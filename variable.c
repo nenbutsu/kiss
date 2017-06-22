@@ -59,7 +59,7 @@ kiss_obj* kiss_defconstant(kiss_obj* name, kiss_obj* form) {
     kiss_symbol_t* symbol = Kiss_Symbol(name);
     kiss_obj* value = kiss_eval(form);
     symbol->var = value;
-    symbol->info = symbol->info | KISS_CONSTANT_VAR;
+    symbol->flags = symbol->flags | KISS_CONSTANT_VAR;
     return name;
 }
 

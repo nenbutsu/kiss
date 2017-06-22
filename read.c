@@ -1,5 +1,5 @@
 /*  -*- coding: utf-8 -*-
-  read.c --- defines the read mechanism of ISLisp processor KISS.
+  read.c --- defines the reader mechanism of ISLisp processor KISS.
 
   Copyright (C) 2017 Yuji Minejima.
 
@@ -42,7 +42,7 @@ static kiss_obj* kiss_read_lexeme(kiss_obj* in);
 
  */
 static int kiss_is_delimiter(wint_t c) {
-    return isspace(c) || strchr("()`,'\"#;", c);
+    return iswspace(c) || wcschr(L"()`,'\"#;", c);
 }
 
 
@@ -51,16 +51,16 @@ static kiss_obj* kiss_read_list(kiss_obj* in) {
     kiss_cons_t* tail = p;
     while(1) {
 	kiss_obj* x = kiss_read_lexeme(in);
-	if (x == NULL) Kiss_Err("Missing closing parenthesis");
+	if (x == NULL) Kiss_Err(L"Missing closing parenthesis");
 	if (x == KISS_RPAREN) { break; }
 	if (x == KISS_DOT) {
 	    kiss_obj* rest;
-	    if (p == tail) { Kiss_Err("Illegal consing dot"); }
+	    if (p == tail) { Kiss_Err(L"Illegal consing dot"); }
 	    rest = kiss_read_lexeme(in);
 	    if (rest == NULL || rest == KISS_RPAREN || rest == KISS_DOT)
-		Kiss_Err("Illegal consing dot");
+		Kiss_Err(L"Illegal consing dot");
 	    if (kiss_read_lexeme(in) != KISS_RPAREN)
-		Kiss_Err("Closing parenthesis is needed");
+		Kiss_Err(L"Closing parenthesis is needed");
 	    tail->cdr = rest;
 	    break;
 	}
@@ -74,15 +74,15 @@ static kiss_obj* kiss_read_string(kiss_obj* in) {
     kiss_obj* stack = KISS_NIL;
     while (1) {
 	kiss_obj* x = kiss_cread_char(in, KISS_NIL, KISS_EOS);
-	if (x == KISS_EOS) { Kiss_Err("Missing closing double quotation"); }
+	if (x == KISS_EOS) { Kiss_Err(L"Missing closing double quotation"); }
 	else {
 	    kiss_character_t* c = (kiss_character_t*)x;
 	    switch (c->c) {
-	    case '"': goto end;
-	    case '\\':
+	    case L'"': goto end;
+	    case L'\\':
 		x = kiss_cread_char(in, KISS_NIL, KISS_EOS);
 		if (x == KISS_EOS) {
-		    Kiss_Err("Missing char after backquote in a string");
+		    Kiss_Err(L"Missing char after backquote in a string");
 		}
 		kiss_push(x, &stack);
 		break;
@@ -102,7 +102,7 @@ static void kiss_push_lexeme_char(kiss_character_t* c) {
 
 static void kiss_read_single_escape(kiss_obj* in) {
     kiss_obj* p = kiss_cread_char(in, KISS_NIL, KISS_EOS);
-    if (p == KISS_EOS) Kiss_Err("Missing single-escaped character");
+    if (p == KISS_EOS) Kiss_Err(L"Missing single-escaped character");
     kiss_push_lexeme_char((kiss_character_t*)p);
 }
 
@@ -110,11 +110,11 @@ static void kiss_read_multiple_escape(kiss_obj* in) {
     while(1) {
 	kiss_obj* p = kiss_cread_char(in, KISS_NIL, KISS_EOS);
 	kiss_character_t* c;
-	if (p == KISS_EOS) Kiss_Err("Missing closing multiple-escape");
+	if (p == KISS_EOS) Kiss_Err(L"Missing closing multiple-escape");
 	c = (kiss_character_t*)p;
 	switch (c->c) {
-	case '|': return;
-	case '\\': kiss_read_single_escape(in); continue;
+	case L'|': return;
+	case L'\\': kiss_read_single_escape(in); continue;
 	default: kiss_push_lexeme_char(c); break;
 	}
     }
@@ -130,12 +130,12 @@ static void kiss_collect_lexeme_chars(kiss_obj* in, int* escaped) {
 	c = (kiss_character_t*)p;
 	if (kiss_is_delimiter(c->c)) { return; }
 	switch (c->c) {
-	case '|':
+	case L'|':
 	    *escaped = 1;
 	    kiss_cread_char(in, KISS_NIL, KISS_NIL);
 	    kiss_read_multiple_escape(in);
 	    break;
-	case '\\':
+	case L'\\':
 	    *escaped = 1;
 	    kiss_cread_char(in, KISS_NIL, KISS_NIL);
 	    kiss_read_single_escape(in);
@@ -155,22 +155,21 @@ static kiss_obj* kiss_read_lexeme_chars(kiss_obj* in) {
     kiss_string_t* str;
     long int i;
     float f;
-    char* tail;
+    wchar_t* tail;
     kiss_collect_lexeme_chars(in, &escaped);
     str = kiss_chars_to_str(kiss_reverse(env->lexeme_chars));
     if (escaped) { return kiss_intern((kiss_obj*)str); }
     errno = 0;
-    i = strtol(str->str, &tail, 10);
-    if (tail == str->str + strlen(str->str)) {
+    i = wcstol(str->str, &tail, 10);
+    if (tail == str->str + wcslen(str->str)) {
       return (kiss_obj*)kiss_make_integer(i);
     }
-    f = strtof(str->str, &tail);
-    if (tail == str->str + strlen(str->str)) {
+    f = wcstof(str->str, &tail);
+    if (tail == str->str + wcslen(str->str)) {
       return (kiss_obj*)kiss_make_float(f);
     }
 
-    if (strcmp(str->str, ".") == 0)   { return KISS_DOT; }
-    /* fwprintf(stderr, "lexeme read\n"); fflush(stderr); */
+    if (wcscmp(str->str, L".") == 0)   { return KISS_DOT; }
     return kiss_intern((kiss_obj*)str);
 }
 
@@ -179,7 +178,7 @@ static kiss_obj* kiss_read_sharp_reader_macro_char(kiss_obj* in) {
     kiss_obj* p = kiss_cread_char(in, KISS_NIL, KISS_EOS);
     kiss_string_t *char_name, *downcased_char_name;
     if (p == KISS_EOS) {
-	Kiss_Err("missing character after #\\ macro reader");
+	Kiss_Err(L"missing character after #\\ macro reader");
     }
     kiss_push(p, &env->lexeme_chars);
 
@@ -203,54 +202,53 @@ static kiss_obj* kiss_read_sharp_reader_macro_char(kiss_obj* in) {
     }
     downcased_char_name = kiss_chars_to_str(kiss_reverse(env->lexeme_chars));
     
-    if (strcmp(downcased_char_name->str, "newline") == 0) {
-	return (kiss_obj*)kiss_make_character('\n');
+    if (wcscmp(downcased_char_name->str, L"newline") == 0) {
+	return (kiss_obj*)kiss_make_character(L'\n');
     }
-    if (strcmp(downcased_char_name->str, "space") == 0) {
-	return (kiss_obj*)kiss_make_character(' ');
+    if (wcscmp(downcased_char_name->str, L"space") == 0) {
+	return (kiss_obj*)kiss_make_character(L' ');
     }
-    Kiss_Err("Invalid character name ~S", char_name);
+    Kiss_Err(L"Invalid character name ~S", char_name);
 }
 
 
 static kiss_obj* kiss_read_sharp_reader_macro(kiss_obj* in) {
     kiss_obj* p = kiss_cread_char(in, KISS_NIL, KISS_EOS);
     kiss_character_t* c;
-    if (p == KISS_EOS) { Kiss_Err("missing # macro reader character"); }
+    if (p == KISS_EOS) { Kiss_Err(L"missing # macro reader character"); }
     c = (kiss_character_t*)p;
     switch (c->c) {
-    case '\'': /* #'f */
+    case L'\'': /* #'f */
 	return kiss_clist(2, KISS_SFUNCTION, kiss_cread(in, KISS_T, KISS_NIL));
-    case '\\': /* #\c */ {
+    case L'\\': /* #\c */
 	return kiss_read_sharp_reader_macro_char(in);
-    }
-    case '(': /* #() */{
+    case L'(': /* #() */{
 	return kiss_general_vector(kiss_read_list(in));
     }
     default:
-	Kiss_Err("Illegal # macro reader character ~S", c);
+	Kiss_Err(L"Illegal # macro reader character ~S", c);
     }
 }
 
 static kiss_obj* kiss_read_comma_at(kiss_obj* in) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_obj* p;
-    if (env->backquote_nest == 0) Kiss_Err("Out of place ,@");
-    env->backquote_nest--;
+    if (env->dynamic_env.backquote_nest == 0) Kiss_Err(L"Out of place ,@");
+    env->dynamic_env.backquote_nest--;
     p = kiss_cread(in, KISS_NIL, KISS_EOS);
-    if (p == KISS_EOS) { Kiss_Err("Missing form after comma-at ,@"); }
-    env->backquote_nest++;
+    if (p == KISS_EOS) { Kiss_Err(L"Missing form after comma-at ,@"); }
+    env->dynamic_env.backquote_nest++;
     return kiss_clist(2, KISS_COMMA_AT, p);
 }
 
 static kiss_obj* kiss_read_comma(kiss_obj* in) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_obj* p;
-    if (env->backquote_nest == 0) Kiss_Err("Out of place ,");
-    env->backquote_nest--;
+    if (env->dynamic_env.backquote_nest == 0) Kiss_Err(L"Out of place ,");
+    env->dynamic_env.backquote_nest--;
     p = kiss_cread(in, KISS_NIL, KISS_EOS);
-    if (p == KISS_EOS) { Kiss_Err("Missing form after comma ,"); }
-    env->backquote_nest++;
+    if (p == KISS_EOS) { Kiss_Err(L"Missing form after comma ,"); }
+    env->dynamic_env.backquote_nest++;
     return kiss_clist(2, KISS_COMMA, p);
 }
 
@@ -270,7 +268,7 @@ static kiss_obj* kiss_expand_backquote(kiss_obj* p) {
     if (KISS_CAR(p) == KISS_COMMA)    /* `,FORM = FORM */
 	return kiss_cadr(p);
     if (KISS_CAR(p) == KISS_COMMA_AT) /* `,@FORM => error */
-	Kiss_Err("Unquote-splicing(,@) out of list");
+	Kiss_Err(L"Unquote-splicing(,@) out of list");
     kiss_push(KISS_SAPPEND_S, &stack);
     while (KISS_IS_CONS(p)) { /* `(FORM ...) */
 	kiss_obj* x = KISS_CAR(p);
@@ -289,7 +287,7 @@ static kiss_obj* kiss_expand_backquote(kiss_obj* p) {
 		kiss_push(kiss_car(p), &stack);
 	    } else if (x == KISS_COMMA_AT) {
 		/* syntax list (a b COMMA_AT c) denotes (a b . ,@c) */
-		Kiss_Err("Invalid unquote-splicing(,@)");
+		Kiss_Err(L"Invalid unquote-splicing(,@)");
 	    } else {
 		kiss_push(kiss_clist(2, ((kiss_obj*)(&KISS_Slist)),
 				     kiss_clist(2, KISS_QUOTE, x)),
@@ -306,10 +304,10 @@ static kiss_obj* kiss_expand_backquote(kiss_obj* p) {
 static kiss_obj* kiss_read_backquote(kiss_obj* in) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_obj* p;
-    env->backquote_nest++;
+    env->dynamic_env.backquote_nest++;
     p = kiss_cread(in, KISS_NIL, KISS_EOS);
-    if (p == KISS_EOS) { Kiss_Err("Missing form after backquote `"); }
-    env->backquote_nest--;
+    if (p == KISS_EOS) { Kiss_Err(L"Missing form after backquote `"); }
+    env->dynamic_env.backquote_nest--;
     return kiss_expand_backquote(p);
 }
 
@@ -321,46 +319,46 @@ static kiss_obj* kiss_read_lexeme(kiss_obj* in) {
 	kiss_character_t* c;
 	if (p == KISS_NIL) { return NULL; }
 	c = (kiss_character_t*)p;
-	if (isspace(c->c)) {
+	if (iswspace(c->c)) {
 	    kiss_cread_char(in, KISS_NIL, KISS_NIL);
 	    continue;
 	}
 
 	switch (c->c) {
-	case '(': { kiss_cread_char(in, KISS_NIL, KISS_NIL);
+	case L'(': { kiss_cread_char(in, KISS_NIL, KISS_NIL);
 		return kiss_read_list(in); }
-	case ')': { kiss_cread_char(in, KISS_NIL, KISS_NIL);
+	case L')': { kiss_cread_char(in, KISS_NIL, KISS_NIL);
 		return KISS_RPAREN; }
-	case '`': { kiss_cread_char(in, KISS_NIL, KISS_NIL);
+	case L'`': { kiss_cread_char(in, KISS_NIL, KISS_NIL);
 		return kiss_read_backquote(in); }
-	case ',':
+	case L',':
 	    kiss_cread_char(in, KISS_NIL, KISS_NIL);
 	    p = kiss_cpreview_char(in, KISS_NIL, KISS_NIL);
-	    if (p == KISS_NIL) Kiss_Err("Stray unquote ,");
+	    if (p == KISS_NIL) Kiss_Err(L"Stray unquote ,");
 	    c = (kiss_character_t*)p;
-	    if (c->c == '@') {
+	    if (c->c == L'@') {
 		kiss_cread_char(in, KISS_NIL, KISS_NIL);
 		return kiss_read_comma_at(in);
 	    } else {
 		return kiss_read_comma(in);
 	    }
-	case '\'': {
+	case L'\'': {
 	    kiss_obj* obj;
 	    kiss_cread_char(in, KISS_NIL, KISS_NIL);
 	    obj = kiss_cread(in, KISS_NIL, KISS_EOS);
-	    if (obj == KISS_EOS) Kiss_Err("Stray quote '");
+	    if (obj == KISS_EOS) Kiss_Err(L"Stray quote '");
 	    return kiss_clist(2, KISS_QUOTE, obj);
 	}
-	case ';':
+	case L';':
 	    do {
 		p = kiss_cread_char(in, KISS_NIL, KISS_NIL);
-	    } while (p != KISS_NIL && ((kiss_character_t*)p)->c != '\n');
+	    } while (p != KISS_NIL && ((kiss_character_t*)p)->c != L'\n');
 	    if (p == KISS_NIL) return NULL;
 	    break;
-	case '"':
+	case L'"':
 	    kiss_cread_char(in, KISS_NIL, KISS_NIL);
 	    return kiss_read_string(in);
-	case '#': {
+	case L'#': {
 	    kiss_cread_char(in, KISS_NIL, KISS_NIL);
 	    return kiss_read_sharp_reader_macro(in);
 	}
@@ -379,8 +377,8 @@ kiss_obj* kiss_cread(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val) {
 	    return eos_val;
 	}
     }
-    else if (p == KISS_RPAREN)  { Kiss_Err("Illegal right parenthesis"); }
-    else if (p == KISS_DOT)     { Kiss_Err("Illegal consing dot"); }
+    else if (p == KISS_RPAREN)  { Kiss_Err(L"Illegal right parenthesis"); }
+    else if (p == KISS_DOT)     { Kiss_Err(L"Illegal consing dot"); }
     else if (KISS_IS_SYMBOL(p)) { assert(kiss_is_interned((kiss_symbol_t*)p)); }
     return p;
 }

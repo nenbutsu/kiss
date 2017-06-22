@@ -17,11 +17,11 @@
 
 (defdynamic *kiss::handlers* nil)
 
-;; special operator: (ignore-errors form*) -> <object>
+;; special operator: (IGNORE-ERRORS FORM*) -> <object>
 ;;   Establishes a handler for <error>, such that if an error occurs during
-;;   execution of forms, ignore-errors will immediately return nil. Then it
-;;   executes forms, returning the value returned by the last form (or nil
-;;   if there were no forms) if execution terminates normally.
+;;   execution of FORMs, ignore-errors will immediately return nil. Then it
+;;   executes FORMs, returning the value returned by the last form (or nil
+;;   if there were no FORMs) if execution terminates normally.
 (defmacro ignore-errors (&rest forms)
   (let ((block-name (gensym)))
   `(block ,block-name
@@ -34,8 +34,8 @@
        ,@forms))))
 
 
-;; function: (error error-string obj*) -> <object>
-;;   An error shall be signaled.  error-string and the objs are advice to
+;; function: (ERROR ERROR-STRING OBJ*) -> <object>
+;;   An error shall be signaled. ERROR-STRING and the OBJs are advice to
 ;;   the implementation about how the error message might be textually
 ;;   described (using format), but whether or not that advice is used is
 ;;   implementation defined.
@@ -45,10 +45,10 @@
                             'format-arguments obj*)
                     nil))
 
-;; function: (cerror continue-string error-string obj*) -> <object>
+;; function: (CERROR CONTINUE-STRING ERROR-STRING OBJ*) -> <object>
 ;;   Like error, but the error that it signals is “continuable” (see
-;;   continue-condition). The extra
-;;   argument continue-string describes what happens if this function returns.
+;;   continue-condition). The extra argument CONTINUE-STRING describes
+;;   what happens if this function returns.
 (defun cerror (continue-string error-string obj*)
   (signal-condition (create (class <simple-error>)
                             'format-string error-string
@@ -57,13 +57,13 @@
                       (format str continue-string obj*)
                       (get-output-stream-string str))))
 
-;; function: (signal-condition condition continuable) -> <object>
-;;   Invokes the condition handling system on condition.  If continuable is
+;; function: (SIGNAL-CONDITION CONDITION CONTINUABLE) -> <object>
+;;   Invokes the condition handling system on CONDITION. If CONTINUABLE is
 ;;   nil, the results of attempting to “continue” (see
 ;;   continue-condition) are not defined except that the call to
-;;   signal-condition will not return normally.  If continuable is not nil,
+;;   signal-condition will not return normally.  If CONTINUABLE is not nil,
 ;;   it will be possible to return from the call to signal-condition (see
-;;   continue-condition). In this case, the specific value of continuable
+;;   continue-condition). In this case, the specific value of CONTINUABLE
 ;;   may be a string indicating the effect of continuing, or it may be the
 ;;   symbol t, indicating that an implementation-defined
 ;;   string such as "Continue with no special action." is to be used.
@@ -71,7 +71,7 @@
   (if (eq continuable t)
       (setq continuable "Continue with no special action"))
   (set-condition-continuable continuable condition)
-  (catch 'kiss::continue-tag
+  (catch 'kiss::continue
     (let ((handlers (dynamic *kiss::handlers*)))
       (if handlers
           (let ((handler (car handlers)))
@@ -101,7 +101,7 @@
   (let ((value (if args
                    (car args)
                  nil)))
-    (throw 'kiss::continue-tag value)))
+    (throw 'kiss::continue value)))
 
 
 
@@ -113,7 +113,6 @@
 (defmacro assure (class-name form)
   `(kiss::assure ',class-name ,form))
 (defun kiss::assure (class-name value)
-  ;;(print class-name)
   (let ((class (kiss::class class-name)))
     (if (instancep value class)
         value
@@ -226,45 +225,33 @@
   (format stream "Undefined function ~S" (undefined-entity-name condition))
   condition)
 
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun kiss::non-negative-integer (i)
-  (assure <integer> i)
-  (if (< i 0)
-      (signal-condition (create (class <domain-error>)
-				'object i
-				'expected-class (class <non-negative-integer>))))
-  i)
-
+(defun kiss::signal-non-negative-integer (integer continuable)
+  (signal-condition (create (class <domain-error>)
+				  'object integer
+				  'expected-class (class <non-negative-integer>))
+		    continuable))
 (defun kiss::signal-end-of-stream (stream continuable)
-  (signal-condition (create (class <end-of-stream>) 'stream stream)
-                   continuable))
+  (signal-condition (create (class <end-of-stream>) 'stream stream) continuable))
 
 (defun kiss::signal-unbound-variable (name continuable)
-  (signal-condition (create (class <unbound-variable>) 'name name
-                           'namespace 'variable)
-                   continuable))
+  (signal-condition (create (class <unbound-variable>) 'name name 'namespace 'variable)
+		    continuable))
 
 (defun kiss::signal-catcher-not-found (name continuable)
-  (signal-condition (create (class <control-error>) 'name name
-                            'namespace 'catch)
-                   continuable))
+  (signal-condition (create (class <control-error>) 'name name 'namespace 'catch) continuable))
 
 (defun kiss::signal-block-not-found (name continuable)
-  (signal-condition (create (class <control-error>) 'name name
-                           'namespace 'block)
-                   continuable))
+  (signal-condition (create (class <control-error>) 'name name 'namespace 'block) continuable))
 
 (defun kiss::signal-tagbody-not-found (name continuable)
-  (signal-condition (create (class <control-error>) 'name name
-                           'namespace 'tagbody)
-                   continuable))
+  (signal-condition (create (class <control-error>) 'name name 'namespace 'tagbody) continuable))
 
 (defun kiss::signal-index-out-of-range (sequence index continuable)
-  (signal-condition (create (class <index-out-of-range>) 'sequence sequence
-                            'index index)
+  (signal-condition (create (class <index-out-of-range>) 'sequence sequence 'index index)
                     continuable))
+
+
 
 (provide 'condition)
 ;;;

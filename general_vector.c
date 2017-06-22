@@ -97,7 +97,7 @@ kiss_obj* kiss_gvref(kiss_obj* general_vector, kiss_obj* index) {
     kiss_general_vector_t* gv = Kiss_General_Vector(general_vector);
     kiss_integer_t* i = Kiss_Non_Negative_Integer(index);
     if (i->i >= gv->n) {
-	Kiss_Err("index is too large. ~S", index);
+	Kiss_Err(L"index is too large. ~S", index);
     }
     return gv->v[i->i];
 }
@@ -112,7 +112,7 @@ kiss_obj* kiss_set_gvref(kiss_obj* obj, kiss_obj* general_vector,
     kiss_general_vector_t* gv = Kiss_General_Vector(general_vector);
     kiss_integer_t* i = Kiss_Non_Negative_Integer(index);
     if (i->i >= gv->n) {
-	Kiss_Err("index is too large. ~S", index);
+	Kiss_Err(L"index is too large. ~S", index);
     }
     gv->v[i->i] = obj;
     return obj;

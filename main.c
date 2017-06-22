@@ -19,9 +19,6 @@
 #include "kiss.h"
 
 int main(void) {
-#ifdef GC
-     GC_INIT();
-#endif
     kiss_initialize();
     kiss_read_eval_print_loop();
 }

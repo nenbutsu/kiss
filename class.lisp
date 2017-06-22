@@ -198,7 +198,7 @@
    ((symbolp obj)           (class <symbol>))
    ((characterp obj)        (class <character>))
    ((integerp obj)          (class <integer>))
-   ;;((floatp obj)            (class <float>))
+   ((floatp obj)            (class <float>))
    ((stringp obj)           (class <string>))
    ((general-vector-p obj)  (class <general-vector>))
    ((streamp obj)           (class <stream>))

@@ -24,25 +24,32 @@ kiss_file_stream_t Kiss_Error_Output;
 
 void kiss_init_streams(void) {
     Kiss_Standard_Input.type      = KISS_STREAM;
-    Kiss_Standard_Input.info      = KISS_INPUT_STREAM | KISS_CHARACTER_STREAM | KISS_FILE_STREAM;
+    Kiss_Standard_Input.flags     = KISS_INPUT_STREAM | KISS_CHARACTER_STREAM | KISS_FILE_STREAM;
     Kiss_Standard_Input.file_ptr  = stdin;
     Kiss_Standard_Input.column    = 0;
+    Kiss_Standard_Input.gc_next   = NULL;
+    Kiss_Standard_Input.gc_flag   = 0;
 
     Kiss_Standard_Output.type     = KISS_STREAM;
-    Kiss_Standard_Output.info     = KISS_OUTPUT_STREAM | KISS_CHARACTER_STREAM | KISS_FILE_STREAM;
+    Kiss_Standard_Output.flags    = KISS_OUTPUT_STREAM | KISS_CHARACTER_STREAM | KISS_FILE_STREAM;
     Kiss_Standard_Output.file_ptr = stdout;
     Kiss_Standard_Output.column   = 0;
-
+    Kiss_Standard_Output.gc_next  = NULL;
+    Kiss_Standard_Output.gc_flag  = 0;
+    
+    
     Kiss_Error_Output.type        = KISS_STREAM;
-    Kiss_Error_Output.info        = KISS_OUTPUT_STREAM | KISS_CHARACTER_STREAM | KISS_FILE_STREAM;
+    Kiss_Error_Output.flags       = KISS_OUTPUT_STREAM | KISS_CHARACTER_STREAM | KISS_FILE_STREAM;
     Kiss_Error_Output.file_ptr    = stderr;
     Kiss_Error_Output.column      = 0;
+    Kiss_Error_Output.gc_next     = NULL;
+    Kiss_Error_Output.gc_flag     = 0;
 }
 
 static kiss_file_stream_t* kiss_make_file_stream(FILE* fp) {
-    kiss_file_stream_t* p = Kiss_Malloc(sizeof(kiss_file_stream_t));
+    kiss_file_stream_t* p = Kiss_GC_Malloc(sizeof(kiss_file_stream_t));
     p->type = KISS_STREAM;
-    p->info = KISS_FILE_STREAM;
+    p->flags = KISS_FILE_STREAM;
     p->file_ptr = fp;
     p->column = 0;
     return p;
@@ -50,9 +57,9 @@ static kiss_file_stream_t* kiss_make_file_stream(FILE* fp) {
 
 static kiss_string_stream_t* kiss_make_string_stream(kiss_string_t* str)
 {
-    kiss_string_stream_t* p = Kiss_Malloc(sizeof(kiss_string_stream_t));
+    kiss_string_stream_t* p = Kiss_GC_Malloc(sizeof(kiss_string_stream_t));
     p->type = KISS_STREAM;
-    p->info = KISS_STRING_STREAM;
+    p->flags = KISS_STRING_STREAM;
     p->list = kiss_str_to_chars(str);
     return p;
 }
@@ -81,7 +88,7 @@ kiss_obj* kiss_open_streamp(kiss_obj* obj) {
 kiss_obj* kiss_create_string_input_stream(kiss_obj* string) {
     kiss_string_t* str = Kiss_String(string);
     kiss_string_stream_t* p = kiss_make_string_stream(str);
-    p->info = KISS_INPUT_STREAM | KISS_CHARACTER_STREAM | p->info;
+    p->flags = KISS_INPUT_STREAM | KISS_CHARACTER_STREAM | p->flags;
     return (kiss_obj*)p;
 }
 
@@ -89,9 +96,9 @@ kiss_obj* kiss_create_string_input_stream(kiss_obj* string) {
    This function creates and returns a string output stream. The output
    to a string stream can be retrieved by get-output-stream-string. */
 kiss_obj* kiss_create_string_output_stream(void) {
-    kiss_string_t* str = kiss_make_string("");
+    kiss_string_t* str = kiss_make_string(L"");
     kiss_string_stream_t* p = kiss_make_string_stream(str);
-    p->info = KISS_OUTPUT_STREAM | KISS_CHARACTER_STREAM | p->info;
+    p->flags = KISS_OUTPUT_STREAM | KISS_CHARACTER_STREAM | p->flags;
     return (kiss_obj*)p;
 }
 
@@ -103,9 +110,6 @@ kiss_obj* kiss_create_string_output_stream(void) {
    create-string-output-stream (error-id. domain-error ).*/
 kiss_obj* kiss_get_output_stream_string(kiss_obj* stream) {
     kiss_string_stream_t* p = Kiss_String_Output_Stream(stream);
-/*    fwprintf(stderr, "get_output_stream_string entered\n");
-    fflush(stderr);
-*/
     return (kiss_obj*)kiss_chars_to_str(kiss_reverse(p->list));
 }
 
@@ -163,7 +167,7 @@ kiss_obj* kiss_cread_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val)
 
     if (KISS_IS_FILE_STREAM(input)) {
 	FILE* fp = ((kiss_file_stream_t*)input)->file_ptr;
-	wint_t c = fgetc(fp);
+	wint_t c = fgetwc(fp);
 	if (c == EOF) {
 	    if (ferror(fp)) { Kiss_System_Error(); }
 	    goto eos;
@@ -190,14 +194,12 @@ eos:
 
 
 
-kiss_obj* kiss_cpreview_char(kiss_obj* in, kiss_obj* eos_err_p,
-			     kiss_obj* eos_val)
-{
+kiss_obj* kiss_cpreview_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val) {
     kiss_stream_t* input = Kiss_Input_Char_Stream(in);
 
     if (KISS_IS_FILE_STREAM(input)) {
 	FILE* fp = ((kiss_file_stream_t*)input)->file_ptr;
-	int c = fgetc(fp);
+	wint_t c = fgetwc(fp);
 	if (c == EOF) {
 	    if (ferror(fp)) { Kiss_System_Error(); }
 	} else {
@@ -268,18 +270,17 @@ kiss_obj* kiss_format_char(kiss_obj* output_stream, kiss_obj* character) {
     if (KISS_IS_FILE_STREAM(out)) {
 	FILE* fp;
 	fp = ((kiss_file_stream_t*)out)->file_ptr;
-	if (c->c == '\n') {
+	if (c->c == L'\n') {
 	     ((kiss_file_stream_t*)out)->column = 0;
-	} else if (c->c == '\t'){
+	} else if (c->c == L'\t'){
 	     size_t column = ((kiss_file_stream_t*)out)->column;
 	     ((kiss_file_stream_t*)out)->column = 7 * ((column / 7) + 1) + (column / 7);
 		  /* assume tab is 8 column-position.
-		     column 0 represents the left margin.
-		   */
+		     column 0 represents the left margin. */
 	} else {
 	     ((kiss_file_stream_t*)out)->column += 1;
 	}
-	if (fputc(c->c, fp) == EOF) {
+	if (fputwc(c->c, fp) == EOF) {
 	    if (ferror(fp)) { Kiss_System_Error(); }
 	}
     } else {
@@ -291,11 +292,13 @@ kiss_obj* kiss_format_char(kiss_obj* output_stream, kiss_obj* character) {
 
 kiss_obj* kiss_open_input_file(kiss_obj* filename, kiss_obj* rest) {
     kiss_string_t* str = Kiss_String(filename);
-    FILE* fp = fopen(str->str, "r");
+    char buff[1024];
+    wcstombs(buff, str->str, 1024);
+    FILE* fp = fopen(buff, "r");
     if (fp == NULL) { Kiss_System_Error(); }
     else {
 	kiss_file_stream_t* stream = kiss_make_file_stream(fp);
-	stream->info = KISS_INPUT_STREAM | KISS_CHARACTER_STREAM | stream->info;
+	stream->flags = KISS_INPUT_STREAM | KISS_CHARACTER_STREAM | stream->flags;
 	return (kiss_obj*)stream;
     }
 }

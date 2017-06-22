@@ -20,18 +20,16 @@
 
 size_t kiss_clength(kiss_obj* p) {
     p = Kiss_Sequence(p);
-    /* fwprintf(stderr, "clength: type = %d\n", p->type); */
-    switch (p->type) {
+    switch (KISS_OBJ_TYPE(p)) {
     case KISS_SYMBOL: return 0;
     case KISS_CONS: {
 	    size_t n = 0;
 	    for (; KISS_IS_CONS(p); p = KISS_CDR(p)) { n++; }
 	    return n;
 	}
-    case KISS_GENERAL_VECTOR: return ((kiss_general_vector_t*)p)->n;
     case KISS_STRING: return ((kiss_string_t*)p)->n;
     default:
-	Kiss_Err("clength internal error, unknown sequence ~S", p);
+	Kiss_Err(L"clength internal error, unknown sequence ~S", p);
     }
 }
 
@@ -62,25 +60,21 @@ kiss_obj* kiss_length(kiss_obj* sequence) {
 kiss_obj* kiss_elt(kiss_obj* sequence, kiss_obj* z) {
     Kiss_Check_Sequence_Index_Range(sequence, z);
     kiss_integer_t* integer = Kiss_Integer(z);
-    switch (sequence->type) {
+    switch (KISS_OBJ_TYPE(sequence)) {
     case KISS_SYMBOL: {
-	Kiss_Err("elt internal error: zero-length-sequence ~S", sequence);
+	Kiss_Err(L"elt internal error: zero-length-sequence ~S", sequence);
     }
     case KISS_CONS: {
 	kiss_cons_t* list = Kiss_Cons(sequence);
 	for (; integer->i > 0; integer->i--) { list = KISS_CDR(list); }
 	return KISS_CAR(list);
     }
-    case KISS_GENERAL_VECTOR: {
-	kiss_general_vector_t* vector = Kiss_General_Vector(sequence);
-	return vector->v[integer->i];
-    }
     case KISS_STRING: {
 	kiss_string_t* string = Kiss_String(sequence);
 	return (kiss_obj*)kiss_make_character(string->str[integer->i]);
     }
     default:
-	Kiss_Err("elt internal error, unknown sequence ~S", sequence);
+	Kiss_Err(L"elt internal error, unknown sequence ~S", sequence);
     }
     
 }

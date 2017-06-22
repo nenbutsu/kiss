@@ -25,29 +25,28 @@ kiss_environment_t* Kiss_Get_Environment(void) { return &Kiss_Environment; }
 
 void kiss_init_environment(void) {
     kiss_environment_t* env = Kiss_Get_Environment();
-    env->type                = KISS_ENVIRONMENT;
-    env->lexical_env.type    = KISS_LEXICAL_ENVIRONMENT;
-    env->lexical_env.vars    = KISS_NIL;
-    env->lexical_env.funs    = KISS_NIL;
-    env->lexical_env.jumpers = KISS_NIL;
 
-    env->dynamic_env.type    = KISS_DYNAMIC_ENVIRONMENT;
-    env->dynamic_env.vars    = KISS_NIL;
-    env->dynamic_env.jumpers = KISS_NIL;
+    env->lexical_env.vars           = KISS_NIL;
+    env->lexical_env.funs           = KISS_NIL;
+    env->lexical_env.jumpers        = KISS_NIL;
 
-    env->call_nest = 0;
-    env->backquote_nest = 0;
-    env->gensym_number = 0;
+    env->dynamic_env.vars           = KISS_NIL;
+    env->dynamic_env.jumpers        = KISS_NIL;
+    env->dynamic_env.backquote_nest = 0;
 
-    env->lexeme_chars = KISS_NIL;
+    env->heap_index                 = 0;
+    env->gensym_number              = 0;
 
-    env->throw_result = KISS_NIL;
-    env->block_result = KISS_NIL;
-    env->current_tagbody = NULL;
+    env->lexeme_chars               = KISS_NIL;
 
-    env->global_dynamic_vars = KISS_NIL;
-    env->top_level = Top_Level;
+    env->throw_result               = KISS_NIL;
+    env->block_result               = KISS_NIL;
+    env->current_tagbody            = NULL;
+
+    env->gc_flag                    = 0;
+
+    env->top_level                  = Top_Level;
+    env->global_dynamic_vars        = KISS_NIL;
+
+    env->features                   = KISS_NIL;
 }
-
-
-

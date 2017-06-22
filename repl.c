@@ -1,5 +1,5 @@
 /*  -*- coding: utf-8 -*-
-  repl.c --- defines the read, eval, print mechanism of ISLisp processor KISS.
+  repl.c --- defines the read, eval and print mechanism of ISLisp processor KISS.
 
   Copyright (C) 2017 Yuji Minejima.
 
@@ -18,43 +18,92 @@
 */
 #include "kiss.h"
 
-int kiss_read_eval_print_loop(void) {
-    kiss_environment_t* env = Kiss_Get_Environment();
-    kiss_lexical_environment_t saved_lexical_env;
-    kiss_dynamic_environment_t saved_dynamic_env;
-    kiss_obj* form;
-    saved_lexical_env = env->lexical_env;
-    saved_dynamic_env = env->dynamic_env;
-    while (1) {
-	if (setjmp(env->top_level) == 0) {
-	    env->lexical_env = saved_lexical_env;
-	    env->dynamic_env = saved_dynamic_env;
+static wchar_t* libraries[] = {
+     L"cons.lisp",
+     L"character.lisp",
+     L"sequence.lisp",
+     L"control.lisp",
+     L"number.lisp",
+     L"string.lisp",
+     L"oo_obj.lisp",
+     L"class.lisp",
+     L"built_in_classes.lisp",
+     L"generic_function.lisp",
+     L"gf_invoke.lisp",
+     L"built_in_conditions.lisp",
+     L"condition.lisp",
+     L"format.lisp",
+     L"format_oo_object.lisp",
+     NULL,
+};
 
-	    env->call_nest = 0;
-	    
-	    fprintf(stdout, "\nKISS>");
-	    fflush(stdout);
-	    form = kiss_cread(kiss_standard_input(), KISS_NIL, KISS_EOS);
-	    /* fprintf(stderr, "read working\n");fflush(stderr); */
-	    if (form == KISS_EOS) break;
-	    kiss_print(kiss_eval(form));
-	    /* kiss_format_object(kiss_standard_output(), form, KISS_T); */
-	    /* format_object(standard_output(), form, T); */
-	    fflush(stdout);
-	} else {
-	    kiss_obj* result = env->throw_result;
-	    if (result->type != KISS_STRING) {
-		fprintf(stderr, "\nKISS| Internal error. Kiss_Err threw non-string object.\n");
-		fprintf(stderr, "%s\n");
-		exit(1);
-	    } else {
-		kiss_string_t* msg = (kiss_string_t*)result;
-		fprintf(stderr, "\nKISS| ");
-		fprintf(stderr, "%s\n", msg->str);
-		fflush(stderr);
-		fflush(stdin);
-		fflush(stdout);
-	    }
-	}
-    }
+void kiss_load_library(wchar_t* name) {
+     kiss_environment_t* env = Kiss_Get_Environment();
+     size_t saved_heap_index = env->heap_index;
+     if (setjmp(env->top_level) == 0) {
+	  fwprintf(stderr, L"loading %ls ... ", name);
+	  fflush(stderr);
+	  kiss_load((kiss_obj*)kiss_make_string(name));
+	  fwprintf(stderr, L"done \n");
+	  fflush(stderr);
+     } else {
+	  kiss_obj* result = env->throw_result;
+	  if (!KISS_IS_STRING(result)) {
+	       fwprintf(stderr, L"\nKISS| Internal error. Kiss_Err threw non-string object.\n");
+	       fwprintf(stderr, L"\n");
+	  } else {
+	       fwprintf(stderr, L"initialization failed\n"); fflush(stderr);
+	       kiss_string_t* msg = (kiss_string_t*)result;
+	       fwprintf(stderr, L"\nKISS| ");
+	       fwprintf(stderr, L"%ls\n", msg->str);
+	  }
+	  exit(1);
+     }
+     env->heap_index = saved_heap_index;
+}
+
+int kiss_read_eval_print_loop(void) {
+     kiss_environment_t* env = Kiss_Get_Environment();
+     kiss_obj* form;
+     kiss_lexical_environment_t saved_lexical_env;
+     kiss_dynamic_environment_t saved_dynamic_env;
+     size_t i;
+
+     for (i = 0; libraries[i] != NULL; i++) {
+	  kiss_load_library(libraries[i]);
+     }
+
+     while (1) {
+	  size_t saved_heap_index = env->heap_index;
+	  saved_dynamic_env = env->dynamic_env;
+	  saved_lexical_env = env->lexical_env;
+	  if (setjmp(env->top_level) == 0) {
+	       fwprintf(stdout, L"\nKISS>");
+	       fflush(stdout);
+
+	       form = kiss_cread(kiss_standard_input(), KISS_NIL, KISS_EOS);
+
+	       if (form == KISS_EOS) break;
+
+	       kiss_print(kiss_gc_eval(form));
+	       fflush(stdout);
+	  } else {
+	       kiss_obj* result = env->throw_result;
+	       if (!KISS_IS_STRING(result)) {
+		    fwprintf(stderr, L"\nKISS| Internal error. Kiss_Err threw non-string object.\n");
+		    fwprintf(stderr, L"\n");
+		    exit(1);
+	       } else {
+		    kiss_string_t* msg = (kiss_string_t*)result;
+		    fwprintf(stderr, L"\nKISS| ");
+		    fwprintf(stderr, L"%ls\n", msg->str);
+		    fflush(stderr);
+		    fflush(stdin);
+		    fflush(stdout);
+		    env->dynamic_env = saved_dynamic_env;
+		    env->lexical_env = saved_lexical_env;
+	       }
+	  }
+	  env->heap_index = saved_heap_index;
+     }
 }

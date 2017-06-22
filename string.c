@@ -19,11 +19,11 @@
 #include "kiss.h"
 
 
-kiss_string_t* kiss_make_string(char* s) {
-    kiss_string_t* p = Kiss_Malloc(sizeof(kiss_string_t));
+kiss_string_t* kiss_make_string(wchar_t* s) {
+    kiss_string_t* p = Kiss_GC_Malloc(sizeof(kiss_string_t));
     p->type = KISS_STRING;
     p->str = s;
-    p->n = strlen(s);
+    p->n = wcslen(s);
     return p;
 }
 
@@ -39,10 +39,10 @@ kiss_string_t* kiss_make_string(char* s) {
  */
 kiss_obj* kiss_create_string(kiss_obj* i, kiss_obj* rest) {
     kiss_integer_t* n = Kiss_Non_Negative_Integer(i);
-    char* s = Kiss_Malloc(sizeof(char) * n->i + 1);
-    char c;
+    wchar_t* s = Kiss_Malloc(sizeof(wchar_t) * n->i + 1);
+    wchar_t c;
     size_t j;
-    if (rest == KISS_NIL) { c = '\0'; }
+    if (rest == KISS_NIL) { c = L'\0'; }
     else                  { c = Kiss_Character(KISS_CAR(rest))->c; }
     for (j = 0; j < n->i; j++) { s[j] = c; }
     return (kiss_obj*)kiss_make_string(s);
@@ -60,8 +60,8 @@ kiss_obj* kiss_stringp(kiss_obj* obj) {
 
 kiss_string_t* kiss_chars_to_str(kiss_obj* chars) {
     size_t n = kiss_clength(chars);
-    char* str = Kiss_Malloc(sizeof(char) * n + 1);
-    char* s = str;
+    wchar_t* str = Kiss_Malloc(sizeof(wchar_t) * n + 1);
+    wchar_t* s = str;
     kiss_obj* p = chars;
     while (KISS_IS_CONS(p)) {
 	kiss_obj* c = KISS_CAR(p);
@@ -97,7 +97,7 @@ kiss_obj* kiss_string_append(kiss_obj* rest) {
      long n = 0;
      kiss_obj* args = rest;
      kiss_string_t* str;
-     char* p;
+     wchar_t* p;
      while (KISS_IS_CONS(args)) {
 	  n += ((kiss_integer_t*)kiss_length(KISS_CAR(args)))->i;
 	  args = KISS_CDR(args);
@@ -107,7 +107,7 @@ kiss_obj* kiss_string_append(kiss_obj* rest) {
      args = rest;
      p = str->str;
      while (KISS_IS_CONS(args)) {
-	  strcpy(p, Kiss_String(KISS_CAR(args))->str);
+	  wcscpy(p, Kiss_String(KISS_CAR(args))->str);
 	  p += ((kiss_integer_t*)kiss_length(KISS_CAR(args)))->i;
 	  args = KISS_CDR(args);
      }

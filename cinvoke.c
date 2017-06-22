@@ -24,8 +24,8 @@ kiss_obj* kiss_cinvoke(kiss_cfunction_t* cfun, kiss_obj* args) {
 				      -1 means any number of args is permitted
 				    */
     long int narg = kiss_clength(args);
-    if (narg < min) { Kiss_Err("Too few arguments ~S", cfun->name); }
-    if (max >= 0 && narg > max) { Kiss_Err("Too many arguments ~S", cfun->name); }
+    if (narg < min) { Kiss_Err(L"Too few arguments ~S", cfun->name); }
+    if (max >= 0 && narg > max) { Kiss_Err(L"Too many arguments ~S", cfun->name); }
     if (min == max) { /* exact number of argumets must be given  */
 	switch (min) {
 	case 0:
@@ -120,7 +120,7 @@ kiss_obj* kiss_cinvoke(kiss_cfunction_t* cfun, kiss_obj* args) {
 					    x6, x7, x8, x9, x10);
 	}
 	default:
-	    Kiss_Err("Internal error. the number of arguments given to a C function exceeds supported value ~S", cfun->name);
+	    Kiss_Err(L"Internal error. the number of arguments given to a C function exceeds supported value ~S", cfun->name);
 	}
     } else { /* min_args number of args must be given, more than that are treated as :rest */
 	switch (min) {
@@ -207,7 +207,7 @@ kiss_obj* kiss_cinvoke(kiss_cfunction_t* cfun, kiss_obj* args) {
 					    x6, x7, x8, x9, args);
 	}
 	default:
-	    Kiss_Err("Internal error. the number of arguments given to a C function exceeds supported value ~S",
+	    Kiss_Err(L"Internal error. the number of arguments given to a C function exceeds supported value ~S",
 		  cfun->name);
 	}
     }

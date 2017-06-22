@@ -19,14 +19,14 @@
 #include "kiss.h"
 
 kiss_integer_t* kiss_make_integer(long int i) {
-    kiss_integer_t* p = Kiss_Malloc(sizeof(kiss_integer_t));
+    kiss_integer_t* p = Kiss_GC_Malloc(sizeof(kiss_integer_t));
     p->type = KISS_INTEGER;
     p->i = i;
     return p;
 }
 
 kiss_float_t* kiss_make_float(float f) {
-    kiss_float_t* p = Kiss_Malloc(sizeof(kiss_float_t));
+    kiss_float_t* p = Kiss_GC_Malloc(sizeof(kiss_float_t));
     p->type = KISS_FLOAT;
     p->f = f;
     return p;
@@ -79,11 +79,11 @@ static int kiss_all_int(kiss_obj* p) {
 */
 kiss_obj* kiss_parse_number(kiss_obj* p) {
      kiss_string_t* str = Kiss_String(p);
-     char* tailptr;
-     long i = strtol(str->str, &tailptr, 10);
+     wchar_t* tailptr;
+     long i = wcstol(str->str, &tailptr, 10);
      if (tailptr == str->str + str->n) { return (kiss_obj*)kiss_make_integer(i); }
      else {
-	  float f = strtof(str->str, &tailptr);
+	  float f = wcstof(str->str, &tailptr);
 	  if (tailptr == str->str + str->n) { return (kiss_obj*)kiss_make_float(f); }
 	  else { Kiss_Cannot_Parse_Number_Error(p); }
      }
@@ -385,7 +385,7 @@ kiss_obj* kiss_truncate(kiss_obj* x) {
    An error shall be signaled if x is not a number (error-id. domain-error).
 */
 kiss_obj* kiss_round(kiss_obj* x) {
-     Kiss_Err("c library function 'roundevenf' is not supported as of this writing.");
+     Kiss_Err(L"c library function 'roundevenf' is not supported as of this writing.");
      /*
      Kiss_Number(x);
      if (KISS_IS_INTEGER(x)) {

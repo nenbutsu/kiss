@@ -1,5 +1,5 @@
-;;; -*- mode: lisp; coding: utf-8 -*-
-;;; format_object.lisp --- defines the formatting mechanism of ISLisp processor KISS.
+;;; -*- mode: lisp; coding: utf-8 -*- 
+;;; object.lisp --- defines the object mechanism of ISLisp processor KISS.
 
 ;; Copyright (C) 2017 Yuji Minejima.
 
@@ -15,15 +15,11 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
-(defun kiss::format-oo-object (out obj escapep)
-  (let* ((plist (object-plist obj))
-         (name (plist-get plist ':name))
-         (class (plist-get plist ':class))
-         (class-name (class-name class)))
-    (if (not name)
-        (setq name "no name"))
-    (format out "#<:~S: " class-name)
-    (format out "~S(" name)
-    (kiss::format-pointer out obj)
-    (format out ")>")
-    nil))
+
+(defun object-plist-get (object property)
+  (let ((plist (object-plist object)))
+    (plist-get plist property)))
+
+(defun object-plist-put (object property value)
+  (let ((plist (object-plist object)))
+    (set-object-plist (plist-put plist property value) object)))

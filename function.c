@@ -19,8 +19,8 @@
 #include "kiss.h"
 
 kiss_function_t* kiss_make_function(kiss_symbol_t* name, kiss_obj* lambda) {
+    kiss_function_t* p = Kiss_GC_Malloc(sizeof(kiss_function_t));
     kiss_environment_t* env = Kiss_Get_Environment();
-    kiss_function_t* p = Kiss_Malloc(sizeof(kiss_function_t));
     p->type = KISS_FUNCTION;
     p->name = name;
     p->lambda = Kiss_Lambda_Expression(lambda);
@@ -49,11 +49,11 @@ void kiss_bind_funargs(kiss_obj* params, kiss_obj* args) {
     int rest = kiss_member(KISS_KW_REST,  params) != KISS_NIL ||
 	kiss_member(KISS_AMP_REST, params) != KISS_NIL;
     if (!rest && nparam < narg) {
-	Kiss_Err("Too many arguments ~S ~S", params, args);
+	Kiss_Err(L"Too many arguments ~S ~S", params, args);
     }
     
     if ((!rest && nparam > narg) || (rest && nparam - 2 > narg)) {
-	Kiss_Err("Too few arguments ~S ~S", params, args);
+	Kiss_Err(L"Too few arguments ~S ~S", params, args);
     }
     while (KISS_IS_CONS(params)) {
 	kiss_obj* p = KISS_CAR(params);
@@ -67,14 +67,6 @@ void kiss_bind_funargs(kiss_obj* params, kiss_obj* args) {
 	args = KISS_CDR(args);
 	params = KISS_CDR(params);
     }
-}
-
-kiss_obj* kiss_eval_body(kiss_obj* body) {
-    kiss_obj* result = KISS_NIL;
-    for (body = Kiss_Proper_List(body); KISS_IS_CONS(body); body = KISS_CDR(body)) {
-	result = kiss_eval(KISS_CAR(body));
-    }
-    return result;
 }
 
 kiss_obj* kiss_linvoke(kiss_function_t* fun, kiss_obj* args) {
@@ -93,31 +85,26 @@ kiss_obj* kiss_linvoke(kiss_function_t* fun, kiss_obj* args) {
 kiss_obj* kiss_lambda(kiss_obj* params, kiss_obj* body) {
     kiss_obj* lambda =
 	kiss_clist(3, KISS_LAMBDA, params,
-		   kiss_cappend(2, kiss_clist(2, &KISS_Sblock, KISS_LAMBDA),
-				body));
+		   kiss_cappend(2, kiss_clist(2, &KISS_Sblock, KISS_LAMBDA), body));
     /* (lambda () . body) -> (lambda () (block lambda . body)) */
     return (kiss_obj*)kiss_make_function(NULL, lambda);
 }
 
 /* special operator: (defun function-name lambda-list form*) → <symbol> */
 kiss_obj* kiss_defun(kiss_obj* name, kiss_obj* params, kiss_obj* body) {
-    /* fwprintf(stderr, "defun entered\n"); fflush(stderr); */
     kiss_symbol_t* fname = Kiss_Symbol(name);
-    kiss_obj* lambda =
-	kiss_clist(3, KISS_LAMBDA, params,
-		   kiss_cappend(2, kiss_clist(2, &KISS_Sblock, name), body));
+    kiss_obj* lambda = kiss_clist(3, KISS_LAMBDA, params,
+				  kiss_cappend(2, kiss_clist(2, &KISS_Sblock, name), body));
     /* (defun foo () . body) -> (defun foo () (block foo . body)) */
     fname->fun = (kiss_obj*)kiss_make_function(fname, lambda);
-    /* fwprintf(stderr, "defun leaving\n"); fflush(stderr); */
     return name;
 }
 
 /* special operator: (defmacro macro-name lambda-list form*) → <symbol> */
 kiss_obj* kiss_defmacro(kiss_obj* name, kiss_obj* params, kiss_obj* body) {
     kiss_symbol_t* fname = Kiss_Symbol(name);
-    kiss_obj* lambda =
-	kiss_clist(3, KISS_LAMBDA, params,
-		   kiss_cappend(2, kiss_clist(2, &KISS_Sblock, name), body));
+    kiss_obj* lambda = kiss_clist(3, KISS_LAMBDA, params,
+				  kiss_cappend(2, kiss_clist(2, &KISS_Sblock, name), body));
     /* (defmacro foo () . body) -> (defmacro foo () (block foo . body)) */
     fname->fun = (kiss_obj*)kiss_make_macro(fname, lambda);
     return name;
@@ -127,7 +114,7 @@ kiss_obj* kiss_fun_ref(kiss_symbol_t* name) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_obj* binding = kiss_assoc((kiss_obj*)name, env->lexical_env.funs);
     if (KISS_IS_CONS(binding)) { return KISS_CDR(binding); }
-    if (name->fun == NULL) { Kiss_Err("Unbound function ~S", name); }
+    if (name->fun == NULL) { Kiss_Err(L"Unbound function ~S", name); }
     return name->fun;
 }
 
@@ -136,25 +123,23 @@ kiss_obj* kiss_fun_ref(kiss_symbol_t* name) {
      identifier in the function namespace of current lexical environment
      (see §9.2) (error-id. undefined-function). The consequences are
      undefined if the function-name names a macro or special form. */
-kiss_obj* kiss_function(kiss_obj* name) {
-    return kiss_fun_ref(Kiss_Symbol(name));
-}
+kiss_obj* kiss_function(kiss_obj* name) { return kiss_fun_ref(Kiss_Symbol(name)); }
 
 
 /* function: (funcall function obj*) → <object> */
 kiss_obj* kiss_funcall(kiss_obj* f, kiss_obj* args) {
-    switch (f->type) {
-    case KISS_CFUNCTION:
-	return kiss_cinvoke((kiss_cfunction_t*)f, args);
-    case KISS_FUNCTION:
-	return kiss_linvoke((kiss_function_t*)f, args);
-    default:
-	Kiss_Err("Not a function ~S", f);
-    }
+     switch (KISS_OBJ_TYPE(f)) {
+     case KISS_CFUNCTION:
+	  return kiss_cinvoke((kiss_cfunction_t*)f, args);
+     case KISS_FUNCTION:
+	  return kiss_linvoke((kiss_function_t*)f, args);
+     default:
+	  Kiss_Err(L"Not a function ~S", f);
+     }
     
 }
 
-kiss_obj* kiss_cfuncall(char* function_name, kiss_obj* args) {
+kiss_obj* kiss_cfuncall(wchar_t* function_name, kiss_obj* args) {
     return kiss_funcall(kiss_symbol_function(kiss_symbol(function_name)), args);
 }
 
@@ -177,8 +162,7 @@ static kiss_cons_t* kiss_flatten_apply_args(kiss_cons_t* args) {
 
 /* function: (apply function obj* list) → <object> */
 kiss_obj* kiss_apply(kiss_obj* f, kiss_obj* obj, kiss_obj* rest) {
-    kiss_obj* args =
-	(kiss_obj*)kiss_flatten_apply_args((kiss_cons_t*)kiss_cons(obj, rest));
+    kiss_obj* args = (kiss_obj*)kiss_flatten_apply_args((kiss_cons_t*)kiss_cons(obj, rest));
     return kiss_funcall(f, args);
 }
 

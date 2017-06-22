@@ -18,19 +18,19 @@
  */
 #include "kiss.h"
 
-static kiss_obj* Kiss_Features = KISS_NIL;
-
 kiss_obj* kiss_featurep(kiss_obj* feature) {
-    if (kiss_member(feature, Kiss_Features) == KISS_NIL) {
-	return KISS_NIL;
-    } else {
-	return KISS_T;
-    }
+     kiss_environment_t* env = Kiss_Get_Environment();
+     if (kiss_member(feature, env->features) == KISS_NIL) {
+	  return KISS_NIL;
+     } else {
+	  return KISS_T;
+     }
 }
 
 kiss_obj* kiss_provide(kiss_obj* feature) {
-    if (kiss_featurep(feature) == KISS_NIL) {
-	Kiss_Features = kiss_cons(feature, Kiss_Features);
-    }
-    return feature;
+     kiss_environment_t* env = Kiss_Get_Environment();
+     if (kiss_featurep(feature) == KISS_NIL) {
+	  env->features = kiss_cons(feature, env->features);
+     }
+     return feature;
 }
