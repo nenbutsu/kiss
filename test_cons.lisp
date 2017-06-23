@@ -100,3 +100,16 @@
 		    (signal-condition condition nil)))
 		(create-list -1 nil)))
 
+;; list
+(equal (list 'a (+ 3 4) 'c) '(a 7 c))
+(eq (list) nil)
+
+;; reverse
+(equal (reverse '(a b c d e)) '(e d c b a))
+(equal (reverse '(a)) '(a))
+(eq (reverse '()) '())
+
+;; nreverse
+(equal (nreverse (list 'a 'b 'c 'd 'e)) '(e d c b a))
+(equal (nreverse (list 'a)) '(a))
+(eq (nreverse '()) '())
