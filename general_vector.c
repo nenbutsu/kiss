@@ -33,9 +33,8 @@
                        +--> <string>
  */
 
-static kiss_general_vector_t* kiss_make_general_vector(size_t n, kiss_obj* obj)
-{
-    kiss_general_vector_t* p = Kiss_Malloc(sizeof(kiss_general_vector_t));
+static kiss_general_vector_t* kiss_make_general_vector(size_t n, kiss_obj* obj) {
+    kiss_general_vector_t* p = Kiss_GC_Malloc(sizeof(kiss_general_vector_t));
     kiss_obj** v = Kiss_Malloc(n * sizeof(kiss_obj*));
     size_t i;
     p->type = KISS_GENERAL_VECTOR;
@@ -56,7 +55,7 @@ kiss_obj* kiss_create_general_vector(kiss_obj* i, kiss_obj* rest) {
     kiss_integer_t* n = Kiss_Non_Negative_Integer(i);
     kiss_obj* obj;
     if (rest == KISS_NIL) { obj = KISS_NIL; }
-    else             { obj = KISS_CAR(rest); }
+    else                  { obj = KISS_CAR(rest); }
     return (kiss_obj*)kiss_make_general_vector(n->i, obj);
 }
 

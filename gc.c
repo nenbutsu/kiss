@@ -107,12 +107,13 @@ void kiss_gc_mark_symbol(kiss_symbol_t* symbol) {
      kiss_gc_mark_obj(symbol->plist);
 }
 
-void kiss_gc_mark_general_vector(kiss_general_vector_t* obj) {
+void kiss_gc_mark_general_vector(kiss_general_vector_t* vec) {
      size_t i;
-     if (gc_marked((kiss_gc_obj*)obj)) { return; }
-     kiss_gc_mark_obj_flag((kiss_gc_obj*)obj);
-     for (i = 0; i < obj->n; i++) {
-	  kiss_gc_mark_obj(*(obj->v) + i);
+     if (gc_marked((kiss_gc_obj*)vec)) { return; }
+     fwprintf(stderr, L"kiss_gc_mark_general_vector\n");
+     kiss_gc_mark_obj_flag((kiss_gc_obj*)vec);
+     for (i = 0; i < vec->n; i++) {
+	  kiss_gc_mark_obj(vec->v[i]);
      }
 }
 
@@ -218,7 +219,8 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
 	       kiss_gc_mark_oo_obj((kiss_oo_obj_t*)obj);
 	       break;
 	  default:
-	       Kiss_Err(L"GC unknown object type");
+	       fwprintf(stderr, L"GC unknown object type = %d\n", KISS_OBJ_TYPE(obj));
+	       abort();
 	  }
      }
 }
