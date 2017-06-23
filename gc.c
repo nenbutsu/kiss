@@ -110,7 +110,6 @@ void kiss_gc_mark_symbol(kiss_symbol_t* symbol) {
 void kiss_gc_mark_general_vector(kiss_general_vector_t* vec) {
      size_t i;
      if (gc_marked((kiss_gc_obj*)vec)) { return; }
-     fwprintf(stderr, L"kiss_gc_mark_general_vector\n");
      kiss_gc_mark_obj_flag((kiss_gc_obj*)vec);
      for (i = 0; i < vec->n; i++) {
 	  kiss_gc_mark_obj(vec->v[i]);
