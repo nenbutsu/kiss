@@ -140,7 +140,7 @@ kiss_obj* kiss_cmapc(kiss_cf1_t f, kiss_obj* list) {
  */
 kiss_obj* kiss_append(kiss_obj* p) {
     kiss_cmapc(Kiss_List, p);
-    kiss_append_s(p);
+    return kiss_append_s(p);
 }
 
 /* function: (append* [list* last]) -> <list>

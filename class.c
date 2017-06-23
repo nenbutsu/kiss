@@ -41,5 +41,5 @@ wchar_t* kiss_type_to_class_name_str(kiss_type t) {
 
 kiss_obj* kiss_type_to_class_name(kiss_type t) {
      wchar_t* class_name = kiss_type_to_class_name_str(t);
-     kiss_symbol(class_name);
+     return kiss_symbol(class_name);
 }
