@@ -14,7 +14,7 @@ gcc *.c でコンパイルできると思います。
 KISS is aimed to be a conforming ISLisp processor.
 The development is at the initial stage.
 
-The current KISS is an interpreter written in C.
+The current KISS is an interpreter written in C and ISLisp.
 
 The rep loop is already running.
 
@@ -22,7 +22,7 @@ The object system and generic functions are working, too.
 
 The license of this software is GPL. See gpl.txt in the zip file.
 
-Download the latest version of current_kiss.zip .
+Download the latest version of kiss.zip at https://github.com/nenbutsu/kiss .
 
 Any comments are welcome.
 I read English and Japanese.

@@ -168,7 +168,7 @@ kiss_obj* kiss_cread_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val)
     if (KISS_IS_FILE_STREAM(input)) {
 	FILE* fp = ((kiss_file_stream_t*)input)->file_ptr;
 	wint_t c = fgetwc(fp);
-	if (c == EOF) {
+	if (c == WEOF) {
 	    if (ferror(fp)) { Kiss_System_Error(); }
 	    goto eos;
 	} else {
@@ -200,7 +200,7 @@ kiss_obj* kiss_cpreview_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_va
     if (KISS_IS_FILE_STREAM(input)) {
 	FILE* fp = ((kiss_file_stream_t*)input)->file_ptr;
 	wint_t c = fgetwc(fp);
-	if (c == EOF) {
+	if (c == WEOF) {
 	    if (ferror(fp)) { Kiss_System_Error(); }
 	} else {
 	    ungetc(c, fp);
@@ -280,7 +280,7 @@ kiss_obj* kiss_format_char(kiss_obj* output_stream, kiss_obj* character) {
 	} else {
 	     ((kiss_file_stream_t*)out)->column += 1;
 	}
-	if (fputwc(c->c, fp) == EOF) {
+	if (fputwc(c->c, fp) == WEOF) {
 	    if (ferror(fp)) { Kiss_System_Error(); }
 	}
     } else {
