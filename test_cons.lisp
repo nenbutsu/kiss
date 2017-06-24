@@ -19,7 +19,7 @@
 (consp '(a . b))
 (consp '(a b c))
 (not (consp '()))
-(not (consp #(a b)))
+;;(not (consp #(a b)))
 
 (equal (cons 'a '()) '(a))
 (equal (cons '(a) '(b c d)) '((a) b c d))
@@ -113,3 +113,36 @@
 (equal (nreverse (list 'a 'b 'c 'd 'e)) '(e d c b a))
 (equal (nreverse (list 'a)) '(a))
 (eq (nreverse '()) '())
+
+;; append
+(equal (append '(a b c) '(d e f)) '(a b c d e f))
+(eq (append) '())
+(eq (append '()) '())
+(equal (append '(a b c) '() '(d e f)) '(a b c d e f))
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(append '(a b) 'x)))
+
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(append 'z)))
+
+;; member
+(equal (member 'c '(a b c d e f)) '(c d e f))
+(not (member 'g '(a b c d e f)))
+(equal (member 'c '(a b c a b c)) '(c a b c))
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(member 'a 'x)))
+
+
+
