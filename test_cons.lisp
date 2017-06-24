@@ -145,4 +145,24 @@
 		(member 'a 'x)))
 
 
+;; mapcar
+(equal (mapcar #'car '((1 a) (2 b) (3 c))) '(1 2 3))
+(equal (mapcar #'abs '(3 -4 2 -5 -6)) '(3 4 2 5 6))
+(equal (mapcar #'cons '(a b c) '(1 2 3)) '((a . 1)(b . 2)(c . 3)))
+
+;; mapc
+(eql (let ((x 0))
+       (mapc (lambda (v) (setq x (+ x v))) '(3 5))
+       x)
+     8)
+
+;; maplist
+(equal (maplist #'append '(1 2 3 4) '(1 2) '(1 2 3))
+       '((1 2 3 4 1 2 1 2 3) (2 3 4 2 2 3)))
+(equal (maplist (lambda (x) (cons 'foo x)) '(a b c d))
+       '((foo a b c d) (foo b c d) (foo c d) (foo d)))
+
+(equal (maplist (lambda (x) (if (member (car x) (cdr x)) 0 1)) '(a b a c d b c))
+       '(0 0 1 0 1 1 1))
+
 
