@@ -93,7 +93,7 @@ int kiss_read_eval_print_loop(void) {
 
      while (1) {
 	  size_t saved_heap_index = env->heap_index;
-	  fwprintf(stderr, L"env->heap_index = %d\n", env->heap_index);
+	  //fwprintf(stderr, L"env->heap_index = %d\n", env->heap_index);
 	  saved_dynamic_env = env->dynamic_env;
 	  saved_lexical_env = env->lexical_env;
 	  if (setjmp(env->top_level) == 0) {
