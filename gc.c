@@ -249,7 +249,7 @@ void kiss_gc_mark(void) {
      }
 }
 
-void kiss_gc_sweep_obj(kiss_gc_obj* obj) {
+void kiss_gc_free_obj(kiss_gc_obj* obj) {
      switch (KISS_OBJ_TYPE(obj)) {
      case KISS_CONS:
 	  break;
@@ -296,14 +296,106 @@ void kiss_gc_sweep(void) {
 	       *prev = obj->gc_next;
 	       tmp = obj;
 	       obj = obj->gc_next;
-	       kiss_gc_sweep_obj(tmp);
+	       kiss_gc_free_obj(tmp);
 	  }
      }
 }
 
 kiss_obj* kiss_gc_info(void) {
      kiss_environment_t* env = Kiss_Get_Environment();
-     fwprintf(stderr, L"heap_index = %d\n", env->heap_index);
+     kiss_gc_obj* p;
+     size_t cons_count = 0;
+     size_t symbol_count = 0;
+     size_t character_count = 0;
+     size_t integer_count = 0;
+     size_t float_count = 0;
+     size_t string_count = 0;
+     size_t general_vector_count = 0;
+     size_t stream_count = 0;
+     size_t function_count = 0;
+     size_t macro_count = 0;
+     size_t cfunction_count = 0;
+     size_t cmacro_count = 0;
+     size_t catcher_count = 0;
+     size_t block_count = 0;
+     size_t cleanup_count = 0;
+     size_t tagbody_count = 0;
+     size_t oo_obj_count = 0;
+     for (p =  GC_Objects; p != NULL; p = p->gc_next) {
+	  switch (KISS_OBJ_TYPE(p)) {
+	  case KISS_CONS:
+	       cons_count++;
+	       break;
+	  case KISS_SYMBOL:
+	       symbol_count++;
+	       break;
+	  case KISS_CHARACTER:
+	       character_count++;
+	  case KISS_INTEGER:
+	       integer_count++;
+	  case KISS_FLOAT:
+	       float_count++;
+	       break;
+	  case KISS_STRING:
+	       string_count++;
+	       break;
+	  case KISS_GENERAL_VECTOR:
+	       general_vector_count++;
+	       break;
+	  case KISS_STREAM:
+	       stream_count++;
+	       break;
+	  case KISS_FUNCTION:
+	       function_count++;
+	       break;
+	  case KISS_MACRO:
+	       macro_count++;
+	       break;
+	  case KISS_CFUNCTION:
+	       cfunction_count++;
+	       break;
+	  case KISS_CMACRO:
+	       cmacro_count++;
+	       break;
+	  case KISS_CATCHER:
+	       catcher_count++;
+	       break;
+	  case KISS_BLOCK:
+	       block_count++;
+	       break;
+	  case KISS_CLEANUP:
+	       cleanup_count++;
+	       break;
+	  case KISS_TAGBODY:
+	       tagbody_count++;
+	       break;
+	  case KISS_OO_OBJ:
+	       oo_obj_count++;
+	       break;
+	  default:
+	       fwprintf(stderr, L"gc_info unknown object type = %d\n", KISS_OBJ_TYPE(p));
+	       abort();
+	  }
+     }
+     fwprintf(stderr, L"heap_index = %d\n\n", env->heap_index);
+     fwprintf(stderr, L"cons           = %d\n", cons_count);
+     fwprintf(stderr, L"symbol         = %d\n", symbol_count);
+     fwprintf(stderr, L"character      = %d\n", character_count);
+     fwprintf(stderr, L"integer        = %d\n", integer_count);
+     fwprintf(stderr, L"float          = %d\n", float_count);
+     fwprintf(stderr, L"string         = %d\n", string_count);
+     fwprintf(stderr, L"general_vector = %d\n", general_vector_count);
+     fwprintf(stderr, L"stream         = %d\n", stream_count);
+     fwprintf(stderr, L"function       = %d\n", function_count);
+     fwprintf(stderr, L"macro          = %d\n", macro_count);
+     fwprintf(stderr, L"cfunction      = %d\n", cfunction_count);
+     fwprintf(stderr, L"cmacro         = %d\n", cmacro_count);
+     fwprintf(stderr, L"catcher        = %d\n", catcher_count);
+     fwprintf(stderr, L"block          = %d\n", block_count);
+     fwprintf(stderr, L"cleanup        = %d\n", cleanup_count);
+     fwprintf(stderr, L"tagbody        = %d\n", tagbody_count);
+     fwprintf(stderr, L"oo_obj         = %d\n", oo_obj_count);
+     
      return KISS_NIL;
 }
 
