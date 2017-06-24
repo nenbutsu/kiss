@@ -408,7 +408,6 @@ kiss_string_stream_t* Kiss_String_Output_Stream(kiss_obj* obj);
 
 /* eval.c */
 kiss_obj* kiss_eval(kiss_obj* form);
-kiss_obj* kiss_gc_eval(kiss_obj* form);
 kiss_obj* kiss_load(kiss_obj* filename);
 kiss_obj* kiss_eval_body(kiss_obj* body);
 
