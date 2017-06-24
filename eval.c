@@ -81,27 +81,6 @@ kiss_obj* kiss_eval(kiss_obj* form) {
     return result;
 }
 
-kiss_obj* kiss_gc_eval(kiss_obj* form) {
-     kiss_environment_t* env = Kiss_Get_Environment();
-     size_t saved_heap_index = env->heap_index;
-     kiss_obj* result;
-     switch (KISS_OBJ_TYPE(form)) {
-     case KISS_CONS: {
-	  result = kiss_eval_compound_form((kiss_cons_t*)Kiss_Proper_List(form));
-	  break;
-     }
-     case KISS_SYMBOL: {
-	  result = kiss_var_ref((kiss_symbol_t*)form);
-	  break;
-     }
-     default: /* self-evaluating object. */
-	  result = form;
-	  break;
-     }
-     env->heap_index = saved_heap_index;
-     return result;
-}
-
 kiss_obj* kiss_eval_body(kiss_obj* body) {
      kiss_environment_t* env = Kiss_Get_Environment();
      kiss_obj* result = KISS_NIL;
@@ -119,13 +98,4 @@ static kiss_obj* kiss_eval_args(kiss_obj* args) {
     return kiss_nreverse(stack);
 }
 
-kiss_obj* kiss_load(kiss_obj* filename) {
-    kiss_obj* in = kiss_open_input_file(filename, KISS_NIL);
-    kiss_obj* form;
-    for (form = kiss_cread(in, KISS_NIL, KISS_EOS); form != KISS_EOS;
-	 form = kiss_cread(in, KISS_NIL, KISS_EOS))
-    {
-	kiss_gc_eval(form);
-    }
-    return KISS_T;
-}
+

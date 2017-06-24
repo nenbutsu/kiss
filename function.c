@@ -23,8 +23,9 @@ kiss_function_t* kiss_make_function(kiss_symbol_t* name, kiss_obj* lambda) {
     kiss_environment_t* env = Kiss_Get_Environment();
     p->type = KISS_FUNCTION;
     p->name = name;
-    p->lambda = Kiss_Lambda_Expression(lambda);
+    p->lambda = KISS_NIL;
     p->lexical_env = env->lexical_env;
+    p->lambda = Kiss_Lambda_Expression(lambda); // might gc
     return p;
 }
 

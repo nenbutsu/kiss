@@ -22,7 +22,7 @@ static int GCing = 0;
 
 static size_t GC_Counter = 0;
 
-#define HEAP_STACK_SIZE (1024 * 1024)
+#define HEAP_STACK_SIZE (1024 * 1024 * 3)
 kiss_gc_obj* Heap_Stack[HEAP_STACK_SIZE];
 static kiss_gc_obj* GC_Objects = NULL;
 
@@ -109,10 +109,12 @@ void kiss_gc_mark_symbol(kiss_symbol_t* symbol) {
 
 void kiss_gc_mark_general_vector(kiss_general_vector_t* vec) {
      size_t i;
+     kiss_obj** p;
      if (gc_marked((kiss_gc_obj*)vec)) { return; }
      kiss_gc_mark_obj_flag((kiss_gc_obj*)vec);
      for (i = 0; i < vec->n; i++) {
-	  kiss_gc_mark_obj(vec->v[i]);
+	  p = vec->v;
+	  kiss_gc_mark_obj(p[i]);
      }
 }
 
@@ -218,7 +220,7 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
 	       kiss_gc_mark_oo_obj((kiss_oo_obj_t*)obj);
 	       break;
 	  default:
-	       fwprintf(stderr, L"GC unknown object type = %d\n", KISS_OBJ_TYPE(obj));
+	       fwprintf(stderr, L"GC mark unknown object type = %d\n", KISS_OBJ_TYPE(obj));
 	       abort();
 	  }
      }
@@ -247,24 +249,54 @@ void kiss_gc_mark(void) {
      }
 }
 
+void kiss_gc_sweep_obj(kiss_gc_obj* obj) {
+     switch (KISS_OBJ_TYPE(obj)) {
+     case KISS_CONS:
+	  break;
+     case KISS_SYMBOL:
+	  free(((kiss_symbol_t*)obj)->name);
+	  break;
+     case KISS_CHARACTER:
+     case KISS_INTEGER:
+     case KISS_FLOAT:
+	  break;
+     case KISS_STRING:
+	  free(((kiss_string_t*)obj)->str);
+	  break;
+     case KISS_GENERAL_VECTOR:
+	  free(((kiss_general_vector_t*)obj)->v);
+	  break;
+     case KISS_STREAM:
+     case KISS_FUNCTION:
+     case KISS_MACRO:
+     case KISS_CFUNCTION:
+     case KISS_CMACRO:
+     case KISS_CATCHER:
+     case KISS_BLOCK:
+     case KISS_CLEANUP:
+     case KISS_TAGBODY:
+     case KISS_OO_OBJ:
+	  break;
+     default:
+	  fwprintf(stderr, L"GC sweep unknown object type = %d\n", KISS_OBJ_TYPE(obj));
+	  abort();
+     }
+     free(obj);
+}
+
 void kiss_gc_sweep(void) {
-     kiss_gc_obj* prev = NULL;
+     kiss_gc_obj** prev = &GC_Objects;
      kiss_gc_obj* obj = GC_Objects;
      while (obj != NULL) {
-	  if (!gc_marked(obj)) {
+	  if (gc_marked(obj)) {
+	       prev = &(obj->gc_next);
+	       obj = obj->gc_next;
+	  } else {
 	       kiss_gc_obj* tmp;
-	       if (prev) {
-		    prev->gc_next = obj->gc_next;
-	       }
+	       *prev = obj->gc_next;
 	       tmp = obj;
 	       obj = obj->gc_next;
-	       free(tmp);
-	  } else {
-	       if (prev == NULL) {
-		    GC_Objects = obj;
-	       }
-	       prev = obj;
-	       obj = obj->gc_next;
+	       kiss_gc_sweep_obj(tmp);
 	  }
      }
 }

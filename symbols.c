@@ -1,4 +1,4 @@
-/*  -*- coding: utf-8 -*-
+/*
   symbols.c --- defines the symbols of ISLisp processor KISS.
 
   Copyright (C) 2017 Yuji Minejima.
@@ -51,8 +51,11 @@ kiss_obj* kiss_symbolp(kiss_obj* obj) {
 
 kiss_obj* kiss_gensym(void) {
      kiss_environment_t* env = Kiss_Get_Environment();
-     wchar_t* name = Kiss_Malloc(sizeof(wchar_t) * 40);
-     swprintf(name, 30, L"<anonymous-symbol: #%x>", env->gensym_number++);
+     wchar_t* name = Kiss_Malloc(sizeof(wchar_t) * 30);
+     if (swprintf(name, 30, L"#:%x>", env->gensym_number++) < 0) {
+	  fwprintf(stderr, L"kiss_gensym: swprintf error\n");
+	  abort();
+     }
      return (kiss_obj*)kiss_make_symbol(name);
 }
 

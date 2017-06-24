@@ -22,7 +22,7 @@
 kiss_string_t* kiss_make_string(wchar_t* s) {
     kiss_string_t* p = Kiss_GC_Malloc(sizeof(kiss_string_t));
     p->type = KISS_STRING;
-    p->str = s;
+    p->str = wcscpy(Kiss_Malloc(sizeof(wchar_t) * (wcslen(s) + 1)), s);
     p->n = wcslen(s);
     return p;
 }
@@ -39,12 +39,13 @@ kiss_string_t* kiss_make_string(wchar_t* s) {
  */
 kiss_obj* kiss_create_string(kiss_obj* i, kiss_obj* rest) {
     kiss_integer_t* n = Kiss_Non_Negative_Integer(i);
-    wchar_t* s = Kiss_Malloc(sizeof(wchar_t) * n->i + 1);
+    wchar_t* s = Kiss_Malloc(sizeof(wchar_t) * (n->i + 1));
     wchar_t c;
     size_t j;
     if (rest == KISS_NIL) { c = L'\0'; }
     else                  { c = Kiss_Character(KISS_CAR(rest))->c; }
     for (j = 0; j < n->i; j++) { s[j] = c; }
+    s[n->i] = 0;
     return (kiss_obj*)kiss_make_string(s);
 }
 

@@ -37,6 +37,23 @@ static wchar_t* libraries[] = {
      NULL,
 };
 
+kiss_obj* kiss_re(kiss_obj* in) {
+     return kiss_cread(in, KISS_NIL, KISS_EOS);
+}
+
+kiss_obj* kiss_load(kiss_obj* filename) {
+     kiss_environment_t* env = Kiss_Get_Environment();
+     kiss_obj* in = kiss_open_input_file(filename, KISS_NIL);
+     size_t saved_heap_index = env->heap_index;
+     kiss_obj* form = kiss_re(in);
+     while (form != KISS_EOS) {
+	  kiss_eval(form);
+	  env->heap_index = saved_heap_index;
+	  form = kiss_re(in);
+     }
+     return KISS_T;
+}
+
 void kiss_load_library(wchar_t* name) {
      kiss_environment_t* env = Kiss_Get_Environment();
      size_t saved_heap_index = env->heap_index;
@@ -60,6 +77,7 @@ void kiss_load_library(wchar_t* name) {
 	  exit(1);
      }
      env->heap_index = saved_heap_index;
+     fwprintf(stderr, L"env->heap_index = %d\n", env->heap_index);
 }
 
 int kiss_read_eval_print_loop(void) {
@@ -75,6 +93,7 @@ int kiss_read_eval_print_loop(void) {
 
      while (1) {
 	  size_t saved_heap_index = env->heap_index;
+	  fwprintf(stderr, L"env->heap_index = %d\n", env->heap_index);
 	  saved_dynamic_env = env->dynamic_env;
 	  saved_lexical_env = env->lexical_env;
 	  if (setjmp(env->top_level) == 0) {
@@ -85,12 +104,12 @@ int kiss_read_eval_print_loop(void) {
 
 	       if (form == KISS_EOS) break;
 
-	       kiss_print(kiss_gc_eval(form));
+	       kiss_print(kiss_eval(form));
 	       fflush(stdout);
 	  } else {
 	       kiss_obj* result = env->throw_result;
 	       if (!KISS_IS_STRING(result)) {
-		    fwprintf(stderr, L"\nKISS| Internal error. Kiss_Err threw non-string object.\n");
+		    fwprintf(stderr, L"\nKISS| Internal error. Kiss_Err threw non-string obj.\n");
 		    fwprintf(stderr, L"\n");
 		    exit(1);
 	       } else {

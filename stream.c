@@ -60,7 +60,8 @@ static kiss_string_stream_t* kiss_make_string_stream(kiss_string_t* str)
     kiss_string_stream_t* p = Kiss_GC_Malloc(sizeof(kiss_string_stream_t));
     p->type = KISS_STREAM;
     p->flags = KISS_STRING_STREAM;
-    p->list = kiss_str_to_chars(str);
+    p->list = KISS_NIL;
+    p->list = kiss_str_to_chars(str); // might gc
     return p;
 }
 
