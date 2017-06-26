@@ -313,20 +313,27 @@ kiss_obj* kiss_eq(kiss_obj* obj1, kiss_obj* obj2) {
  */
 kiss_obj* kiss_eql(kiss_obj* obj1, kiss_obj* obj2) {
      if (KISS_IS_INTEGER(obj1) && KISS_IS_INTEGER(obj2)) {
-	if (((kiss_integer_t*)obj1)->i == ((kiss_integer_t*)obj2)->i) {
-	    return KISS_T;
-	} else {
-	    return KISS_NIL;
-	}
-    }
+	  if (((kiss_integer_t*)obj1)->i == ((kiss_integer_t*)obj2)->i) {
+	       return KISS_T;
+	  } else {
+	       return KISS_NIL;
+	  }
+     }
+     if (KISS_IS_FLOAT(obj1) && KISS_IS_FLOAT(obj2)) {
+	  if (((kiss_float_t*)obj1)->f == ((kiss_float_t*)obj2)->f) {
+	       return KISS_T;
+	  } else {
+	       return KISS_NIL;
+	  }
+     }
      if (KISS_IS_CHARACTER(obj1) && KISS_IS_CHARACTER(obj2)) {
-	if (((kiss_character_t*)obj1)->c == ((kiss_character_t*)obj2)->c) {
-	    return KISS_T;
-	} else {
-	    return KISS_NIL;
-	}
-    }
-    return kiss_eq(obj1, obj2);
+	  if (((kiss_character_t*)obj1)->c == ((kiss_character_t*)obj2)->c) {
+	       return KISS_T;
+	  } else {
+	       return KISS_NIL;
+	  }
+     }
+     return kiss_eq(obj1, obj2);
 }
 
 /* special operator: (progn form*) → <object> */
