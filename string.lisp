@@ -26,7 +26,9 @@
 	  (n (length string1)))
       (while (and (< i n) (char= (elt string1 i) (elt string2 i)))
 	(setq i (+ i 1)))
-      t)))
+      (if (= i n)
+	  t
+	nil))))
 
 
 ;; function: (string/= string1 string2) ¨ quasi-boolean
