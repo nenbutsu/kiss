@@ -43,8 +43,8 @@ kiss_obj* kiss_re(kiss_obj* in) {
 
 kiss_obj* kiss_load(kiss_obj* filename) {
      kiss_environment_t* env = Kiss_Get_Environment();
-     kiss_obj* in = kiss_open_input_file(filename, KISS_NIL);
-     size_t saved_heap_index = env->heap_index;
+     kiss_obj* in = kiss_open_input_file(filename, KISS_NIL); // the order of these two lines
+     size_t saved_heap_index = env->heap_index;               // matters.
      kiss_obj* form = kiss_re(in);
      while (form != KISS_EOS) {
 	  kiss_eval(form);
