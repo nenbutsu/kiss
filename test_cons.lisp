@@ -166,3 +166,26 @@
        '(0 0 1 0 1 1 1))
 
 
+;; mapl
+(= (let ((k 0))
+     (mapl (lambda (x)
+	     (setq k (+ k (if (member (car x) (cdr x)) 0 1))))
+	   '(a b a c d b c))
+     k)
+   4)
+
+;; mapcan
+(equal (mapcan (lambda (x) (if (> x 0) (list x))) '(-3 4 0 5 -2 7))
+       '(4 5 7))
+
+;; mapcon
+(equal (mapcon (lambda (x) (if (member (car x) (cdr x)) (list (car x))))
+	       '(a b a c d b c b c))
+       '(a b c b c))
+(equal (mapcon #'list '(1 2 3 4))
+       '((1 2 3 4) (2 3 4) (3 4) (4)))
+
+;; assoc
+(equal (assoc 'a '((a . 1) (b . 2))) '(a . 1))
+(equal (assoc 'a '((a . 1) (a . 2))) '(a . 1))
+(not (assoc 'c '((a . 1) (b . 2))))
