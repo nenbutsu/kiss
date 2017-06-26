@@ -195,7 +195,10 @@
              (equal (cdr obj1) (cdr obj2)))
         t
       nil))
-   ;; code for array is currently not implemented.
+   ((and (stringp obj1) (stringp obj2))
+    (if (string= obj1 obj2)
+	t
+      nil))
    (t (eql obj1 obj2))))
 
 (defmacro prog1 (first-form &rest forms)
