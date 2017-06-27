@@ -583,22 +583,22 @@ kiss_symbol_t KISS_Screate_general_vector = {
     KISS_NIL,                                 /* plist */
 };
 
-kiss_symbol_t KISS_Sgeneral_vector;
-kiss_cfunction_t KISS_CFgeneral_vector = {
+kiss_symbol_t KISS_Svector;
+kiss_cfunction_t KISS_CFvector = {
     KISS_CFUNCTION,        /* type */
-    &KISS_Sgeneral_vector, /* name */
-    kiss_general_vector,   /* C function name */
+    &KISS_Svector, /* name */
+    kiss_vector,   /* C function name */
     0,                /* minimum argument number */
     -1,               /* maximum argument number */
 };
-kiss_symbol_t KISS_Sgeneral_vector = {
+kiss_symbol_t KISS_Svector = {
     KISS_SYMBOL,                       /* type */
     NULL,              /* gc_next */
     0,                 /* gc_flag */
-    L"general-vector",            /* name */
+    L"vector",            /* name */
     KISS_CONSTANT_FUN,                 /* flags */
     NULL,                         /* var */
-    (kiss_obj*)&KISS_CFgeneral_vector, /* fun */
+    (kiss_obj*)&KISS_CFvector, /* fun */
     KISS_NIL,                          /* plist */
 };
 
@@ -2631,7 +2631,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Splist_member, &KISS_Splist_put, &KISS_Splist_get, 
 
     /* general_vector.c */
-    &KISS_Screate_general_vector, &KISS_Sgeneral_vector,
+    &KISS_Screate_general_vector, &KISS_Svector,
     &KISS_Sgeneral_vector_p, &KISS_Sgvref, &KISS_Sset_gvref,
 
     /* function.c */
