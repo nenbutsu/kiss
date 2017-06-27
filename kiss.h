@@ -59,6 +59,26 @@ typedef struct {
      void* pointer[];
 } kiss_obj;
 
+typedef kiss_obj* (*kiss_cf0_t)(void);
+typedef kiss_obj* (*kiss_cf1_t)(kiss_obj*);
+typedef kiss_obj* (*kiss_cf2_t)(kiss_obj*, kiss_obj*);
+typedef kiss_obj* (*kiss_cf3_t)(kiss_obj*, kiss_obj*, kiss_obj*);
+typedef kiss_obj* (*kiss_cf4_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*);
+typedef kiss_obj* (*kiss_cf5_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*, 
+				kiss_obj*);
+typedef kiss_obj* (*kiss_cf6_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
+				kiss_obj*, kiss_obj*);
+typedef kiss_obj* (*kiss_cf7_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
+				kiss_obj*, kiss_obj*, kiss_obj*);
+typedef kiss_obj* (*kiss_cf8_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
+				kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*);
+typedef kiss_obj* (*kiss_cf9_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
+				kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
+				kiss_obj*);
+typedef kiss_obj* (*kiss_cf10_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
+				 kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
+				 kiss_obj*, kiss_obj*);
+
 struct kiss_gc_obj_t {
      kiss_type type;
      struct kiss_gc_obj_t* gc_next;
@@ -296,25 +316,6 @@ kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda,
 #define KISS_IS_STRING_STREAM(x)    (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_STRING_STREAM))
 
 
-typedef kiss_obj* (*kiss_cf0_t)(void);
-typedef kiss_obj* (*kiss_cf1_t)(kiss_obj*);
-typedef kiss_obj* (*kiss_cf2_t)(kiss_obj*, kiss_obj*);
-typedef kiss_obj* (*kiss_cf3_t)(kiss_obj*, kiss_obj*, kiss_obj*);
-typedef kiss_obj* (*kiss_cf4_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*);
-typedef kiss_obj* (*kiss_cf5_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*, 
-				kiss_obj*);
-typedef kiss_obj* (*kiss_cf6_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
-				kiss_obj*, kiss_obj*);
-typedef kiss_obj* (*kiss_cf7_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
-				kiss_obj*, kiss_obj*, kiss_obj*);
-typedef kiss_obj* (*kiss_cf8_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
-				kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*);
-typedef kiss_obj* (*kiss_cf9_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
-				kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
-				kiss_obj*);
-typedef kiss_obj* (*kiss_cf10_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
-				 kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
-				 kiss_obj*, kiss_obj*);
 
 
 /* character.c */
