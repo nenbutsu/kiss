@@ -223,7 +223,7 @@ static kiss_obj* kiss_read_sharp_reader_macro(kiss_obj* in) {
     case L'\\': /* #\c */
 	return kiss_read_sharp_reader_macro_char(in);
     case L'(': /* #() */{
-	return kiss_general_vector(kiss_read_list(in));
+	return kiss_vector(kiss_read_list(in));
     }
     default:
 	Kiss_Err(L"Illegal # macro reader character ~S", c);
