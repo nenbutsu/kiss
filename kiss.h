@@ -445,7 +445,7 @@ void kiss_bind_funargs(kiss_obj* params, kiss_obj* args);
 
 /* general_vector.c */
 kiss_obj* kiss_create_general_vector(kiss_obj* i, kiss_obj* rest);
-kiss_obj* kiss_general_vector(kiss_obj* objs);
+kiss_obj* kiss_vector(kiss_obj* objs);
 kiss_obj* kiss_general_vector_p(kiss_obj* obj);
 kiss_obj* kiss_gvref(kiss_obj* general_vector, kiss_obj* index);
 kiss_obj* kiss_set_gvref(kiss_obj* obj, kiss_obj* general_vector, kiss_obj* index);

@@ -59,14 +59,14 @@ kiss_obj* kiss_create_general_vector(kiss_obj* i, kiss_obj* rest) {
     return (kiss_obj*)kiss_make_general_vector(n->i, obj);
 }
 
-/* function: (general-vector obj*) → <general-vector> 
+/* function: (vector obj*) → <general-vector> 
    Returns a new general-vector whose elements are its obj arguments.
    The length of the newly created vector is, therefore, the number of
    objs passed as arguments. The vector is indexed by integers ranging
    from 0 to dimension−1. An error shall be signaled if the requested
    vector cannot be allocated (error-id. cannot-create-vector ).
    Each obj may be any LISP object. */
-kiss_obj* kiss_general_vector(kiss_obj* objs) {
+kiss_obj* kiss_vector(kiss_obj* objs) {
     size_t n = kiss_clength(objs);
     kiss_general_vector_t* v = kiss_make_general_vector(n, KISS_NIL);
     size_t i;
