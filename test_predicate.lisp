@@ -72,3 +72,35 @@
 (equal #(a b) #(a b))
 (not (equal #(a b) #(a c)))
 (not (equal "a" "A"))
+
+;; not
+(eq (not t) nil)
+(eq (not '()) t)
+(eq (not 'nil) t)
+(eq (not nil) t)
+(eq (not 3) nil)
+(eq (not (list)) t)
+(eq (not (list 3)) 'nil)
+
+;; and
+(eq (and) t)
+(eq (and (= 2 2) (> 2 1)) t)
+(eq (and (= 2 2) (< 2 1)) nil)
+(eq (and (eql 'a 'a) (not (> 1 2))) t)
+(eq (let ((x 'a)) (and x (setq x 'b))) 'b)
+(eq (let ((x nil)) (and x (setq x 'b))) nil)
+(eql (let ((time 10))
+      (if (and (< time 24) (> time 12))
+	  (- time 12) time))
+     10)
+(eql (let ((time 18))
+       (if (and (< time 24) (> time 12))
+	   (- time 12) time))
+     6)
+
+;; or
+(eq (or (= 2 2) (> 2 1)) t)
+(eq (or (= 2 2) (< 2 1)) t)
+(eq (let ((x 'a)) (or x (setq x 'b))) 'a)
+(eq (let ((x nil)) (or x (setq x 'b))) 'b)
+
