@@ -104,37 +104,43 @@
 ;; (for (iteration-spec*) (end-test result*) form*) → <object> 
 ;;  iteration-spec ::= (var init [step])
 (defmacro for (iteration-specs test-result-spec &rest body)
-  (flet ((make-inits (iteration-specs)
-          ;; in:  ((var1 init1 [step1]) (var2 init2 [step2]) ...)
-          ;; out: ((var1 init1) (var2 init2) ...)
-           (let ((inits nil)
-                 (spec nil))
-             (while (consp iteration-specs)
-               (setq spec (car iteration-specs))
-               (setq inits `((,(car spec) ,(cadr spec)) ,@inits))
-               (setq iteration-specs (cdr iteration-specs)))
-             (nreverse inits)))
-         (make-steps (iteration-specs)
-          ;; in:  ((var1 init1) (var2 init2 step2) ...)
-          ;; note var1 doesn't have a step in this example
-          ;; out: ((setq var2 step2) ...) 
-            (let ((steps nil)
-                  (spec nil))
-              (while (consp iteration-specs)
-                (setq spec (car iteration-specs))
-                (if (consp (cddr spec)) ; if step exists
-                    (setq steps `((setq ,(car spec) ,(caddr spec)) ,@steps)))
-                (setq iteration-specs (cdr iteration-specs)))
-              (nreverse steps))))
-    (let ((inits (make-inits iteration-specs))
-          (steps (make-steps iteration-specs))
-          (test `(not ,(car test-result-spec)))
-          (results (cdr test-result-spec)))
-      `(let ,inits
-         (while ,test
-           ,@body
-           ,@steps)
-         ,@results))))
+  (let ((tmp-var-inits nil))
+    (flet ((make-inits (iteration-specs)
+		       ;; in:  ((var1 init1 [step1]) (var2 init2 [step2]) ...)
+		       ;; out: ((var1 init1) (var2 init2) ...)
+		       (let ((inits nil)
+			     (spec nil))
+			 (while (consp iteration-specs)
+			   (setq spec (car iteration-specs))
+			   (setq inits `((,(car spec) ,(cadr spec)) ,@inits))
+			   (setq iteration-specs (cdr iteration-specs)))
+			 (nreverse inits)))
+	   (make-steps (iteration-specs)
+		       ;; in:  ((var1 init1) (var2 init2 step2) ...)
+		       ;; note var1 doesn't have a step in this example
+		       ;; out: ((setq var2 step2) ...) 
+		       (let ((tmps nil)
+			     (steps nil))
+			 (while (consp iteration-specs)
+			   (let ((spec (car iteration-specs))
+				 (g (gensym)))
+			     (if (consp (cddr spec)) ; if step exists
+				 (progn
+				   (setq tmp-var-inits `((,g nil) ,@tmp-var-inits))
+				   (setq tmps `((setq ,g ,(caddr spec)) ,@tmps))
+				   (setq steps `((setq ,(car spec) ,g) ,@steps)))))
+			   (setq iteration-specs (cdr iteration-specs)))
+			 `(,@(nreverse tmps) ,@(nreverse steps)))))
+      (let ((inits (make-inits iteration-specs))
+	    (steps (make-steps iteration-specs))
+	    (test `(not ,(car test-result-spec)))
+	    (results (cdr test-result-spec)))
+	`(let (,@tmp-var-inits ,@inits)
+	   (while ,test
+	     ,@body
+	     ,@steps)
+	   ,@results)))))
+
 
 ;; special operator: (case keyform ((key*) form*)* [(t form*)]) → <object>
 (defmacro case (keyform &rest clauses)
