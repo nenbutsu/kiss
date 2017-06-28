@@ -35,7 +35,8 @@
 		  (if (instancep condition (class <error>))
 		      (return-from a t)
 		    (signal-condition condition nil)))
-		(car '())))
+		(car '()))
+  nil)
 (eq (car '(a b c)) 'a)
 (equal (car '((a) b c d)) '(a))
 (= (car '(1 . 2)) 1)
@@ -48,7 +49,8 @@
 		  (if (instancep condition (class <error>))
 		      (return-from a t)
 		    (signal-condition condition nil)))
-		(cdr '())))
+		(cdr '()))
+  nil)
 (equal (cdr '((a) b c d)) '(b c d))
 (eql (cdr '(1 . 2)) 2)
 
@@ -92,13 +94,15 @@
 		  (if (instancep condition (class <error>))
 		      (return-from a t)
 		    (signal-condition condition nil)))
-		(create-list 'a nil)))
+		(create-list 'a nil))
+  nil)
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
 		      (return-from a t)
 		    (signal-condition condition nil)))
-		(create-list -1 nil)))
+		(create-list -1 nil))
+  nil)
 
 ;; list
 (equal (list 'a (+ 3 4) 'c) '(a 7 c))
@@ -124,14 +128,16 @@
 		  (if (instancep condition (class <error>))
 		      (return-from a t)
 		    (signal-condition condition nil)))
-		(append '(a b) 'x)))
+		(append '(a b) 'x))
+  nil)
 
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
 		      (return-from a t)
 		    (signal-condition condition nil)))
-		(append 'z)))
+		(append 'z))
+  nil)
 
 ;; member
 (equal (member 'c '(a b c d e f)) '(c d e f))
@@ -142,7 +148,8 @@
 		  (if (instancep condition (class <error>))
 		      (return-from a t)
 		    (signal-condition condition nil)))
-		(member 'a 'x)))
+		(member 'a 'x))
+  nil)
 
 
 ;; mapcar
