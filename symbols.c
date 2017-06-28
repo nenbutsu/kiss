@@ -112,6 +112,37 @@ kiss_obj* kiss_intern(kiss_obj* name) {
     return (kiss_obj*)p;
 }
 
+// function: (property symbol property-name [obj]) -> <object>
+kiss_obj* kiss_property(kiss_obj* symbol, kiss_obj* property, kiss_obj* rest) {
+     kiss_symbol_t* s = Kiss_Symbol(symbol);
+     kiss_obj* p = kiss_plist_member(s->plist, (kiss_obj*)Kiss_Symbol(property));
+     if (KISS_IS_CONS(p)) {
+	  return kiss_car(KISS_CDR(p));
+     } else {
+	  if (rest == KISS_NIL) {
+	       return KISS_NIL;
+	  } else {
+	       return kiss_car(rest);
+	  }
+     }
+}
+
+// function: (set-property obj symbol property-name) -> <object>
+kiss_obj* kiss_set_property(kiss_obj* obj, kiss_obj* symbol, kiss_obj* property) {
+     kiss_symbol_t* s = Kiss_Symbol(symbol);
+     s->plist = kiss_plist_put(s->plist, (kiss_obj*)Kiss_Symbol(property), obj);
+     return obj;     
+}
+
+// function: (remove-property symbol property-name) -> <object>
+kiss_obj* kiss_remove_property(kiss_obj* symbol, kiss_obj* property) {
+     kiss_symbol_t* s = Kiss_Symbol(symbol);
+     kiss_obj* obj = kiss_plist_get(s->plist, property);
+     s->plist = kiss_plist_remove(s->plist, (kiss_obj*)Kiss_Symbol(property));
+     return obj;
+}
+
+
 kiss_obj* kiss_symbol(wchar_t* name) {
     return kiss_intern((kiss_obj*)kiss_make_string(name));
 }
@@ -1814,6 +1845,63 @@ kiss_symbol_t KISS_Sfmakunbound = {
     KISS_NIL,                  /* plist */
 };
 
+kiss_symbol_t KISS_Sproperty;
+kiss_cfunction_t KISS_CFproperty = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Sproperty,  /* name */
+    kiss_property,    /* C function name */
+    2,         /* minimum argument number */
+    3,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Sproperty = {
+    KISS_SYMBOL,
+    NULL,              /* gc_next */
+    0,                 /* gc_flag */
+    L"property",
+    KISS_CONSTANT_FUN,
+    NULL,                 /* var */
+    (kiss_obj*)&KISS_CFproperty, /* fun */
+    KISS_NIL,                  /* plist */
+};
+
+kiss_symbol_t KISS_Sset_property;
+kiss_cfunction_t KISS_CFset_property = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Sset_property,  /* name */
+    kiss_set_property,    /* C function name */
+    3,         /* minimum argument number */
+    3,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Sset_property = {
+    KISS_SYMBOL,
+    NULL,              /* gc_next */
+    0,                 /* gc_flag */
+    L"set-property",
+    KISS_CONSTANT_FUN,
+    NULL,                 /* var */
+    (kiss_obj*)&KISS_CFset_property, /* fun */
+    KISS_NIL,                  /* plist */
+};
+
+kiss_symbol_t KISS_Sremove_property;
+kiss_cfunction_t KISS_CFremove_property = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Sremove_property,  /* name */
+    kiss_remove_property,    /* C function name */
+    2,         /* minimum argument number */
+    2,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Sremove_property = {
+    KISS_SYMBOL,
+    NULL,              /* gc_next */
+    0,                 /* gc_flag */
+    L"remove-property",
+    KISS_CONSTANT_FUN,
+    NULL,                 /* var */
+    (kiss_obj*)&KISS_CFremove_property, /* fun */
+    KISS_NIL,                  /* plist */
+};
+
 
 
 /*** format.c ***/
@@ -2661,7 +2749,8 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     /* symbols.c */
     &KISS_Sgensym, &KISS_Ssymbolp,
     &KISS_Ssymbol_function, &KISS_Sset_symbol_function,
-    &KISS_Sfboundp, &KISS_Sfmakunbound,
+    &KISS_Sfboundp, &KISS_Sfmakunbound, &KISS_Sproperty, &KISS_Sset_property,
+    &KISS_Sremove_property,
 
     /* string.c */
     &KISS_Sstringp, &KISS_Screate_string, &KISS_Sstring_append, 

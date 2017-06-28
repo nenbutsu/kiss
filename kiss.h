@@ -349,6 +349,7 @@ kiss_obj* kiss_assoc(kiss_obj* obj, kiss_obj* alist);
 kiss_obj* kiss_cmapcar(kiss_cf1_t f, kiss_obj* list);
 kiss_obj* kiss_cmapc(kiss_cf1_t f, kiss_obj* list);
 kiss_obj* kiss_plist_member (kiss_obj* plist, kiss_obj* property);
+kiss_obj* kiss_plist_remove(kiss_obj* plist, kiss_obj* property);
 kiss_obj* kiss_plist_get (kiss_obj* plist, kiss_obj* property);
 kiss_obj* kiss_plist_put (kiss_obj* plist, kiss_obj* property, kiss_obj* value);
 kiss_obj* kiss_copy_list(kiss_obj* p);
@@ -547,6 +548,9 @@ kiss_obj* kiss_fmakunbound (kiss_obj* obj);
 int kiss_is_interned(kiss_symbol_t* p);
 kiss_obj* kiss_symbol(wchar_t* name);
 kiss_obj* kiss_intern(kiss_obj* name);
+kiss_obj* kiss_property(kiss_obj* symbol, kiss_obj* property, kiss_obj* rest);
+kiss_obj* kiss_set_property(kiss_obj* obj, kiss_obj* symbol, kiss_obj* property);
+kiss_obj* kiss_remove_property(kiss_obj* symbol, kiss_obj* property);
 extern kiss_symbol_t KISS_Sblock;
 extern kiss_symbol_t KISS_Serror;
 

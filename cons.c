@@ -267,16 +267,37 @@ kiss_obj* kiss_assoc(kiss_obj* obj, kiss_obj* alist) {
      missing property and a property with the value `nil'.  The value
      is actually the tail of PLIST whose `car' is PROPERTY. */
 kiss_obj* kiss_plist_member (kiss_obj* plist, kiss_obj* property) {
-    plist = Kiss_List(plist);
-    while (KISS_IS_CONS(plist)) {
-	if (KISS_CAR(plist) == property) {
-	    return plist;
-	}
-	plist = KISS_CDR(plist);
-	if (!KISS_IS_CONS(plist)) { return KISS_NIL; }
-	plist = KISS_CDR(plist);
-    }
-    return KISS_NIL;
+     plist = Kiss_List(plist);
+     while (KISS_IS_CONS(plist)) {
+	  if (KISS_CAR(plist) == property) {
+	       return plist;
+	  }
+	  plist = KISS_CDR(plist);
+	  if (!KISS_IS_CONS(plist)) { return KISS_NIL; }
+	  plist = KISS_CDR(plist);
+     }
+     return KISS_NIL;
+}
+
+kiss_obj* kiss_plist_remove(kiss_obj* plist, kiss_obj* property) {
+     kiss_obj* prev = KISS_NIL;
+     kiss_obj* p = Kiss_List(plist);
+     while (KISS_IS_CONS(p)) {
+	  if (KISS_CAR(p) == property) {
+	       if (prev == KISS_NIL) {
+		    p = kiss_cddr(p);
+		    plist = p;
+	       } else {
+		    p = kiss_cddr(p);
+		    kiss_set_cdr(p, prev);
+	       }
+	  } else {
+	       p = KISS_CDR(p);
+	       prev = p;
+	       p = kiss_cdr(p);
+	  }
+     }
+     return plist;
 }
 
 /* Emacs Lisp
