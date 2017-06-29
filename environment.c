@@ -43,8 +43,6 @@ void kiss_init_environment(void) {
     env->block_result               = KISS_NIL;
     env->current_tagbody            = NULL;
 
-    env->gc_flag                    = 0;
-
     env->top_level                  = Top_Level;
     env->global_dynamic_vars        = KISS_NIL;
 

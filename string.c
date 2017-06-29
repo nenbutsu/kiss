@@ -20,7 +20,7 @@
 
 
 kiss_string_t* kiss_make_string(wchar_t* s) {
-    kiss_string_t* p = Kiss_GC_Malloc(sizeof(kiss_string_t));
+    kiss_string_t* p = Kiss_Malloc(sizeof(kiss_string_t));
     p->type = KISS_STRING;
     p->str = wcscpy(Kiss_Malloc(sizeof(wchar_t) * (wcslen(s) + 1)), s);
     p->n = wcslen(s);

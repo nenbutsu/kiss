@@ -31,6 +31,8 @@
 #include <wchar.h>
 #include <wctype.h>
 
+#include <gc.h>
+
 typedef enum {
      KISS_CONS,
      KISS_SYMBOL,
@@ -79,19 +81,8 @@ typedef kiss_obj* (*kiss_cf10_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
 				 kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
 				 kiss_obj*, kiss_obj*);
 
-struct kiss_gc_obj_t {
-     kiss_type type;
-     struct kiss_gc_obj_t* gc_next;
-     int gc_flag;
-     void* pointer[];
-};
-
-typedef struct kiss_gc_obj_t kiss_gc_obj;
-
 typedef struct {
      kiss_type type;
-     kiss_gc_obj* gc_next;
-     int gc_flag;
      kiss_obj* car;
      kiss_obj* cdr;
 } kiss_cons_t;
@@ -103,8 +94,6 @@ typedef enum {
 
 typedef struct {
      kiss_type type;
-     kiss_gc_obj* gc_next;
-     int gc_flag;
      wchar_t* name;
      kiss_symbol_flags flags;
      kiss_obj* var;
@@ -114,37 +103,27 @@ typedef struct {
 
 typedef struct {
      kiss_type type;
-     kiss_gc_obj* gc_next;
-     int gc_flag;
      wchar_t c;
 } kiss_character_t;
 
 typedef struct {
      kiss_type type;
-     kiss_gc_obj* gc_next;
-     int gc_flag;
      long int i;
 } kiss_integer_t;
 
 typedef struct {
      kiss_type type;
-     kiss_gc_obj* gc_next;
-     int gc_flag;
      float f;
 } kiss_float_t;
 
 typedef struct {
      kiss_type type;
-     kiss_gc_obj* gc_next;
-     int gc_flag;
      wchar_t* str;
      size_t n;
 } kiss_string_t;
 
 typedef struct {
      kiss_type type;
-     kiss_gc_obj* gc_next;
-     int gc_flag;
      kiss_obj** v;
      size_t n;
 } kiss_general_vector_t;
@@ -171,8 +150,6 @@ typedef struct {
 
 typedef struct {
      kiss_type type;
-     kiss_gc_obj* gc_next;
-     int gc_flag;
      kiss_symbol_t* name;
      kiss_obj* lambda;
      kiss_lexical_environment_t lexical_env;
@@ -180,8 +157,6 @@ typedef struct {
 
 typedef struct {
      kiss_type type;
-     kiss_gc_obj* gc_next;
-     int gc_flag;
      kiss_obj* tag;
      void*     jmp;
      kiss_dynamic_environment_t dynamic_env;
@@ -189,8 +164,6 @@ typedef struct {
 
 typedef struct {
      kiss_type type;
-     kiss_gc_obj* gc_next;
-     int gc_flag;
      kiss_symbol_t* name;
      void*          jmp;
      kiss_dynamic_environment_t dynamic_env;
@@ -198,8 +171,6 @@ typedef struct {
 
 typedef struct {
      kiss_type type;
-     kiss_gc_obj* gc_next;
-     int gc_flag;
      kiss_obj* body;
      kiss_lexical_environment_t lexical_env;
      kiss_dynamic_environment_t dynamic_env;
@@ -207,8 +178,6 @@ typedef struct {
 
 typedef struct {
      kiss_type type;
-     kiss_gc_obj* gc_next;
-     int gc_flag;
      kiss_symbol_t* tag;
      void* jmp;
      kiss_dynamic_environment_t dynamic_env;
@@ -227,16 +196,12 @@ typedef enum {
 
 typedef struct {
      kiss_type type;
-     kiss_gc_obj* gc_next;
-     int gc_flag;
      kiss_stream_flags flags;
      void* ptr;
 } kiss_stream_t;
 
 typedef struct {
      kiss_type type;
-     kiss_gc_obj* gc_next;
-     int gc_flag;
      kiss_stream_flags flags;
      FILE* file_ptr;
      size_t column;
@@ -244,16 +209,12 @@ typedef struct {
 
 typedef struct {
      kiss_type type;
-     kiss_gc_obj* gc_next;
-     int gc_flag;
      kiss_stream_flags flags;
      kiss_obj* list;
 } kiss_string_stream_t;
 
 typedef struct {
      kiss_type type;
-     kiss_gc_obj* gc_next;
-     int gc_flag;
      kiss_obj* plist;
 } kiss_oo_obj_t;
 
@@ -267,7 +228,6 @@ typedef struct {
      kiss_obj* block_result;
      size_t heap_index;
      kiss_tagbody_t* current_tagbody;
-     int gc_flag;
      void* top_level;
      kiss_obj* global_dynamic_vars;
      kiss_obj* features;
@@ -489,10 +449,8 @@ kiss_obj* kiss_sin(kiss_obj* x);
 kiss_obj* kiss_cos(kiss_obj* x);
 kiss_obj* kiss_tan(kiss_obj* x);
 
-/* gc.c */
-void kiss_init_gc(void);
+/* malloc.c */
 void* Kiss_Malloc(size_t size);
-void* Kiss_GC_Malloc(size_t size);
 
 /* read.c */
 kiss_obj* kiss_cread(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val);
@@ -590,8 +548,4 @@ void kiss_init_environment(void);
 /* feature.c */
 kiss_obj* kiss_featurep(kiss_obj* feature);
 kiss_obj* kiss_provide(kiss_obj* feature);
-
-/* gc.c */
-kiss_obj* kiss_gc_info(void);
-kiss_obj* kiss_gc(void);
 

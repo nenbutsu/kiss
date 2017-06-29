@@ -43,12 +43,10 @@ kiss_obj* kiss_re(kiss_obj* in) {
 
 kiss_obj* kiss_load(kiss_obj* filename) {
      kiss_environment_t* env = Kiss_Get_Environment();
-     kiss_obj* in = kiss_open_input_file(filename, KISS_NIL); // the order of these two lines
-     size_t saved_heap_index = env->heap_index;               // matters.
+     kiss_obj* in = kiss_open_input_file(filename, KISS_NIL);
      kiss_obj* form = kiss_re(in);
      while (form != KISS_EOS) {
 	  kiss_eval(form);
-	  env->heap_index = saved_heap_index;
 	  form = kiss_re(in);
      }
      return KISS_T;
@@ -56,7 +54,6 @@ kiss_obj* kiss_load(kiss_obj* filename) {
 
 void kiss_load_library(wchar_t* name) {
      kiss_environment_t* env = Kiss_Get_Environment();
-     size_t saved_heap_index = env->heap_index;
      if (setjmp(env->top_level) == 0) {
 	  fwprintf(stderr, L"loading %ls ... ", name);
 	  fflush(stderr);
@@ -76,8 +73,6 @@ void kiss_load_library(wchar_t* name) {
 	  }
 	  exit(1);
      }
-     env->heap_index = saved_heap_index;
-     //fwprintf(stderr, L"env->heap_index = %d\n", env->heap_index);
 }
 
 int kiss_read_eval_print_loop(void) {
@@ -92,8 +87,6 @@ int kiss_read_eval_print_loop(void) {
      }
 
      while (1) {
-	  size_t saved_heap_index = env->heap_index;
-	  //fwprintf(stderr, L"env->heap_index = %d\n", env->heap_index);
 	  saved_dynamic_env = env->dynamic_env;
 	  saved_lexical_env = env->lexical_env;
 	  if (setjmp(env->top_level) == 0) {
@@ -123,7 +116,5 @@ int kiss_read_eval_print_loop(void) {
 		    env->lexical_env = saved_lexical_env;
 	       }
 	  }
-	  env->heap_index = saved_heap_index;
-	  kiss_gc();
      }
 }

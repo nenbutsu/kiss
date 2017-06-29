@@ -27,27 +27,21 @@ void kiss_init_streams(void) {
     Kiss_Standard_Input.flags     = KISS_INPUT_STREAM | KISS_CHARACTER_STREAM | KISS_FILE_STREAM;
     Kiss_Standard_Input.file_ptr  = stdin;
     Kiss_Standard_Input.column    = 0;
-    Kiss_Standard_Input.gc_next   = NULL;
-    Kiss_Standard_Input.gc_flag   = 0;
 
     Kiss_Standard_Output.type     = KISS_STREAM;
     Kiss_Standard_Output.flags    = KISS_OUTPUT_STREAM | KISS_CHARACTER_STREAM | KISS_FILE_STREAM;
     Kiss_Standard_Output.file_ptr = stdout;
     Kiss_Standard_Output.column   = 0;
-    Kiss_Standard_Output.gc_next  = NULL;
-    Kiss_Standard_Output.gc_flag  = 0;
     
     
     Kiss_Error_Output.type        = KISS_STREAM;
     Kiss_Error_Output.flags       = KISS_OUTPUT_STREAM | KISS_CHARACTER_STREAM | KISS_FILE_STREAM;
     Kiss_Error_Output.file_ptr    = stderr;
     Kiss_Error_Output.column      = 0;
-    Kiss_Error_Output.gc_next     = NULL;
-    Kiss_Error_Output.gc_flag     = 0;
 }
 
 static kiss_file_stream_t* kiss_make_file_stream(FILE* fp) {
-    kiss_file_stream_t* p = Kiss_GC_Malloc(sizeof(kiss_file_stream_t));
+    kiss_file_stream_t* p = Kiss_Malloc(sizeof(kiss_file_stream_t));
     p->type = KISS_STREAM;
     p->flags = KISS_FILE_STREAM;
     p->file_ptr = fp;
@@ -57,7 +51,7 @@ static kiss_file_stream_t* kiss_make_file_stream(FILE* fp) {
 
 static kiss_string_stream_t* kiss_make_string_stream(kiss_string_t* str)
 {
-    kiss_string_stream_t* p = Kiss_GC_Malloc(sizeof(kiss_string_stream_t));
+    kiss_string_stream_t* p = Kiss_Malloc(sizeof(kiss_string_stream_t));
     p->type = KISS_STREAM;
     p->flags = KISS_STRING_STREAM;
     p->list = KISS_NIL;
