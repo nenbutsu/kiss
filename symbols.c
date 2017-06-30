@@ -52,7 +52,7 @@ kiss_obj* kiss_symbolp(kiss_obj* obj) {
 kiss_obj* kiss_gensym(void) {
      kiss_environment_t* env = Kiss_Get_Environment();
      wchar_t* name = Kiss_Malloc(sizeof(wchar_t) * 30);
-     if (swprintf(name, 30, L"#:%x>", env->gensym_number++) < 0) {
+     if (swprintf(name, 30, L"#:%x", env->gensym_number++) < 0) {
 	  fwprintf(stderr, L"kiss_gensym: swprintf error\n");
 	  abort();
      }
