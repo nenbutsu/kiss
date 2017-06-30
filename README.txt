@@ -2,7 +2,9 @@
 
 国際標準化機構(ISO)で定められた ISLisp の処理系KISSです。
 
-gcc *.c でコンパイルできると思います。
+xx.bat でコンパイル。(内容を環境に合わせて変えてください)
+
+私はmsys2 mingw64環境で開発しております。libgcを使用します。
 
 まだ開発の初期段階です。
 
@@ -15,6 +17,9 @@ KISS is aimed to be a conforming ISLisp processor.
 The development is at the initial stage.
 
 The current KISS is an interpreter written in C and ISLisp.
+
+run xx.bat and you get kiss.exe if you're lucky.
+(change xx.bat according to your environment.)
 
 The rep loop is already running.
 
