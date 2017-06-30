@@ -27,7 +27,7 @@ The object system and generic functions are working, too.
 
 The license of this software is GPL. See gpl.txt in the zip file.
 
-Download the latest version of kiss.zip at https://github.com/nenbutsu/kiss .
+Download the latest version of KISS at https://github.com/nenbutsu/kiss .
 
 Any comments are welcome.
 I read English and Japanese.
