@@ -118,9 +118,9 @@ static kiss_obj* kiss_format_escaped_symbol(kiss_obj* out, kiss_obj* obj) {
 
 kiss_obj* kiss_format_symbol(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
     kiss_symbol_t* symbol = Kiss_Symbol(obj);
-    if (!kiss_is_interned(symbol)) {
-	kiss_format_string(out, (kiss_obj*)kiss_make_string(L"#:"), KISS_NIL);
-    }
+    //if (!kiss_is_interned(symbol)) {
+    //	kiss_format_string(out, (kiss_obj*)kiss_make_string(L"#:"), KISS_NIL);
+    //}
     if (escapep == KISS_NIL || kiss_is_simple_name(symbol->name)) {
 	kiss_format_string(out, (kiss_obj*)kiss_make_string(symbol->name), KISS_NIL);
     } else {
