@@ -217,9 +217,44 @@
 
 ;;; unwind-protect
 (defun foo (x)
-  (catch ’duplicates
+  (catch 'duplicates
     (unwind-protect (bar x)
       (for ((l x (cdr l)))
-	   ((null l) ’unused)
-	   (remove-property (car l) ’label)))))
+	   ((null l) 'unused)
+	   (remove-property (car l) 'label)))))
 
+(defun bar (l)
+  (cond
+   ((and (symbolp l) (property l 'label))
+    (throw 'duplicates 'found))
+   ((symbolp l) (set-property t l 'label))
+   ((bar (car l)) (bar (cdr l)))
+   (t nil)))
+
+(foo '(a b c))
+(null (property 'a 'label))
+(eq (foo '(a b a c)) 'found)
+(null (property 'a 'label))
+
+(defun test ()
+  (catch 'outer (test2)))
+
+(defun test2 ()
+  (block inner
+    (test3 (lambda ()
+	     (return-from inner 7)))))
+
+
+(defun test3 (fun)
+  (unwind-protect (test4) (funcall fun)))
+
+(defun test4 ()
+  (throw 'outer 6))
+
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(test))
+  nil)
