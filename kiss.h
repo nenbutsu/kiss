@@ -451,6 +451,7 @@ kiss_obj* kiss_tan(kiss_obj* x);
 
 /* malloc.c */
 void* Kiss_Malloc(size_t size);
+void* Kiss_Malloc_Atomic(size_t size);
 
 /* read.c */
 kiss_obj* kiss_cread(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val);

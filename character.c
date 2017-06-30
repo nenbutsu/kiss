@@ -19,7 +19,7 @@
 #include "kiss.h"
 
 kiss_character_t* kiss_make_character(wchar_t c) {
-    kiss_character_t* p = Kiss_Malloc(sizeof(kiss_character_t));
+    kiss_character_t* p = Kiss_Malloc_Atomic(sizeof(kiss_character_t));
     p->type = KISS_CHARACTER;
     p->c = c;
     return p;
