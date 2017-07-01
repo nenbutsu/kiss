@@ -21,6 +21,7 @@
 static wchar_t* libraries[] = {
      L"cons.lisp",
      L"character.lisp",
+     L"stream.lisp",
      L"sequence.lisp",
      L"control.lisp",
      L"number.lisp",

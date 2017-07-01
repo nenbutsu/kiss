@@ -109,15 +109,19 @@ kiss_obj* kiss_get_output_stream_string(kiss_obj* stream) {
 }
 
 /* function: (standard-input) -> <stream> */
-kiss_obj* kiss_standard_input(void)  { return (kiss_obj*)&Kiss_Standard_Input; }
+kiss_obj* kiss_standard_input(void)  {
+     return kiss_dynamic(kiss_symbol(L"*kiss::standard-input*"));
+}
 
 /* function: (standard-output) -> <stream> */
 kiss_obj* kiss_standard_output(void) {
-     return (kiss_obj*)&Kiss_Standard_Output;
+     return kiss_dynamic(kiss_symbol(L"*kiss::standard-output*"));
 }
 
 /* function: (error-output) -> <stream> */
-kiss_obj* kiss_error_output(void)    { return (kiss_obj*)&Kiss_Error_Output; }
+kiss_obj* kiss_error_output(void)    {
+     return kiss_dynamic(kiss_symbol(L"*kiss::error-output*"));
+}
 
 /* function: (input-stream-p obj) -> boolean
    Returns t if obj is a stream that can handle input operations;

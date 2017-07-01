@@ -1989,6 +1989,36 @@ kiss_symbol_t KISS_Serror_output = {
     KISS_NIL,                        /* plist */
 };
 
+extern kiss_file_stream_t Kiss_Standard_Input;
+extern kiss_file_stream_t Kiss_Standard_Output;
+extern kiss_file_stream_t Kiss_Error_Output;
+
+kiss_symbol_t KISS_Ss_standard_input_s = {
+    KISS_SYMBOL,
+    L"*kiss::standard-input*",
+    KISS_CONSTANT_VAR,
+    (kiss_obj*)(&Kiss_Standard_Input), /* var */
+    NULL,                              /* fun */
+    KISS_NIL,                          /* plist */
+};
+
+kiss_symbol_t KISS_Ss_standard_output_s = {
+    KISS_SYMBOL,
+    L"*kiss::standard-output*",
+    KISS_CONSTANT_VAR,
+    (kiss_obj*)(&Kiss_Standard_Output), /* var */
+    NULL,                               /* fun */
+    KISS_NIL,                           /* plist */
+};
+
+kiss_symbol_t KISS_Ss_error_output_s = {
+    KISS_SYMBOL,
+    L"*kiss::error-output*",
+    KISS_CONSTANT_VAR,
+    (kiss_obj*)(&Kiss_Error_Output), /* var */
+    NULL,                            /* fun */
+    KISS_NIL,                        /* plist */
+};
 
 kiss_symbol_t KISS_Sstreamp;
 kiss_cfunction_t KISS_CFstreamp = {
@@ -2475,7 +2505,8 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sinput_stream_p, &KISS_Soutput_stream_p, 
     &KISS_Sread_char, &KISS_Spreview_char, &KISS_Sformat_char, &KISS_Sformat_integer,
     &KISS_Sformat_float,
-    &KISS_Sopen_input_file, 
+    &KISS_Sopen_input_file,
+    &KISS_Ss_standard_input_s, &KISS_Ss_standard_output_s, &KISS_Ss_error_output_s,
 
     /* format.c */
     &KISS_Sformat, &KISS_Sformat_object, &KISS_Sformat_pointer, &KISS_Sprint, 
