@@ -347,6 +347,7 @@ void Kiss_Tagbody_Not_Found_Error(kiss_obj* name);
 kiss_obj* Kiss_Check_Sequence_Index_Range(kiss_obj* sequence, kiss_obj* index);
 kiss_cons_t* Kiss_Cons(kiss_obj* obj);
 kiss_obj* Kiss_List(kiss_obj* obj);
+kiss_stream_t* Kiss_Stream(kiss_obj* obj);
 kiss_obj* Kiss_Proper_List(kiss_obj* obj);
 kiss_cons_t* Kiss_Proper_List_2(kiss_obj* obj);
 kiss_integer_t* Kiss_Integer(kiss_obj* obj);
@@ -485,6 +486,7 @@ kiss_obj* kiss_read_char(kiss_obj* args);
 kiss_obj* kiss_preview_char(kiss_obj* args);
 kiss_obj* kiss_format_char(kiss_obj* out, kiss_obj* obj);
 kiss_obj* kiss_open_input_file(kiss_obj* filename, kiss_obj* rest);
+kiss_obj* kiss_close(kiss_obj* obj);
 
 /* string.c */
 kiss_string_t* kiss_make_string(wchar_t* s);

@@ -112,6 +112,12 @@ kiss_string_t* Kiss_String(kiss_obj* obj) {
     return (kiss_string_t*)obj;
 }
 
+kiss_stream_t* Kiss_Stream(kiss_obj* obj) {
+     kiss_assure(KISS_STREAM, obj);
+     return (kiss_stream_t*)obj;
+}
+
+
 kiss_general_vector_t* Kiss_General_Vector(kiss_obj* obj) {
      kiss_assure(KISS_GENERAL_VECTOR, obj);
     return (kiss_general_vector_t*)obj;

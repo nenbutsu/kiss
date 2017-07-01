@@ -49,8 +49,7 @@ static kiss_file_stream_t* kiss_make_file_stream(FILE* fp) {
     return p;
 }
 
-static kiss_string_stream_t* kiss_make_string_stream(kiss_string_t* str)
-{
+static kiss_string_stream_t* kiss_make_string_stream(kiss_string_t* str) {
     kiss_string_stream_t* p = Kiss_Malloc(sizeof(kiss_string_stream_t));
     p->type = KISS_STREAM;
     p->flags = KISS_STRING_STREAM;
@@ -71,10 +70,19 @@ kiss_obj* kiss_streamp(kiss_obj* obj) {
     else                     { return KISS_NIL; }
 }
 
-/* function: (open-stream-p obj ) → boolean
+/* function: (open-stream-p obj) → boolean
    Returns t if obj is an open stream; otherwise, returns nil. */
 kiss_obj* kiss_open_streamp(kiss_obj* obj) {
-    
+     if (!KISS_IS_STREAM(obj)) { return KISS_NIL; }
+     if (KISS_IS_STRING_STREAM(obj)) { return KISS_T; }
+     assert(KISS_IS_FILE_STREAM(obj));
+
+     kiss_file_stream_t* f = (kiss_file_stream_t*)obj;
+     if (f->file_ptr) {
+	  return KISS_T;
+     } else {
+	  return KISS_NIL;
+     }
 }
 
 /* function: (create-string-input-stream string) → <stream>
@@ -302,3 +310,18 @@ kiss_obj* kiss_open_input_file(kiss_obj* filename, kiss_obj* rest) {
     }
 }
 
+kiss_obj* kiss_close(kiss_obj* obj) {
+     Kiss_Stream(obj);
+     if (KISS_IS_STRING_STREAM(obj)) {
+	  return KISS_NIL;
+     }
+     assert(KISS_IS_FILE_STREAM(obj));
+     kiss_file_stream_t* f = (kiss_file_stream_t*)obj;
+     if (f->file_ptr == NULL) {
+	  return KISS_NIL;
+     } else {
+	  fclose(f->file_ptr);
+	  f->file_ptr = NULL;
+	  return KISS_NIL;
+     }
+}
