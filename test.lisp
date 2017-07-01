@@ -6,7 +6,8 @@
   '("test_symbol.lisp"
     "test_cons.lisp"
     "test_control.lisp"
-    "test_predicate.lisp"))
+    "test_predicate.lisp"
+    "test_stream.lisp"))
 
 (defun test-file (name)
   (let* ((file (open-input-file name))
