@@ -226,6 +226,11 @@
   condition)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun kiss::signal-simple-error (format-string format-arguments continuable)
+  (signal-condition (create (class <simple-error>)
+				  'format-string format-string
+				  'format-arguments format-arguments)
+		    continuable))
 (defun kiss::signal-non-negative-integer (integer continuable)
   (signal-condition (create (class <domain-error>)
 				  'object integer
