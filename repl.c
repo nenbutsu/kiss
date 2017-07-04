@@ -111,8 +111,9 @@ int kiss_read_eval_print_loop(void) {
 		    fwprintf(stderr, L"\nKISS| ");
 		    fwprintf(stderr, L"%ls\n", msg->str);
 		    fflush(stderr);
-		    fflush(stdin);
 		    fflush(stdout);
+		    wint_t c;
+		    while ((c = getwchar()) != L'\n' && c != WEOF);
 		    env->dynamic_env = saved_dynamic_env;
 		    env->lexical_env = saved_lexical_env;
 	       }

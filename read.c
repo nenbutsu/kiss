@@ -225,6 +225,11 @@ static kiss_obj* kiss_read_sharp_reader_macro(kiss_obj* in) {
     case L'(': /* #() */{
 	return kiss_vector(kiss_read_list(in));
     }
+    case L'0': case L'1': case L'2': case L'3': case L'4': 
+    case L'5': case L'6': case L'7': case L'8': case L'9':
+
+	 //return kiss_array(kiss_read_list(in));
+
     default:
 	Kiss_Err(L"Illegal # macro reader character ~S", c);
     }

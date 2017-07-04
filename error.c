@@ -47,25 +47,37 @@ kiss_obj* kiss_err(kiss_obj* error_string, kiss_obj* rest) {
 }
 
 void Kiss_Err(wchar_t* str, ...) {
-    va_list args;
-    wchar_t* p;
-    kiss_obj* out = kiss_create_string_output_stream();
-    kiss_obj* string;
+     va_list args;
+     wchar_t* p;
+     kiss_obj* out = kiss_create_string_output_stream();
+     kiss_obj* string;
+     kiss_obj* rest = KISS_NIL;
 
-    va_start(args, str);
-    for (p = str; *p != L'\0'; p++) {
-	if (*p == L'~' && *(p+1) == L'S') {
-	    kiss_format_object(out, va_arg(args, kiss_obj*), KISS_T);
-	    p++;
-	} else {
-	    kiss_format_char(out, (kiss_obj*)kiss_make_character(*p));
-	}
-    }
-    va_end(args);
+     va_start(args, str);
+     for (p = str; *p != L'\0'; p++) {
+	  if (*p == L'~' && *(p+1) == L'S') {
+	       if (condition_working_p()) {
+		    kiss_push(va_arg(args, kiss_obj*), &rest);
+		    kiss_format_char(out, (kiss_obj*)kiss_make_character(L'~'));
+		    kiss_format_char(out, (kiss_obj*)kiss_make_character(L'S'));
+	       } else {
+		    kiss_format_object(out, va_arg(args, kiss_obj*), KISS_T);
+	       }
+	       p++;
+	  } else {
+	       kiss_format_char(out, (kiss_obj*)kiss_make_character(*p));
+	  }
+     }
+     va_end(args);
 
-    string = kiss_get_output_stream_string(out);
-
-    kiss_throw(kiss_clist(2, kiss_symbol(L"quote"), kiss_symbol(L"kiss::error")), string);
+     string = kiss_get_output_stream_string(out);
+     if (condition_working_p()) {
+	  rest = kiss_nreverse(rest);
+	  kiss_cfuncall(L"kiss::signal-simple-error",
+			kiss_clist(3, (kiss_obj*)string, rest, KISS_NIL));
+     } else {
+	  kiss_throw(kiss_clist(2, kiss_symbol(L"quote"), kiss_symbol(L"kiss::error")), string);
+     }
 }
 
 
