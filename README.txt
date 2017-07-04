@@ -4,7 +4,7 @@
 
 xx.bat でコンパイル。(内容を環境に合わせて変えてください)
 
-私はmsys2 mingw64環境で開発しております。libgcを使用します。
+私はmsys2 mingw64環境で開発しております。
 
 まだ開発の初期段階です。
 
@@ -20,6 +20,8 @@ The current KISS is an interpreter written in C and ISLisp.
 
 run xx.bat and you get kiss.exe if you're lucky.
 (change xx.bat according to your environment.)
+
+I'm using msys2 mingw64.
 
 The rep loop is already running.
 
