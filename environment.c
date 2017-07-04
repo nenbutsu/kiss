@@ -35,6 +35,8 @@ void kiss_init_environment(void) {
     env->dynamic_env.backquote_nest = 0;
 
     env->heap_index                 = 0;
+    env->gc_flag                    = 0;
+
     env->gensym_number              = 0;
 
     env->lexeme_chars               = KISS_NIL;

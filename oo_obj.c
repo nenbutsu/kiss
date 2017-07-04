@@ -19,7 +19,7 @@
 #include "kiss.h"
 
 kiss_obj* kiss_make_object(kiss_obj* plist) {
-    kiss_oo_obj_t* p = Kiss_Malloc(sizeof(kiss_oo_obj_t));
+    kiss_oo_obj_t* p = Kiss_GC_Malloc(sizeof(kiss_oo_obj_t));
     p->type = KISS_OO_OBJ;
     p->plist = plist;
     return (kiss_obj*)p;

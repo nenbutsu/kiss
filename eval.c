@@ -18,33 +18,50 @@
  */
 #include "kiss.h"
 
+extern kiss_gc_obj* Kiss_Heap_Stack[];
+
 static kiss_obj* kiss_eval_args(kiss_obj* args);
 
 static kiss_obj* kiss_invoke(kiss_obj* f, kiss_obj* args) {
+     kiss_obj* result = KISS_NIL;
+     kiss_environment_t* env = Kiss_Get_Environment();
+     size_t saved_heap_index = env->heap_index;
      switch (KISS_OBJ_TYPE(f)) {
      case KISS_CFUNCTION:
-	  return kiss_cinvoke((kiss_cfunction_t*)f, kiss_eval_args(args));
+	  result = kiss_cinvoke((kiss_cfunction_t*)f, kiss_eval_args(args));
+	  break;
      case KISS_CMACRO:
-	  return kiss_cinvoke((kiss_cfunction_t*)f, args);
+	  result = kiss_cinvoke((kiss_cfunction_t*)f, args);
+	  break;
      case KISS_FUNCTION:
-	  return kiss_linvoke((kiss_function_t*)f, kiss_eval_args(args));
+	  result = kiss_linvoke((kiss_function_t*)f, kiss_eval_args(args));
+	  break;
      case KISS_MACRO: {
 	  kiss_obj* form = kiss_linvoke((kiss_function_t*)f, args);
-	  return kiss_eval(form);
+	  result = kiss_eval(form);
+	  break;
      }
-     case KISS_OO_OBJ: {
+     case KISS_OO_OBJ:
 	  if (kiss_cfuncall(L"generic-function-p", kiss_clist(1, f)) == KISS_T) {
 	       /* fwprintf(stderr, "calling generic-function\n"); fflush(stderr); */
-	       return kiss_cfuncall(L"generic-function-invoke",
-				    kiss_clist(2, f, kiss_eval_args(args)));
+	       result = kiss_cfuncall(L"generic-function-invoke",
+				      kiss_clist(2, f, kiss_eval_args(args)));
 	  } else {
-	       return kiss_method_invoke(f);
+	       result = kiss_method_invoke(f);
 	  }
-
-     }
+	  break;
      default:
 	  Kiss_Err(L"Can't invoke function like object ~S", f);
+	  assert(0); // never reach here.
      }
+     assert(saved_heap_index <= env->heap_index);
+     if (saved_heap_index < env->heap_index) {
+	  if (KISS_IS_GC_OBJ(result)) {
+	       Kiss_Heap_Stack[saved_heap_index++] = (kiss_gc_obj*)result;
+	  }
+	  env->heap_index = saved_heap_index;
+     }
+     return result;
 }
 
 static kiss_obj* kiss_eval_compound_form(kiss_cons_t* p) {

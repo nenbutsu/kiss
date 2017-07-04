@@ -25,7 +25,7 @@
    (error-id. cannot-create-cons). Both obj1 and obj2 may be any ISLISP object.
 */
 kiss_obj* kiss_cons(kiss_obj* car, kiss_obj* cdr) {
-    kiss_cons_t* p = Kiss_Malloc(sizeof(kiss_cons_t));
+    kiss_cons_t* p = Kiss_GC_Malloc(sizeof(kiss_cons_t));
     p->type = KISS_CONS;
     p->car  = car;
     p->cdr  = cdr;

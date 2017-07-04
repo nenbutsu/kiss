@@ -19,14 +19,14 @@
 #include "kiss.h"
 
 kiss_integer_t* kiss_make_integer(long int i) {
-    kiss_integer_t* p = Kiss_Malloc_Atomic(sizeof(kiss_integer_t));
+    kiss_integer_t* p = Kiss_GC_Malloc(sizeof(kiss_integer_t));
     p->type = KISS_INTEGER;
     p->i = i;
     return p;
 }
 
 kiss_float_t* kiss_make_float(float f) {
-    kiss_float_t* p = Kiss_Malloc_Atomic(sizeof(kiss_float_t));
+    kiss_float_t* p = Kiss_GC_Malloc(sizeof(kiss_float_t));
     p->type = KISS_FLOAT;
     p->f = f;
     return p;

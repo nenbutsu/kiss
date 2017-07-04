@@ -41,7 +41,7 @@ void kiss_init_streams(void) {
 }
 
 static kiss_file_stream_t* kiss_make_file_stream(FILE* fp) {
-    kiss_file_stream_t* p = Kiss_Malloc(sizeof(kiss_file_stream_t));
+    kiss_file_stream_t* p = Kiss_GC_Malloc(sizeof(kiss_file_stream_t));
     p->type = KISS_STREAM;
     p->flags = KISS_FILE_STREAM;
     p->file_ptr = fp;
@@ -50,7 +50,7 @@ static kiss_file_stream_t* kiss_make_file_stream(FILE* fp) {
 }
 
 static kiss_string_stream_t* kiss_make_string_stream(kiss_string_t* str) {
-    kiss_string_stream_t* p = Kiss_Malloc(sizeof(kiss_string_stream_t));
+    kiss_string_stream_t* p = Kiss_GC_Malloc(sizeof(kiss_string_stream_t));
     p->type = KISS_STREAM;
     p->flags = KISS_STRING_STREAM;
     p->list = KISS_NIL;

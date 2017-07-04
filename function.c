@@ -19,7 +19,7 @@
 #include "kiss.h"
 
 kiss_function_t* kiss_make_function(kiss_symbol_t* name, kiss_obj* lambda) {
-    kiss_function_t* p = Kiss_Malloc(sizeof(kiss_function_t));
+    kiss_function_t* p = Kiss_GC_Malloc(sizeof(kiss_function_t));
     kiss_environment_t* env = Kiss_Get_Environment();
     p->type = KISS_FUNCTION;
     p->name = name;

@@ -19,7 +19,7 @@
 #include "kiss.h"
 
 kiss_catcher_t* kiss_make_catcher(kiss_obj* tag, jmp_buf jmp) {
-    kiss_catcher_t* p = Kiss_Malloc(sizeof(kiss_catcher_t));
+    kiss_catcher_t* p = Kiss_GC_Malloc(sizeof(kiss_catcher_t));
     kiss_environment_t* env = Kiss_Get_Environment();
     p->type = KISS_CATCHER;
     p->tag = tag;
@@ -29,7 +29,7 @@ kiss_catcher_t* kiss_make_catcher(kiss_obj* tag, jmp_buf jmp) {
 }
 
 static kiss_block_t* kiss_make_block(kiss_symbol_t* name, jmp_buf jmp) {
-    kiss_block_t* p = Kiss_Malloc(sizeof(kiss_block_t));
+    kiss_block_t* p = Kiss_GC_Malloc(sizeof(kiss_block_t));
     kiss_environment_t* env = Kiss_Get_Environment();
     p->type = KISS_BLOCK;
     p->name = name;
@@ -39,7 +39,7 @@ static kiss_block_t* kiss_make_block(kiss_symbol_t* name, jmp_buf jmp) {
 }
 
 static kiss_tagbody_t* kiss_make_tagbody(kiss_symbol_t* tag, jmp_buf jmp, kiss_obj* body) {
-    kiss_tagbody_t* p = Kiss_Malloc(sizeof(kiss_tagbody_t));
+    kiss_tagbody_t* p = Kiss_GC_Malloc(sizeof(kiss_tagbody_t));
     kiss_environment_t* env = Kiss_Get_Environment();
     p->type = KISS_TAGBODY;
     p->tag = tag;
@@ -50,7 +50,7 @@ static kiss_tagbody_t* kiss_make_tagbody(kiss_symbol_t* tag, jmp_buf jmp, kiss_o
 }
 
 static kiss_cleanup_t* kiss_make_cleanup(kiss_obj* body) {
-    kiss_cleanup_t* p = Kiss_Malloc(sizeof(kiss_cleanup_t));
+    kiss_cleanup_t* p = Kiss_GC_Malloc(sizeof(kiss_cleanup_t));
     kiss_environment_t* env = Kiss_Get_Environment();
     p->type = KISS_CLEANUP;
     p->body = body;

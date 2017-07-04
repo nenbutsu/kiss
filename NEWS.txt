@@ -1,4 +1,10 @@
 ----------------------------------------------------------------------
+2017/07/05
+Changed to use homegrown gc back again
+----------------------------------------------------------------------
+2017/06/30
+Changed to use libgc again
+----------------------------------------------------------------------
 2017/06/22
 Added a good old mark and sweep garbage collector.
 Changed char to wchar_t

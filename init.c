@@ -28,7 +28,7 @@ void kiss_init_error_catcher(void) {
 }
 
 void kiss_initialize(void) {
-     GC_INIT();
+     kiss_init_gc();
      kiss_init_environment();
      kiss_init_symbols();
      kiss_init_streams();
