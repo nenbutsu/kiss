@@ -593,7 +593,6 @@ kiss_obj* kiss_featurep(kiss_obj* feature);
 kiss_obj* kiss_provide(kiss_obj* feature);
 
 /* gc.c */
-void kiss_init_gc(void);
 void* Kiss_Malloc(size_t size);
 void* Kiss_GC_Malloc(size_t size);
 
