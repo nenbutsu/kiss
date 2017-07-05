@@ -22,18 +22,11 @@ static int GCing = 0;
 
 static size_t GC_Counter = 0;
 
-#define HEAP_STACK_SIZE (1024 * 1024)
+#define HEAP_STACK_SIZE (1024 * 100)
 kiss_gc_obj* Kiss_Heap_Stack[HEAP_STACK_SIZE];
 static kiss_gc_obj* GC_Objects = NULL;
 
 kiss_obj* kiss_gc(void);
-
-void kiss_init_gc(void) {
-     size_t i;
-     for (i = 0; i < HEAP_STACK_SIZE; i++) {
-	  Kiss_Heap_Stack[i] = NULL;
-     }
-}
 
 /* An error shall be signaled if the requested memory cannot be allocated
    (error-id. <storage-exhausted>). */
@@ -44,12 +37,11 @@ void* Kiss_Malloc(size_t size) {
 }
 
 void* Kiss_GC_Malloc(size_t size) {
-    void* p = malloc(size);
+    void* p = Kiss_Malloc(size);
     kiss_environment_t* env = Kiss_Get_Environment();
-    if (p == NULL) { Kiss_System_Error(); }
 
     GC_Counter += size;
-    if (GC_Counter > 1024 * 1024 * 3) {
+    if (GC_Counter > 1024 * 1024) {
 	 kiss_gc();
 	 GC_Counter = 0;
     }
@@ -96,6 +88,15 @@ void kiss_gc_mark_cons(kiss_cons_t* obj) {
      
      kiss_gc_mark_obj(obj->car);
      kiss_gc_mark_obj(obj->cdr);
+}
+
+void kiss_gc_mark_general_vector(kiss_general_vector_t* obj) {
+     size_t i;
+     if (gc_marked((kiss_gc_obj*)obj)) { return; }
+     kiss_gc_mark_obj_flag((kiss_gc_obj*)obj);
+     for (i = 0; i < obj->n; i++) {
+	  kiss_gc_mark_obj(obj->v[i]);
+     }
 }
 
 void kiss_gc_mark_symbol(kiss_symbol_t* symbol) {
@@ -182,6 +183,8 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
 	       if (gc_marked((kiss_gc_obj*)obj)) { return; }
 	       kiss_gc_mark_obj_flag((kiss_gc_obj*)obj);
 	       break;
+	  case KISS_GENERAL_VECTOR:
+	       kiss_gc_mark_general_vector((kiss_general_vector_t*)obj);
 	  case KISS_STREAM:
 	       kiss_gc_mark_stream((kiss_stream_t*)obj);
 	       break;
@@ -238,6 +241,60 @@ void kiss_gc_mark(void) {
      }
 }
 
+void kiss_gc_free_symbol(kiss_symbol_t* obj) {
+     free(obj->name);
+     free(obj);
+}
+
+void kiss_gc_free_string(kiss_string_t* obj) {
+     free(obj->str);
+     free(obj);
+}
+
+void kiss_gc_free_stream(kiss_stream_t* obj) {
+     if (KISS_IS_FILE_STREAM(obj) && (((kiss_file_stream_t*)obj)->file_ptr)) {
+	  fclose(((kiss_file_stream_t*)obj)->file_ptr);
+     }
+     free(obj);
+}
+
+void kiss_gc_free_obj(kiss_gc_obj* obj) {
+     if (obj == NULL) {
+	  return;
+     } else {
+	  switch (KISS_OBJ_TYPE(obj)) {
+	  case KISS_SYMBOL:
+	       kiss_gc_free_symbol((kiss_symbol_t*)obj);
+	       break;
+	  case KISS_STRING:
+	       kiss_gc_free_string((kiss_string_t*)obj);
+	       break;
+	  case KISS_STREAM:
+	       kiss_gc_free_stream((kiss_stream_t*)obj);
+	       break;
+	  case KISS_CONS:
+	  case KISS_CHARACTER:
+	  case KISS_INTEGER:
+	  case KISS_FLOAT:
+	  case KISS_GENERAL_VECTOR:
+	  case KISS_FUNCTION:
+	  case KISS_MACRO:
+	  case KISS_CFUNCTION:
+	  case KISS_CMACRO:
+	  case KISS_CATCHER:
+	  case KISS_BLOCK:
+	  case KISS_CLEANUP:
+	  case KISS_TAGBODY:
+	  case KISS_OO_OBJ:
+	       free(obj);
+	       break;
+	  default:
+	       fwprintf(stderr, L"GC unknown object type = %d\n", KISS_OBJ_TYPE(obj));
+	       abort();
+	  }
+     }
+}
+
 void kiss_gc_sweep(void) {
      kiss_gc_obj** prev = &GC_Objects;
      kiss_gc_obj* obj = GC_Objects;
@@ -250,7 +307,7 @@ void kiss_gc_sweep(void) {
 	       *prev = obj->gc_next;
 	       tmp = obj;
 	       obj = obj->gc_next;
-	       free(tmp);
+	       kiss_gc_free_obj(tmp);
 	  }
      }
 }
@@ -265,15 +322,15 @@ kiss_obj* kiss_gc(void) {
      kiss_environment_t* env = Kiss_Get_Environment();
      assert(!GCing);
      GCing = 1;
-     fwprintf(stderr, L"GC entered\n");
-     fwprintf(stderr, L"heap_index = %d\n", env->heap_index);
-     fwprintf(stderr, L"gc_flag = %d\n", env->gc_flag);
-     fwprintf(stderr, L"gc_mark\n");
+     //fwprintf(stderr, L"GC entered\n");
+     //fwprintf(stderr, L"heap_index = %d\n", env->heap_index);
+     //fwprintf(stderr, L"gc_flag = %d\n", env->gc_flag);
+     //fwprintf(stderr, L"gc_mark\n");
      kiss_gc_mark();
-     fwprintf(stderr, L"gc_sweep\n");
+     //fwprintf(stderr, L"gc_sweep\n");
      kiss_gc_sweep();
      env->gc_flag = env->gc_flag ? 0 : 1;
-     fwprintf(stderr, L"GC leaving\n\n");
+     //fwprintf(stderr, L"GC leaving\n\n");
      GCing = 0;
      return KISS_NIL;
 }
