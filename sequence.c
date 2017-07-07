@@ -74,8 +74,51 @@ kiss_obj* kiss_elt(kiss_obj* sequence, kiss_obj* z) {
 	kiss_string_t* string = Kiss_String(sequence);
 	return (kiss_obj*)kiss_make_character(string->str[integer->i]);
     }
+    case KISS_GENERAL_VECTOR: {
+	 kiss_general_vector_t* vector = Kiss_General_Vector(sequence);
+	 return vector->v[integer->i];
+    }
     default:
 	Kiss_Err(L"elt internal error, unknown sequence ~S", sequence);
     }
     
+}
+
+/* function: (set-elt obj sequence z) → <object>
+   Replace the object obtainable by elt with obj.
+   The returned value is obj. 
+   An error shall be signaled if z is an integer outside of the valid range of indices 
+   (error-id. index-out-of-range).
+   An error shall be signaled if sequence is not a basic-vector or a list or 
+   if z is not an integer (error-id. domain-error).
+   obj may be any ISLISP object.
+*/
+kiss_obj* kiss_set_elt(kiss_obj* obj, kiss_obj* sequence, kiss_obj* z) {
+    Kiss_Check_Sequence_Index_Range(sequence, z);
+    kiss_integer_t* integer = Kiss_Integer(z);
+    switch (KISS_OBJ_TYPE(sequence)) {
+    case KISS_SYMBOL: {
+	Kiss_Err(L"elt internal error: zero-length-sequence ~S", sequence);
+    }
+    case KISS_CONS: {
+	kiss_cons_t* list = Kiss_Cons(sequence);
+	for (; integer->i > 0; integer->i--) { list = KISS_CDR(list); }
+	kiss_set_car(obj, (kiss_obj*)list);
+	break;
+    }
+    case KISS_STRING: {
+	kiss_string_t* string = Kiss_String(sequence);
+	kiss_character_t* c = Kiss_Character(obj);
+	string->str[integer->i] = c->c;
+	break;
+    }
+    case KISS_GENERAL_VECTOR: {
+	 kiss_general_vector_t* vector = Kiss_General_Vector(sequence);
+	 vector->v[integer->i] = obj;
+	 break;
+    }
+    default:
+	Kiss_Err(L"elt internal error, unknown sequence ~S", sequence);
+    }
+    return obj;
 }

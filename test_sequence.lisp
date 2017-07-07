@@ -20,3 +20,28 @@
 (eql (length '(a (b) (c d e))) 3)
 (eql (length '()) 0)
 (eql (length (vector 'a 'b 'c)) 3)
+
+;; elt
+(eq (elt '(a b c) 2) 'c)
+(eq (elt (vector 'a 'b 'c) 1) 'b)
+(eql (elt "abc" 0) #\a)
+
+;; set-elt
+(string= (let ((string (create-string 5 #\x)))
+	   (set-elt #\O string 2)
+	   string)
+	 "xxOxx")
+
+(equal (let ((x (create-list 3 'x)))
+	 (set-elt 'y x 1)
+	 x)
+       '(x y x))
+
+(equal (let ((x (vector 'a 'b 'c)))
+	 (set-elt 'z x 1)
+	 x)
+       '#(a z c))
+
+
+
+

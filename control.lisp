@@ -205,6 +205,15 @@
     (if (string= obj1 obj2)
 	t
       nil))
+   ((and (general-vector-p obj1) (general-vector-p obj2))
+    (if (= (length obj1) (length obj2))
+	(let ((i 0))
+	  (while (< i (length obj1))
+	    (if (not (eql (elt obj1 i) (elt obj2 i)))
+		(return-from equal nil))
+	    (setq i (+ i 1)))
+	  t)
+      nil))
    (t (eql obj1 obj2))))
 
 (defmacro prog1 (first-form &rest forms)

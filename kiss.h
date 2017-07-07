@@ -514,6 +514,7 @@ int kiss_read_eval_print_loop(void);
 size_t kiss_clength(kiss_obj* p);
 kiss_obj* kiss_length(kiss_obj* sequence);
 kiss_obj* kiss_elt(kiss_obj* sequence, kiss_obj* z);
+kiss_obj* kiss_set_elt(kiss_obj* obj, kiss_obj* sequence, kiss_obj* z) ;
 
 /* stream.c */
 void kiss_init_streams(void);
