@@ -42,7 +42,7 @@ kiss_obj* kiss_create_string(kiss_obj* i, kiss_obj* rest) {
     wchar_t* s = Kiss_Malloc(sizeof(wchar_t) * (n->i + 1));
     wchar_t c;
     size_t j;
-    if (rest == KISS_NIL) { c = L'\0'; }
+    if (rest == KISS_NIL) { c = L' '; }
     else                  { c = Kiss_Character(KISS_CAR(rest))->c; }
     for (j = 0; j < n->i; j++) { s[j] = c; }
     s[n->i] = 0;

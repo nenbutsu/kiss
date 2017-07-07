@@ -39,6 +39,7 @@ typedef enum {
      KISS_FLOAT,
      KISS_STRING,
      KISS_GENERAL_VECTOR,
+     KISS_GENERAL_ARRAY,
      KISS_STREAM,
 
      KISS_FUNCTION,
@@ -148,6 +149,14 @@ typedef struct {
      kiss_obj** v;
      size_t n;
 } kiss_general_vector_t;
+
+typedef struct {
+     kiss_type type;
+     int gc_flag;
+     kiss_gc_obj* gc_next;
+     kiss_obj** v;
+     kiss_obj* dimensions;
+} kiss_general_array_t;
 
 typedef struct {
      kiss_type type;

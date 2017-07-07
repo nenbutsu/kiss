@@ -28,6 +28,7 @@ size_t kiss_clength(kiss_obj* p) {
 	    return n;
 	}
     case KISS_STRING: return ((kiss_string_t*)p)->n;
+    case KISS_GENERAL_VECTOR: return ((kiss_general_vector_t*)p)->n;
     default:
 	Kiss_Err(L"clength internal error, unknown sequence ~S", p);
     }

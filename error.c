@@ -292,7 +292,7 @@ kiss_string_stream_t* Kiss_String_Output_Stream(kiss_obj* obj) {
 }
 
 kiss_obj* Kiss_Sequence(kiss_obj* obj) {
-     if (!KISS_IS_LIST(obj) && !KISS_IS_STRING(obj))
+     if (!KISS_IS_LIST(obj) && !KISS_IS_STRING(obj) && !KISS_IS_GENERAL_VECTOR(obj))
      {
 	  Kiss_Err(L"Sequence expected ~S", obj);
      }
