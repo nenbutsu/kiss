@@ -35,7 +35,7 @@ kiss_obj* kiss_err(kiss_obj* error_string, kiss_obj* rest) {
     wchar_t* p;
     for (p = s->str; *p != L'\0'; p++) {
 	if (*p == L'~' && *(p+1) == L'S') {
-	    kiss_format_object(out, kiss_car(rest), KISS_T);
+	    kiss_format_object(out, kiss_car(rest), KISS_NIL);
 	    rest = kiss_cdr(rest);
 	    p++;
 	} else {
@@ -61,7 +61,7 @@ void Kiss_Err(wchar_t* str, ...) {
 		    kiss_format_char(out, (kiss_obj*)kiss_make_character(L'~'));
 		    kiss_format_char(out, (kiss_obj*)kiss_make_character(L'S'));
 	       } else {
-		    kiss_format_object(out, va_arg(args, kiss_obj*), KISS_T);
+		    kiss_format_object(out, va_arg(args, kiss_obj*), KISS_NIL);
 	       }
 	       p++;
 	  } else {
@@ -292,11 +292,10 @@ kiss_string_stream_t* Kiss_String_Output_Stream(kiss_obj* obj) {
 }
 
 kiss_obj* Kiss_Sequence(kiss_obj* obj) {
-     if (!KISS_IS_LIST(obj) && !KISS_IS_STRING(obj) && !KISS_IS_GENERAL_VECTOR(obj))
-     {
-	  Kiss_Err(L"Sequence expected ~S", obj);
+     if (KISS_IS_SEQUENCE(obj)) {
+	  return obj;
      }
-     return obj;
+     Kiss_Err(L"Sequence expected ~S", obj);
 }
 
 kiss_function_t* Kiss_Macro(kiss_obj* obj) {

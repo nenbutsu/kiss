@@ -33,7 +33,7 @@
                        +--> <string>
  */
 
-static kiss_general_vector_t* kiss_make_general_vector(size_t n, kiss_obj* obj) {
+kiss_general_vector_t* kiss_make_general_vector(size_t n, kiss_obj* obj) {
     kiss_general_vector_t* p = Kiss_GC_Malloc(sizeof(kiss_general_vector_t));
     kiss_obj** v = Kiss_Malloc(n * sizeof(kiss_obj*));
     size_t i;

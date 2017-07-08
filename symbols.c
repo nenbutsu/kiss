@@ -2120,6 +2120,44 @@ kiss_symbol_t KISS_Sset_elt = {
     KISS_NIL,                /* plist */
 };
 
+kiss_symbol_t KISS_Ssubseq;
+kiss_cfunction_t KISS_CFsubseq = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Ssubseq,    /* name */
+    kiss_subseq,     /* C function name */
+    3,         /* minimum argument number */
+    3,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Ssubseq = {
+    KISS_SYMBOL,
+    0,                 /* gc_flag */
+    NULL,              /* gc_next */
+    L"subseq",
+    KISS_CONSTANT_FUN,
+    NULL,               /* var */
+    (kiss_obj*)&KISS_CFsubseq, /* fun */
+    KISS_NIL,                /* plist */
+};
+
+kiss_symbol_t KISS_Smap_into;
+kiss_cfunction_t KISS_CFmap_into = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Smap_into,    /* name */
+    kiss_map_into,     /* C function name */
+    2,         /* minimum argument number */
+    -1,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Smap_into = {
+    KISS_SYMBOL,
+    0,                 /* gc_flag */
+    NULL,              /* gc_next */
+    L"map-into",
+    KISS_CONSTANT_FUN,
+    NULL,               /* var */
+    (kiss_obj*)&KISS_CFmap_into, /* fun */
+    KISS_NIL,                /* plist */
+};
+
 /*** eval.c ***/
 kiss_symbol_t KISS_Seval;
 kiss_cfunction_t KISS_CFeval = {
@@ -2791,7 +2829,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sstringp, &KISS_Screate_string, &KISS_Sstring_append, 
 
     /* sequence.c */
-    &KISS_Slength, &KISS_Selt, &KISS_Sset_elt,
+    &KISS_Slength, &KISS_Selt, &KISS_Sset_elt, &KISS_Ssubseq, &KISS_Smap_into,
 
     /* eval.c */
     &KISS_Seval, &KISS_Sload,

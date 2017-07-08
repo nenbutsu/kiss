@@ -79,7 +79,7 @@
             (funcall handler condition))))
     (let ((string-stream (create-string-output-stream)))
       (report-condition condition string-stream)
-      (kiss::err "~S" (get-output-stream-string string-stream)))))
+      (kiss::err (get-output-stream-string string-stream) nil))))
 
 ;; special operator: (with-handler handler form*) → <object>
 ;;  Evaluates handler, which must yield a function (called the “handler

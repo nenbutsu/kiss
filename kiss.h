@@ -308,6 +308,7 @@ kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda,
 #define KISS_IS_CHARACTER(x)         (KISS_OBJ_TYPE(x) == KISS_CHARACTER)
 #define KISS_IS_STRING(x)            (KISS_OBJ_TYPE(x) == KISS_STRING)
 #define KISS_IS_GENERAL_VECTOR(x)    (KISS_OBJ_TYPE(x) == KISS_GENERAL_VECTOR)
+#define KISS_IS_SEQUENCE(x)          (KISS_IS_LIST(x) || KISS_IS_STRING(x) || KISS_IS_GENERAL_VECTOR(x))
 #define KISS_IS_FUNCTION(x)          (KISS_OBJ_TYPE(x) == KISS_FUNCTION)
 #define KISS_IS_MACRO(x)             (KISS_OBJ_TYPE(x) == KISS_MACRO)
 #define KISS_IS_CFUNCTION(x)         (KISS_OBJ_TYPE(x) == KISS_CFUNCTION)
@@ -393,6 +394,7 @@ void Kiss_Unbound_Variable_Error(kiss_obj* obj);
 void Kiss_Catcher_Not_Found_Error(kiss_obj* tag);
 void Kiss_Block_Not_Found_Error(kiss_obj* name);
 void Kiss_Tagbody_Not_Found_Error(kiss_obj* name);
+void Kiss_Index_Out_Of_Range_Error(kiss_obj* sequence, kiss_obj* index);
 kiss_obj* Kiss_Check_Sequence_Index_Range(kiss_obj* sequence, kiss_obj* index);
 kiss_cons_t* Kiss_Cons(kiss_obj* obj);
 kiss_obj* Kiss_List(kiss_obj* obj);
@@ -455,6 +457,7 @@ kiss_obj* kiss_labels(kiss_obj* fspecs, kiss_obj* body);
 void kiss_bind_funargs(kiss_obj* params, kiss_obj* args);
 
 /* general_vector.c */
+kiss_general_vector_t* kiss_make_general_vector(size_t n, kiss_obj* obj);
 kiss_obj* kiss_create_general_vector(kiss_obj* i, kiss_obj* rest);
 kiss_obj* kiss_vector(kiss_obj* objs);
 kiss_obj* kiss_general_vector_p(kiss_obj* obj);
@@ -514,7 +517,9 @@ int kiss_read_eval_print_loop(void);
 size_t kiss_clength(kiss_obj* p);
 kiss_obj* kiss_length(kiss_obj* sequence);
 kiss_obj* kiss_elt(kiss_obj* sequence, kiss_obj* z);
-kiss_obj* kiss_set_elt(kiss_obj* obj, kiss_obj* sequence, kiss_obj* z) ;
+kiss_obj* kiss_set_elt(kiss_obj* obj, kiss_obj* sequence, kiss_obj* z);
+kiss_obj* kiss_subseq(kiss_obj* sequence, kiss_obj* z1, kiss_obj* z2);
+kiss_obj* kiss_map_into(kiss_obj* destination, kiss_obj* function, kiss_obj* rest);
 
 /* stream.c */
 void kiss_init_streams(void);
