@@ -15,12 +15,15 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
-;; cons
-(consp '(a . b))
-(consp '(a b c))
-(not (consp '()))
-;;(not (consp #(a b)))
+;; consp
+(eq (consp '(a . b)) t)
+(eq (consp '(a b c)) t)
+(eq (consp '()) nil)
+(eq (consp #(a b)) nil)
+(eq (consp "love") nil)
+(eq (consp #\x) nil)
 
+;; cons
 (equal (cons 'a '()) '(a))
 (equal (cons '(a) '(b c d)) '((a) b c d))
 (let ((l (cons "a" '(b c))))
@@ -42,6 +45,13 @@
 (= (car '(1 . 2)) 1)
 (eq (car '(a b c)) 'a)
 (equal (car '((a) b c d)) '(a))
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(car "string"))
+  nil)
 
 ;; cdr
 (block a
@@ -53,6 +63,13 @@
   nil)
 (equal (cdr '((a) b c d)) '(b c d))
 (eql (cdr '(1 . 2)) 2)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(cdr "string"))
+  nil)
 
 ;; set-car
 (let ((l (list 'a 'b)))
@@ -62,6 +79,13 @@
 (let* ((l (list 1 2))
        (c (set-car 2 l)))
   (eql c 2))
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(set-car 0 "string"))
+  nil)
 
 ;; set-cdr
 (let ((l (list 'a 'b)))
@@ -72,19 +96,35 @@
       (l2 (list 3 4 5)))
   (eq (set-cdr l2 l) l2))
 
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(set-cdr 0 "string"))
+  nil)
+
+
 ;; null
-(not (null '(a b c)))
-(null '())
-(null 'nil)
-(null (list))
+(eq (null '(a b c)) nil)
+(eq (null '()) t)
+(eq (null 'nil) t)
+(eq (null (list)) t)
+(eq (null "") nil)
+(eq (null #\z) nil)
+(eq (null #()) nil)
+
 
 ;; listp
-(listp '(a b c))
-(listp '())
-(listp '(a . b))
-(not (listp "abc"))
-(not (listp 9))
-(not (listp 'list))
+(eq (listp '(a b c)) t)
+(eq (listp '()) t)
+(eq (listp '(a . b)) t)
+(eq (listp "abc") nil)
+(eq (listp 9) nil)
+(eq (listp 'list) nil)
+(eq (listp #\z) nil)
+(eq (listp #()) nil)
+
 
 ;; create-list
 (equal (create-list 3 17) '(17 17 17))
@@ -103,6 +143,8 @@
 		    (signal-condition condition nil)))
 		(create-list -1 nil))
   nil)
+(eq (create-list 0) nil)
+(eq (create-list 0 t) nil)
 
 ;; list
 (equal (list 'a (+ 3 4) 'c) '(a 7 c))
@@ -112,11 +154,39 @@
 (equal (reverse '(a b c d e)) '(e d c b a))
 (equal (reverse '(a)) '(a))
 (eq (reverse '()) '())
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(reverse "string"))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(reverse #(x y z)))
+  nil)
 
 ;; nreverse
 (equal (nreverse (list 'a 'b 'c 'd 'e)) '(e d c b a))
 (equal (nreverse (list 'a)) '(a))
 (eq (nreverse '()) '())
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(nreverse "string"))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(nreverse #(x y z)))
+  nil)
 
 ;; append
 (equal (append '(a b c) '(d e f)) '(a b c d e f))
@@ -156,12 +226,56 @@
 (equal (mapcar #'car '((1 a) (2 b) (3 c))) '(1 2 3))
 (equal (mapcar #'abs '(3 -4 2 -5 -6)) '(3 4 2 5 6))
 (equal (mapcar #'cons '(a b c) '(1 2 3)) '((a . 1)(b . 2)(c . 3)))
+(eq (mapcar (lambda (x y) (cons x y)) '() '(a b c)) nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(mapcar 'not-a-function '(a b c) '(x y z)))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(mapcar #'cons 'not-a-list '(x y z)))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(mapcar #'cons))
+  nil)
 
 ;; mapc
 (eql (let ((x 0))
        (mapc (lambda (v) (setq x (+ x v))) '(3 5))
        x)
      8)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(mapc 'not-a-function '(a b c) '(x y z)))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(mapc #'cons 'not-a-list '(x y z)))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(mapc #'cons))
+  nil)
+
 
 ;; maplist
 (equal (maplist #'append '(1 2 3 4) '(1 2) '(1 2 3))
@@ -171,6 +285,27 @@
 
 (equal (maplist (lambda (x) (if (member (car x) (cdr x)) 0 1)) '(a b a c d b c))
        '(0 0 1 0 1 1 1))
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(maplist 'not-a-function '(a b c) '(x y z)))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(maplist #'cons 'not-a-list '(x y z)))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(maplist #'cons))
+  nil)
 
 
 ;; mapl
@@ -180,10 +315,52 @@
 	   '(a b a c d b c))
      k)
    4)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(mapl 'not-a-function '(a b c) '(x y z)))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(mapl #'cons 'not-a-list '(x y z)))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(mapl #'cons))
+  nil)
 
 ;; mapcan
 (equal (mapcan (lambda (x) (if (> x 0) (list x))) '(-3 4 0 5 -2 7))
        '(4 5 7))
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(mapcan 'not-a-function '(a b c) '(x y z)))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(mapcan #'list 'not-a-list '(x y z)))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(mapcan #'list))
+  nil)
 
 ;; mapcon
 (equal (mapcon (lambda (x) (if (member (car x) (cdr x)) (list (car x))))
@@ -191,8 +368,45 @@
        '(a b c b c))
 (equal (mapcon #'list '(1 2 3 4))
        '((1 2 3 4) (2 3 4) (3 4) (4)))
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(mapcon 'not-a-function '(a b c) '(x y z)))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(mapcon #'list 'not-a-list '(x y z)))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(mapcon #'list))
+  nil)
 
 ;; assoc
 (equal (assoc 'a '((a . 1) (b . 2))) '(a . 1))
 (equal (assoc 'a '((a . 1) (a . 2))) '(a . 1))
-(not (assoc 'c '((a . 1) (b . 2))))
+(eq (assoc 'c '((a . 1) (b . 2))) nil)
+
+(equal (assoc #\a '((#\a . 1) (#\b . 2))) '(#\a . 1))
+(equal (assoc #\a '((#\a . 1) (#\a . 2))) '(#\a . 1))
+(eq (assoc #\c '((#\a . 1) (#\b . 2))) nil)
+
+(equal (assoc 1 '((1 . 1) (2 . 2))) '(1 . 1))
+(equal (assoc 1 '((1 . 1) (1 . 2))) '(1 . 1))
+
+
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(assoc 'a 'not-a-list)
+  nil)
