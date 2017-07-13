@@ -104,3 +104,34 @@ kiss_obj* kiss_basic_array_s_p (kiss_obj* obj) {
 	  fwprintf(stderr, L"basic-array*-p: unknown primitive obj type %d", KISS_OBJ_TYPE(obj));
      }
 }
+
+/* function: (general-array*-p obj) → boolean
+   general-array*-p returns t if obj is a general-array* (instance of class <general-array*>);
+   otherwise, returns nil. obj may be any ISLISP object.
+*/
+kiss_obj* kiss_general_array_s_p (kiss_obj* obj) {
+     switch (KISS_OBJ_TYPE(obj)) {
+     case KISS_CONS:
+     case KISS_SYMBOL:
+     case KISS_CHARACTER:
+     case KISS_INTEGER:
+     case KISS_FLOAT:
+     case KISS_STREAM:
+     case KISS_FUNCTION:
+     case KISS_MACRO:
+     case KISS_CFUNCTION:
+     case KISS_CMACRO:
+     case KISS_CATCHER:
+     case KISS_CLEANUP:
+     case KISS_BLOCK:
+     case KISS_TAGBODY:
+     case KISS_OO_OBJ:
+     case KISS_STRING:
+     case KISS_GENERAL_VECTOR:
+	  return KISS_NIL;
+     case KISS_GENERAL_ARRAY:
+	  return KISS_T;
+     default:
+	  fwprintf(stderr, L"general-array*-p: unknown primitive obj type %d", KISS_OBJ_TYPE(obj));
+     }
+}

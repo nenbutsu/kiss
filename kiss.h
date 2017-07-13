@@ -467,6 +467,7 @@ kiss_obj* kiss_set_gvref(kiss_obj* obj, kiss_obj* general_vector, kiss_obj* inde
 /* array.c */
 kiss_obj* kiss_basic_array_p (kiss_obj* obj);
 kiss_obj* kiss_basic_array_s_p (kiss_obj* obj);
+kiss_obj* kiss_general_array_s_p (kiss_obj* obj);
 
 /* environment.c */
 kiss_environment_t* Kiss_Get_Environment(void);

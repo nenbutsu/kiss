@@ -631,6 +631,25 @@ kiss_symbol_t KISS_Sbasic_array_s_p = {
     KISS_NIL,                                 /* plist */
 };
 
+kiss_symbol_t KISS_Sgeneral_array_s_p;
+kiss_cfunction_t KISS_CFgeneral_array_s_p = {
+    KISS_CFUNCTION,               /* type */
+    &KISS_Sgeneral_array_s_p, /* name */
+    kiss_general_array_s_p,   /* C function name */
+    1,         /* minimum argument number */
+    1,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Sgeneral_array_s_p = {
+    KISS_SYMBOL,                              /* type */
+    0,                 /* gc_flag */
+    NULL,              /* gc_next */
+    L"general-array*-p",            /* name */
+    KISS_CONSTANT_FUN,                        /* flags */
+    NULL,                                /* var */
+    (kiss_obj*)&KISS_CFgeneral_array_s_p, /* fun */
+    KISS_NIL,                                 /* plist */
+};
+
 
 /*** vector.c ***/
 kiss_symbol_t KISS_Screate_general_vector;
@@ -2849,7 +2868,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Splist_member, &KISS_Splist_put, &KISS_Splist_get, 
 
     /* array.c */
-    &KISS_Sbasic_array_p, &KISS_Sbasic_array_s_p,
+    &KISS_Sbasic_array_p, &KISS_Sbasic_array_s_p, &KISS_Sgeneral_array_s_p,
     
     /* vector.c */
     &KISS_Screate_general_vector, &KISS_Svector,
