@@ -592,9 +592,28 @@ kiss_symbol_t KISS_Splist_put = {
 };
 
 
+/*** array.c ***/
+kiss_symbol_t KISS_Sbasic_array_p;
+kiss_cfunction_t KISS_CFbasic_array_p = {
+    KISS_CFUNCTION,               /* type */
+    &KISS_Sbasic_array_p, /* name */
+    kiss_basic_array_p,   /* C function name */
+    1,         /* minimum argument number */
+    1,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Sbasic_array_p = {
+    KISS_SYMBOL,                              /* type */
+    0,                 /* gc_flag */
+    NULL,              /* gc_next */
+    L"basic-array-p",            /* name */
+    KISS_CONSTANT_FUN,                        /* flags */
+    NULL,                                /* var */
+    (kiss_obj*)&KISS_CFbasic_array_p, /* fun */
+    KISS_NIL,                                 /* plist */
+};
 
 
-/*** general_vector.c ***/
+/*** vector.c ***/
 kiss_symbol_t KISS_Screate_general_vector;
 kiss_cfunction_t KISS_CFcreate_general_vector = {
     KISS_CFUNCTION,               /* type */
@@ -2810,7 +2829,10 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Smember, &KISS_Sassoc, &KISS_Scopy_list,
     &KISS_Splist_member, &KISS_Splist_put, &KISS_Splist_get, 
 
-    /* general_vector.c */
+    /* array.c */
+    &KISS_Sbasic_array_p,
+    
+    /* vector.c */
     &KISS_Screate_general_vector, &KISS_Svector,
     &KISS_Sgeneral_vector_p, &KISS_Sgvref, &KISS_Sset_gvref,
 
