@@ -16,16 +16,18 @@
 ;; GNU General Public License for more details.
 
 ;;; symbolp
-(symbolp 'a)
-(not (symbolp "a"))
-(not (symbolp #\a))
-(symbolp 't)
-(symbolp t)
-(symbolp 'nil)
-(symbolp nil)
-(symbolp '())
-(symbolp '*pi*)
-(symbolp *pi*)
+(eq (symbolp 'a) t)
+(eq (symbolp "a") nil)
+(eq (symbolp #\a) nil)
+(eq (symbolp 't) t)
+(eq (symbolp t) t)
+(eq (symbolp 'nil) t)
+(eq (symbolp nil) t)
+(eq (symbolp '()) t)
+(eq (symbolp '*pi*) t)
+(eq (symbolp *pi*) nil)
+(eq (symbolp 3) nil)
+
 
 ;; set-property
 (and (eq (set-property 'athena 'zeus 'daughter) 'athena)

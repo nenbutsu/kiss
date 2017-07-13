@@ -408,5 +408,5 @@
 		  (if (instancep condition (class <error>))
 		      (return-from a t)
 		    (signal-condition condition nil)))
-		(assoc 'a 'not-a-list)
+		(assoc 'a 'not-a-list))
   nil)
