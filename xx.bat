@@ -1,1 +1,2 @@
-gcc *.c -o kiss
+gcc *.c -o kiss -lm
+
