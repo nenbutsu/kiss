@@ -41,7 +41,7 @@ static kiss_symbol_t* kiss_make_symbol(wchar_t* name) {
     return p;
 }
 
-/* function: (symbolp obj) → boolean 
+/* function: (symbolp obj) -> boolean 
    Returns t if obj is a symbol; otherwise, returns nil. The obj may
    be any LISP object */
 kiss_obj* kiss_symbolp(kiss_obj* obj) {

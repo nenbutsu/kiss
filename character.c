@@ -25,7 +25,7 @@ kiss_character_t* kiss_make_character(wchar_t c) {
     return p;
 }
 
-/* function: (characterp obj) → boolean
+/* function: (characterp obj) -> boolean
      Returns t if obj is a character (instance of class <character>);
      otherwise, returns nil. obj may be any ISLISP object.
  */

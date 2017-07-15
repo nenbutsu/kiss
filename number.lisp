@@ -16,7 +16,7 @@
 ;; GNU General Public License for more details.
 
 
-;; function: (numberp obj) → boolean
+;; function: (numberp obj) -> boolean
 ;; Returns t if obj is a number (instance of class <number>);
 ;; otherwise, returns nil.
 ;; The obj may be any ISLISP object.
@@ -26,23 +26,23 @@
 
 (defun numberp (obj) (or (integerp obj) (floatp obj)))
 
-;; function: (/= x1 x2) → boolean
+;; function: (/= x1 x2) -> boolean
 ;; Returns t if x1 and x2 have mathematically distinct values; otherwise,
 ;; returns nil. An error shall be signaled if either x1 or x2 is not a number
 ;; (error-id. domain-error ).
 (defun /= (x1 x2) (not (= x1 x2)))
 
-;; function: (>= x1 x2) → boolean
+;; function: (>= x1 x2) -> boolean
 (defun >= (x1 x2) (not (< x1 x2)))
 
-;; function: (<= x1 x2) → boolean 
+;; function: (<= x1 x2) -> boolean 
 (defun <= (x1 x2) (or (< x1 x2) (= x1 x2)))
 
-;; function: (> x1 x2) → boolean
+;; function: (> x1 x2) -> boolean
 (defun > (x1 x2) (not (<= x1 x2)))
 
 
-;; function: (min x+) → <number>
+;; function: (min x+) -> <number>
 ;; The function min returns the least (closest to negative infinity) of its arguments.
 ;; The comparison is done by < .
 (defun min (x1 &rest rest)
@@ -53,7 +53,7 @@
       (setq rest (cdr rest)))
     min))
 
-;; function: (max x+) → <number>
+;; function: (max x+) -> <number>
 ;; The function min returns the greatest (closest to positive infinity) of its arguments.
 ;; The comparison is done by > .
 (defun max (x1 &rest rest)

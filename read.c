@@ -388,7 +388,7 @@ kiss_obj* kiss_cread(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val) {
     return p;
 }
 
-/* function: (read [input-stream [eos-error-p [eos-value]]]) → <object> */
+/* function: (read [input-stream [eos-error-p [eos-value]]]) -> <object> */
 kiss_obj* kiss_read(kiss_obj* args) {
     kiss_obj* in = kiss_standard_input();
     kiss_obj* eos_err_p = KISS_T;

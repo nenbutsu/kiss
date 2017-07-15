@@ -82,7 +82,7 @@ kiss_obj* kiss_linvoke(kiss_function_t* fun, kiss_obj* args) {
     return result;
 }
 
-/* special operator: (lambda lambda-list form*) → <function> */
+/* special operator: (lambda lambda-list form*) -> <function> */
 kiss_obj* kiss_lambda(kiss_obj* params, kiss_obj* body) {
     kiss_obj* lambda =
 	kiss_clist(3, KISS_LAMBDA, params,
@@ -91,7 +91,7 @@ kiss_obj* kiss_lambda(kiss_obj* params, kiss_obj* body) {
     return (kiss_obj*)kiss_make_function(NULL, lambda);
 }
 
-/* special operator: (defun function-name lambda-list form*) → <symbol> */
+/* special operator: (defun function-name lambda-list form*) -> <symbol> */
 kiss_obj* kiss_defun(kiss_obj* name, kiss_obj* params, kiss_obj* body) {
     kiss_symbol_t* fname = Kiss_Symbol(name);
     kiss_obj* lambda = kiss_clist(3, KISS_LAMBDA, params,
@@ -101,7 +101,7 @@ kiss_obj* kiss_defun(kiss_obj* name, kiss_obj* params, kiss_obj* body) {
     return name;
 }
 
-/* special operator: (defmacro macro-name lambda-list form*) → <symbol> */
+/* special operator: (defmacro macro-name lambda-list form*) -> <symbol> */
 kiss_obj* kiss_defmacro(kiss_obj* name, kiss_obj* params, kiss_obj* body) {
     kiss_symbol_t* fname = Kiss_Symbol(name);
     kiss_obj* lambda = kiss_clist(3, KISS_LAMBDA, params,
@@ -119,7 +119,7 @@ kiss_obj* kiss_fun_ref(kiss_symbol_t* name) {
     return name->fun;
 }
 
-/* special operator: (function function-name) → <function>
+/* special operator: (function function-name) -> <function>
      An error shall be signaled if no binding has been established for the
      identifier in the function namespace of current lexical environment
      (see §9.2) (error-id. undefined-function). The consequences are
@@ -127,7 +127,7 @@ kiss_obj* kiss_fun_ref(kiss_symbol_t* name) {
 kiss_obj* kiss_function(kiss_obj* name) { return kiss_fun_ref(Kiss_Symbol(name)); }
 
 
-/* function: (funcall function obj*) → <object> */
+/* function: (funcall function obj*) -> <object> */
 kiss_obj* kiss_funcall(kiss_obj* f, kiss_obj* args) {
      switch (KISS_OBJ_TYPE(f)) {
      case KISS_CFUNCTION:
@@ -161,14 +161,14 @@ static kiss_cons_t* kiss_flatten_apply_args(kiss_cons_t* args) {
     return (kiss_cons_t*)head->cdr;
 }
 
-/* function: (apply function obj* list) → <object> */
+/* function: (apply function obj* list) -> <object> */
 kiss_obj* kiss_apply(kiss_obj* f, kiss_obj* obj, kiss_obj* rest) {
     kiss_obj* args = (kiss_obj*)kiss_flatten_apply_args((kiss_cons_t*)kiss_cons(obj, rest));
     return kiss_funcall(f, args);
 }
 
 /* special operator:
-   (flet ((function-name lambda-list form*)*) body-form*) → <object> */
+   (flet ((function-name lambda-list form*)*) body-form*) -> <object> */
 kiss_obj* kiss_flet(kiss_obj* fspecs, kiss_obj* body) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_obj* saved_funs = env->lexical_env.funs;
@@ -190,7 +190,7 @@ kiss_obj* kiss_flet(kiss_obj* fspecs, kiss_obj* body) {
 }
 
 /* special operator
-   (labels ((function-name lambda-list form*)*) body-form*) → <object>
+   (labels ((function-name lambda-list form*)*) body-form*) -> <object>
 
    the scope of an identifier FUNCTION-NAME is the whole labels special
    form (excluding nested scopes, if any);

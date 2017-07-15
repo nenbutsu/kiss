@@ -28,7 +28,7 @@ kiss_string_t* kiss_make_string(wchar_t* s) {
 }
 
 
-/* function: (create-string i [initial-character]) → <string>
+/* function: (create-string i [initial-character]) -> <string>
    Returns a string of length i. If initial-character is given,
    then the characters of the new string are initialized with
    this character, otherwise it is initialized with \0.
@@ -49,7 +49,7 @@ kiss_obj* kiss_create_string(kiss_obj* i, kiss_obj* rest) {
     return (kiss_obj*)kiss_make_string(s);
 }
 
-/* function: (stringp obj) → boolean 
+/* function: (stringp obj) -> boolean 
    Returns t if obj is a string (instance of class string);
    otherwise, returns nil. obj may be any LISP object. */
 kiss_obj* kiss_stringp(kiss_obj* obj) {
@@ -83,7 +83,7 @@ kiss_obj* kiss_str_to_chars(kiss_string_t* str) {
     return chars;
 }
 
-/* function: (string-append string*) → <string>
+/* function: (string-append string*) -> <string>
    Returns a single string containing a sequence of characters that results from
    appending the sequences of characters of each of the strings, 
    or "" if given no strings.

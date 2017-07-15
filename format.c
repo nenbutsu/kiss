@@ -243,7 +243,7 @@ kiss_obj* kiss_format_cmacro(kiss_obj* out, kiss_obj* obj) {
     return KISS_NIL;
 }
 
-/* function: (format-object output-stream obj escape-p) → <null> */
+/* function: (format-object output-stream obj escape-p) -> <null> */
 kiss_obj* kiss_format_object(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
      switch (KISS_OBJ_TYPE(obj)) {
      case KISS_SYMBOL: kiss_format_symbol(out, obj, escapep); break;
@@ -277,7 +277,7 @@ kiss_obj* kiss_format_object(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
     return KISS_NIL;
 }
 
-/* function: (format output-stream format-string obj*) → <null>
+/* function: (format output-stream format-string obj*) -> <null>
 */
 kiss_obj* kiss_format(kiss_obj* out, kiss_obj* format, kiss_obj* args) {
      size_t i = 0;

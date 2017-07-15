@@ -15,12 +15,12 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
-;; function: (not obj) → boolean
+;; function: (not obj) -> boolean
 ;; This predicate is the logical “not” (or “¬”). It returns t
 ;; if obj is nil and nil otherwise. obj may be any ISLISP object.
 (defun not (obj) (if (eq obj nil) t nil))
 
-;; special operator: (and form*) → <object>
+;; special operator: (and form*) -> <object>
 ;; and is the sequential logical “and” (or “∧”). forms are evaluated
 ;; from left to right until either one of them evaluates to nil or else
 ;; none are left. If one of them evaluates to nil, then nil is returned
@@ -34,7 +34,7 @@
       `(if ,(car args) (and ,@(cdr args)) 'nil))))
 
 
-;; special operator: (or form*) → <object>
+;; special operator: (or form*) -> <object>
 ;; or is the sequential logical “or” (or “∨”). forms are evaluated from
 ;; left to right until either one of them evaluates to a non-nil value or
 ;; else none are left. If one of them evaluates to a non-nil value,
@@ -52,7 +52,7 @@
         `((lambda (,var) (if ,var ,var (or ,@(cdr args)))) ,(car args))))))
 
 
-;; special operator: (cond (test form*)*) → <object>
+;; special operator: (cond (test form*)*) -> <object>
 ;; Executing the prepared cond, the clauses (test form*) are scanned
 ;; sequentially and in each case the test is evaluated; when a test delivers
 ;; a non-nil value the scanning process stops and all forms associated
@@ -82,7 +82,7 @@
                (progn ,@forms1)
              (cond ,@rest)))))))
 
-;; special operator: (while test-form body-form*) → <null>
+;; special operator: (while test-form body-form*) -> <null>
 ;; Iterates while the test-form returns a true value. Specifically:
 ;;   1. test-form is evaluated, producing a value Vt.
 ;;   2. If Vt is nil, then the while form immediately returns nil.
@@ -101,7 +101,7 @@
       ,end)))
 
 ;; special operator: 
-;; (for (iteration-spec*) (end-test result*) form*) → <object> 
+;; (for (iteration-spec*) (end-test result*) form*) -> <object> 
 ;;  iteration-spec ::= (var init [step])
 (defmacro for (iteration-specs test-result-spec &rest body)
   (let ((tmp-var-inits nil))
@@ -142,13 +142,13 @@
 	   ,@results)))))
 
 
-;; special operator: (case keyform ((key*) form*)* [(t form*)]) → <object>
+;; special operator: (case keyform ((key*) form*)* [(t form*)]) -> <object>
 (defmacro case (keyform &rest clauses)
   `(case-using #'eql ,keyform
      ,@clauses))
 
 ;; special operator: (case-using predform keyform ((key*) form*)* [(t form*)])
-;;  → <object>
+;;  -> <object>
 (defmacro case-using (predform keyform &rest clauses)
   ;; clauses := (((key*) form*)* [(t form*)])
   (cond
@@ -192,7 +192,7 @@
 ;;     nil))
 
 
-;; function: (equal obj1 obj2) → boolean
+;; function: (equal obj1 obj2) -> boolean
 (defun equal (obj1 obj2)
   (cond
    ((and (null obj1) (null obj2)) t)

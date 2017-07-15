@@ -15,7 +15,7 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
-;; function: (format output-stream format-string obj*) → <null> 
+;; function: (format output-stream format-string obj*) -> <null> 
 (defun format (output-stream format-string &rest objects)
   (let ((i 0)
         (n (length format-string)))

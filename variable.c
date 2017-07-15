@@ -27,7 +27,7 @@ kiss_obj* kiss_var_ref(kiss_symbol_t* name) {
 }
 
 
-/* special operator: (setq var form) → <object> */
+/* special operator: (setq var form) -> <object> */
 kiss_obj* kiss_setq(kiss_obj* name, kiss_obj* form) {
      kiss_environment_t* env = Kiss_Get_Environment();
      kiss_symbol_t* symbol = Kiss_Symbol(name);
@@ -46,7 +46,7 @@ kiss_obj* kiss_setq(kiss_obj* name, kiss_obj* form) {
      }
 }
 
-/* defining operator: (defglobal name form) → <symbol> */
+/* defining operator: (defglobal name form) -> <symbol> */
 kiss_obj* kiss_defglobal(kiss_obj* name, kiss_obj* form) {
     kiss_symbol_t* symbol = Kiss_Symbol(name);
     kiss_obj* value = kiss_eval(form);
@@ -54,7 +54,7 @@ kiss_obj* kiss_defglobal(kiss_obj* name, kiss_obj* form) {
     return name;
 }
 
-/* defining operator: (defconstant name form) → <symbol> */
+/* defining operator: (defconstant name form) -> <symbol> */
 kiss_obj* kiss_defconstant(kiss_obj* name, kiss_obj* form) {
     kiss_symbol_t* symbol = Kiss_Symbol(name);
     kiss_obj* value = kiss_eval(form);
@@ -63,7 +63,7 @@ kiss_obj* kiss_defconstant(kiss_obj* name, kiss_obj* form) {
     return name;
 }
 
-/* special operator: (let ((var form)*) body-form*) → <object> */
+/* special operator: (let ((var form)*) body-form*) -> <object> */
 kiss_obj* kiss_let(kiss_obj* vspecs, kiss_obj* body) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_obj* saved_lexical_vars = env->lexical_env.vars;
@@ -82,7 +82,7 @@ kiss_obj* kiss_let(kiss_obj* vspecs, kiss_obj* body) {
     return result;
 }
 
-/* special operator: (let* ((var form)*) body-form*) → <object> */
+/* special operator: (let* ((var form)*) body-form*) -> <object> */
 kiss_obj* kiss_let_s(kiss_obj* vspecs, kiss_obj* body) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_obj* saved_lexical_vars = env->lexical_env.vars;
@@ -99,7 +99,7 @@ kiss_obj* kiss_let_s(kiss_obj* vspecs, kiss_obj* body) {
 }
 
 
-/* defining operator: (defdynamic name form) → <symbol> */
+/* defining operator: (defdynamic name form) -> <symbol> */
 kiss_obj* kiss_defdynamic(kiss_obj* name, kiss_obj* form) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_symbol_t* symbol = Kiss_Symbol(name);
@@ -114,7 +114,7 @@ kiss_obj* kiss_defdynamic(kiss_obj* name, kiss_obj* form) {
     return name;
 }
 
-/* special operator: (dynamic var) → <object> */
+/* special operator: (dynamic var) -> <object> */
 kiss_obj* kiss_dynamic(kiss_obj* name) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_obj* binding = kiss_assoc(name, env->dynamic_env.vars);
@@ -124,7 +124,7 @@ kiss_obj* kiss_dynamic(kiss_obj* name) {
     Kiss_Unbound_Variable_Error((kiss_obj*)name);
 }
 
-/* special operator: (set-dynamic form var) → <object>
+/* special operator: (set-dynamic form var) -> <object>
   This special form denotes an assignment to a dynamic variable. This
   form can appear anywhere that (dynamic var) can appear.  form is
   evaluated and the result of the evaluation is used to change the
@@ -149,7 +149,7 @@ kiss_obj* kiss_set_dynamic(kiss_obj* form, kiss_obj* name) {
 }
 
 
-/* special operator: (dynamic-let ((var form)*) body-form*) → <object> */
+/* special operator: (dynamic-let ((var form)*) body-form*) -> <object> */
 kiss_obj* kiss_dynamic_let(kiss_obj* vspecs, kiss_obj* body) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_obj* saved_dynamic_vars = env->dynamic_env.vars;

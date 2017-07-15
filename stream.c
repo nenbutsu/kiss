@@ -58,7 +58,7 @@ static kiss_string_stream_t* kiss_make_string_stream(kiss_string_t* str) {
     return p;
 }
 
-/* function: (streamp obj ) → boolean
+/* function: (streamp obj ) -> boolean
    Returns t if obj is a stream (instance of class <stream>); otherwise,
    returns nil. obj may be any ISLISP object. streamp is unaffected by
    whether its argument, if an instance of the class <stream>, is open or
@@ -70,7 +70,7 @@ kiss_obj* kiss_streamp(kiss_obj* obj) {
     else                     { return KISS_NIL; }
 }
 
-/* function: (open-stream-p obj) → boolean
+/* function: (open-stream-p obj) -> boolean
    Returns t if obj is an open stream; otherwise, returns nil. */
 kiss_obj* kiss_open_streamp(kiss_obj* obj) {
      if (!KISS_IS_STREAM(obj)) { return KISS_NIL; }
@@ -85,7 +85,7 @@ kiss_obj* kiss_open_streamp(kiss_obj* obj) {
      }
 }
 
-/* function: (create-string-input-stream string) → <stream>
+/* function: (create-string-input-stream string) -> <stream>
    Creates and returns an input stream from the string. An error shall be
    signaled if string is not a string (error-id. domain-error ). */
 kiss_obj* kiss_create_string_input_stream(kiss_obj* string) {
@@ -95,7 +95,7 @@ kiss_obj* kiss_create_string_input_stream(kiss_obj* string) {
     return (kiss_obj*)p;
 }
 
-/* function: (create-string-output-stream) → <stream>
+/* function: (create-string-output-stream) -> <stream>
    This function creates and returns a string output stream. The output
    to a string stream can be retrieved by get-output-stream-string. */
 kiss_obj* kiss_create_string_output_stream(void) {
@@ -105,7 +105,7 @@ kiss_obj* kiss_create_string_output_stream(void) {
     return (kiss_obj*)p;
 }
 
-/* function: (get-output-stream-string stream) → <string> 
+/* function: (get-output-stream-string stream) -> <string> 
    Returns a string containing all characters written to stream since the
    last call to this function or since the creation of the stream, if
    this function has not been called with stream before. An error shall

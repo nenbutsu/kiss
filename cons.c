@@ -18,7 +18,7 @@
  */
 #include "kiss.h"
 
-/* function: (cons obj1 obj2) → <cons
+/* function: (cons obj1 obj2) -> <cons
    This function builds a cons from two objects, with obj1 as its car (or ‘left’) part and
    with obj2 as its cdr (or ‘right’) part.
    An error shall be signaled if the requested cons cannot be allocated 
@@ -32,7 +32,7 @@ kiss_obj* kiss_cons(kiss_obj* car, kiss_obj* cdr) {
     return (kiss_obj*)p;
 }
 
-/* function: (consp obj) → boolean
+/* function: (consp obj) -> boolean
    Returns t if obj is a cons (instance of class <cons>); otherwise, returns nil.
    obj may be any ISLISP object.
 */
@@ -41,13 +41,13 @@ kiss_obj* kiss_consp(kiss_obj* obj) {
     else                   { return KISS_NIL; }
 }
 
-/* function: (car cons) → <object>
+/* function: (car cons) -> <object>
    The function car returns the left component of the cons.
    An error shall be signaled if cons is not a cons (error-id. domain-error).
 */
 kiss_obj* kiss_car(kiss_obj* p) { return KISS_CAR(Kiss_Cons(p)); }
 
-/* function: (cdr cons) → <object>
+/* function: (cdr cons) -> <object>
    The function cdr returns the right component of the cons.
    An error shall be signaled if cons is not a cons (error-id. domain-error).
 */
@@ -57,7 +57,7 @@ kiss_obj* kiss_cadr(kiss_obj* p)  { return kiss_car(kiss_cdr(p)); }
 kiss_obj* kiss_cddr(kiss_obj* p)  { return kiss_cdr(kiss_cdr(p)); }
 kiss_obj* kiss_caddr(kiss_obj* p) { return kiss_car(kiss_cddr(p)); }
 
-/* function: (set-car obj cons) → <object>
+/* function: (set-car obj cons) -> <object>
    Updates the left component of cons with obj.
    The returned value is obj.
    An error shall be signaled if cons is not a cons (error-id. domain-error).

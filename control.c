@@ -60,7 +60,7 @@ static kiss_cleanup_t* kiss_make_cleanup(kiss_obj* body) {
 }
 
 
-/* special operator: (catch tag-form form*) → <object> */
+/* special operator: (catch tag-form form*) -> <object> */
 kiss_obj* kiss_catch(kiss_obj* tag_form, kiss_obj* body) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_obj* tag = kiss_eval(tag_form);
@@ -122,7 +122,7 @@ kiss_obj* kiss_throw(kiss_obj* tag_form, kiss_obj* result_form) {
     longjmp(catcher->jmp, 1);
 }
 
-/* special operator: (unwind-protect form cleanup-form*) → <object> */
+/* special operator: (unwind-protect form cleanup-form*) -> <object> */
 kiss_obj* kiss_unwind_protect(kiss_obj* protected_form, kiss_obj* cleanup_body) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_obj* result;
@@ -134,7 +134,7 @@ kiss_obj* kiss_unwind_protect(kiss_obj* protected_form, kiss_obj* cleanup_body) 
 }
 
 
-/* special operator: (block name form*) → <object>*/
+/* special operator: (block name form*) -> <object>*/
 kiss_obj* kiss_block(kiss_obj* name, kiss_obj* body) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_lexical_environment_t saved_lexical_env = env->lexical_env;
@@ -211,7 +211,7 @@ static kiss_obj* kiss_make_tagbodies(kiss_obj* p, jmp_buf jmp) {
     return stack;
 }
 
-/* special operator: (tagbody {tagbody-tag | form}*) → <object>
+/* special operator: (tagbody {tagbody-tag | form}*) -> <object>
    executes the forms sequentially from left to right, discarding their
    values. If the execution of the last form completes normally, nil is
    returned by the tagbody special form.
@@ -281,10 +281,10 @@ kiss_obj* kiss_go(kiss_obj* tag) {
      longjmp(tagbody->jmp, 1);
 }
 
-/* special operator: (quote obj) → <object> */
+/* special operator: (quote obj) -> <object> */
 kiss_obj* kiss_quote(kiss_obj* obj) { return obj; }
 
-/* special operator: (if test-form then-form [else-form]) → <object> */
+/* special operator: (if test-form then-form [else-form]) -> <object> */
 kiss_obj* kiss_if(kiss_obj* test_form, kiss_obj* then_form, kiss_obj* rest) {
     if (kiss_eval(test_form) != KISS_NIL) {
 	return kiss_eval(then_form);
@@ -293,7 +293,7 @@ kiss_obj* kiss_if(kiss_obj* test_form, kiss_obj* then_form, kiss_obj* rest) {
     }
 }
 
-/* function: (eq obj1 obj2) → boolean
+/* function: (eq obj1 obj2) -> boolean
    the consequences are implementation defined if both obj1 and obj2 are
    numbers or both are characters.*/
 kiss_obj* kiss_eq(kiss_obj* obj1, kiss_obj* obj2) {
@@ -301,7 +301,7 @@ kiss_obj* kiss_eq(kiss_obj* obj1, kiss_obj* obj2) {
     else              { return KISS_NIL; }
 }
 
-/* function: (eql obj1 obj2) → boolean
+/* function: (eql obj1 obj2) -> boolean
    the meaning for numbers and characters is defined as follows:
    • If obj1 and obj2 are numbers, eql tests whether they are direct
    instances of the same class and have the same value.  If an
@@ -336,7 +336,7 @@ kiss_obj* kiss_eql(kiss_obj* obj1, kiss_obj* obj2) {
      return kiss_eq(obj1, obj2);
 }
 
-/* special operator: (progn form*) → <object> */
+/* special operator: (progn form*) -> <object> */
 kiss_obj* kiss_progn(kiss_obj* body) { return kiss_eval_body(body); }
 
 

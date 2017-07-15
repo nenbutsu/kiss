@@ -44,7 +44,7 @@ kiss_general_vector_t* kiss_make_general_vector(size_t n, kiss_obj* obj) {
     return p;
 }
 
-/* function: (create-general-vector i [initial-element]) → <general-vector>
+/* function: (create-general-vector i [initial-element]) -> <general-vector>
    Returns a general-vector of length i. If initial-element is given,
    the elements of the new vector are initialized with this object, otherwise
    it is initialized with nil. An error shall be signaled if the requested
@@ -59,7 +59,7 @@ kiss_obj* kiss_create_general_vector(kiss_obj* i, kiss_obj* rest) {
     return (kiss_obj*)kiss_make_general_vector(n->i, obj);
 }
 
-/* function: (vector obj*) → <general-vector> 
+/* function: (vector obj*) -> <general-vector> 
    Returns a new general-vector whose elements are its obj arguments.
    The length of the newly created vector is, therefore, the number of
    objs passed as arguments. The vector is indexed by integers ranging
@@ -77,7 +77,7 @@ kiss_obj* kiss_vector(kiss_obj* objs) {
     return (kiss_obj*)v;
 }
 
-/* function: (general-vector-p obj) → boolean
+/* function: (general-vector-p obj) -> boolean
    general-vector-p returns t if obj is a general vector; otherwise,
    returns nil. obj may be any LISP object. */
 kiss_obj* kiss_general_vector_p(kiss_obj* obj) {
@@ -101,7 +101,7 @@ kiss_obj* kiss_gvref(kiss_obj* general_vector, kiss_obj* index) {
     return gv->v[i->i];
 }
 
-/* function: (set-gvref obj general-vector index) → <object>
+/* function: (set-gvref obj general-vector index) -> <object>
    Replace the object obtainable by gvref with obj . The returned value is
    obj. The constraints on the general-vector and index are the same as for
    gvref. */

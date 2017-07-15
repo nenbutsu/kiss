@@ -31,14 +31,14 @@
 	nil))))
 
 
-;; function: (string/= string1 string2) ¨ quasi-boolean
+;; function: (string/= string1 string2) -> quasi-boolean
 ;; Two strings are string/= if and only if they are not string=.
 ;; if the test is satisfied, an implementation-defined non-nil value is returned; otherwise,
 ;; nil is returned.
 (defun string/= (string1 string2)
   (not (string= string1 string2)))
 
-;; function: (string< string1 string2) ¨ quasi-boolean
+;; function: (string< string1 string2) -> quasi-boolean
 ;; Two strings string1 and string2 are in order (string<) if in the first position in which
 ;; they differ the character of string1 is char< the corresponding character of string2,
 ;; or if the string1 is a proper prefix of string 2 (of shorter length and matching in all
@@ -52,18 +52,18 @@
 	nil
       t)))
 
-;; function: (string> string1 string2) → quasi-boolean
+;; function: (string> string1 string2) -> quasi-boolean
 ;; Two strings are string> if and only if they are not string<=
 (defun string> (string1 string2)
   (not (string<= string1 string2)))
 
 
-;; function: (string<= string1 string2) ¨ quasi-boolean
+;; function: (string<= string1 string2) -> quasi-boolean
 ;; Two strings are string<= if they are either string< or they are string=.
 (defun string<= (string1 string2)
   (or (string< string1 string2) (string= string1 string2)))
 
-;; function: (string>= string1 string2) ¨ quasi-boolean
+;; function: (string>= string1 string2) -> quasi-boolean
 ;; Two strings are string>= if and only if they are not string<.
 (defun string>= (string1 string2)
   (not (string< string1 string2)))
@@ -87,7 +87,7 @@
 	nil
       here)))
 
-;; function: (string-index substring string [start-position]) ¨ <object>
+;; function: (string-index substring string [start-position]) -> <object>
 ;; Returns the position of the given substring within string.
 ;; The search starts from the position indicated by start-position
 ;; (which is 0-based and defaults to 0).

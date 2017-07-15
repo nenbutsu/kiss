@@ -36,7 +36,7 @@ size_t kiss_clength(kiss_obj* p) {
     }
 }
 
-/* function: (length sequence) → <integer> 
+/* function: (length sequence) -> <integer> 
    Returns the length of sequence as an integer greater than or equal to 0.
    When sequence is a vector, length returns its dimension.
    When sequence is a list, the result is the number of elements in the list;
@@ -52,7 +52,7 @@ kiss_obj* kiss_length(kiss_obj* sequence) {
     return (kiss_obj*)kiss_make_integer(kiss_clength(sequence));
 }
 
-/* function: (elt sequence z) → <object>
+/* function: (elt sequence z) -> <object>
    Given a sequence and an integer z satisfying 0 ≤ z < (length sequence),
    elt returns the element of sequence that has index z. Indexing is
    0-based; i.e., z = 0 designates the first element. An error shall be
@@ -88,7 +88,7 @@ kiss_obj* kiss_elt(kiss_obj* sequence, kiss_obj* z) {
     
 }
 
-/* function: (set-elt obj sequence z) → <object>
+/* function: (set-elt obj sequence z) -> <object>
    Replace the object obtainable by elt with obj.
    The returned value is obj. 
    An error shall be signaled if z is an integer outside of the valid range of indices 
@@ -128,7 +128,7 @@ kiss_obj* kiss_set_elt(kiss_obj* obj, kiss_obj* sequence, kiss_obj* z) {
      return obj;
 }
 
-/* function: (subseq sequence z1 z2) → sequence
+/* function: (subseq sequence z1 z2) -> sequence
    Given a sequence SEQUENCE and two integers Z1 and Z2 satisfying 
    0 ≤ Z1 ≤ Z2 ≤ (length SEQUENCE), this function returns the subsequence of length
    Z2 − Z1, containing the elements with indices from Z1 (inclusive) to Z2(exclusive).
@@ -195,7 +195,7 @@ kiss_obj* kiss_subseq(kiss_obj* sequence, kiss_obj* z1, kiss_obj* z2) {
      abort();
 }
 
-/* function: (map-into destination function sequence*) → sequence
+/* function: (map-into destination function sequence*) -> sequence
    Destructively modifies destination to contain the results of applying function
    to successive elements in the sequences. 
    The destination is returned.

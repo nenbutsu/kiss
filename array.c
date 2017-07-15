@@ -42,7 +42,7 @@ static kiss_general_vector_t* kiss_make_general_array(kiss_obj* dimensions, kiss
     return p;
 }
 
-/* function: (basic-array-p obj) → boolean
+/* function: (basic-array-p obj) -> boolean
    basic-array-p returns t if obj is a basic-array (instance of class <basic-array>);
    otherwise, returns nil. obj may be any ISLISP object.
  */
@@ -73,7 +73,7 @@ kiss_obj* kiss_basic_array_p (kiss_obj* obj) {
      }
 }
 
-/* function: (basic-array*-p obj) → boolean
+/* function: (basic-array*-p obj) -> boolean
    basic-array*-p returns t if obj is a basic-array* (instance of class <basic-array*>);
    otherwise, returns nil. obj may be any ISLISP object.
 */
@@ -105,7 +105,7 @@ kiss_obj* kiss_basic_array_s_p (kiss_obj* obj) {
      }
 }
 
-/* function: (general-array*-p obj) → boolean
+/* function: (general-array*-p obj) -> boolean
    general-array*-p returns t if obj is a general-array* (instance of class <general-array*>);
    otherwise, returns nil. obj may be any ISLISP object.
 */

@@ -29,7 +29,7 @@
     nil))
 
 
-;; (create-list i [initial-element]) → <list>
+;; (create-list i [initial-element]) -> <list>
 ;; Returns a list of length i. If initial-element is given,
 ;; the elements of the new list are initialized with this object;
 ;; otherwise, the initialization is implementation defined.
@@ -101,7 +101,7 @@
          (setq result `(,(funcall function (car p)) ,@result)))
     (nreverse result)))
 
-;; function: (mapcar function list+) → <list>
+;; function: (mapcar function list+) -> <list>
 ;; mapcar operates on successive elements of the lists. function is applied to
 ;; the first element of each list, then to the second element of each list,
 ;; and so on. The iteration terminates when the shortest list runs out,
@@ -117,7 +117,7 @@
       (setq lists (kiss::mapcar1 #'cdr lists)))
     (nreverse result)))
 
-;; function: (mapc function list+) → <list>
+;; function: (mapc function list+) -> <list>
 ;; mapc is like mapcar except that the results of applying function are not accumulated;
 ;; The first list is returned.
 (defun mapc (function list1 &rest rest)
@@ -128,7 +128,7 @@
       (setq lists (kiss::mapcar1 #'cdr lists)))
     list1))
 
-;; function: (mapcan function list+) → <list>
+;; function: (mapcan function list+) -> <list>
 ;; mapcan is like mapcar, except that the results of applying function are combined
 ;; into a list by the use of an operation that performs a destructive form of
 ;; append rather than list.

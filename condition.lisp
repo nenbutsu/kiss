@@ -81,7 +81,7 @@
       (report-condition condition string-stream)
       (kiss::err (get-output-stream-string string-stream) nil))))
 
-;; special operator: (with-handler handler form*) → <object>
+;; special operator: (with-handler handler form*) -> <object>
 ;;  Evaluates handler, which must yield a function (called the “handler
 ;;  function”). The handler function is established as active handler
 ;;  (see §29.2) and then the forms are executed. If execution of forms
@@ -121,7 +121,7 @@
                                 'expected-class class)
                         nil))))
 
-;; generic function (report-condition condition stream) → <condition>
+;; generic function (report-condition condition stream) -> <condition>
 ;;   Presents a natural language description of condition to stream. This
 ;;   generic function may be specialized for user-defined condition
 ;;   classes.
