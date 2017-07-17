@@ -75,6 +75,15 @@ kiss_obj* kiss_format_general_vector(kiss_obj* out, kiss_obj* obj, kiss_obj* esc
     
 }
 
+kiss_obj* kiss_format_general_array(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
+     kiss_general_array_t* array = Kiss_General_Array_S(obj);
+    kiss_format_char(out, (kiss_obj*)kiss_make_character(L'#'));
+    kiss_format_integer(out, (kiss_obj*)kiss_make_integer(array->rank), (kiss_obj*)kiss_make_integer(10));
+    kiss_format_char(out, (kiss_obj*)kiss_make_character(L'R'));
+    kiss_format_list(out, kiss_general_array_s_to_list(obj), escapep);
+    return KISS_NIL;
+}
+
 static int kiss_is_simple_name(wchar_t* name) {
     if (wcscmp(name, L"+")  == 0 || wcscmp(name, L"-")  == 0 ||
 	wcscmp(name, L"1+") == 0 || wcscmp(name, L"1-") == 0) {
@@ -254,6 +263,8 @@ kiss_obj* kiss_format_object(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
 	  kiss_format_char(out, (kiss_obj*)kiss_make_character(L'"'));
 	  break;
      case KISS_GENERAL_VECTOR: kiss_format_general_vector(out, obj, escapep);
+	  break;
+     case KISS_GENERAL_ARRAY: kiss_format_general_array(out, obj, escapep);
 	  break;
      case KISS_CHARACTER: {
 	  if (escapep == KISS_NIL) { kiss_format_char(out, obj); }

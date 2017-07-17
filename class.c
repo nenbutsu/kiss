@@ -27,6 +27,10 @@ wchar_t* kiss_type_to_class_name_str(kiss_type t) {
      case KISS_INTEGER:   class_name_str = L"<integer>";   break;
      case KISS_FLOAT:     class_name_str = L"<float>";     break;
      case KISS_STRING:    class_name_str = L"<string>";    break;
+     case KISS_GENERAL_VECTOR:
+	  class_name_str = L"<general-vector>"; break;
+     case KISS_GENERAL_ARRAY:
+	  class_name_str = L"<general-array*>"; break;
      case KISS_STREAM:    class_name_str = L"<stream>";    break;
      case KISS_FUNCTION:  class_name_str = L"<function>";  break;
      case KISS_CFUNCTION: class_name_str = L"<function>";  break;

@@ -593,6 +593,64 @@ kiss_symbol_t KISS_Splist_put = {
 
 
 /*** array.c ***/
+kiss_symbol_t KISS_Screate_array;
+kiss_cfunction_t KISS_CFcreate_array = {
+    KISS_CFUNCTION,               /* type */
+    &KISS_Screate_array, /* name */
+    kiss_create_array,   /* C function name */
+    1,         /* minimum argument number */
+    2,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Screate_array = {
+    KISS_SYMBOL,                              /* type */
+    0,                 /* gc_flag */
+    NULL,              /* gc_next */
+    L"create-array",            /* name */
+    KISS_CONSTANT_FUN,                        /* flags */
+    NULL,                                /* var */
+    (kiss_obj*)&KISS_CFcreate_array, /* fun */
+    KISS_NIL,                                 /* plist */
+};
+
+kiss_symbol_t KISS_Sgaref;
+kiss_cfunction_t KISS_CFgaref = {
+    KISS_CFUNCTION,               /* type */
+    &KISS_Sgaref, /* name */
+    kiss_garef,   /* C function name */
+    1,         /* minimum argument number */
+    -1,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Sgaref = {
+    KISS_SYMBOL,                              /* type */
+    0,                 /* gc_flag */
+    NULL,              /* gc_next */
+    L"garef",            /* name */
+    KISS_CONSTANT_FUN,                        /* flags */
+    NULL,                                /* var */
+    (kiss_obj*)&KISS_CFgaref, /* fun */
+    KISS_NIL,                                 /* plist */
+};
+
+kiss_symbol_t KISS_Sset_garef;
+kiss_cfunction_t KISS_CFset_garef = {
+    KISS_CFUNCTION,               /* type */
+    &KISS_Sset_garef, /* name */
+    kiss_set_garef,   /* C function name */
+    2,         /* minimum argument number */
+    -1,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Sset_garef = {
+    KISS_SYMBOL,                              /* type */
+    0,                 /* gc_flag */
+    NULL,              /* gc_next */
+    L"set-garef",            /* name */
+    KISS_CONSTANT_FUN,                        /* flags */
+    NULL,                                /* var */
+    (kiss_obj*)&KISS_CFset_garef, /* fun */
+    KISS_NIL,                                 /* plist */
+};
+
+
 kiss_symbol_t KISS_Sbasic_array_p;
 kiss_cfunction_t KISS_CFbasic_array_p = {
     KISS_CFUNCTION,               /* type */
@@ -2869,6 +2927,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
 
     /* array.c */
     &KISS_Sbasic_array_p, &KISS_Sbasic_array_s_p, &KISS_Sgeneral_array_s_p,
+    &KISS_Screate_array, &KISS_Sgaref, &KISS_Sset_garef,
     
     /* vector.c */
     &KISS_Screate_general_vector, &KISS_Svector,

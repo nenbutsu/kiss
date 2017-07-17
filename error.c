@@ -135,6 +135,11 @@ kiss_general_vector_t* Kiss_General_Vector(kiss_obj* obj) {
     return (kiss_general_vector_t*)obj;
 }
 
+kiss_general_array_t* Kiss_General_Array_S(kiss_obj* obj) {
+     kiss_assure(KISS_GENERAL_ARRAY, obj);
+    return (kiss_general_array_t*)obj;
+}
+
 kiss_function_t* Kiss_Function(kiss_obj* obj) {
      kiss_assure(KISS_FUNCTION, obj);
      return (kiss_function_t*)obj;
@@ -181,6 +186,15 @@ kiss_integer_t* Kiss_Non_Zero_Integer(kiss_obj* obj) {
     return i;
 }
 
+kiss_obj* Kiss_General_Array(kiss_obj* obj) {
+     if (KISS_IS_GENERAL_VECTOR(obj) || KISS_IS_GENERAL_ARRAY(obj)) {
+	  return obj;
+     }
+     Kiss_Err(L"<general-vector> or <general-array*> expected ~S", obj);
+}
+
+
+// -----------
 void Kiss_Cannot_Parse_Number_Error(kiss_obj* str) {
      Kiss_Err(L"Cannot parse number ~S", str);
 }

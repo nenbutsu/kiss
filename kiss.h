@@ -154,8 +154,8 @@ typedef struct {
      kiss_type type;
      int gc_flag;
      kiss_gc_obj* gc_next;
-     kiss_obj** v;
-     kiss_obj* dimensions;
+     kiss_obj* vector;
+     size_t rank;
 } kiss_general_array_t;
 
 typedef struct {
@@ -308,6 +308,7 @@ kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda,
 #define KISS_IS_CHARACTER(x)         (KISS_OBJ_TYPE(x) == KISS_CHARACTER)
 #define KISS_IS_STRING(x)            (KISS_OBJ_TYPE(x) == KISS_STRING)
 #define KISS_IS_GENERAL_VECTOR(x)    (KISS_OBJ_TYPE(x) == KISS_GENERAL_VECTOR)
+#define KISS_IS_GENERAL_ARRAY(x)     (KISS_OBJ_TYPE(x) == KISS_GENERAL_ARRAY)
 #define KISS_IS_SEQUENCE(x)          (KISS_IS_LIST(x) || KISS_IS_STRING(x) || KISS_IS_GENERAL_VECTOR(x))
 #define KISS_IS_FUNCTION(x)          (KISS_OBJ_TYPE(x) == KISS_FUNCTION)
 #define KISS_IS_MACRO(x)             (KISS_OBJ_TYPE(x) == KISS_MACRO)
@@ -410,6 +411,8 @@ kiss_character_t* Kiss_Character(kiss_obj* obj);
 kiss_symbol_t* Kiss_Symbol(kiss_obj* obj);
 kiss_string_t* Kiss_String(kiss_obj* obj);
 kiss_general_vector_t* Kiss_General_Vector(kiss_obj* obj);
+kiss_general_array_t* Kiss_General_Array_S(kiss_obj* obj);
+kiss_obj* Kiss_General_Array(kiss_obj* obj);
 kiss_obj* Kiss_Sequence(kiss_obj* obj);
 kiss_function_t* Kiss_Function(kiss_obj* obj);
 kiss_function_t* Kiss_Macro(kiss_obj* obj);
@@ -465,6 +468,11 @@ kiss_obj* kiss_gvref(kiss_obj* general_vector, kiss_obj* index);
 kiss_obj* kiss_set_gvref(kiss_obj* obj, kiss_obj* general_vector, kiss_obj* index);
 
 /* array.c */
+kiss_obj* kiss_create_array(kiss_obj* dimensions, kiss_obj* rest);
+kiss_obj* kiss_garef(kiss_obj* array, kiss_obj* rest);
+kiss_obj* kiss_set_garef(kiss_obj* obj, kiss_obj* array, kiss_obj* rest);
+kiss_obj* kiss_general_array_s_to_list (kiss_obj* obj);
+
 kiss_obj* kiss_basic_array_p (kiss_obj* obj);
 kiss_obj* kiss_basic_array_s_p (kiss_obj* obj);
 kiss_obj* kiss_general_array_s_p (kiss_obj* obj);

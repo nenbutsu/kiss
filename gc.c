@@ -99,6 +99,12 @@ void kiss_gc_mark_general_vector(kiss_general_vector_t* obj) {
      }
 }
 
+void kiss_gc_mark_general_array(kiss_general_array_t* obj) {
+     if (gc_marked((kiss_gc_obj*)obj)) { return; }
+     kiss_gc_mark_obj_flag((kiss_gc_obj*)obj);
+     kiss_gc_mark_obj(obj->vector);
+}
+
 void kiss_gc_mark_symbol(kiss_symbol_t* symbol) {
      if (gc_marked((kiss_gc_obj*)symbol)) { return; }
      kiss_gc_mark_obj_flag((kiss_gc_obj*)symbol);
@@ -185,6 +191,8 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
 	       break;
 	  case KISS_GENERAL_VECTOR:
 	       kiss_gc_mark_general_vector((kiss_general_vector_t*)obj);
+	  case KISS_GENERAL_ARRAY:
+	       kiss_gc_mark_general_array((kiss_general_array_t*)obj);
 	  case KISS_STREAM:
 	       kiss_gc_mark_stream((kiss_stream_t*)obj);
 	       break;
@@ -277,6 +285,7 @@ void kiss_gc_free_obj(kiss_gc_obj* obj) {
 	  case KISS_INTEGER:
 	  case KISS_FLOAT:
 	  case KISS_GENERAL_VECTOR:
+	  case KISS_GENERAL_ARRAY:
 	  case KISS_FUNCTION:
 	  case KISS_MACRO:
 	  case KISS_CFUNCTION:

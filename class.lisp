@@ -201,6 +201,7 @@
    ((floatp obj)            (class <float>))
    ((stringp obj)           (class <string>))
    ((general-vector-p obj)  (class <general-vector>))
+   ((general-array*-p obj)  (class <general-array*>))
    ((streamp obj)           (class <stream>))
    ((simple-function-p obj) (class <function>))
    ((object-p obj)          (object-plist-get obj ':class))

@@ -105,8 +105,7 @@ kiss_obj* kiss_gvref(kiss_obj* general_vector, kiss_obj* index) {
    Replace the object obtainable by gvref with obj . The returned value is
    obj. The constraints on the general-vector and index are the same as for
    gvref. */
-kiss_obj* kiss_set_gvref(kiss_obj* obj, kiss_obj* general_vector,
-			 kiss_obj* index)
+kiss_obj* kiss_set_gvref(kiss_obj* obj, kiss_obj* general_vector, kiss_obj* index)
 {
     kiss_general_vector_t* gv = Kiss_General_Vector(general_vector);
     kiss_integer_t* i = Kiss_Non_Negative_Integer(index);
