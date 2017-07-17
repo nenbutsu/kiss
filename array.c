@@ -118,7 +118,56 @@ kiss_obj* kiss_garef(kiss_obj* array, kiss_obj* rest) {
      case KISS_GENERAL_ARRAY:
 	  return kiss_ga_s_ref(((kiss_general_array_t*)array)->vector, rest);
      default:
-	  Kiss_Err(L"unexpeced primitive obj type ~S", KISS_OBJ_TYPE(array));
+	  fwprintf(stderr, L"garef: unexpeced primitive obj type %d", KISS_OBJ_TYPE(array));
+	  abort();
+     }
+}
+
+/* function: (aref basic-array z*) -> <object>
+   aref returns the object stored in the component of the basic-array specified
+   by the sequence of integers z.
+   This sequence must have exactly as many elements as there are dimensions in the
+   basic-array, and each one must satisfy 0 <= zi < di, di the i th dimension and
+   0 <= i < d, d the number of dimensions.
+   Arrays are indexed 0 based, so the ith row is accessed via the index i − 1.
+   An error shall be signaled if basic-array is not a basic-array 
+   (error-id. domain-error).
+   An error shall be signaled if any z is not a non-negative integer
+   (error-id. domain-error).
+ */
+kiss_obj* kiss_aref(kiss_obj* array, kiss_obj* rest) {
+     array = Kiss_Basic_Array(array);
+     switch (KISS_OBJ_TYPE(array)) {
+     case KISS_STRING: {
+	  if (kiss_clength(rest) != 1) {
+	       Kiss_Err(L"Invalid string dimension ~S", kiss_length(rest));
+	  }
+	  return kiss_elt(array, kiss_car(rest));
+     }
+     case KISS_GENERAL_VECTOR:
+     case KISS_GENERAL_ARRAY:
+	  return kiss_garef(array, rest);
+     default:
+	  fwprintf(stderr, L"aref: unexpected primitive obj type %d", KISS_OBJ_TYPE(array));
+	  abort();
+     }
+}
+
+kiss_obj* kiss_set_aref(kiss_obj* obj, kiss_obj* array, kiss_obj* rest) {
+     array = Kiss_Basic_Array(array);
+     switch (KISS_OBJ_TYPE(array)) {
+     case KISS_STRING: {
+	  if (kiss_clength(rest) != 1) {
+	       Kiss_Err(L"Invalid string dimension ~S", kiss_length(rest));
+	  }
+	  return kiss_set_elt(obj, array, kiss_car(rest));
+     }
+     case KISS_GENERAL_VECTOR:
+     case KISS_GENERAL_ARRAY:
+	  return kiss_set_garef(obj, array, rest);
+     default:
+	  fwprintf(stderr, L"aref: unexpected primitive obj type %d", KISS_OBJ_TYPE(array));
+	  abort();
      }
 }
 
@@ -144,7 +193,8 @@ kiss_obj* kiss_set_garef(kiss_obj* obj, kiss_obj* array, kiss_obj* rest) {
 	  return kiss_set_ga_s_ref(obj, a->vector, rest);
      }
      default:
-	  Kiss_Err(L"unexpeced primitive obj type ~S", KISS_OBJ_TYPE(array));
+	  fwprintf(stderr, L"set-garef: unexpeced primitive obj type %d", KISS_OBJ_TYPE(array));
+	  abort();
      }
 }
 
@@ -170,6 +220,42 @@ kiss_obj* kiss_general_array_s_to_list (kiss_obj* obj) {
      }
 
      return kiss_ga_s_to_list(array->rank, array->vector); 
+}
+
+kiss_obj* kiss_ga_dimensions(kiss_general_array_t* array) {
+     if (array->rank == 0) { return KISS_NIL; }
+
+     kiss_obj* dimensions = KISS_NIL;
+     kiss_general_vector_t* p = (kiss_general_vector_t*)array->vector;
+     for (size_t rank = array->rank; rank > 0; rank--) {
+	  kiss_push((kiss_obj*)kiss_make_integer(p->n), &dimensions);
+	  p = (kiss_general_vector_t*)(p->v[0]);
+     }
+     return kiss_nreverse(dimensions);
+}
+
+/* function: (array-dimensions basic-array) -> <list>
+   Returns a list of the dimensions of a given basic-array.
+   An error shall be signaled if basic-array is not a basic-array 
+   (error-id. domain-error).
+   The consequences are undefined if the returned list is modified.
+*/
+kiss_obj* kiss_array_dimensions(kiss_obj* array) {
+     array = Kiss_Basic_Array(array);
+     switch (KISS_OBJ_TYPE(array)) {
+     case KISS_STRING: {
+	  return kiss_cons((kiss_obj*)kiss_make_integer(Kiss_String(array)->n), KISS_NIL);
+     }
+     case KISS_GENERAL_VECTOR:
+	  return kiss_cons((kiss_obj*)kiss_make_integer(Kiss_General_Vector(array)->n), KISS_NIL);
+     case KISS_GENERAL_ARRAY:
+	  return kiss_ga_dimensions((kiss_general_array_t*)array);
+     default:
+	  fwprintf(stderr, L"array-dimensions: unexpected primitive obj type %d",
+		   KISS_OBJ_TYPE(array));
+	  abort();
+     }
+     
 }
 
 /* function: (basic-array-p obj) -> boolean

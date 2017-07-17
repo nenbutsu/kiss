@@ -631,6 +631,25 @@ kiss_symbol_t KISS_Sgaref = {
     KISS_NIL,                                 /* plist */
 };
 
+kiss_symbol_t KISS_Saref;
+kiss_cfunction_t KISS_CFaref = {
+    KISS_CFUNCTION,               /* type */
+    &KISS_Saref, /* name */
+    kiss_aref,   /* C function name */
+    1,         /* minimum argument number */
+    -1,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Saref = {
+    KISS_SYMBOL,                              /* type */
+    0,                 /* gc_flag */
+    NULL,              /* gc_next */
+    L"aref",            /* name */
+    KISS_CONSTANT_FUN,                        /* flags */
+    NULL,                                /* var */
+    (kiss_obj*)&KISS_CFaref, /* fun */
+    KISS_NIL,                                 /* plist */
+};
+
 kiss_symbol_t KISS_Sset_garef;
 kiss_cfunction_t KISS_CFset_garef = {
     KISS_CFUNCTION,               /* type */
@@ -647,6 +666,25 @@ kiss_symbol_t KISS_Sset_garef = {
     KISS_CONSTANT_FUN,                        /* flags */
     NULL,                                /* var */
     (kiss_obj*)&KISS_CFset_garef, /* fun */
+    KISS_NIL,                                 /* plist */
+};
+
+kiss_symbol_t KISS_Sset_aref;
+kiss_cfunction_t KISS_CFset_aref = {
+    KISS_CFUNCTION,               /* type */
+    &KISS_Sset_aref, /* name */
+    kiss_set_aref,   /* C function name */
+    2,         /* minimum argument number */
+    -1,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Sset_aref = {
+    KISS_SYMBOL,                              /* type */
+    0,                 /* gc_flag */
+    NULL,              /* gc_next */
+    L"set-aref",            /* name */
+    KISS_CONSTANT_FUN,                        /* flags */
+    NULL,                                /* var */
+    (kiss_obj*)&KISS_CFset_aref, /* fun */
     KISS_NIL,                                 /* plist */
 };
 
@@ -705,6 +743,44 @@ kiss_symbol_t KISS_Sgeneral_array_s_p = {
     KISS_CONSTANT_FUN,                        /* flags */
     NULL,                                /* var */
     (kiss_obj*)&KISS_CFgeneral_array_s_p, /* fun */
+    KISS_NIL,                                 /* plist */
+};
+
+kiss_symbol_t KISS_Sarray_dimensions;
+kiss_cfunction_t KISS_CFarray_dimensions = {
+    KISS_CFUNCTION,               /* type */
+    &KISS_Sarray_dimensions, /* name */
+    kiss_array_dimensions,   /* C function name */
+    1,         /* minimum argument number */
+    1,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Sarray_dimensions = {
+    KISS_SYMBOL,                              /* type */
+    0,                 /* gc_flag */
+    NULL,              /* gc_next */
+    L"array-dimensions",            /* name */
+    KISS_CONSTANT_FUN,                        /* flags */
+    NULL,                                /* var */
+    (kiss_obj*)&KISS_CFarray_dimensions, /* fun */
+    KISS_NIL,                                 /* plist */
+};
+
+kiss_symbol_t KISS_Sgeneral_array_s_to_list;
+kiss_cfunction_t KISS_CFgeneral_array_s_to_list = {
+    KISS_CFUNCTION,               /* type */
+    &KISS_Sgeneral_array_s_to_list, /* name */
+    kiss_general_array_s_to_list,   /* C function name */
+    1,         /* minimum argument number */
+    1,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Sgeneral_array_s_to_list = {
+    KISS_SYMBOL,                              /* type */
+    0,                 /* gc_flag */
+    NULL,              /* gc_next */
+    L"kiss::general-array*-to-list",            /* name */
+    KISS_CONSTANT_FUN,                        /* flags */
+    NULL,                                /* var */
+    (kiss_obj*)&KISS_CFgeneral_array_s_to_list, /* fun */
     KISS_NIL,                                 /* plist */
 };
 
@@ -2927,7 +3003,8 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
 
     /* array.c */
     &KISS_Sbasic_array_p, &KISS_Sbasic_array_s_p, &KISS_Sgeneral_array_s_p,
-    &KISS_Screate_array, &KISS_Sgaref, &KISS_Sset_garef,
+    &KISS_Screate_array, &KISS_Sgaref, &KISS_Sset_garef, &KISS_Saref, &KISS_Sset_aref,
+    &KISS_Sarray_dimensions, &KISS_Sgeneral_array_s_to_list,
     
     /* vector.c */
     &KISS_Screate_general_vector, &KISS_Svector,

@@ -79,7 +79,7 @@ kiss_obj* kiss_format_general_array(kiss_obj* out, kiss_obj* obj, kiss_obj* esca
      kiss_general_array_t* array = Kiss_General_Array_S(obj);
     kiss_format_char(out, (kiss_obj*)kiss_make_character(L'#'));
     kiss_format_integer(out, (kiss_obj*)kiss_make_integer(array->rank), (kiss_obj*)kiss_make_integer(10));
-    kiss_format_char(out, (kiss_obj*)kiss_make_character(L'R'));
+    kiss_format_char(out, (kiss_obj*)kiss_make_character(L'a'));
     kiss_format_list(out, kiss_general_array_s_to_list(obj), escapep);
     return KISS_NIL;
 }

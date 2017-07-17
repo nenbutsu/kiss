@@ -9,6 +9,7 @@
     "test_predicate.lisp"
     "test_string.lisp"
     "test_sequence.lisp"
+    "test_array.lisp"
     "test_stream.lisp"))
 
 (defun test-file (name)

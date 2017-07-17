@@ -413,6 +413,7 @@ kiss_string_t* Kiss_String(kiss_obj* obj);
 kiss_general_vector_t* Kiss_General_Vector(kiss_obj* obj);
 kiss_general_array_t* Kiss_General_Array_S(kiss_obj* obj);
 kiss_obj* Kiss_General_Array(kiss_obj* obj);
+kiss_obj* Kiss_Basic_Array(kiss_obj* obj);
 kiss_obj* Kiss_Sequence(kiss_obj* obj);
 kiss_function_t* Kiss_Function(kiss_obj* obj);
 kiss_function_t* Kiss_Macro(kiss_obj* obj);
@@ -469,10 +470,13 @@ kiss_obj* kiss_set_gvref(kiss_obj* obj, kiss_obj* general_vector, kiss_obj* inde
 
 /* array.c */
 kiss_obj* kiss_create_array(kiss_obj* dimensions, kiss_obj* rest);
+kiss_obj* kiss_aref(kiss_obj* array, kiss_obj* rest);
+kiss_obj* kiss_set_aref(kiss_obj* obj, kiss_obj* array, kiss_obj* rest);
 kiss_obj* kiss_garef(kiss_obj* array, kiss_obj* rest);
 kiss_obj* kiss_set_garef(kiss_obj* obj, kiss_obj* array, kiss_obj* rest);
 kiss_obj* kiss_general_array_s_to_list (kiss_obj* obj);
-
+kiss_obj* kiss_array_dimensions(kiss_obj* array);
+kiss_obj* kiss_general_array_s_to_list (kiss_obj* obj);
 kiss_obj* kiss_basic_array_p (kiss_obj* obj);
 kiss_obj* kiss_basic_array_s_p (kiss_obj* obj);
 kiss_obj* kiss_general_array_s_p (kiss_obj* obj);

@@ -214,6 +214,11 @@
 	    (setq i (+ i 1)))
 	  t)
       nil))
+   ((and (general-array*-p obj1) (general-array*-p obj2)
+	 (equal (array-dimensions obj1) (array-dimensions obj2)))
+    (if (equal (kiss::general-array*-to-list obj1) (kiss::general-array*-to-list obj2))
+	t
+      nil))
    (t (eql obj1 obj2))))
 
 (defmacro prog1 (first-form &rest forms)

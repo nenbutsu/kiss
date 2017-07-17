@@ -193,6 +193,12 @@ kiss_obj* Kiss_General_Array(kiss_obj* obj) {
      Kiss_Err(L"<general-vector> or <general-array*> expected ~S", obj);
 }
 
+kiss_obj* Kiss_Basic_Array(kiss_obj* obj) {
+     if (KISS_IS_GENERAL_VECTOR(obj) || KISS_IS_GENERAL_ARRAY(obj) || KISS_IS_STRING(obj)) {
+	  return obj;
+     }
+     Kiss_Err(L"<basic-array> expected ~S", obj);
+}
 
 // -----------
 void Kiss_Cannot_Parse_Number_Error(kiss_obj* str) {

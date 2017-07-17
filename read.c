@@ -211,28 +211,84 @@ static kiss_obj* kiss_read_sharp_reader_macro_char(kiss_obj* in) {
     Kiss_Err(L"Invalid character name ~S", char_name);
 }
 
+static kiss_obj* kiss_list_to_array_dimensions(size_t rank, kiss_obj* list) {
+     kiss_obj* p = KISS_NIL;
+     for (size_t i = 0; i < rank; i++) {
+	  size_t n = kiss_clength(list);
+	  kiss_push((kiss_obj*)kiss_make_integer(n), &p);
+	  list = kiss_car(list);
+     }
+     return kiss_nreverse(p);
+}
+
+static void kiss_fill_array(size_t rank, kiss_obj* list, kiss_general_vector_t* vector) {
+     if (rank == 1) {
+	  for (size_t i = 0; i < vector->n; i++) {
+	       vector->v[i] = kiss_car(list);
+	       list = kiss_cdr(list);
+	  }
+     } else {
+	  for (size_t i = 0; i < vector->n; i++) {
+	       kiss_fill_array(rank - 1, kiss_car(list), Kiss_General_Vector(vector->v[i]));
+	       list = kiss_cdr(list);
+	  }
+     }
+}
+
+static kiss_obj* kiss_read_array(kiss_obj* in) {
+     wchar_t wcs[100];
+     wchar_t i = 0;
+     kiss_obj* p = kiss_cread_char(in, KISS_NIL, KISS_EOS);
+     kiss_character_t* c = Kiss_Character(p);
+     while (iswdigit(c->c)) {
+	  wcs[i++] = c->c;
+	  c = Kiss_Character(kiss_cread_char(in, KISS_NIL, KISS_EOS));
+     }
+     wcs[i] = L'\0';
+
+     if (c->c != L'a') {
+	  Kiss_Err(L"Invalid array designator");
+     }
+     c = Kiss_Character(kiss_cread_char(in, KISS_NIL, KISS_EOS));
+     if (c->c != L'(') {
+	  Kiss_Err(L"Invalid array designator");
+     }
+     size_t rank = wcstol(wcs, NULL, 10);
+     kiss_obj* list = kiss_read_list(in);
+
+     if (rank == 1) {
+	  return kiss_vector(list);
+     }
+     kiss_obj* dimensions = kiss_list_to_array_dimensions(rank, list);
+     kiss_obj* array = kiss_create_array(dimensions, KISS_NIL);
+
+     kiss_fill_array(rank, list, Kiss_General_Vector(Kiss_General_Array_S(array)->vector));
+     return array;
+}
 
 static kiss_obj* kiss_read_sharp_reader_macro(kiss_obj* in) {
-    kiss_obj* p = kiss_cread_char(in, KISS_NIL, KISS_EOS);
-    kiss_character_t* c;
-    if (p == KISS_EOS) { Kiss_Err(L"missing # macro reader character"); }
-    c = (kiss_character_t*)p;
-    switch (c->c) {
-    case L'\'': /* #'f */
-	return kiss_clist(2, KISS_SFUNCTION, kiss_cread(in, KISS_T, KISS_NIL));
-    case L'\\': /* #\c */
-	return kiss_read_sharp_reader_macro_char(in);
-    case L'(': /* #() */{
-	return kiss_vector(kiss_read_list(in));
-    }
-    case L'0': case L'1': case L'2': case L'3': case L'4': 
-    case L'5': case L'6': case L'7': case L'8': case L'9': {
-	 
-	 //return kiss_array(kiss_read_list(in));
-    }
-    default:
-	Kiss_Err(L"Illegal # macro reader character ~S", c);
-    }
+     kiss_obj* p = kiss_cpreview_char(in, KISS_NIL, KISS_EOS);
+     kiss_character_t* c;
+     if (p == KISS_EOS) { Kiss_Err(L"missing # macro reader character"); }
+     c = (kiss_character_t*)p;
+     switch (c->c) {
+     case L'\'': /* #'f */
+	  kiss_cread_char(in, KISS_NIL, KISS_EOS);
+	  return kiss_clist(2, KISS_SFUNCTION, kiss_cread(in, KISS_T, KISS_NIL));
+     case L'\\': /* #\c */
+	  kiss_cread_char(in, KISS_NIL, KISS_EOS);
+	  return kiss_read_sharp_reader_macro_char(in);
+     case L'(': /* #() */{
+	  kiss_cread_char(in, KISS_NIL, KISS_EOS);
+	  return kiss_vector(kiss_read_list(in));
+     }
+     case L'1': case L'2': case L'3': case L'4': 
+     case L'5': case L'6': case L'7': case L'8': case L'9': {
+	  return kiss_read_array(in);
+     }
+     default:
+	  Kiss_Err(L"Illegal # macro reader character ~S", c);
+     }
 }
 
 static kiss_obj* kiss_read_comma_at(kiss_obj* in) {
