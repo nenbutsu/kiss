@@ -24,7 +24,7 @@ static int condition_working_p(void) {
 
 void Kiss_System_Error (void) {
     perror(NULL);
-    abort();
+    exit(EXIT_FAILURE);
 }
 
 /* Called in signal-condition from Lisp world by the name kiss::err */
@@ -150,10 +150,14 @@ kiss_function_t* Kiss_Function(kiss_obj* obj) {
 /* assure non-primitive type */
 
 kiss_obj* Kiss_Number(kiss_obj* obj) {
-  if (!KISS_IS_INTEGER(obj) && !KISS_IS_FLOAT(obj)) {
-      Kiss_Err(L"Number expected ~S", obj);
-  }
-  return obj;
+     if (!KISS_IS_INTEGER(obj) && !KISS_IS_FLOAT(obj)) {
+	  if (condition_working_p()) {
+	       kiss_cfuncall(L"kiss::assure", kiss_clist(2, kiss_symbol(L"<number>"), obj));
+	  } else {
+	       Kiss_Err(L"Number expected ~S", obj);
+	  }
+     }
+     return obj;
 }
 
 kiss_obj* Kiss_List(kiss_obj* obj) {
@@ -182,7 +186,9 @@ kiss_integer_t* Kiss_Non_Negative_Integer(kiss_obj* obj) {
 
 kiss_integer_t* Kiss_Non_Zero_Integer(kiss_obj* obj) {
     kiss_integer_t* i = Kiss_Integer(obj);
-    if (i->i == 0) { Kiss_Err(L"Non zero integer expected ~S", obj); }
+    if (i->i == 0) {
+	 Kiss_Err(L"Non zero integer expected ~S", obj);
+    }
     return i;
 }
 

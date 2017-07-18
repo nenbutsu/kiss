@@ -67,7 +67,7 @@ kiss_obj* kiss_elt(kiss_obj* sequence, kiss_obj* z) {
      case KISS_SYMBOL: {
 	  assert(sequence == KISS_NIL);
 	  // Kiss_Check_Sequence_Index_Range(sequence, z) above must have signaled error
-	  abort();
+	  exit(EXIT_FAILURE);
      }
      case KISS_CONS: {
 	  kiss_obj* list = sequence;
@@ -192,7 +192,7 @@ kiss_obj* kiss_subseq(kiss_obj* sequence, kiss_obj* z1, kiss_obj* z2) {
      default:
 	  Kiss_Err(L"subseq internal error, unknown sequence ~S", sequence);
      }
-     abort();
+     exit(EXIT_FAILURE);
 }
 
 /* function: (map-into destination function sequence*) -> sequence

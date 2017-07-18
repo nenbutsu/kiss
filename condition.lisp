@@ -116,10 +116,14 @@
   (let ((class (kiss::class class-name)))
     (if (instancep value class)
         value
-      (signal-condition (create (class <domain-error>)
-                                'object value
-                                'expected-class class)
-                        nil))))
+      (if (and (eq class-name '<non-negative-integer>)
+	       (integerp value)
+	       (>= value 0))
+	  value
+	(signal-condition (create (class <domain-error>)
+				  'object value
+				  'expected-class class)
+			  nil)))))
 
 ;; generic function (report-condition condition stream) -> <condition>
 ;;   Presents a natural language description of condition to stream. This

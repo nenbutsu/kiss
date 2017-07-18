@@ -221,7 +221,7 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
 	       break;
 	  default:
 	       fwprintf(stderr, L"GC unknown object type = %d\n", KISS_OBJ_TYPE(obj));
-	       abort();
+	       exit(EXIT_FAILURE);
 	  }
      }
 }
@@ -299,7 +299,7 @@ void kiss_gc_free_obj(kiss_gc_obj* obj) {
 	       break;
 	  default:
 	       fwprintf(stderr, L"GC unknown object type = %d\n", KISS_OBJ_TYPE(obj));
-	       abort();
+	       exit(EXIT_FAILURE);
 	  }
      }
 }

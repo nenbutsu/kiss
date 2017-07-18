@@ -122,7 +122,7 @@ kiss_obj* kiss_garef(kiss_obj* array, kiss_obj* rest) {
      }
      default:
 	  fwprintf(stderr, L"garef: unexpeced primitive obj type %d", KISS_OBJ_TYPE(array));
-	  abort();
+	  exit(EXIT_FAILURE);
      }
 }
 
@@ -152,7 +152,7 @@ kiss_obj* kiss_aref(kiss_obj* array, kiss_obj* rest) {
 	  return kiss_garef(array, rest);
      default:
 	  fwprintf(stderr, L"aref: unexpected primitive obj type %d", KISS_OBJ_TYPE(array));
-	  abort();
+	  exit(EXIT_FAILURE);
      }
 }
 
@@ -170,7 +170,7 @@ kiss_obj* kiss_set_aref(kiss_obj* obj, kiss_obj* array, kiss_obj* rest) {
 	  return kiss_set_garef(obj, array, rest);
      default:
 	  fwprintf(stderr, L"aref: unexpected primitive obj type %d", KISS_OBJ_TYPE(array));
-	  abort();
+	  exit(EXIT_FAILURE);
      }
 }
 
@@ -197,7 +197,7 @@ kiss_obj* kiss_set_garef(kiss_obj* obj, kiss_obj* array, kiss_obj* rest) {
      }
      default:
 	  fwprintf(stderr, L"set-garef: unexpeced primitive obj type %d", KISS_OBJ_TYPE(array));
-	  abort();
+	  exit(EXIT_FAILURE);
      }
 }
 
@@ -256,7 +256,7 @@ kiss_obj* kiss_array_dimensions(kiss_obj* array) {
      default:
 	  fwprintf(stderr, L"array-dimensions: unexpected primitive obj type %d",
 		   KISS_OBJ_TYPE(array));
-	  abort();
+	  exit(EXIT_FAILURE);
      }
      
 }
