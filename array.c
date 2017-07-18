@@ -80,8 +80,9 @@ static kiss_general_array_t* kiss_make_general_array(kiss_obj* dimensions, kiss_
 kiss_obj* kiss_create_array(kiss_obj* dimensions, kiss_obj* rest) {
      dimensions = Kiss_Proper_List(dimensions);
      kiss_cmapc((kiss_cf1_t)Kiss_Non_Negative_Integer, dimensions);
-     
-     if (kiss_clength(dimensions) == 1) {
+     size_t rank = kiss_clength(dimensions);
+
+     if (rank == 1) {
 	  return kiss_create_general_vector(kiss_car(dimensions), rest);
      } else {
 	  kiss_obj* obj = (rest == KISS_NIL) ? KISS_NIL : kiss_car(rest);
@@ -112,11 +113,13 @@ kiss_obj* kiss_garef(kiss_obj* array, kiss_obj* rest) {
      switch (KISS_OBJ_TYPE(array)) {
      case KISS_GENERAL_VECTOR:
 	  if (kiss_clength(rest) != 1) {
-	       Kiss_Err(L"Invalid vector dimension ~S", kiss_length(rest));
+	       Kiss_Err(L"Invalid vector index dimension ~S", kiss_length(rest));
 	  }
 	  return kiss_gvref(array, kiss_car(rest));
-     case KISS_GENERAL_ARRAY:
-	  return kiss_ga_s_ref(((kiss_general_array_t*)array)->vector, rest);
+     case KISS_GENERAL_ARRAY: {
+	  kiss_general_array_t* gv = ((kiss_general_array_t*)array);
+	  return kiss_ga_s_ref(gv->vector, rest);
+     }
      default:
 	  fwprintf(stderr, L"garef: unexpeced primitive obj type %d", KISS_OBJ_TYPE(array));
 	  abort();
