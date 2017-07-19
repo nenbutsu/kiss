@@ -250,10 +250,10 @@ kiss_obj* kiss_div(kiss_obj* z1, kiss_obj* z2) {
    and the difference of z1 and this result is divisible by z2 without remainder.
 */
 kiss_obj* kiss_mod(kiss_obj* z1, kiss_obj* z2) {
-     float f1 = Kiss_Integer(z1)->i;
-     float f2 = Kiss_Non_Zero_Integer(z2)->i;
+     long int i1 = Kiss_Integer(z1)->i;
+     long int i2 = Kiss_Non_Zero_Integer(z2)->i;
      
-     return (kiss_obj*)kiss_make_integer(remainderf(f1, f2));
+     return (kiss_obj*)kiss_make_integer(i1 - (((kiss_integer_t*)kiss_div(z1, z2))->i * i2));
 }
 
 /* function: (gcd z1 z2) -> <integer>
