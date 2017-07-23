@@ -51,8 +51,8 @@ static kiss_obj* kiss_invoke(kiss_obj* f, kiss_obj* args) {
 	  }
 	  break;
      default:
-	  Kiss_Err(L"Can't invoke function like object ~S", f);
-	  assert(0); // never reach here.
+	  fwprintf(stderr, L"Can't invoke function like object ~S", f);
+	  exit(EXIT_FAILURE);
      }
      assert(saved_heap_index <= env->heap_index);
      if (saved_heap_index < env->heap_index) {
