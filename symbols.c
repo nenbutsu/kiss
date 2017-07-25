@@ -2505,6 +2505,25 @@ kiss_symbol_t KISS_Sstreamp = {
     KISS_NIL,                        /* plist */
 };
 
+kiss_symbol_t KISS_Sopen_stream_p;
+kiss_cfunction_t KISS_CFopen_stream_p = {
+    KISS_CFUNCTION,      /* type */
+    &KISS_Sopen_stream_p, /* name */
+    kiss_open_stream_p,   /* C function name */
+    1,              /* minimum argument number */
+    1,              /* maximum argument number */
+};
+kiss_symbol_t KISS_Sopen_stream_p = {
+    KISS_SYMBOL,
+    0,                 /* gc_flag */
+    NULL,              /* gc_next */
+    L"open-stream-p",
+    KISS_CONSTANT_FUN,
+    NULL,                       /* var */
+    (kiss_obj*)&KISS_CFopen_stream_p, /* fun */
+    KISS_NIL,                        /* plist */
+};
+
 
 kiss_symbol_t KISS_Sinput_stream_p;
 kiss_cfunction_t KISS_CFinput_stream_p = {
@@ -3063,7 +3082,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sformat_float,
     &KISS_Sopen_input_file,
     &KISS_Ss_standard_input_s, &KISS_Ss_standard_output_s, &KISS_Ss_error_output_s,
-    &KISS_Sclose,
+    &KISS_Sclose, &KISS_Sopen_stream_p,
 
     /* format.c */
     &KISS_Sformat, &KISS_Sformat_object, &KISS_Sformat_pointer, &KISS_Sprint, 

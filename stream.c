@@ -24,17 +24,23 @@ kiss_file_stream_t Kiss_Error_Output;
 
 void kiss_init_streams(void) {
     Kiss_Standard_Input.type      = KISS_STREAM;
+    Kiss_Standard_Input.gc_flag   = 0;
+    Kiss_Standard_Input.gc_next   = NULL;
     Kiss_Standard_Input.flags     = KISS_INPUT_STREAM | KISS_CHARACTER_STREAM | KISS_FILE_STREAM;
     Kiss_Standard_Input.file_ptr  = stdin;
     Kiss_Standard_Input.column    = 0;
 
     Kiss_Standard_Output.type     = KISS_STREAM;
+    Kiss_Standard_Output.gc_flag   = 0;
+    Kiss_Standard_Output.gc_next   = NULL;
     Kiss_Standard_Output.flags    = KISS_OUTPUT_STREAM | KISS_CHARACTER_STREAM | KISS_FILE_STREAM;
     Kiss_Standard_Output.file_ptr = stdout;
     Kiss_Standard_Output.column   = 0;
     
     
     Kiss_Error_Output.type        = KISS_STREAM;
+    Kiss_Error_Output.gc_flag     = 0;
+    Kiss_Error_Output.gc_next     = NULL;
     Kiss_Error_Output.flags       = KISS_OUTPUT_STREAM | KISS_CHARACTER_STREAM | KISS_FILE_STREAM;
     Kiss_Error_Output.file_ptr    = stderr;
     Kiss_Error_Output.column      = 0;
@@ -72,7 +78,7 @@ kiss_obj* kiss_streamp(kiss_obj* obj) {
 
 /* function: (open-stream-p obj) -> boolean
    Returns t if obj is an open stream; otherwise, returns nil. */
-kiss_obj* kiss_open_streamp(kiss_obj* obj) {
+kiss_obj* kiss_open_stream_p(kiss_obj* obj) {
      if (!KISS_IS_STREAM(obj)) { return KISS_NIL; }
      if (KISS_IS_STRING_STREAM(obj)) { return KISS_T; }
      assert(KISS_IS_FILE_STREAM(obj));
@@ -84,6 +90,85 @@ kiss_obj* kiss_open_streamp(kiss_obj* obj) {
 	  return KISS_NIL;
      }
 }
+
+/* function: (input-stream-p obj) -> boolean
+   Returns t if obj is a stream that can handle input operations;
+   otherwise, returns nil. */
+kiss_obj* kiss_input_stream_p(kiss_obj* p) {
+    if (KISS_IS_INPUT_STREAM(p)) { return KISS_T; }
+    else                         { return KISS_NIL; }
+}
+
+/* function: (output-stream-p obj ) -> boolean
+   Returns t if obj is a stream that can handle output operations;
+   otherwise, returns nil. */
+kiss_obj* kiss_output_stream_p(kiss_obj* p) {
+    if (KISS_IS_OUTPUT_STREAM(p)) { return KISS_T; }
+    else                          { return KISS_NIL; }
+}
+
+
+/* function: (standard-input) -> <stream> */
+kiss_obj* kiss_standard_input(void)  {
+     return kiss_dynamic(kiss_symbol(L"*kiss::standard-input*"));
+}
+
+/* function: (standard-output) -> <stream> */
+kiss_obj* kiss_standard_output(void) {
+     return kiss_dynamic(kiss_symbol(L"*kiss::standard-output*"));
+}
+
+/* function: (error-output) -> <stream> */
+kiss_obj* kiss_error_output(void)    {
+     return kiss_dynamic(kiss_symbol(L"*kiss::error-output*"));
+}
+
+/*function: (close stream) -> implementation defined
+  The function close closes the stream stream. If stream is closed it may no longer
+  be used in input or output operations. Closing a file stream ends the association
+  between the stream and its file. If the stream was already closed this function
+  performs nothing. The result value is implementation defined.
+  An error shall be signaled if stream is not a stream (error-id. domain-error).
+*/
+kiss_obj* kiss_close(kiss_obj* obj) {
+     Kiss_Stream(obj);
+     if (KISS_IS_STRING_STREAM(obj)) {
+	  return KISS_T;
+     }
+     assert(KISS_IS_FILE_STREAM(obj));
+     kiss_file_stream_t* file_stream = (kiss_file_stream_t*)obj;
+     if (file_stream->file_ptr) {
+	  int result = fclose(file_stream->file_ptr);
+	  if (result == EOF) {
+	       Kiss_System_Error();
+	  }
+	  file_stream->file_ptr = NULL;
+     }
+     return KISS_T;
+}
+
+/*
+
+*/
+kiss_obj* kiss_open_input_file(kiss_obj* filename, kiss_obj* rest) {
+    kiss_string_t* str = Kiss_String(filename);
+    char buff[1024];
+    size_t n = wcstombs(buff, str->str, 1024);
+
+    if (n == -1) {
+	 Kiss_System_Error();
+    }
+    assert(n < 1024);
+    
+    FILE* fp = fopen(buff, "r");
+    if (fp == NULL) { Kiss_System_Error(); }
+    else {
+	kiss_file_stream_t* stream = kiss_make_file_stream(fp);
+	stream->flags = KISS_INPUT_STREAM | KISS_CHARACTER_STREAM | stream->flags;
+	return (kiss_obj*)stream;
+    }
+}
+
 
 /* function: (create-string-input-stream string) -> <stream>
    Creates and returns an input stream from the string. An error shall be
@@ -116,44 +201,8 @@ kiss_obj* kiss_get_output_stream_string(kiss_obj* stream) {
     return (kiss_obj*)kiss_chars_to_str(kiss_reverse(p->list));
 }
 
-/* function: (standard-input) -> <stream> */
-kiss_obj* kiss_standard_input(void)  {
-     return kiss_dynamic(kiss_symbol(L"*kiss::standard-input*"));
-}
-
-/* function: (standard-output) -> <stream> */
-kiss_obj* kiss_standard_output(void) {
-     return kiss_dynamic(kiss_symbol(L"*kiss::standard-output*"));
-}
-
-/* function: (error-output) -> <stream> */
-kiss_obj* kiss_error_output(void)    {
-     return kiss_dynamic(kiss_symbol(L"*kiss::error-output*"));
-}
-
-/* function: (input-stream-p obj) -> boolean
-   Returns t if obj is a stream that can handle input operations;
-   otherwise, returns nil. */
-kiss_obj* kiss_input_stream_p(kiss_obj* p) {
-    if (KISS_IS_INPUT_STREAM(p)) { return KISS_T; }
-    else                         { return KISS_NIL; }
-}
-
-/* function: (output-stream-p obj ) -> boolean
-   Returns t if obj is a stream that can handle output operations;
-   otherwise, returns nil. */
-kiss_obj* kiss_output_stream_p(kiss_obj* p) {
-    if (KISS_IS_OUTPUT_STREAM(p)) { return KISS_T; }
-    else                          { return KISS_NIL; }
-}
-
-kiss_obj* kiss_char_stream_p(kiss_obj* p) {
-    if (KISS_IS_CHARACTER_STREAM(p)) { return KISS_T; }
-    else                             { return KISS_NIL; }
-}
-
 kiss_obj* kiss_input_char_stream_p(kiss_obj* p) {
-    if (kiss_input_stream_p(p) == KISS_T && kiss_char_stream_p(p) == KISS_T) {
+     if (kiss_input_stream_p(p) == KISS_T && KISS_IS_CHARACTER_STREAM(p) == KISS_T) {
 	return KISS_T;
     } else {
 	return KISS_NIL;
@@ -161,7 +210,7 @@ kiss_obj* kiss_input_char_stream_p(kiss_obj* p) {
 }
 
 kiss_obj* kiss_output_char_stream_p(kiss_obj* p) {
-    if (kiss_output_stream_p(p) == KISS_T && kiss_char_stream_p(p) == KISS_T) {
+    if (kiss_output_stream_p(p) == KISS_T && KISS_IS_CHARACTER_STREAM(p) == KISS_T) {
 	return KISS_T;
     } else {
 	return KISS_NIL;
@@ -297,31 +346,3 @@ kiss_obj* kiss_format_char(kiss_obj* output_stream, kiss_obj* character) {
     return KISS_NIL;
 }
 
-kiss_obj* kiss_open_input_file(kiss_obj* filename, kiss_obj* rest) {
-    kiss_string_t* str = Kiss_String(filename);
-    char buff[1024];
-    wcstombs(buff, str->str, 1024);
-    FILE* fp = fopen(buff, "r");
-    if (fp == NULL) { Kiss_System_Error(); }
-    else {
-	kiss_file_stream_t* stream = kiss_make_file_stream(fp);
-	stream->flags = KISS_INPUT_STREAM | KISS_CHARACTER_STREAM | stream->flags;
-	return (kiss_obj*)stream;
-    }
-}
-
-kiss_obj* kiss_close(kiss_obj* obj) {
-     Kiss_Stream(obj);
-     if (KISS_IS_STRING_STREAM(obj)) {
-	  return KISS_NIL;
-     }
-     assert(KISS_IS_FILE_STREAM(obj));
-     kiss_file_stream_t* f = (kiss_file_stream_t*)obj;
-     if (f->file_ptr == NULL) {
-	  return KISS_NIL;
-     } else {
-	  fclose(f->file_ptr);
-	  f->file_ptr = NULL;
-	  return KISS_NIL;
-     }
-}

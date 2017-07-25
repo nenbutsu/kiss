@@ -540,6 +540,7 @@ kiss_obj* kiss_map_into(kiss_obj* destination, kiss_obj* function, kiss_obj* res
 /* stream.c */
 void kiss_init_streams(void);
 kiss_obj* kiss_streamp(kiss_obj* obj);
+kiss_obj* kiss_open_stream_p(kiss_obj* obj);
 kiss_obj* kiss_create_string_input_stream(kiss_obj* string);
 kiss_obj* kiss_create_string_output_stream(void);
 kiss_obj* kiss_get_output_stream_string(kiss_obj* stream);
