@@ -27,25 +27,6 @@ void Kiss_System_Error (void) {
     exit(EXIT_FAILURE);
 }
 
-/* Called in signal-condition from Lisp world by the name kiss::err */
-kiss_obj* kiss_err(kiss_obj* error_string, kiss_obj* rest) {
-    kiss_environment_t* env = Kiss_Get_Environment();
-    kiss_string_t* s = Kiss_String(error_string);
-    kiss_obj* out = kiss_create_string_output_stream();
-    wchar_t* p;
-    for (p = s->str; *p != L'\0'; p++) {
-	if (*p == L'~' && *(p+1) == L'S') {
-	    kiss_format_object(out, kiss_car(rest), KISS_NIL);
-	    rest = kiss_cdr(rest);
-	    p++;
-	} else {
-	    kiss_format_char(out, (kiss_obj*)kiss_make_character(*p));
-	}
-    }
-    kiss_throw(kiss_clist(2, kiss_symbol(L"quote"), kiss_symbol(L"kiss::error")),
-	       kiss_get_output_stream_string(out));
-}
-
 void Kiss_Err(wchar_t* str, ...) {
      va_list args;
      wchar_t* p;
@@ -174,12 +155,7 @@ kiss_obj* Kiss_List(kiss_obj* obj) {
 kiss_integer_t* Kiss_Non_Negative_Integer(kiss_obj* obj) {
     kiss_integer_t* i = Kiss_Integer(obj);
     if (i->i < 0) {
-	 if (condition_working_p()) {
-	      kiss_cfuncall(L"kiss::signal-non-negative-integer",
-			    kiss_clist(2, (kiss_obj*)obj, KISS_NIL));
-	 } else {
-	      Kiss_Err(L"Non negative integer expected ~S", obj);
-	 }
+	 Kiss_Err(L"Non negative integer expected ~S", obj);
     }
     return i;
 }
@@ -203,8 +179,22 @@ kiss_obj* Kiss_Basic_Array(kiss_obj* obj) {
      if (KISS_IS_GENERAL_VECTOR(obj) || KISS_IS_GENERAL_ARRAY(obj) || KISS_IS_STRING(obj)) {
 	  return obj;
      }
-     Kiss_Err(L"<basic-array> expected ~S", obj);
+     if (condition_working_p()) {
+	  kiss_cfuncall(L"kiss::assure", kiss_clist(2, kiss_symbol(L"<basic-array>"), obj));
+     } else {
+	       Kiss_Err(L"Number expected ~S", obj);
+     }
 }
+
+kiss_obj* Kiss_Valid_Sequence_Index(kiss_obj* sequence, kiss_obj* index) {
+    size_t n = kiss_clength(sequence);
+    long int i = Kiss_Integer(index)->i;
+    if (i < 0 || i >= n) {
+	 Kiss_Err(L"Invalid sequence index ~S ~S", sequence, index);
+    }
+    return index;
+}
+
 
 // -----------
 void Kiss_Cannot_Parse_Number_Error(kiss_obj* str) {
@@ -249,27 +239,6 @@ void Kiss_Tagbody_Not_Found_Error(kiss_obj* tag) {
      } else {
 	  Kiss_Err(L"Tagbody not found ~S", tag);
      }
-}
-
-void Kiss_Index_Out_Of_Range_Error(kiss_obj* sequence, kiss_obj* index) {
-     if (condition_working_p()) {
-	  kiss_cfuncall(L"kiss::signal-index-out-of-range",
-			kiss_clist(3, sequence, index, KISS_NIL));
-     } else {
-	  Kiss_Err(L"Index out of range: ~S ~S", sequence, index);
-     }
-}
-
-
-
-
-kiss_obj* Kiss_Check_Sequence_Index_Range(kiss_obj* sequence, kiss_obj* index) {
-    size_t n = kiss_clength(sequence);
-    kiss_integer_t* i = Kiss_Integer(index);
-    if (i->i < 0 || i->i >= n) {
-	Kiss_Index_Out_Of_Range_Error(sequence, index);
-    }
-    return sequence;
 }
 
 kiss_obj* Kiss_Proper_List(kiss_obj* obj) {
