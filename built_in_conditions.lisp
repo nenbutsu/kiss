@@ -31,7 +31,6 @@
 ;;              |       +--> <parse-error>
 ;;              |       +--> <program-error>
 ;;              |       |           |
-;;              |       |           +--> <index-out-of-range> *
 ;;              |       |           +--> <domain-error>
 ;;              |       |           +--> <undefined-entity>
 ;;              |       |                     |
@@ -43,7 +42,6 @@
 ;;              |                   +--> <end-of-stream>
 ;;              +--> <storage-exhausted>
 ;;      
-;; `*' indicates erros not defined in the spec.
 
 
 (defclass <serious-condition> (<object>)
@@ -100,11 +98,6 @@
   (:metaclass <built-in-class>))
 
 (defclass <program-error> (<error>) ()
-  (:metaclass <built-in-class>))
-
-(defclass <index-out-of-range> (<program-error>) ;; not in the spec.
-  ((sequence :reader index-out-of-range-sequence :initarg sequence)
-   (index :reader index-out-of-range-index :initarg index))
   (:metaclass <built-in-class>))
 
 (defclass <domain-error> (<program-error>)
