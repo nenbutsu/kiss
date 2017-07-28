@@ -253,6 +253,28 @@ kiss_obj* kiss_open_io_file(kiss_obj* filename, kiss_obj* rest) {
     }
 }
 
+/* function: (finish-output stream) -> <null>
+   Completes any pending output to the destination designated by stream.
+   Waits until the pending output is complete and then returns nil.
+   For instance, pending output might be stored in a buffer; in this case
+   finish-output forces the buffer to be written to the stream’s destination.
+   An error shall be signaled if stream is not a stream that can handle output operations
+   (error-id. domain-error).
+*/
+kiss_obj* kiss_finish_output (kiss_obj* obj) {
+     if (!KISS_IS_OUTPUT_STREAM(Kiss_Stream(obj))) {
+	  Kiss_Err(L"output stream expected ~S", obj);
+     }
+     if (KISS_IS_FILE_STREAM(obj)) {
+	  kiss_file_stream_t* stream = (kiss_file_stream_t*)obj;
+	  int result = fflush(stream->file_ptr);
+	  if (result == EOF) {
+	       Kiss_System_Error();
+	  }
+     }
+     return KISS_NIL;
+}
+
 
 /* function: (create-string-input-stream string) -> <stream>
    Creates and returns an input stream from the string. An error shall be
@@ -260,7 +282,7 @@ kiss_obj* kiss_open_io_file(kiss_obj* filename, kiss_obj* rest) {
 kiss_obj* kiss_create_string_input_stream(kiss_obj* string) {
     kiss_string_t* str = Kiss_String(string);
     kiss_string_stream_t* p = kiss_make_string_stream(str);
-    p->flags = KISS_INPUT_STREAM | KISS_CHARACTER_STREAM | p->flags;
+    p->flags |= (KISS_INPUT_STREAM | KISS_CHARACTER_STREAM);
     return (kiss_obj*)p;
 }
 
@@ -270,7 +292,7 @@ kiss_obj* kiss_create_string_input_stream(kiss_obj* string) {
 kiss_obj* kiss_create_string_output_stream(void) {
     kiss_string_t* str = kiss_make_string(L"");
     kiss_string_stream_t* p = kiss_make_string_stream(str);
-    p->flags = KISS_OUTPUT_STREAM | KISS_CHARACTER_STREAM | p->flags;
+    p->flags |= (KISS_OUTPUT_STREAM | KISS_CHARACTER_STREAM);
     return (kiss_obj*)p;
 }
 
@@ -285,83 +307,36 @@ kiss_obj* kiss_get_output_stream_string(kiss_obj* stream) {
     return (kiss_obj*)kiss_chars_to_str(kiss_reverse(p->list));
 }
 
-kiss_obj* kiss_input_char_stream_p(kiss_obj* p) {
-     if (kiss_input_stream_p(p) == KISS_T && KISS_IS_CHARACTER_STREAM(p)) {
-	return KISS_T;
-    } else {
-	return KISS_NIL;
-    }
-}
-
-kiss_obj* kiss_output_char_stream_p(kiss_obj* p) {
-     if (kiss_output_stream_p(p) == KISS_T && KISS_IS_CHARACTER_STREAM(p)) {
-	return KISS_T;
-    } else {
-	return KISS_NIL;
-    }
-}
-
-kiss_obj* kiss_cread_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val)
-{
-    kiss_stream_t* input = Kiss_Input_Char_Stream(in);
-
-    if (KISS_IS_FILE_STREAM(input)) {
-	FILE* fp = ((kiss_file_stream_t*)input)->file_ptr;
-	wint_t c = fgetwc(fp);
-	if (c == WEOF) {
-	    if (ferror(fp)) { Kiss_System_Error(); }
-	    goto eos;
-	} else {
-	    return (kiss_obj*)kiss_make_character(c);
-	}
-    } else {
-	kiss_string_stream_t* string_stream = (kiss_string_stream_t*)in;
-	if (string_stream->list == KISS_NIL) {
-	    goto eos;
-	} else {
-	    kiss_obj* c = KISS_CAR(string_stream->list);
-	    string_stream->list = KISS_CDR(string_stream->list);
-	    return c;
-	}
-    }
+kiss_obj* kiss_c_read_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val) {
+     if (KISS_IS_FILE_STREAM(Kiss_Input_Char_Stream(in))) {
+	  FILE* fp = ((kiss_file_stream_t*)in)->file_ptr;
+	  wint_t c = fgetwc(fp);
+	  if (c == WEOF) {
+	       if (ferror(fp)) { Kiss_System_Error(); }
+	       goto eos;
+	  } else {
+	       return (kiss_obj*)kiss_make_character(c);
+	  }
+     } else if (KISS_IS_STRING_STREAM(in)) {
+	  kiss_string_stream_t* string_stream = (kiss_string_stream_t*)in;
+	  if (string_stream->list == KISS_NIL) {
+	       goto eos;
+	  } else {
+	       kiss_obj* c = KISS_CAR(string_stream->list);
+	       string_stream->list = KISS_CDR(string_stream->list);
+	       return c;
+	  }
+     } else {
+	  fwprintf(stderr, L"kiss_c_read_char: unknown input stream type = %d", KISS_OBJ_TYPE(in));
+     }
 eos:
-    if (eos_err_p != KISS_NIL) {
-	Kiss_End_Of_Stream_Error(in);
-    } else {
-	return eos_val;
-    }
+     if (eos_err_p != KISS_NIL) {
+	  Kiss_End_Of_Stream_Error(in);
+     } else {
+	  return eos_val;
+     }
 }
 
-
-
-kiss_obj* kiss_cpreview_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val) {
-    kiss_stream_t* input = Kiss_Input_Char_Stream(in);
-
-    if (KISS_IS_FILE_STREAM(input)) {
-	FILE* fp = ((kiss_file_stream_t*)input)->file_ptr;
-	wint_t c = fgetwc(fp);
-	if (c == WEOF) {
-	    if (ferror(fp)) { Kiss_System_Error(); }
-	} else {
-	    ungetc(c, fp);
-	    return (kiss_obj*)kiss_make_character(c);
-	}
-    } else {
-	kiss_string_stream_t* string_stream = (kiss_string_stream_t*)in;
-	if (string_stream->list == KISS_NIL) {
-	    goto eos;
-	} else {
-	    kiss_obj* c = KISS_CAR(string_stream->list);
-	    return c;
-	}
-    }
-eos:
-    if (eos_err_p != KISS_NIL) {
-	Kiss_End_Of_Stream_Error(in);
-    } else {
-	return eos_val;
-    }
-}
 
 /*
   function: (read-char [input-stream [eos-error-p [eos-value]]]) -> <object>
@@ -381,7 +356,38 @@ kiss_obj* kiss_read_char(kiss_obj* args) {
 	    }
 	}
     }
-    return kiss_cread_char(in, eos_err_p, eos_val);
+    return kiss_c_read_char(in, eos_err_p, eos_val);
+}
+
+
+kiss_obj* kiss_c_preview_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val) {
+     if (KISS_IS_FILE_STREAM(Kiss_Input_Char_Stream(in))) {
+	  FILE* fp = ((kiss_file_stream_t*)in)->file_ptr;
+	  wint_t c = fgetwc(fp);
+	  if (c == WEOF) {
+	       if (ferror(fp)) { Kiss_System_Error(); }
+	  } else {
+	       ungetwc(c, fp);
+	       return (kiss_obj*)kiss_make_character(c);
+	  }
+     } else if (KISS_IS_STRING_STREAM(in)) {
+	  kiss_string_stream_t* string_stream = (kiss_string_stream_t*)in;
+	  if (string_stream->list == KISS_NIL) {
+	       goto eos;
+	  } else {
+	       kiss_obj* c = KISS_CAR(string_stream->list);
+	       return c;
+	  }
+     } else {
+	  fwprintf(stderr, L"kiss_c_preview_char: unknown input stream type = %d", KISS_OBJ_TYPE(in));
+
+     }
+eos:
+     if (eos_err_p != KISS_NIL) {
+	  Kiss_End_Of_Stream_Error(in);
+     } else {
+	  return eos_val;
+     }
 }
 
 kiss_obj* kiss_preview_char(kiss_obj* args) {
@@ -400,7 +406,7 @@ kiss_obj* kiss_preview_char(kiss_obj* args) {
 	    }
 	}
     }
-    return kiss_cpreview_char(in, eos_err_p, eos_val);
+    return kiss_c_preview_char(in, eos_err_p, eos_val);
 }
 
 /* function: (format-char output-stream char) -> <null> */
