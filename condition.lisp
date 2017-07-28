@@ -79,7 +79,7 @@
             (funcall handler condition))))
     (let ((string-stream (create-string-output-stream)))
       (report-condition condition string-stream)
-      (kiss::err (get-output-stream-string string-stream) nil))))
+      (throw 'kiss::error (get-output-stream-string string-stream)))))
 
 ;; special operator: (with-handler handler form*) -> <object>
 ;;  Evaluates handler, which must yield a function (called the “handler
@@ -116,14 +116,10 @@
   (let ((class (kiss::class class-name)))
     (if (instancep value class)
         value
-      (if (and (eq class-name '<non-negative-integer>)
-	       (integerp value)
-	       (>= value 0))
-	  value
-	(signal-condition (create (class <domain-error>)
-				  'object value
-				  'expected-class class)
-			  nil)))))
+      (signal-condition (create (class <domain-error>)
+				'object value
+				'expected-class class)
+			nil))))
 
 ;; generic function (report-condition condition stream) -> <condition>
 ;;   Presents a natural language description of condition to stream. This
@@ -199,12 +195,6 @@
   (format stream "Program error")
   condition)
 
-(defmethod report-condition ((condition <index-out-of-range>) (stream <stream>))
-  (format stream "Index out of range error ~S ~S"
-          (index-out-of-range-sequence condition)
-          (index-out-of-range-index condition))
-  condition)
-
 (defmethod report-condition ((condition <domain-error>) (stream <stream>))
   (if (error-id condition)
       (format stream "Domain error ~S is not ~S"
@@ -235,11 +225,6 @@
 				  'format-string format-string
 				  'format-arguments format-arguments)
 		    continuable))
-(defun kiss::signal-non-negative-integer (integer continuable)
-  (signal-condition (create (class <domain-error>)
-				  'object integer
-				  'expected-class (class <non-negative-integer>))
-		    continuable))
 (defun kiss::signal-end-of-stream (stream continuable)
   (signal-condition (create (class <end-of-stream>) 'stream stream) continuable))
 
@@ -255,10 +240,6 @@
 
 (defun kiss::signal-tagbody-not-found (name continuable)
   (signal-condition (create (class <control-error>) 'name name 'namespace 'tagbody) continuable))
-
-(defun kiss::signal-index-out-of-range (sequence index continuable)
-  (signal-condition (create (class <index-out-of-range>) 'sequence sequence 'index index)
-                    continuable))
 
 
 
