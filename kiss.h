@@ -68,7 +68,6 @@ struct kiss_gc_obj {
 
 typedef struct kiss_gc_obj kiss_gc_obj;
 
-
 typedef kiss_obj* (*kiss_cf0_t)(void);
 typedef kiss_obj* (*kiss_cf1_t)(kiss_obj*);
 typedef kiss_obj* (*kiss_cf2_t)(kiss_obj*, kiss_obj*);
@@ -384,7 +383,6 @@ kiss_obj* kiss_go(kiss_obj* tag);
 /* error.c */
 void Kiss_System_Error (void);
 void Kiss_Err(wchar_t* str, ...);
-kiss_obj* kiss_err(kiss_obj* error_string, kiss_obj* rest);
 kiss_obj* kiss_error(kiss_obj* error_string, kiss_obj* rest);
 void Kiss_Cannot_Chage_Constant_Error(kiss_obj* obj);
 void Kiss_End_Of_Stream_Error(kiss_obj* stream);
@@ -396,7 +394,7 @@ void Kiss_Catcher_Not_Found_Error(kiss_obj* tag);
 void Kiss_Block_Not_Found_Error(kiss_obj* name);
 void Kiss_Tagbody_Not_Found_Error(kiss_obj* name);
 void Kiss_Index_Out_Of_Range_Error(kiss_obj* sequence, kiss_obj* index);
-kiss_obj* Kiss_Check_Sequence_Index_Range(kiss_obj* sequence, kiss_obj* index);
+kiss_obj* Kiss_Valid_Sequence_Index(kiss_obj* sequence, kiss_obj* index);
 kiss_cons_t* Kiss_Cons(kiss_obj* obj);
 kiss_obj* Kiss_List(kiss_obj* obj);
 kiss_stream_t* Kiss_Stream(kiss_obj* obj);

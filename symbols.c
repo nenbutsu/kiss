@@ -2763,25 +2763,6 @@ kiss_symbol_t KISS_Sclose = {
 
 
 /*** error.c ***/
-kiss_symbol_t KISS_Serr;
-kiss_cfunction_t KISS_CFerr = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Serr,   /* name */
-    kiss_err,    /* C function name */
-    1,         /* minimum argument number */
-    -1,        /* maximum argument number */
-};
-kiss_symbol_t KISS_Serr = {
-    KISS_SYMBOL,
-    0,                 /* gc_flag */
-    NULL,              /* gc_next */
-    L"kiss::err",
-    KISS_CONSTANT_FUN,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFerr, /* fun */
-    KISS_NIL,                 /* plist */
-};
-
 kiss_symbol_t KISS_Sassure_list;
 kiss_cfunction_t KISS_CFassure_list = {
     KISS_CFUNCTION, /* type */
@@ -3069,7 +3050,6 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Seval, &KISS_Sload,
 
     /* error.c */
-    &KISS_Serr,
     &KISS_Sassure_list, // kiss::assure-list is used in map functions when assure is not ready yet
     
     /* stream.c */

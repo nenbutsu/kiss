@@ -147,24 +147,108 @@ kiss_obj* kiss_close(kiss_obj* obj) {
      return KISS_T;
 }
 
-/*
+char* kiss_wcstombs(const wchar_t* src) {
+     mbstate_t state;
+     memset (&state, '\0', sizeof (state));
+     size_t len = sizeof(char) * MB_LEN_MAX * wcslen(src) + 1;
+     char* str = Kiss_Malloc(len);
+     size_t result = wcsrtombs(str, &src, len, &state);
+     if (result == -1) {
+	  Kiss_System_Error();
+     }
+     return str;
+}
 
+
+/* function: (open-input-file filename [element-class]) -> <stream>
+   open-input-file opens a file for input only.
+   An error shall be signaled if filename is not a string. 
+   The corresponding file is opened in an implementation-defined way.
+   These functions return an instance of the <stream> class connected to the file
+   specified by filename.
+   The element-class can be either the class <character> (the default) or a positive integer
+   that is a number of bits in a byte to be used for a binary stream.
+   All implementations must support a value of 8 (denoting integer byte values from 0 to 255),
+   but some implementations might support other byte sizes as well.
 */
 kiss_obj* kiss_open_input_file(kiss_obj* filename, kiss_obj* rest) {
-    kiss_string_t* str = Kiss_String(filename);
-    char buff[1024];
-    size_t n = wcstombs(buff, str->str, 1024);
+    char* name = kiss_wcstombs(Kiss_String(filename)->str);
 
-    if (n == -1) {
-	 Kiss_System_Error();
-    }
-    assert(n < 1024);
-    
-    FILE* fp = fopen(buff, "r");
+    FILE* fp = fopen(name, "r");
+    free(name);
     if (fp == NULL) { Kiss_System_Error(); }
     else {
 	kiss_file_stream_t* stream = kiss_make_file_stream(fp);
-	stream->flags = KISS_INPUT_STREAM | KISS_CHARACTER_STREAM | stream->flags;
+
+	if (rest == KISS_NIL) {
+	     stream->flags |= (KISS_INPUT_STREAM | KISS_CHARACTER_STREAM);
+	} else if (Kiss_Integer(kiss_car(rest))->i == 8) {
+	     stream->flags |= (KISS_INPUT_STREAM | KISS_BYTE_STREAM);
+	} else {
+	     Kiss_Err(L"only 8 bit-binary-element-class is supported ~S", kiss_car(rest));
+	}
+	return (kiss_obj*)stream;
+    }
+}
+
+/* function: (open-output-file filename [element-class]) -> <stream>
+   open-output-file opens a file for output only.
+   An error shall be signaled if filename is not a string. 
+   The corresponding file is opened in an implementation-defined way.
+   These functions return an instance of the <stream> class connected to the file
+   specified by filename.
+   The element-class can be either the class <character> (the default) or a positive integer
+   that is a number of bits in a byte to be used for a binary stream.
+   All implementations must support a value of 8 (denoting integer byte values from 0 to 255),
+   but some implementations might support other byte sizes as well.
+*/
+kiss_obj* kiss_open_output_file(kiss_obj* filename, kiss_obj* rest) {
+    char* name = kiss_wcstombs(Kiss_String(filename)->str);
+
+    FILE* fp = fopen(name, "w");
+    free(name);
+    if (fp == NULL) { Kiss_System_Error(); }
+    else {
+	kiss_file_stream_t* stream = kiss_make_file_stream(fp);
+
+	if (rest == KISS_NIL) {
+	     stream->flags |= (KISS_OUTPUT_STREAM | KISS_CHARACTER_STREAM);
+	} else if (Kiss_Integer(kiss_car(rest))->i == 8) {
+	     stream->flags |= (KISS_OUTPUT_STREAM | KISS_BYTE_STREAM);
+	} else {
+	     Kiss_Err(L"only 8 bit-binary-element-class is supported ~S", kiss_car(rest));
+	}
+	return (kiss_obj*)stream;
+    }
+}
+
+/* function: (open-io-file filename [element-class]) -> <stream>
+   open-io-file opens a file for both input and output.
+   An error shall be signaled if filename is not a string. 
+   The corresponding file is opened in an implementation-defined way.
+   These functions return an instance of the <stream> class connected to the file
+   specified by filename.
+   The element-class can be either the class <character> (the default) or a positive integer
+   that is a number of bits in a byte to be used for a binary stream.
+   All implementations must support a value of 8 (denoting integer byte values from 0 to 255),
+   but some implementations might support other byte sizes as well.
+*/
+kiss_obj* kiss_open_io_file(kiss_obj* filename, kiss_obj* rest) {
+    char* name = kiss_wcstombs(Kiss_String(filename)->str);
+
+    FILE* fp = fopen(name, "r+");
+    free(name);
+    if (fp == NULL) { Kiss_System_Error(); }
+    else {
+	kiss_file_stream_t* stream = kiss_make_file_stream(fp);
+
+	if (rest == KISS_NIL) {
+	     stream->flags |= (KISS_OUTPUT_STREAM | KISS_INPUT_STREAM | KISS_CHARACTER_STREAM);
+	} else if (Kiss_Integer(kiss_car(rest))->i == 8) {
+	     stream->flags |= (KISS_OUTPUT_STREAM | KISS_INPUT_STREAM | KISS_BYTE_STREAM);
+	} else {
+	     Kiss_Err(L"only 8 bit-binary-element-class is supported ~S", kiss_car(rest));
+	}
 	return (kiss_obj*)stream;
     }
 }
@@ -202,7 +286,7 @@ kiss_obj* kiss_get_output_stream_string(kiss_obj* stream) {
 }
 
 kiss_obj* kiss_input_char_stream_p(kiss_obj* p) {
-     if (kiss_input_stream_p(p) == KISS_T && KISS_IS_CHARACTER_STREAM(p) == KISS_T) {
+     if (kiss_input_stream_p(p) == KISS_T && KISS_IS_CHARACTER_STREAM(p)) {
 	return KISS_T;
     } else {
 	return KISS_NIL;
@@ -210,7 +294,7 @@ kiss_obj* kiss_input_char_stream_p(kiss_obj* p) {
 }
 
 kiss_obj* kiss_output_char_stream_p(kiss_obj* p) {
-    if (kiss_output_stream_p(p) == KISS_T && KISS_IS_CHARACTER_STREAM(p) == KISS_T) {
+     if (kiss_output_stream_p(p) == KISS_T && KISS_IS_CHARACTER_STREAM(p)) {
 	return KISS_T;
     } else {
 	return KISS_NIL;

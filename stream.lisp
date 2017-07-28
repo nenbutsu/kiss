@@ -30,3 +30,37 @@
 (defmacro with-error-output (stream-form &rest forms)
   `(dynamic-let ((*kiss::error-output* ,stream-form))
       ,@forms))
+
+;; (with-open-input-file (name filename [element-class]) form*) -> <object>
+(defmacro with-open-input-file (filespec &rest forms)
+  (let ((name (car filespec))
+	(filename (car (cdr filespec)))
+	(rest (cdr (cdr filespec))))
+    `(let ((,name (apply #'open-input-file ,filename ,rest)))
+       (unwind-protect
+	   (progn
+	     ,@forms)
+	 (close ,name)))))
+
+;; (with-open-output-file (name filename [element-class]) form*) -> <object>
+(defmacro with-open-output-file (filespec &rest forms)
+  (let ((name (car filespec))
+	(filename (car (cdr filespec)))
+	(rest (cdr (cdr filespec))))
+    `(let ((,name (apply #'open-output-file ,filename ,rest)))
+       (unwind-protect
+	   (progn
+	     ,@forms)
+	 (close ,name)))))
+
+;; (with-open-io-file (name filename [element-class]) form*) -> <object>
+(defmacro with-open-io-file (filespec &rest forms)
+  (let ((name (car filespec))
+	(filename (car (cdr filespec)))
+	(rest (cdr (cdr filespec))))
+    `(let ((,name (apply #'open-io-file ,filename ,rest)))
+       (unwind-protect
+	   (progn
+	     ,@forms)
+	 (close ,name)))))
+
