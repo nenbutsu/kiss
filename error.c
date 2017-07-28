@@ -63,7 +63,7 @@ void Kiss_Err(wchar_t* str, ...) {
 
 
 /* assure primitive type */
-kiss_obj* kiss_assure(kiss_type t, kiss_obj* obj) {
+kiss_obj* kiss_primitive_assure(kiss_type t, kiss_obj* obj) {
      if (t == obj->type) {
 	  return obj;
      } else {
@@ -76,53 +76,53 @@ kiss_obj* kiss_assure(kiss_type t, kiss_obj* obj) {
 }
 
 kiss_cons_t* Kiss_Cons(kiss_obj* obj) {
-     kiss_assure(KISS_CONS, obj);
+     kiss_primitive_assure(KISS_CONS, obj);
      return (kiss_cons_t*)obj;
 }
 
 kiss_integer_t* Kiss_Integer(kiss_obj* obj) {
-     kiss_assure(KISS_INTEGER, obj);
+     kiss_primitive_assure(KISS_INTEGER, obj);
      return (kiss_integer_t*)obj;
 }
 
 kiss_float_t* Kiss_Float(kiss_obj* obj) {
-     kiss_assure(KISS_FLOAT, obj);
+     kiss_primitive_assure(KISS_FLOAT, obj);
      return (kiss_float_t*)obj;
 }
 
 kiss_character_t* Kiss_Character(kiss_obj* obj) {
-     kiss_assure(KISS_CHARACTER, obj);
+     kiss_primitive_assure(KISS_CHARACTER, obj);
      return (kiss_character_t*)obj;
 }
 
 kiss_symbol_t* Kiss_Symbol(kiss_obj* obj) {
-     kiss_assure(KISS_SYMBOL, obj);
+     kiss_primitive_assure(KISS_SYMBOL, obj);
      return (kiss_symbol_t*)obj;
 }
 
 kiss_string_t* Kiss_String(kiss_obj* obj) {
-     kiss_assure(KISS_STRING, obj);
+     kiss_primitive_assure(KISS_STRING, obj);
     return (kiss_string_t*)obj;
 }
 
 kiss_stream_t* Kiss_Stream(kiss_obj* obj) {
-     kiss_assure(KISS_STREAM, obj);
+     kiss_primitive_assure(KISS_STREAM, obj);
      return (kiss_stream_t*)obj;
 }
 
 
 kiss_general_vector_t* Kiss_General_Vector(kiss_obj* obj) {
-     kiss_assure(KISS_GENERAL_VECTOR, obj);
+     kiss_primitive_assure(KISS_GENERAL_VECTOR, obj);
     return (kiss_general_vector_t*)obj;
 }
 
 kiss_general_array_t* Kiss_General_Array_S(kiss_obj* obj) {
-     kiss_assure(KISS_GENERAL_ARRAY, obj);
+     kiss_primitive_assure(KISS_GENERAL_ARRAY, obj);
     return (kiss_general_array_t*)obj;
 }
 
 kiss_function_t* Kiss_Function(kiss_obj* obj) {
-     kiss_assure(KISS_FUNCTION, obj);
+     kiss_primitive_assure(KISS_FUNCTION, obj);
      return (kiss_function_t*)obj;
 }
 
