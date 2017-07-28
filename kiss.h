@@ -550,13 +550,16 @@ kiss_obj* kiss_output_stream_p(kiss_obj* p);
 kiss_obj* kiss_char_stream_p(kiss_obj* p);
 kiss_obj* kiss_input_char_stream_p(kiss_obj* p);
 kiss_obj* kiss_output_char_stream_p(kiss_obj* p);
-kiss_obj* kiss_cread_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val);
-kiss_obj* kiss_cpreview_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val);
+kiss_obj* kiss_c_read_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val);
+kiss_obj* kiss_c_preview_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val);
 kiss_obj* kiss_read_char(kiss_obj* args);
 kiss_obj* kiss_preview_char(kiss_obj* args);
 kiss_obj* kiss_format_char(kiss_obj* out, kiss_obj* obj);
 kiss_obj* kiss_open_input_file(kiss_obj* filename, kiss_obj* rest);
+kiss_obj* kiss_open_output_file(kiss_obj* filename, kiss_obj* rest);
+kiss_obj* kiss_open_io_file(kiss_obj* filename, kiss_obj* rest);
 kiss_obj* kiss_close(kiss_obj* obj);
+kiss_obj* kiss_finish_output (kiss_obj* obj);
 
 /* string.c */
 kiss_string_t* kiss_make_string(wchar_t* s);

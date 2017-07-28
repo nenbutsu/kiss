@@ -2742,6 +2742,64 @@ kiss_symbol_t KISS_Sopen_input_file = {
     KISS_NIL,                        /* plist */
 };
 
+kiss_symbol_t KISS_Sopen_output_file;
+kiss_cfunction_t KISS_CFopen_output_file = {
+    KISS_CFUNCTION,      /* type */
+    &KISS_Sopen_output_file, /* name */
+    kiss_open_output_file,   /* C function name */
+    1,              /* minimum argument number */
+    2,              /* maximum argument number */
+};
+kiss_symbol_t KISS_Sopen_output_file = {
+    KISS_SYMBOL,
+    0,                 /* gc_flag */
+    NULL,              /* gc_next */
+    L"open-output-file",
+    KISS_CONSTANT_FUN,
+    NULL,                       /* var */
+    (kiss_obj*)&KISS_CFopen_output_file, /* fun */
+    KISS_NIL,                        /* plist */
+};
+
+kiss_symbol_t KISS_Sopen_io_file;
+kiss_cfunction_t KISS_CFopen_io_file = {
+    KISS_CFUNCTION,      /* type */
+    &KISS_Sopen_io_file, /* name */
+    kiss_open_io_file,   /* C function name */
+    1,              /* minimum argument number */
+    2,              /* maximum argument number */
+};
+kiss_symbol_t KISS_Sopen_io_file = {
+    KISS_SYMBOL,
+    0,                 /* gc_flag */
+    NULL,              /* gc_next */
+    L"open-io-file",
+    KISS_CONSTANT_FUN,
+    NULL,                       /* var */
+    (kiss_obj*)&KISS_CFopen_io_file, /* fun */
+    KISS_NIL,                        /* plist */
+};
+
+kiss_symbol_t KISS_Sfinish_output;
+kiss_cfunction_t KISS_CFfinish_output = {
+    KISS_CFUNCTION,      /* type */
+    &KISS_Sfinish_output, /* name */
+    kiss_finish_output,   /* C function name */
+    1,              /* minimum argument number */
+    1,              /* maximum argument number */
+};
+kiss_symbol_t KISS_Sfinish_output = {
+    KISS_SYMBOL,
+    0,                 /* gc_flag */
+    NULL,              /* gc_next */
+    L"finish-output",
+    KISS_CONSTANT_FUN,
+    NULL,                       /* var */
+    (kiss_obj*)&KISS_CFfinish_output, /* fun */
+    KISS_NIL,                        /* plist */
+};
+
+
 kiss_symbol_t KISS_Sclose;
 kiss_cfunction_t KISS_CFclose = {
     KISS_CFUNCTION,      /* type */
@@ -3060,9 +3118,11 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sinput_stream_p, &KISS_Soutput_stream_p, 
     &KISS_Sread_char, &KISS_Spreview_char, &KISS_Sformat_char, &KISS_Sformat_integer,
     &KISS_Sformat_float,
-    &KISS_Sopen_input_file,
     &KISS_Ss_standard_input_s, &KISS_Ss_standard_output_s, &KISS_Ss_error_output_s,
     &KISS_Sclose, &KISS_Sopen_stream_p,
+    &KISS_Sopen_input_file, &KISS_Sopen_output_file, &KISS_Sopen_io_file,
+    &KISS_Sfinish_output,
+    
 
     /* format.c */
     &KISS_Sformat, &KISS_Sformat_object, &KISS_Sformat_pointer, &KISS_Sprint, 

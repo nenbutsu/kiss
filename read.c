@@ -73,14 +73,14 @@ static kiss_obj* kiss_read_list(kiss_obj* in) {
 static kiss_obj* kiss_read_string(kiss_obj* in) {
     kiss_obj* stack = KISS_NIL;
     while (1) {
-	kiss_obj* x = kiss_cread_char(in, KISS_NIL, KISS_EOS);
+	kiss_obj* x = kiss_c_read_char(in, KISS_NIL, KISS_EOS);
 	if (x == KISS_EOS) { Kiss_Err(L"Missing closing double quotation"); }
 	else {
 	    kiss_character_t* c = (kiss_character_t*)x;
 	    switch (c->c) {
 	    case L'"': goto end;
 	    case L'\\':
-		x = kiss_cread_char(in, KISS_NIL, KISS_EOS);
+		x = kiss_c_read_char(in, KISS_NIL, KISS_EOS);
 		if (x == KISS_EOS) {
 		    Kiss_Err(L"Missing char after backquote in a string");
 		}
@@ -101,14 +101,14 @@ static void kiss_push_lexeme_char(kiss_character_t* c) {
 }
 
 static void kiss_read_single_escape(kiss_obj* in) {
-    kiss_obj* p = kiss_cread_char(in, KISS_NIL, KISS_EOS);
+    kiss_obj* p = kiss_c_read_char(in, KISS_NIL, KISS_EOS);
     if (p == KISS_EOS) Kiss_Err(L"Missing single-escaped character");
     kiss_push_lexeme_char((kiss_character_t*)p);
 }
 
 static void kiss_read_multiple_escape(kiss_obj* in) {
     while(1) {
-	kiss_obj* p = kiss_cread_char(in, KISS_NIL, KISS_EOS);
+	kiss_obj* p = kiss_c_read_char(in, KISS_NIL, KISS_EOS);
 	kiss_character_t* c;
 	if (p == KISS_EOS) Kiss_Err(L"Missing closing multiple-escape");
 	c = (kiss_character_t*)p;
@@ -125,23 +125,23 @@ static void kiss_collect_lexeme_chars(kiss_obj* in, int* escaped) {
     kiss_character_t* c;
     *escaped = 0;
     while (1) {
-	p = kiss_cpreview_char(in, KISS_NIL, KISS_EOS);
+	p = kiss_c_preview_char(in, KISS_NIL, KISS_EOS);
 	if (p == KISS_EOS) { return; }
 	c = (kiss_character_t*)p;
 	if (kiss_is_delimiter(c->c)) { return; }
 	switch (c->c) {
 	case L'|':
 	    *escaped = 1;
-	    kiss_cread_char(in, KISS_NIL, KISS_NIL);
+	    kiss_c_read_char(in, KISS_NIL, KISS_NIL);
 	    kiss_read_multiple_escape(in);
 	    break;
 	case L'\\':
 	    *escaped = 1;
-	    kiss_cread_char(in, KISS_NIL, KISS_NIL);
+	    kiss_c_read_char(in, KISS_NIL, KISS_NIL);
 	    kiss_read_single_escape(in);
 	    break;
 	default:
-	    kiss_cread_char(in, KISS_NIL, KISS_NIL);
+	    kiss_c_read_char(in, KISS_NIL, KISS_NIL);
 	    c->c = tolower(c->c);
 	    kiss_push_lexeme_char(c);
 	    break;
@@ -175,18 +175,18 @@ static kiss_obj* kiss_read_lexeme_chars(kiss_obj* in) {
 
 static kiss_obj* kiss_read_sharp_reader_macro_char(kiss_obj* in) {
     kiss_environment_t* env = Kiss_Get_Environment();
-    kiss_obj* p = kiss_cread_char(in, KISS_NIL, KISS_EOS);
+    kiss_obj* p = kiss_c_read_char(in, KISS_NIL, KISS_EOS);
     kiss_string_t *char_name, *downcased_char_name;
     if (p == KISS_EOS) {
 	Kiss_Err(L"missing character after #\\ macro reader");
     }
     kiss_push(p, &env->lexeme_chars);
 
-    p = kiss_cpreview_char(in, KISS_NIL, KISS_EOS);
+    p = kiss_c_preview_char(in, KISS_NIL, KISS_EOS);
     while (p != KISS_EOS && !kiss_is_delimiter(((kiss_character_t*)p)->c)) {
-	kiss_cread_char(in, KISS_NIL, KISS_EOS);
+	kiss_c_read_char(in, KISS_NIL, KISS_EOS);
 	kiss_push(p, &env->lexeme_chars);
-	p = kiss_cpreview_char(in, KISS_NIL, KISS_EOS);
+	p = kiss_c_preview_char(in, KISS_NIL, KISS_EOS);
     }
 
     /* given a single character */
@@ -238,18 +238,18 @@ static void kiss_fill_array(size_t rank, kiss_obj* list, kiss_general_vector_t* 
 static kiss_obj* kiss_read_array(kiss_obj* in) {
      wchar_t wcs[100];
      wchar_t i = 0;
-     kiss_obj* p = kiss_cread_char(in, KISS_NIL, KISS_EOS);
+     kiss_obj* p = kiss_c_read_char(in, KISS_NIL, KISS_EOS);
      kiss_character_t* c = Kiss_Character(p);
      while (iswdigit(c->c)) {
 	  wcs[i++] = c->c;
-	  c = Kiss_Character(kiss_cread_char(in, KISS_NIL, KISS_EOS));
+	  c = Kiss_Character(kiss_c_read_char(in, KISS_NIL, KISS_EOS));
      }
      wcs[i] = L'\0';
 
      if (c->c != L'a') {
 	  Kiss_Err(L"Invalid array designator");
      }
-     c = Kiss_Character(kiss_cread_char(in, KISS_NIL, KISS_EOS));
+     c = Kiss_Character(kiss_c_read_char(in, KISS_NIL, KISS_EOS));
      if (c->c != L'(') {
 	  Kiss_Err(L"Invalid array designator");
      }
@@ -267,19 +267,19 @@ static kiss_obj* kiss_read_array(kiss_obj* in) {
 }
 
 static kiss_obj* kiss_read_sharp_reader_macro(kiss_obj* in) {
-     kiss_obj* p = kiss_cpreview_char(in, KISS_NIL, KISS_EOS);
+     kiss_obj* p = kiss_c_preview_char(in, KISS_NIL, KISS_EOS);
      kiss_character_t* c;
      if (p == KISS_EOS) { Kiss_Err(L"missing # macro reader character"); }
      c = (kiss_character_t*)p;
      switch (c->c) {
      case L'\'': /* #'f */
-	  kiss_cread_char(in, KISS_NIL, KISS_EOS);
+	  kiss_c_read_char(in, KISS_NIL, KISS_EOS);
 	  return kiss_clist(2, KISS_SFUNCTION, kiss_cread(in, KISS_T, KISS_NIL));
      case L'\\': /* #\c */
-	  kiss_cread_char(in, KISS_NIL, KISS_EOS);
+	  kiss_c_read_char(in, KISS_NIL, KISS_EOS);
 	  return kiss_read_sharp_reader_macro_char(in);
      case L'(': /* #() */{
-	  kiss_cread_char(in, KISS_NIL, KISS_EOS);
+	  kiss_c_read_char(in, KISS_NIL, KISS_EOS);
 	  return kiss_vector(kiss_read_list(in));
      }
      case L'1': case L'2': case L'3': case L'4': 
@@ -376,51 +376,51 @@ static kiss_obj* kiss_read_lexeme(kiss_obj* in) {
     kiss_environment_t* env = Kiss_Get_Environment();
     env->lexeme_chars = KISS_NIL;
     while(1) {
-	kiss_obj* p = kiss_cpreview_char(in, KISS_NIL, KISS_NIL);
+	kiss_obj* p = kiss_c_preview_char(in, KISS_NIL, KISS_NIL);
 	kiss_character_t* c;
 	if (p == KISS_NIL) { return NULL; }
 	c = (kiss_character_t*)p;
 	if (iswspace(c->c)) {
-	    kiss_cread_char(in, KISS_NIL, KISS_NIL);
+	    kiss_c_read_char(in, KISS_NIL, KISS_NIL);
 	    continue;
 	}
 
 	switch (c->c) {
-	case L'(': { kiss_cread_char(in, KISS_NIL, KISS_NIL);
+	case L'(': { kiss_c_read_char(in, KISS_NIL, KISS_NIL);
 		return kiss_read_list(in); }
-	case L')': { kiss_cread_char(in, KISS_NIL, KISS_NIL);
+	case L')': { kiss_c_read_char(in, KISS_NIL, KISS_NIL);
 		return KISS_RPAREN; }
-	case L'`': { kiss_cread_char(in, KISS_NIL, KISS_NIL);
+	case L'`': { kiss_c_read_char(in, KISS_NIL, KISS_NIL);
 		return kiss_read_backquote(in); }
 	case L',':
-	    kiss_cread_char(in, KISS_NIL, KISS_NIL);
-	    p = kiss_cpreview_char(in, KISS_NIL, KISS_NIL);
+	    kiss_c_read_char(in, KISS_NIL, KISS_NIL);
+	    p = kiss_c_preview_char(in, KISS_NIL, KISS_NIL);
 	    if (p == KISS_NIL) Kiss_Err(L"Stray unquote ,");
 	    c = (kiss_character_t*)p;
 	    if (c->c == L'@') {
-		kiss_cread_char(in, KISS_NIL, KISS_NIL);
+		kiss_c_read_char(in, KISS_NIL, KISS_NIL);
 		return kiss_read_comma_at(in);
 	    } else {
 		return kiss_read_comma(in);
 	    }
 	case L'\'': {
 	    kiss_obj* obj;
-	    kiss_cread_char(in, KISS_NIL, KISS_NIL);
+	    kiss_c_read_char(in, KISS_NIL, KISS_NIL);
 	    obj = kiss_cread(in, KISS_NIL, KISS_EOS);
 	    if (obj == KISS_EOS) Kiss_Err(L"Stray quote '");
 	    return kiss_clist(2, KISS_QUOTE, obj);
 	}
 	case L';':
 	    do {
-		p = kiss_cread_char(in, KISS_NIL, KISS_NIL);
+		p = kiss_c_read_char(in, KISS_NIL, KISS_NIL);
 	    } while (p != KISS_NIL && ((kiss_character_t*)p)->c != L'\n');
 	    if (p == KISS_NIL) return NULL;
 	    break;
 	case L'"':
-	    kiss_cread_char(in, KISS_NIL, KISS_NIL);
+	    kiss_c_read_char(in, KISS_NIL, KISS_NIL);
 	    return kiss_read_string(in);
 	case L'#': {
-	    kiss_cread_char(in, KISS_NIL, KISS_NIL);
+	    kiss_c_read_char(in, KISS_NIL, KISS_NIL);
 	    return kiss_read_sharp_reader_macro(in);
 	}
 	default:
