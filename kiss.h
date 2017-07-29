@@ -349,7 +349,7 @@ kiss_obj* kiss_caddr(kiss_obj* p);
 kiss_obj* kiss_set_car(kiss_obj* obj, kiss_obj* cons);
 kiss_obj* kiss_set_cdr(kiss_obj* obj, kiss_obj* cons);
 kiss_obj* kiss_list(kiss_obj* p);
-kiss_obj* kiss_clist(int nargs, ...);
+kiss_obj* kiss_c_list(int nargs, ...);
 kiss_obj* kiss_append(kiss_obj* p);
 kiss_obj* kiss_append_s(kiss_obj* p);
 kiss_obj* kiss_cappend(int nargs, ...);

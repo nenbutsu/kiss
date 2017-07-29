@@ -289,7 +289,7 @@ kiss_obj* kiss_format_object(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
      case KISS_CFUNCTION: kiss_format_cfunction(out, obj); break;
      case KISS_CMACRO: kiss_format_cmacro(out, obj); break;
      case KISS_OO_OBJ:
-	  kiss_cfuncall(L"kiss::format-oo-object", kiss_clist(3, out, obj, KISS_NIL));
+	  kiss_cfuncall(L"kiss::format-oo-object", kiss_c_list(3, out, obj, KISS_NIL));
 	  break;
      default:
 	  kiss_format_string(out, (kiss_obj*)kiss_make_string(L"unprintable object"), escapep);

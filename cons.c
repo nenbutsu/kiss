@@ -103,7 +103,7 @@ kiss_obj* kiss_copy_list(kiss_obj* p) {
    (error-id. cannot-create-list). Each obj may be any ISLisp object. */
 kiss_obj* kiss_list(kiss_obj* p) { return kiss_copy_list(p); }
 
-kiss_obj* kiss_clist(int nargs, ...) {
+kiss_obj* kiss_c_list(int nargs, ...) {
     va_list args;
     kiss_obj* stack = KISS_NIL;
     va_start(args, nargs);
@@ -347,7 +347,7 @@ kiss_obj* kiss_plist_put (kiss_obj* plist, kiss_obj* property, kiss_obj* value)
 {
     kiss_obj* here = kiss_plist_member(plist, property);
     if (here == KISS_NIL) {
-	return kiss_cappend(2, plist, kiss_clist(2, property, value));
+	return kiss_cappend(2, plist, kiss_c_list(2, property, value));
     } else {
 	kiss_set_car(value, kiss_cdr(here));
 	return plist;

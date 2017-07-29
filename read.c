@@ -274,7 +274,7 @@ static kiss_obj* kiss_read_sharp_reader_macro(kiss_obj* in) {
      switch (c->c) {
      case L'\'': /* #'f */
 	  kiss_c_read_char(in, KISS_NIL, KISS_EOS);
-	  return kiss_clist(2, KISS_SFUNCTION, kiss_cread(in, KISS_T, KISS_NIL));
+	  return kiss_c_list(2, KISS_SFUNCTION, kiss_cread(in, KISS_T, KISS_NIL));
      case L'\\': /* #\c */
 	  kiss_c_read_char(in, KISS_NIL, KISS_EOS);
 	  return kiss_read_sharp_reader_macro_char(in);
@@ -299,7 +299,7 @@ static kiss_obj* kiss_read_comma_at(kiss_obj* in) {
     p = kiss_cread(in, KISS_NIL, KISS_EOS);
     if (p == KISS_EOS) { Kiss_Err(L"Missing form after comma-at ,@"); }
     env->dynamic_env.backquote_nest++;
-    return kiss_clist(2, KISS_COMMA_AT, p);
+    return kiss_c_list(2, KISS_COMMA_AT, p);
 }
 
 static kiss_obj* kiss_read_comma(kiss_obj* in) {
@@ -310,7 +310,7 @@ static kiss_obj* kiss_read_comma(kiss_obj* in) {
     p = kiss_cread(in, KISS_NIL, KISS_EOS);
     if (p == KISS_EOS) { Kiss_Err(L"Missing form after comma ,"); }
     env->dynamic_env.backquote_nest++;
-    return kiss_clist(2, KISS_COMMA, p);
+    return kiss_c_list(2, KISS_COMMA, p);
 }
 
 /*
@@ -325,7 +325,7 @@ static kiss_obj* kiss_read_comma(kiss_obj* in) {
 static kiss_obj* kiss_expand_backquote(kiss_obj* p) {
     kiss_obj* stack = KISS_NIL;
     if (!KISS_IS_CONS(p))        /* `ATOM = 'ATOM */
-	return kiss_clist(2, KISS_QUOTE, p);
+	return kiss_c_list(2, KISS_QUOTE, p);
     if (KISS_CAR(p) == KISS_COMMA)    /* `,FORM = FORM */
 	return kiss_cadr(p);
     if (KISS_CAR(p) == KISS_COMMA_AT) /* `,@FORM => error */
@@ -335,10 +335,10 @@ static kiss_obj* kiss_expand_backquote(kiss_obj* p) {
 	kiss_obj* x = KISS_CAR(p);
 	if (KISS_IS_CONS(x)) {
 	    if (KISS_CAR(x) == KISS_COMMA)
-		kiss_push(kiss_clist(2, KISS_SLIST, kiss_cadr(x)), &stack);
+		kiss_push(kiss_c_list(2, KISS_SLIST, kiss_cadr(x)), &stack);
 	    else if (KISS_CAR(x) == KISS_COMMA_AT)
 		kiss_push(kiss_cadr(x), &stack);
-	    else kiss_push(kiss_clist(2, ((kiss_obj*)(&KISS_Slist)),
+	    else kiss_push(kiss_c_list(2, ((kiss_obj*)(&KISS_Slist)),
 				      kiss_expand_backquote(x)),
 			   &stack);
 	} else {
@@ -350,8 +350,8 @@ static kiss_obj* kiss_expand_backquote(kiss_obj* p) {
 		/* syntax list (a b COMMA_AT c) denotes (a b . ,@c) */
 		Kiss_Err(L"Invalid unquote-splicing(,@)");
 	    } else {
-		kiss_push(kiss_clist(2, ((kiss_obj*)(&KISS_Slist)),
-				     kiss_clist(2, KISS_QUOTE, x)),
+		kiss_push(kiss_c_list(2, ((kiss_obj*)(&KISS_Slist)),
+				     kiss_c_list(2, KISS_QUOTE, x)),
 			  &stack);
 	    }
 
@@ -408,7 +408,7 @@ static kiss_obj* kiss_read_lexeme(kiss_obj* in) {
 	    kiss_c_read_char(in, KISS_NIL, KISS_NIL);
 	    obj = kiss_cread(in, KISS_NIL, KISS_EOS);
 	    if (obj == KISS_EOS) Kiss_Err(L"Stray quote '");
-	    return kiss_clist(2, KISS_QUOTE, obj);
+	    return kiss_c_list(2, KISS_QUOTE, obj);
 	}
 	case L';':
 	    do {
