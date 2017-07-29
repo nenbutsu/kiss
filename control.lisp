@@ -16,37 +16,37 @@
 ;; GNU General Public License for more details.
 
 ;; function: (not obj) -> boolean
-;; This predicate is the logical “not” (or “¬”). It returns t
+;; This predicate is the logical “not”. It returns t
 ;; if obj is nil and nil otherwise. obj may be any ISLISP object.
 (defun not (obj) (if (eq obj nil) t nil))
 
 ;; special operator: (and form*) -> <object>
-;; and is the sequential logical “and” (or “∧”). forms are evaluated
+;; and is the sequential logical “and”. forms are evaluated
 ;; from left to right until either one of them evaluates to nil or else
 ;; none are left. If one of them evaluates to nil, then nil is returned
 ;; from the and; otherwise, the value of the last evaluated form is returned.
 (defmacro and (&rest args)
-  (if (eq args nil)                     ; (and) ≡ ’t
+  (if (eq args nil)                     ; (and) = 't
       'T
-    (if (eq (cdr args) nil)             ; (and form) ≡ form
+    (if (eq (cdr args) nil)             ; (and form) = form
         (car args)
-      ;; (and form1 form2 . . . formn)≡(if form1 (and form2 . . . formn) ’nil)
+      ;; (and form1 form2 . . . formn) = (if form1 (and form2 . . . formn) 'nil)
       `(if ,(car args) (and ,@(cdr args)) 'nil))))
 
 
 ;; special operator: (or form*) -> <object>
-;; or is the sequential logical “or” (or “∨”). forms are evaluated from
+;; or is the sequential logical “or”. forms are evaluated from
 ;; left to right until either one of them evaluates to a non-nil value or
 ;; else none are left. If one of them evaluates to a non-nil value,
 ;; then this non-nil value is returned, otherwise nil is returned.
 (defmacro or (&rest args)
   (cond
-   ((eq args nil)                       ; (or) ≡ ’nil
+   ((eq args nil)                       ; (or) = 'nil
     'nil)
-   ((eq (cdr args) nil)                 ; (or form) ≡ form
+   ((eq (cdr args) nil)                 ; (or form) = form
     (car args))
    (t (let ((var (gensym)))
-        ;; (or form1 form2 . . . formn) ≡ 
+        ;; (or form1 form2 . . . formn) = 
         ;; ((lambda (var) (if var var (or form2 . . . formn))) form1)
         ;; where var does not occur in form2 . . . formn
         `((lambda (,var) (if ,var ,var (or ,@(cdr args)))) ,(car args))))))
@@ -62,19 +62,19 @@
 ;; is returned.
 (defmacro cond (&rest args)
   (if (eq args nil)                     
-      ;; (cond) ≡ nil
+      ;; (cond) = nil
       nil
     (let ((clause1 (car args))
           (rest (cdr args)))
       (if (eq (cdr clause1) nil)
-          ;; (cond (test1)         ≡ (or test1
+          ;; (cond (test1)         = (or test1
           ;;       (test2 form2*)        (cond (test2 form2*)
           ;;          ...)                   ...))
         `(or ,(car clause1)
              (cond ,@rest))
         (let ((test1 (car clause1))
               (forms1 (cdr clause1)))
-          ;; (cond (test1 form+1)  ≡ (if test1
+          ;; (cond (test1 form+1)  = (if test1
           ;;       (test2 form2*)        (progn form+1)
           ;;          ...)                  (cond (test2 form2*)
           ;;                                    ...))
