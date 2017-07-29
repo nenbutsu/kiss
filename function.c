@@ -85,8 +85,8 @@ kiss_obj* kiss_linvoke(kiss_function_t* fun, kiss_obj* args) {
 /* special operator: (lambda lambda-list form*) -> <function> */
 kiss_obj* kiss_lambda(kiss_obj* params, kiss_obj* body) {
     kiss_obj* lambda =
-	kiss_clist(3, KISS_LAMBDA, params,
-		   kiss_cappend(2, kiss_clist(2, &KISS_Sblock, KISS_LAMBDA), body));
+	kiss_c_list(3, KISS_LAMBDA, params,
+		   kiss_cappend(2, kiss_c_list(2, &KISS_Sblock, KISS_LAMBDA), body));
     /* (lambda () . body) -> (lambda () (block lambda . body)) */
     return (kiss_obj*)kiss_make_function(NULL, lambda);
 }
@@ -94,8 +94,8 @@ kiss_obj* kiss_lambda(kiss_obj* params, kiss_obj* body) {
 /* special operator: (defun function-name lambda-list form*) -> <symbol> */
 kiss_obj* kiss_defun(kiss_obj* name, kiss_obj* params, kiss_obj* body) {
     kiss_symbol_t* fname = Kiss_Symbol(name);
-    kiss_obj* lambda = kiss_clist(3, KISS_LAMBDA, params,
-				  kiss_cappend(2, kiss_clist(2, &KISS_Sblock, name), body));
+    kiss_obj* lambda = kiss_c_list(3, KISS_LAMBDA, params,
+				  kiss_cappend(2, kiss_c_list(2, &KISS_Sblock, name), body));
     /* (defun foo () . body) -> (defun foo () (block foo . body)) */
     fname->fun = (kiss_obj*)kiss_make_function(fname, lambda);
     return name;
@@ -104,8 +104,8 @@ kiss_obj* kiss_defun(kiss_obj* name, kiss_obj* params, kiss_obj* body) {
 /* special operator: (defmacro macro-name lambda-list form*) -> <symbol> */
 kiss_obj* kiss_defmacro(kiss_obj* name, kiss_obj* params, kiss_obj* body) {
     kiss_symbol_t* fname = Kiss_Symbol(name);
-    kiss_obj* lambda = kiss_clist(3, KISS_LAMBDA, params,
-				  kiss_cappend(2, kiss_clist(2, &KISS_Sblock, name), body));
+    kiss_obj* lambda = kiss_c_list(3, KISS_LAMBDA, params,
+				  kiss_cappend(2, kiss_c_list(2, &KISS_Sblock, name), body));
     /* (defmacro foo () . body) -> (defmacro foo () (block foo . body)) */
     fname->fun = (kiss_obj*)kiss_make_macro(fname, lambda);
     return name;
@@ -134,6 +134,11 @@ kiss_obj* kiss_funcall(kiss_obj* f, kiss_obj* args) {
 	  return kiss_cinvoke((kiss_cfunction_t*)f, args);
      case KISS_FUNCTION:
 	  return kiss_linvoke((kiss_function_t*)f, args);
+     case KISS_OO_OBJ:
+	  if (kiss_cfuncall(L"generic-function-p", kiss_c_list(1, f)) == KISS_T) {
+	       return kiss_cfuncall(L"generic-function-invoke", kiss_c_list(2, f, args));
+	  }
+	  // fall through
      default:
 	  Kiss_Err(L"Not a function ~S", f);
      }
