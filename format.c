@@ -379,7 +379,9 @@ kiss_obj* kiss_format(kiss_obj* out, kiss_obj* format, kiss_obj* args) {
 	       case L'5': case L'6': case L'7': case L'8': case L'9': {
 		    wchar_t* tailptr;
 		    long int m = wcstol(str->str + i - 1, &tailptr, 10);
-		    assert(*tailptr == L'T' || *tailptr == L'R');
+		    if (*tailptr != L'T' && *tailptr != L'R') {
+			 Kiss_Err(L"Invalid format string ~S", format);
+		    }
 		    if (*tailptr == L'T') {
 			 m = m - ((kiss_stream_t*)out)->column - 1;
 			 kiss_format_char(out, (kiss_obj*)kiss_make_character(L' '));
@@ -388,10 +390,13 @@ kiss_obj* kiss_format(kiss_obj* out, kiss_obj* format, kiss_obj* args) {
 			 }
 			 i = tailptr - str->str + 1;
 			 break;
-		    } else {
+		    } else if (*tailptr == L'R') {
 			 kiss_format_integer(out, kiss_car(args), (kiss_obj*)kiss_make_integer(m));
 			 args = KISS_CDR(args);
 			 break;
+		    } else {
+			 fwprintf(stderr, L"format: internal error unsupported format\n");
+			 exit(EXIT_FAILURE);
 		    }
 	       }
 	       default:
