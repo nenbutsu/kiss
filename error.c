@@ -23,8 +23,13 @@ static int condition_working_p(void) {
 }
 
 void Kiss_System_Error (void) {
-    perror(NULL);
-    exit(EXIT_FAILURE);
+     perror(NULL);
+     kiss_obj* msg = (kiss_obj*)kiss_make_string(L"system error");
+     if (condition_working_p()) {
+	  kiss_cfuncall(L"kiss::signal-simple-error", kiss_clist(3, msg, KISS_NIL, KISS_NIL));
+     } else {
+	  kiss_throw(kiss_clist(2, kiss_symbol(L"quote"), kiss_symbol(L"kiss::error")), msg);
+     }
 }
 
 void Kiss_Err(wchar_t* str, ...) {
