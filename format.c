@@ -18,7 +18,7 @@
  */
 #include "kiss.h"
 
-kiss_obj* kiss_format_string(kiss_obj* out, kiss_obj* str, kiss_obj* escapep) {
+static kiss_obj* kiss_format_string(kiss_obj* out, kiss_obj* str, kiss_obj* escapep) {
     kiss_string_t* s = Kiss_String(str);
     wchar_t* p;
     for (p = s->str; *p != L'\0'; p++) {
@@ -36,7 +36,7 @@ kiss_obj* kiss_format_string(kiss_obj* out, kiss_obj* str, kiss_obj* escapep) {
     return KISS_NIL;
 }
 
-kiss_obj* kiss_format_list(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
+static kiss_obj* kiss_format_list(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
     kiss_obj* p = Kiss_List(obj);
     if (obj == KISS_NIL) {
 	kiss_format_string(out, (kiss_obj*)kiss_make_string(L"()"), KISS_NIL);
@@ -56,7 +56,7 @@ kiss_obj* kiss_format_list(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
     return KISS_NIL;
 }
 
-kiss_obj* kiss_format_general_vector(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
+static kiss_obj* kiss_format_general_vector(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
     kiss_general_vector_t* v = Kiss_General_Vector(obj);
     size_t i;
     if (v->n == 0) {
@@ -75,7 +75,7 @@ kiss_obj* kiss_format_general_vector(kiss_obj* out, kiss_obj* obj, kiss_obj* esc
     
 }
 
-kiss_obj* kiss_format_general_array(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
+static kiss_obj* kiss_format_general_array(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
      kiss_general_array_t* array = Kiss_General_Array_S(obj);
     kiss_format_char(out, (kiss_obj*)kiss_make_character(L'#'));
     kiss_format_integer(out, (kiss_obj*)kiss_make_integer(array->rank), (kiss_obj*)kiss_make_integer(10));
@@ -129,7 +129,7 @@ static kiss_obj* kiss_format_escaped_symbol(kiss_obj* out, kiss_obj* obj) {
     return KISS_NIL;
 }
 
-kiss_obj* kiss_format_symbol(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
+static kiss_obj* kiss_format_symbol(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
     kiss_symbol_t* symbol = Kiss_Symbol(obj);
     //if (!kiss_is_interned(symbol)) {
     //	kiss_format_string(out, (kiss_obj*)kiss_make_string(L"#:"), KISS_NIL);
@@ -158,6 +158,7 @@ static kiss_obj* kiss_format_escaped_char(kiss_obj* out, kiss_obj* obj) {
     return KISS_NIL;
 }
 
+/* function: (format-integer output-stream integer radix) -> <null> */
 kiss_obj* kiss_format_integer(kiss_obj* out, kiss_obj* obj, kiss_obj* radix) {
     kiss_integer_t* i = Kiss_Integer(obj);
     kiss_integer_t* r= Kiss_Integer(radix);
@@ -187,6 +188,7 @@ kiss_obj* kiss_format_integer(kiss_obj* out, kiss_obj* obj, kiss_obj* radix) {
     return KISS_NIL;
 }
 
+/* function: (format-float output-stream float) -> <null> */
 kiss_obj* kiss_format_float(kiss_obj* out, kiss_obj* obj) {
   kiss_float_t* f = Kiss_Float(obj);
   wchar_t buff[1024];
@@ -200,7 +202,7 @@ kiss_obj* kiss_format_float(kiss_obj* out, kiss_obj* obj) {
   }
 }
 
-kiss_obj* kiss_format_function(kiss_obj* out, kiss_obj* obj) {
+static kiss_obj* kiss_format_function(kiss_obj* out, kiss_obj* obj) {
     kiss_function_t* f = Kiss_Function(obj);
     kiss_format_string(out, (kiss_obj*)kiss_make_string(L"#<"), KISS_NIL);
     if (f->name == NULL) {
@@ -215,7 +217,7 @@ kiss_obj* kiss_format_function(kiss_obj* out, kiss_obj* obj) {
     return KISS_NIL;
 }
 
-kiss_obj* kiss_format_macro(kiss_obj* out, kiss_obj* obj) {
+static kiss_obj* kiss_format_macro(kiss_obj* out, kiss_obj* obj) {
     kiss_function_t* f = Kiss_Macro(obj);
     kiss_format_string(out, (kiss_obj*)kiss_make_string(L"#<"), KISS_NIL);
     assert(f->name != NULL);
@@ -234,7 +236,7 @@ kiss_obj* kiss_format_pointer(kiss_obj* out, kiss_obj* obj) {
     return KISS_NIL;
 }
 
-kiss_obj* kiss_format_cfunction(kiss_obj* out, kiss_obj* obj) {
+static kiss_obj* kiss_format_cfunction(kiss_obj* out, kiss_obj* obj) {
     kiss_cfunction_t* f = Kiss_CFunction(obj);
     kiss_format_string(out, (kiss_obj*)kiss_make_string(L"#<c function "),
 		       KISS_NIL);
@@ -245,7 +247,7 @@ kiss_obj* kiss_format_cfunction(kiss_obj* out, kiss_obj* obj) {
     return KISS_NIL;
 }
 
-kiss_obj* kiss_format_cmacro(kiss_obj* out, kiss_obj* obj) {
+static kiss_obj* kiss_format_cmacro(kiss_obj* out, kiss_obj* obj) {
     kiss_cfunction_t* f = Kiss_CMacro(obj);
     kiss_format_string(out, (kiss_obj*)kiss_make_string(L"#<c macro "),
 		       KISS_NIL);
@@ -262,9 +264,13 @@ kiss_obj* kiss_format_object(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
      case KISS_SYMBOL: kiss_format_symbol(out, obj, escapep); break;
      case KISS_CONS: kiss_format_list(out, obj, escapep); break;
      case KISS_STRING:
-	  kiss_format_char(out, (kiss_obj*)kiss_make_character(L'"'));
+	  if (escapep != KISS_NIL) {
+	       kiss_format_char(out, (kiss_obj*)kiss_make_character(L'"'));
+	  }
 	  kiss_format_string(out, obj, escapep);
-	  kiss_format_char(out, (kiss_obj*)kiss_make_character(L'"'));
+	  if (escapep != KISS_NIL) {
+	       kiss_format_char(out, (kiss_obj*)kiss_make_character(L'"'));
+	  }
 	  break;
      case KISS_GENERAL_VECTOR: kiss_format_general_vector(out, obj, escapep);
 	  break;
@@ -292,8 +298,7 @@ kiss_obj* kiss_format_object(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
     return KISS_NIL;
 }
 
-/* function: (format output-stream format-string obj*) -> <null>
-*/
+/* function: (format output-stream format-string obj*) -> <null> */
 kiss_obj* kiss_format(kiss_obj* out, kiss_obj* format, kiss_obj* args) {
      size_t i = 0;
      size_t n = kiss_clength(format);
@@ -373,10 +378,10 @@ kiss_obj* kiss_format(kiss_obj* out, kiss_obj* format, kiss_obj* args) {
 	       case L'0': case L'1': case L'2': case L'3': case L'4':
 	       case L'5': case L'6': case L'7': case L'8': case L'9': {
 		    wchar_t* tailptr;
-		    long m = wcstol(str->str + i - 1, &tailptr, 10);
+		    long int m = wcstol(str->str + i - 1, &tailptr, 10);
 		    assert(*tailptr == L'T' || *tailptr == L'R');
 		    if (*tailptr == L'T') {
-			 m = m - ((kiss_file_stream_t*)out)->column - 1;
+			 m = m - ((kiss_stream_t*)out)->column - 1;
 			 kiss_format_char(out, (kiss_obj*)kiss_make_character(L' '));
 			 for (; m > 0; --m) {
 			      kiss_format_char(out, (kiss_obj*)kiss_make_character(L' '));

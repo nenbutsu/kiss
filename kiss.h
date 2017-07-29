@@ -238,7 +238,7 @@ typedef struct {
      int gc_flag;
      kiss_gc_obj* gc_next;
      kiss_stream_flags flags;
-     void* ptr;
+     size_t column;
 } kiss_stream_t;
 
 typedef struct {
@@ -246,8 +246,8 @@ typedef struct {
      int gc_flag;
      kiss_gc_obj* gc_next;
      kiss_stream_flags flags;
-     FILE* file_ptr;
      size_t column;
+     FILE* file_ptr;
 } kiss_file_stream_t;
 
 typedef struct {
@@ -255,6 +255,7 @@ typedef struct {
      int gc_flag;
      kiss_gc_obj* gc_next;
      kiss_stream_flags flags;
+     size_t column;
      kiss_obj* list;
 } kiss_string_stream_t;
 
@@ -429,16 +430,9 @@ kiss_obj* kiss_eval_body(kiss_obj* body);
 
 /* format.c */
 kiss_obj* kiss_format(kiss_obj* out, kiss_obj* format, kiss_obj* args);
-kiss_obj* kiss_format_string(kiss_obj* out, kiss_obj* str, kiss_obj* escapep);
-kiss_obj* kiss_format_list(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep);
-kiss_obj* kiss_format_symbol(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep);
 kiss_obj* kiss_format_integer(kiss_obj* out, kiss_obj* obj, kiss_obj* radix);
 kiss_obj* kiss_format_float(kiss_obj* out, kiss_obj* obj) ;
-kiss_obj* kiss_format_function(kiss_obj* out, kiss_obj* obj);
-kiss_obj* kiss_format_macro(kiss_obj* out, kiss_obj* obj);
 kiss_obj* kiss_format_pointer(kiss_obj* out, kiss_obj* obj);
-kiss_obj* kiss_format_cfunction(kiss_obj* out, kiss_obj* obj);
-kiss_obj* kiss_format_cmacro(kiss_obj* out, kiss_obj* obj);
 kiss_obj* kiss_format_object(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep);
 kiss_obj* kiss_print(kiss_obj* obj);
 

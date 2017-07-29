@@ -35,6 +35,7 @@ static wchar_t* libraries[] = {
      L"condition.lisp",
      L"format.lisp",
      L"format_oo_object.lisp",
+     L"init.lisp",
      NULL,
 };
 

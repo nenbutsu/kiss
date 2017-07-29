@@ -417,8 +417,11 @@ kiss_obj* kiss_preview_char(kiss_obj* args) {
      return kiss_c_preview_char(in, eos_err_p, eos_val);
 }
 
-/* function: (format-char output-stream char) -> <null> 
-*/
+static size_t kiss_next_column(size_t column, size_t width) {
+     return (column / width) * width + width;
+}
+
+/* function: (format-char output-stream char) -> <null> */
 kiss_obj* kiss_format_char(kiss_obj* output, kiss_obj* character) {
      kiss_character_t* c = Kiss_Character(character);
      if (KISS_IS_FILE_STREAM(Kiss_Output_Char_Stream(output))) {
@@ -428,9 +431,8 @@ kiss_obj* kiss_format_char(kiss_obj* output, kiss_obj* character) {
 	       out->column = 0;
 	  } else if (c->c == L'\t'){
 	       size_t column = out->column;
-	       out->column = 7 * ((column / 7) + 1) + (column / 7);
-	       /* assume tab is 8 column-position.
-		  column 0 represents the left margin. */
+	       size_t width = Kiss_Integer(kiss_dynamic(kiss_symbol(L"*column-width*")))->i;
+	       out->column = kiss_next_column(column, width);
 	  } else {
 	       out->column += 1;
 	  }
@@ -438,8 +440,17 @@ kiss_obj* kiss_format_char(kiss_obj* output, kiss_obj* character) {
 	       Kiss_System_Error();
 	  }
      } else if (KISS_IS_STRING_STREAM(output)) {
-	  kiss_string_stream_t* string_stream = (kiss_string_stream_t*)output;
-	  kiss_push(character, &(string_stream->list));
+	  kiss_string_stream_t* out = (kiss_string_stream_t*)output;
+	  if (c->c == L'\n') {
+	       out->column = 0;
+	  } else if (c->c == L'\t'){
+	       size_t column = out->column;
+	       size_t width = Kiss_Integer(kiss_dynamic(kiss_symbol(L"*column-width*")))->i;
+	       out->column = kiss_next_column(column, width);
+	  } else {
+	       out->column += 1;
+	  }
+	  kiss_push(character, &(out->list));
      } else {
 	  fwprintf(stderr, L"kiss_format_char: unknown stream type = %d", KISS_OBJ_TYPE(output));
 	  exit(EXIT_FAILURE);
