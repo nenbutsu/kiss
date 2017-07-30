@@ -486,7 +486,7 @@ kiss_obj* kiss_format_char(kiss_obj* output, kiss_obj* character) {
 	       out->column = 0;
 	  } else if (c->c == L'\t'){
 	       size_t column = out->column;
-	       size_t width = Kiss_Integer(kiss_dynamic(kiss_symbol(L"*column-width*")))->i;
+	       size_t width = Kiss_Integer(kiss_dynamic(kiss_symbol(L"*tab-width*")))->i;
 	       out->column = kiss_next_column(column, width);
 	  }
 	  if (fputwc(c->c, fp) == WEOF) {
@@ -501,7 +501,7 @@ kiss_obj* kiss_format_char(kiss_obj* output, kiss_obj* character) {
 	       out->column = 0;
 	  } else if (c->c == L'\t'){
 	       size_t column = out->column;
-	       size_t width = Kiss_Integer(kiss_dynamic(kiss_symbol(L"*column-width*")))->i;
+	       size_t width = Kiss_Integer(kiss_dynamic(kiss_symbol(L"*tab-width*")))->i;
 	       out->column = kiss_next_column(column, width);
 	  } else {
 	       out->column += 1;

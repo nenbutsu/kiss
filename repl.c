@@ -33,7 +33,6 @@ static wchar_t* libraries[] = {
      L"gf_invoke.lisp",
      L"built_in_conditions.lisp",
      L"condition.lisp",
-     L"format.lisp",
      L"format_oo_object.lisp",
      L"init.lisp",
      NULL,
