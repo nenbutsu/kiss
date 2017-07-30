@@ -2154,6 +2154,25 @@ kiss_symbol_t KISS_Sformat_pointer = {
     KISS_NIL,                         /* plist */
 };
 
+kiss_symbol_t KISS_Sformat_fresh_line;
+kiss_cfunction_t KISS_CFformat_fresh_line = {
+    KISS_CFUNCTION,       /* type */
+    &KISS_Sformat_fresh_line, /* name */
+    kiss_format_fresh_line,   /* C function name */
+    1,               /* minimum argument number */
+    1,               /* maximum argument number */
+};
+kiss_symbol_t KISS_Sformat_fresh_line = {
+    KISS_SYMBOL,
+    0,                 /* gc_flag */
+    NULL,              /* gc_next */
+    L"format-fresh-line",
+    KISS_CONSTANT_FUN,
+    NULL,                        /* var */
+    (kiss_obj*)&KISS_CFformat_fresh_line, /* fun */
+    KISS_NIL,                         /* plist */
+};
+
 
 kiss_symbol_t KISS_Sprint;
 kiss_cfunction_t KISS_CFprint = {
@@ -3163,7 +3182,8 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     
 
     /* format.c */
-    &KISS_Sformat, &KISS_Sformat_object, &KISS_Sformat_pointer, &KISS_Sprint, 
+    &KISS_Sformat, &KISS_Sformat_object, &KISS_Sformat_pointer, &KISS_Sprint,
+    &KISS_Sformat_fresh_line,
 
     /* read.c */
     &KISS_Sread, 

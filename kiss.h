@@ -433,6 +433,7 @@ kiss_obj* kiss_eval_body(kiss_obj* body);
 
 /* format.c */
 kiss_obj* kiss_format(kiss_obj* out, kiss_obj* format, kiss_obj* args);
+kiss_obj* kiss_format_fresh_line(kiss_obj* output);
 kiss_obj* kiss_format_integer(kiss_obj* out, kiss_obj* obj, kiss_obj* radix);
 kiss_obj* kiss_format_float(kiss_obj* out, kiss_obj* obj) ;
 kiss_obj* kiss_format_pointer(kiss_obj* out, kiss_obj* obj);
