@@ -501,8 +501,8 @@ kiss_obj* kiss_format_char(kiss_obj* output, kiss_obj* character) {
 	       out->column = 0;
 	  } else if (c->c == L'\t'){
 	       size_t column = out->column;
-	       size_t width = Kiss_Integer(kiss_dynamic(kiss_symbol(L"*tab-width*")))->i;
-	       out->column = kiss_next_column(column, width);
+	       size_t width = Kiss_Integer(kiss_dynamic(kiss_symbol(L"*tab-width*")))->i;	
+       out->column = kiss_next_column(column, width);
 	  } else {
 	       out->column += 1;
 	  }
@@ -538,4 +538,44 @@ kiss_obj* kiss_stream_ready_p(kiss_obj* obj) {
      } else {
 	  return KISS_T;
      }
+}
+
+kiss_obj* kiss_c_read_byte(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val) {
+     if (KISS_IS_FILE_STREAM(Kiss_Input_Byte_Stream(in))) {
+	  FILE* fp = Kiss_Open_File_Stream(in)->file_ptr;
+	  int c = fgetc(fp);
+	  if (c == EOF) {
+	       if (ferror(fp)) { Kiss_System_Error(); }
+	       goto eos;
+	  } else {
+	       ((kiss_file_stream_t*)in)->pos++;
+	       return (kiss_obj*)kiss_make_integer(c);
+	  }
+     } else {
+	  fwprintf(stderr, L"kiss_c_read_byte: unknown input stream type = %d", KISS_OBJ_TYPE(in));
+	  exit(EXIT_FAILURE);
+     }
+eos:
+     if (eos_err_p != KISS_NIL) {
+	  Kiss_End_Of_Stream_Error(in);
+     } else {
+	  return eos_val;
+     }
+}
+
+/* function: (read-byte input-stream [eos-error-p [eos-value]]) -> <integer>
+   Reads a byte from the input-stream and returns it.
+   The number of bits in a byte is determined by the stream element type of the
+   input-stream ;see open-input-file. */
+kiss_obj* kiss_read_byte(kiss_obj* in, kiss_obj* args) {
+     kiss_obj* eos_err_p = KISS_T;
+     kiss_obj* eos_val = KISS_NIL;
+     if (KISS_IS_CONS(args)) {
+	  eos_err_p = KISS_CAR(args);
+	  args = KISS_CDR(args);
+	  if (KISS_IS_CONS(args)) {
+	       eos_val = KISS_CAR(args);
+	  }
+     }
+     return kiss_c_read_byte(in, eos_err_p, eos_val);
 }

@@ -16,4 +16,8 @@
 ;; GNU General Public License for more details.
 
 (defdynamic *tab-width* 8)
+(defun open-output-stream (filename &rest element-class)
+  (apply #'open-output-file filename element-class))
+(defun open-input-stream (filename &rest element-class)
+  (apply #'open-input-file filename element-class))
 

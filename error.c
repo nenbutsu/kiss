@@ -200,52 +200,6 @@ kiss_obj* Kiss_Valid_Sequence_Index(kiss_obj* sequence, kiss_obj* index) {
     return index;
 }
 
-
-// -----------
-void Kiss_Cannot_Parse_Number_Error(kiss_obj* str) {
-     Kiss_Err(L"Cannot parse number ~S", str);
-}
-
-void Kiss_Division_By_Zero_Error(kiss_obj* i) {
-     Kiss_Err(L"Division by zero: ~S", i);
-}
-
-void Kiss_End_Of_Stream_Error(kiss_obj* stream) {
-     Kiss_Err(L"End of stream ~S", stream);
-}
-
-void Kiss_Unbound_Variable_Error(kiss_obj* name) {
-     if (condition_working_p()) {
-	  kiss_cfuncall(L"kiss::signal-unbound-variable", kiss_c_list(2, name, KISS_NIL));
-     } else {
-	  Kiss_Err(L"Unbound variable ~S", name);
-     }
-}
-
-void Kiss_Catcher_Not_Found_Error(kiss_obj* tag) {
-     if (condition_working_p()) {
-	  kiss_cfuncall(L"kiss::signal-catcher-not-found", kiss_c_list(2, tag, KISS_NIL));
-     } else {
-	  Kiss_Err(L"Catcher not found for ~S", tag);
-     }
-}
-
-void Kiss_Block_Not_Found_Error(kiss_obj* tag) {
-     if (condition_working_p()) {
-	  kiss_cfuncall(L"kiss::signal-block-not-found", kiss_c_list(2, tag, KISS_NIL));
-     } else {
-	  Kiss_Err(L"Block not found ~S", tag);
-     }
-}
-
-void Kiss_Tagbody_Not_Found_Error(kiss_obj* tag) {
-     if (condition_working_p()) {
-	  kiss_cfuncall(L"kiss::signal-tagbody-not-found", kiss_c_list(2, tag, KISS_NIL));
-     } else {
-	  Kiss_Err(L"Tagbody not found ~S", tag);
-     }
-}
-
 kiss_obj* Kiss_Proper_List(kiss_obj* obj) {
     /* Proper list is a list terminated by the empty list. (The empty
        list is a proper list.) */
@@ -283,6 +237,21 @@ kiss_stream_t* Kiss_Output_Char_Stream(kiss_obj* obj) {
     }
     return (kiss_stream_t*)obj;
 }
+
+kiss_stream_t* Kiss_Input_Byte_Stream(kiss_obj* obj) {
+    if (!KISS_IS_INPUT_STREAM(obj) || !KISS_IS_BYTE_STREAM(obj)) {
+	Kiss_Err(L"Input byte stream expected ~S", obj);
+    }
+    return (kiss_stream_t*)obj;
+}
+
+kiss_stream_t* Kiss_Output_Byte_Stream(kiss_obj* obj) {
+    if (!KISS_IS_OUTPUT_STREAM(obj) || !KISS_IS_BYTE_STREAM(obj)){
+	Kiss_Err(L"Output byte stream expected ~S", obj);
+    }
+    return (kiss_stream_t*)obj;
+}
+
 
 kiss_file_stream_t* Kiss_Open_File_Stream(kiss_obj* obj) {
      Kiss_Stream(obj);
@@ -356,3 +325,49 @@ kiss_obj* Kiss_Lambda_Expression(kiss_obj* p) {
     Kiss_Lambda_List(kiss_cadr(p));
     return p;
 }
+
+// -----------
+void Kiss_Cannot_Parse_Number_Error(kiss_obj* str) {
+     Kiss_Err(L"Cannot parse number ~S", str);
+}
+
+void Kiss_Division_By_Zero_Error(kiss_obj* i) {
+     Kiss_Err(L"Division by zero: ~S", i);
+}
+
+void Kiss_End_Of_Stream_Error(kiss_obj* stream) {
+     Kiss_Err(L"End of stream ~S", stream);
+}
+
+void Kiss_Unbound_Variable_Error(kiss_obj* name) {
+     if (condition_working_p()) {
+	  kiss_cfuncall(L"kiss::signal-unbound-variable", kiss_c_list(2, name, KISS_NIL));
+     } else {
+	  Kiss_Err(L"Unbound variable ~S", name);
+     }
+}
+
+void Kiss_Catcher_Not_Found_Error(kiss_obj* tag) {
+     if (condition_working_p()) {
+	  kiss_cfuncall(L"kiss::signal-catcher-not-found", kiss_c_list(2, tag, KISS_NIL));
+     } else {
+	  Kiss_Err(L"Catcher not found for ~S", tag);
+     }
+}
+
+void Kiss_Block_Not_Found_Error(kiss_obj* tag) {
+     if (condition_working_p()) {
+	  kiss_cfuncall(L"kiss::signal-block-not-found", kiss_c_list(2, tag, KISS_NIL));
+     } else {
+	  Kiss_Err(L"Block not found ~S", tag);
+     }
+}
+
+void Kiss_Tagbody_Not_Found_Error(kiss_obj* tag) {
+     if (condition_working_p()) {
+	  kiss_cfuncall(L"kiss::signal-tagbody-not-found", kiss_c_list(2, tag, KISS_NIL));
+     } else {
+	  Kiss_Err(L"Tagbody not found ~S", tag);
+     }
+}
+

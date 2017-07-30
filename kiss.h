@@ -325,6 +325,7 @@ kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda,
 #define KISS_IS_INPUT_STREAM(x)     (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_INPUT_STREAM))
 #define KISS_IS_OUTPUT_STREAM(x)    (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_OUTPUT_STREAM))
 #define KISS_IS_CHARACTER_STREAM(x) (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_CHARACTER_STREAM))
+#define KISS_IS_BYTE_STREAM(x) (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_BYTE_STREAM))
 #define KISS_IS_FILE_STREAM(x)      (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_FILE_STREAM))
 #define KISS_IS_STRING_STREAM(x)    (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_STRING_STREAM))
 
@@ -386,17 +387,6 @@ kiss_obj* kiss_go(kiss_obj* tag);
 /* error.c */
 void Kiss_System_Error (void);
 void Kiss_Err(wchar_t* str, ...);
-kiss_obj* kiss_error(kiss_obj* error_string, kiss_obj* rest);
-void Kiss_Cannot_Chage_Constant_Error(kiss_obj* obj);
-void Kiss_End_Of_Stream_Error(kiss_obj* stream);
-void Kiss_Cannot_Parse_Number_Error(kiss_obj* str);
-kiss_stream_t* Kiss_Input_Char_Stream(kiss_obj* obj);
-kiss_stream_t* Kiss_Output_Char_Stream(kiss_obj* obj);
-void Kiss_Unbound_Variable_Error(kiss_obj* obj);
-void Kiss_Catcher_Not_Found_Error(kiss_obj* tag);
-void Kiss_Block_Not_Found_Error(kiss_obj* name);
-void Kiss_Tagbody_Not_Found_Error(kiss_obj* name);
-void Kiss_Index_Out_Of_Range_Error(kiss_obj* sequence, kiss_obj* index);
 kiss_obj* Kiss_Valid_Sequence_Index(kiss_obj* sequence, kiss_obj* index);
 kiss_cons_t* Kiss_Cons(kiss_obj* obj);
 kiss_obj* Kiss_List(kiss_obj* obj);
@@ -425,6 +415,19 @@ kiss_obj* Kiss_Lambda_List(kiss_obj* list);
 kiss_obj* Kiss_Lambda_Expression(kiss_obj* p);
 kiss_string_stream_t* Kiss_String_Output_Stream(kiss_obj* obj);
 kiss_file_stream_t* Kiss_Open_File_Stream(kiss_obj* obj);
+kiss_stream_t* Kiss_Input_Char_Stream(kiss_obj* obj);
+kiss_stream_t* Kiss_Output_Char_Stream(kiss_obj* obj);
+kiss_stream_t* Kiss_Input_Byte_Stream(kiss_obj* obj);
+kiss_stream_t* Kiss_Output_Byte_Stream(kiss_obj* obj);
+void Kiss_Unbound_Variable_Error(kiss_obj* obj);
+void Kiss_Catcher_Not_Found_Error(kiss_obj* tag);
+void Kiss_Block_Not_Found_Error(kiss_obj* name);
+void Kiss_Tagbody_Not_Found_Error(kiss_obj* name);
+void Kiss_Index_Out_Of_Range_Error(kiss_obj* sequence, kiss_obj* index);
+kiss_obj* kiss_error(kiss_obj* error_string, kiss_obj* rest);
+void Kiss_Cannot_Chage_Constant_Error(kiss_obj* obj);
+void Kiss_End_Of_Stream_Error(kiss_obj* stream);
+void Kiss_Cannot_Parse_Number_Error(kiss_obj* str);
 
 /* eval.c */
 kiss_obj* kiss_eval(kiss_obj* form);
@@ -551,6 +554,8 @@ kiss_obj* kiss_output_char_stream_p(kiss_obj* p);
 kiss_obj* kiss_c_read_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val);
 kiss_obj* kiss_c_preview_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val);
 kiss_obj* kiss_read_char(kiss_obj* args);
+kiss_obj* kiss_c_read_byte(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val);
+kiss_obj* kiss_read_byte(kiss_obj* input_stream, kiss_obj* args);
 kiss_obj* kiss_preview_char(kiss_obj* args);
 kiss_obj* kiss_c_read_line(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val);
 kiss_obj* kiss_read_line(kiss_obj* args);
