@@ -2563,6 +2563,25 @@ kiss_symbol_t KISS_Soutput_stream_p = {
     KISS_NIL,                        /* plist */
 };
 
+kiss_symbol_t KISS_Sstream_ready_p;
+kiss_cfunction_t KISS_CFstream_ready_p = {
+    KISS_CFUNCTION,      /* type */
+    &KISS_Sstream_ready_p, /* name */
+    kiss_stream_ready_p,   /* C function name */
+    1,              /* minimum argument number */
+    1,              /* maximum argument number */
+};
+kiss_symbol_t KISS_Sstream_ready_p = {
+    KISS_SYMBOL,
+    0,                 /* gc_flag */
+    NULL,              /* gc_next */
+    L"stream-ready-p",
+    KISS_CONSTANT_FUN,
+    NULL,                       /* var */
+    (kiss_obj*)&KISS_CFstream_ready_p, /* fun */
+    KISS_NIL,                        /* plist */
+};
+
 
 kiss_symbol_t KISS_Screate_string_input_stream;
 kiss_cfunction_t KISS_CFcreate_string_input_stream = {
@@ -3140,7 +3159,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Ss_standard_input_s, &KISS_Ss_standard_output_s, &KISS_Ss_error_output_s,
     &KISS_Sclose, &KISS_Sopen_stream_p,
     &KISS_Sopen_input_file, &KISS_Sopen_output_file, &KISS_Sopen_io_file,
-    &KISS_Sfinish_output, &KISS_Sread_line,
+    &KISS_Sfinish_output, &KISS_Sread_line, &KISS_Sstream_ready_p,
     
 
     /* format.c */

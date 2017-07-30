@@ -559,6 +559,7 @@ kiss_obj* kiss_open_output_file(kiss_obj* filename, kiss_obj* rest);
 kiss_obj* kiss_open_io_file(kiss_obj* filename, kiss_obj* rest);
 kiss_obj* kiss_close(kiss_obj* obj);
 kiss_obj* kiss_finish_output (kiss_obj* obj);
+kiss_obj* kiss_stream_ready_p(kiss_obj* obj);
 
 /* string.c */
 kiss_string_t* kiss_make_string(wchar_t* s);
