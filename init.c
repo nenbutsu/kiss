@@ -28,6 +28,19 @@ void kiss_init_error_catcher(void) {
 }
 
 void kiss_initialize(void) {
+     fwide(stdin, 1);
+     fwide(stdout, 1);
+     fwide(stderr, 1);
+     setlocale (LC_ALL, "");
+     char* s = setlocale(LC_ALL, NULL);
+     size_t size = strlen(s) * sizeof(wchar_t) + 1;
+     wchar_t* wcs = Kiss_Malloc(size);
+     if (mbstowcs(wcs, s, size) == -1) {
+	  perror(NULL);
+	  exit(EXIT_FAILURE);
+     }
+     fwprintf(stderr, L"LOCALE = %S\n", wcs);
+     free(wcs);
      kiss_init_environment();
      kiss_init_symbols();
      kiss_init_streams();
