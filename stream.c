@@ -361,6 +361,44 @@ kiss_obj* kiss_read_char(kiss_obj* args) {
      return kiss_c_read_char(in, eos_err_p, eos_val);
 }
 
+/* Reads a line of characters from input-stream and returns them as a string
+   (without the newline character at the end of the line).
+   If an end-of-stream is reached before the next newline character
+   and a non-empty line has been read prior to the end-of-stream, that line is returned. */
+kiss_obj* kiss_c_read_line(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val) {
+     kiss_obj* p = KISS_NIL;
+     kiss_obj* c = kiss_c_read_char(in, eos_err_p, KISS_NIL);
+     if (c == KISS_NIL) { return eos_val; }
+     while (c != KISS_NIL) {
+	  if (((kiss_character_t*)c)->c == L'\n') {
+	       break;
+	  }
+	  kiss_push(c, &p);
+	  c = kiss_c_read_char(in, KISS_NIL, KISS_NIL);
+     }
+     return (kiss_obj*)kiss_chars_to_str(kiss_nreverse(p));
+}
+
+
+/* (read-line [input-stream [eos-error-p [eos-value]]]) -> <object> */
+kiss_obj* kiss_read_line(kiss_obj* args) {
+     kiss_obj* in = kiss_standard_input();
+     kiss_obj* eos_err_p = KISS_T;
+     kiss_obj* eos_val = KISS_NIL;
+     if (KISS_IS_CONS(args)) {
+	  in = KISS_CAR(args);
+	  args = KISS_CDR(args);
+	  if (KISS_IS_CONS(args)) {
+	       eos_err_p = KISS_CAR(args);
+	       args = KISS_CDR(args);
+	       if (KISS_IS_CONS(args)) {
+		    eos_val = KISS_CAR(args);
+	       }
+	  }
+     }
+     return kiss_c_read_line(in, eos_err_p, eos_val);
+}
+
 
 kiss_obj* kiss_c_preview_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val) {
      if (KISS_IS_FILE_STREAM(Kiss_Input_Char_Stream(in))) {

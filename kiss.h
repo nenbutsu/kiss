@@ -548,6 +548,8 @@ kiss_obj* kiss_c_read_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val)
 kiss_obj* kiss_c_preview_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val);
 kiss_obj* kiss_read_char(kiss_obj* args);
 kiss_obj* kiss_preview_char(kiss_obj* args);
+kiss_obj* kiss_c_read_line(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val);
+kiss_obj* kiss_read_line(kiss_obj* args);
 kiss_obj* kiss_format_char(kiss_obj* out, kiss_obj* obj);
 kiss_obj* kiss_open_input_file(kiss_obj* filename, kiss_obj* rest);
 kiss_obj* kiss_open_output_file(kiss_obj* filename, kiss_obj* rest);

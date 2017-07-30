@@ -46,3 +46,14 @@
 	(format (error-output) "love me tender...")
 	(setq message (get-output-stream-string (error-output))))
   (string= message "love me tender..."))
+
+;; read-line
+(null (with-open-output-file (out "newfile")
+		       (format out "This is an example")
+		       (format out "~%")
+		       (format out "look at the output file")))
+(defglobal str (open-input-file "newfile"))
+(equal (read-line str) "This is an example")
+(equal (read-line str) "look at the output file")
+
+

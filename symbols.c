@@ -2642,6 +2642,25 @@ kiss_symbol_t KISS_Spreview_char = {
     KISS_NIL,                        /* plist */
 };
 
+kiss_symbol_t KISS_Sread_line;
+kiss_cfunction_t KISS_CFread_line = {
+    KISS_CFUNCTION,      /* type */
+    &KISS_Sread_line, /* name */
+    kiss_read_line,   /* C function name */
+    0,              /* minimum argument number */
+    3,              /* maximum argument number */
+};
+kiss_symbol_t KISS_Sread_line = {
+    KISS_SYMBOL,
+    0,                 /* gc_flag */
+    NULL,              /* gc_next */
+    L"read-line",
+    KISS_CONSTANT_FUN,
+    NULL,                       /* var */
+    (kiss_obj*)&KISS_CFread_line, /* fun */
+    KISS_NIL,                        /* plist */
+};
+
 
 kiss_symbol_t KISS_Sget_output_stream_string;
 kiss_cfunction_t KISS_CFget_output_stream_string = {
@@ -3121,7 +3140,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Ss_standard_input_s, &KISS_Ss_standard_output_s, &KISS_Ss_error_output_s,
     &KISS_Sclose, &KISS_Sopen_stream_p,
     &KISS_Sopen_input_file, &KISS_Sopen_output_file, &KISS_Sopen_io_file,
-    &KISS_Sfinish_output,
+    &KISS_Sfinish_output, &KISS_Sread_line,
     
 
     /* format.c */
