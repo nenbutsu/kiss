@@ -52,6 +52,7 @@ static kiss_file_stream_t* kiss_make_file_stream(FILE* fp) {
      p->flags = KISS_FILE_STREAM;
      p->file_ptr = fp;
      p->column = 0;
+     p->pos =0;
      return p;
 }
 
@@ -159,6 +160,15 @@ char* kiss_wcstombs(const wchar_t* src) {
      return str;
 }
 
+static int kiss_is_character_class(kiss_obj* obj) {
+     if (!KISS_IS_OBJECT(obj)) { return 0; }
+     kiss_obj* class = kiss_cfuncall(L"kiss::class", kiss_c_list(1, kiss_symbol(L"<character>")));
+     if (obj == class) {
+	  return 1;
+     } else {
+	  return 0;
+     }
+}
 
 /* function: (open-input-file filename [element-class]) -> <stream>
    open-input-file opens a file for input only.
@@ -180,10 +190,12 @@ kiss_obj* kiss_open_input_file(kiss_obj* filename, kiss_obj* rest) {
      else {
 	  kiss_file_stream_t* stream = kiss_make_file_stream(fp);
 
-	  if (rest == KISS_NIL) {
+	  if (rest == KISS_NIL || kiss_is_character_class(kiss_car(rest))) {
 	       stream->flags |= (KISS_INPUT_STREAM | KISS_CHARACTER_STREAM);
+	       fwide(fp, 1);
 	  } else if (Kiss_Integer(kiss_car(rest))->i == 8) {
 	       stream->flags |= (KISS_INPUT_STREAM | KISS_BYTE_STREAM);
+	       fwide(fp, -1);
 	  } else {
 	       Kiss_Err(L"only 8 bit-binary-element-class is supported ~S", kiss_car(rest));
 	  }
@@ -211,10 +223,12 @@ kiss_obj* kiss_open_output_file(kiss_obj* filename, kiss_obj* rest) {
      else {
 	  kiss_file_stream_t* stream = kiss_make_file_stream(fp);
 
-	  if (rest == KISS_NIL) {
+	  if (rest == KISS_NIL || kiss_is_character_class(kiss_car(rest))) {
 	       stream->flags |= (KISS_OUTPUT_STREAM | KISS_CHARACTER_STREAM);
+	       fwide(fp, 1);
 	  } else if (Kiss_Integer(kiss_car(rest))->i == 8) {
 	       stream->flags |= (KISS_OUTPUT_STREAM | KISS_BYTE_STREAM);
+	       fwide(fp, -1);
 	  } else {
 	       Kiss_Err(L"only 8 bit-binary-element-class is supported ~S", kiss_car(rest));
 	  }
@@ -242,10 +256,12 @@ kiss_obj* kiss_open_io_file(kiss_obj* filename, kiss_obj* rest) {
      else {
 	  kiss_file_stream_t* stream = kiss_make_file_stream(fp);
 
-	  if (rest == KISS_NIL) {
+	  if (rest == KISS_NIL || kiss_is_character_class(kiss_car(rest))) {
 	       stream->flags |= (KISS_OUTPUT_STREAM | KISS_INPUT_STREAM | KISS_CHARACTER_STREAM);
+	       fwide(fp, 1);
 	  } else if (Kiss_Integer(kiss_car(rest))->i == 8) {
 	       stream->flags |= (KISS_OUTPUT_STREAM | KISS_INPUT_STREAM | KISS_BYTE_STREAM);
+	       fwide(fp, -1);
 	  } else {
 	       Kiss_Err(L"only 8 bit-binary-element-class is supported ~S", kiss_car(rest));
 	  }
@@ -266,7 +282,7 @@ kiss_obj* kiss_finish_output (kiss_obj* obj) {
 	  Kiss_Err(L"output stream expected ~S", obj);
      }
      if (KISS_IS_FILE_STREAM(obj)) {
-	  kiss_file_stream_t* stream = (kiss_file_stream_t*)obj;
+	  kiss_file_stream_t* stream = Kiss_Open_File_Stream(obj);
 	  int result = fflush(stream->file_ptr);
 	  if (result == EOF) {
 	       Kiss_System_Error();
@@ -309,12 +325,13 @@ kiss_obj* kiss_get_output_stream_string(kiss_obj* stream) {
 
 kiss_obj* kiss_c_read_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val) {
      if (KISS_IS_FILE_STREAM(Kiss_Input_Char_Stream(in))) {
-	  FILE* fp = ((kiss_file_stream_t*)in)->file_ptr;
+	  FILE* fp = Kiss_Open_File_Stream(in)->file_ptr;
 	  wint_t c = fgetwc(fp);
 	  if (c == WEOF) {
 	       if (ferror(fp)) { Kiss_System_Error(); }
 	       goto eos;
 	  } else {
+	       ((kiss_file_stream_t*)in)->pos++;
 	       return (kiss_obj*)kiss_make_character(c);
 	  }
      } else if (KISS_IS_STRING_STREAM(in)) {
@@ -402,7 +419,7 @@ kiss_obj* kiss_read_line(kiss_obj* args) {
 
 kiss_obj* kiss_c_preview_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val) {
      if (KISS_IS_FILE_STREAM(Kiss_Input_Char_Stream(in))) {
-	  FILE* fp = ((kiss_file_stream_t*)in)->file_ptr;
+	  FILE* fp = Kiss_Open_File_Stream(in)->file_ptr;
 	  wint_t c = fgetwc(fp);
 	  if (c == WEOF) {
 	       if (ferror(fp)) { Kiss_System_Error(); }
@@ -463,7 +480,7 @@ static size_t kiss_next_column(size_t column, size_t width) {
 kiss_obj* kiss_format_char(kiss_obj* output, kiss_obj* character) {
      kiss_character_t* c = Kiss_Character(character);
      if (KISS_IS_FILE_STREAM(Kiss_Output_Char_Stream(output))) {
-	  kiss_file_stream_t* out = (kiss_file_stream_t*)output;
+	  kiss_file_stream_t* out = Kiss_Open_File_Stream(output);
 	  FILE* fp = out->file_ptr;
 	  if (c->c == L'\n') {
 	       out->column = 0;
@@ -471,11 +488,12 @@ kiss_obj* kiss_format_char(kiss_obj* output, kiss_obj* character) {
 	       size_t column = out->column;
 	       size_t width = Kiss_Integer(kiss_dynamic(kiss_symbol(L"*column-width*")))->i;
 	       out->column = kiss_next_column(column, width);
-	  } else {
-	       out->column += 1;
 	  }
 	  if (fputwc(c->c, fp) == WEOF) {
 	       Kiss_System_Error();
+	  } else {
+	       out->column++;
+	       out->pos++;
 	  }
      } else if (KISS_IS_STRING_STREAM(output)) {
 	  kiss_string_stream_t* out = (kiss_string_stream_t*)output;
@@ -496,3 +514,28 @@ kiss_obj* kiss_format_char(kiss_obj* output, kiss_obj* character) {
      return KISS_NIL;
 }
 
+/* function: (stream-ready-p input-stream) -> boolean
+   Returns t if an attempt to obtain the next element from the stream will not cause the
+   processor to have to wait; otherwise, returns nil.
+   An error shall be signaled if stream is not a stream that can handle input operations
+   (error-id. domain-error). */
+kiss_obj* kiss_stream_ready_p(kiss_obj* obj) {
+     Kiss_Stream(obj);
+     if (!KISS_IS_INPUT_STREAM(obj)) {
+	  Kiss_Err(L"input stream expected ~S", obj);
+     }
+     if (KISS_IS_FILE_STREAM(obj)) {
+	  kiss_file_stream_t* f = (kiss_file_stream_t*)obj;
+	  if (f->file_ptr == NULL) {
+	       Kiss_Err(L"file stream is closed ~S", obj);
+	  }
+	  if (isatty(fileno(f->file_ptr))) {
+	       return KISS_NIL;
+	  } else {
+	       return KISS_T;
+	  }
+	  
+     } else {
+	  return KISS_T;
+     }
+}

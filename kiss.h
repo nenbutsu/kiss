@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <wchar.h>
 #include <wctype.h>
 
@@ -248,6 +249,7 @@ typedef struct {
      kiss_stream_flags flags;
      size_t column;
      FILE* file_ptr;
+     size_t pos;
 } kiss_file_stream_t;
 
 typedef struct {
@@ -422,6 +424,7 @@ kiss_oo_obj_t* Kiss_Object(kiss_obj* obj);
 kiss_obj* Kiss_Lambda_List(kiss_obj* list);
 kiss_obj* Kiss_Lambda_Expression(kiss_obj* p);
 kiss_string_stream_t* Kiss_String_Output_Stream(kiss_obj* obj);
+kiss_file_stream_t* Kiss_Open_File_Stream(kiss_obj* obj);
 
 /* eval.c */
 kiss_obj* kiss_eval(kiss_obj* form);

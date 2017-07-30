@@ -284,6 +284,14 @@ kiss_stream_t* Kiss_Output_Char_Stream(kiss_obj* obj) {
     return (kiss_stream_t*)obj;
 }
 
+kiss_file_stream_t* Kiss_Open_File_Stream(kiss_obj* obj) {
+     Kiss_Stream(obj);
+     if (KISS_IS_FILE_STREAM(obj) || ((kiss_file_stream_t*)obj)->file_ptr) {
+	  return (kiss_file_stream_t*)obj;
+     }
+     Kiss_Err(L"Open file stream expected ~S", obj);
+}
+
 kiss_string_stream_t* Kiss_String_Output_Stream(kiss_obj* obj) {
     if (!KISS_IS_OUTPUT_STREAM(obj) || !KISS_IS_STRING_STREAM(obj)) {
 	Kiss_Err(L"String output stream expected ~S", obj);
