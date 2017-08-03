@@ -158,10 +158,24 @@ typedef struct {
      size_t rank;
 } kiss_general_array_t;
 
+typedef union {
+     kiss_cf0_t f0;
+     kiss_cf1_t f1;
+     kiss_cf2_t f2;
+     kiss_cf3_t f3;
+     kiss_cf4_t f4;
+     kiss_cf5_t f5;
+     kiss_cf6_t f6;
+     kiss_cf7_t f7;
+     kiss_cf8_t f8;
+     kiss_cf9_t f9;
+     kiss_cf10_t f10;
+} kiss_cf_t;
+
 typedef struct {
      kiss_type type;
      kiss_symbol_t* name;
-     void* fun;
+     kiss_cf_t* fun;
      int min_args;
      int max_args;
 } kiss_cfunction_t;
@@ -522,7 +536,7 @@ void* Kiss_Malloc(size_t size);
 void* Kiss_Malloc_Atomic(size_t size);
 
 /* read.c */
-kiss_obj* kiss_cread(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val);
+kiss_obj* kiss_c_read(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val);
 kiss_obj* kiss_read(kiss_obj* args);
 
 /* repl.c */
@@ -556,6 +570,7 @@ kiss_obj* kiss_c_preview_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_v
 kiss_obj* kiss_read_char(kiss_obj* args);
 kiss_obj* kiss_c_read_byte(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val);
 kiss_obj* kiss_read_byte(kiss_obj* input_stream, kiss_obj* args);
+kiss_obj* kiss_write_byte(kiss_obj* z, kiss_obj* output);
 kiss_obj* kiss_preview_char(kiss_obj* args);
 kiss_obj* kiss_c_read_line(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val);
 kiss_obj* kiss_read_line(kiss_obj* args);

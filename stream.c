@@ -579,3 +579,27 @@ kiss_obj* kiss_read_byte(kiss_obj* in, kiss_obj* args) {
      }
      return kiss_c_read_byte(in, eos_err_p, eos_val);
 }
+
+/* (write-byte z output-stream) -> <integer>
+   Writes z to the output-stream and returns it.
+   An error shall be signaled if z is not an integer in the range appropriate to
+   the stream element type of output-stream or if output-stream is not a stream
+   capable of handling output operations (error-id. domain-error). */
+kiss_obj* kiss_write_byte(kiss_obj* z, kiss_obj* output) {
+     if (KISS_IS_FILE_STREAM(Kiss_Output_Byte_Stream(output))) {
+	  FILE* fp = Kiss_Open_File_Stream(output)->file_ptr;
+	  long int i = Kiss_Integer(z)->i;
+	  if (i > 255) {
+	       Kiss_Err(L"Greater than 8-bit integer ~S", z);
+	  }
+	  if(fputc(i, fp) == EOF) {
+	       Kiss_System_Error();
+	  } else {
+	       ((kiss_file_stream_t*)output)->pos++;
+	  }
+	  return z;
+     } else {
+	  fwprintf(stderr, L"kiss_write_byte: unknown output stream type = %d", KISS_OBJ_TYPE(output));
+	  exit(EXIT_FAILURE);
+     }
+}

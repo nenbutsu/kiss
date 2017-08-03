@@ -274,7 +274,7 @@ static kiss_obj* kiss_read_sharp_reader_macro(kiss_obj* in) {
      switch (c->c) {
      case L'\'': /* #'f */
 	  kiss_c_read_char(in, KISS_NIL, KISS_EOS);
-	  return kiss_c_list(2, KISS_SFUNCTION, kiss_cread(in, KISS_T, KISS_NIL));
+	  return kiss_c_list(2, KISS_SFUNCTION, kiss_c_read(in, KISS_T, KISS_NIL));
      case L'\\': /* #\c */
 	  kiss_c_read_char(in, KISS_NIL, KISS_EOS);
 	  return kiss_read_sharp_reader_macro_char(in);
@@ -296,7 +296,7 @@ static kiss_obj* kiss_read_comma_at(kiss_obj* in) {
     kiss_obj* p;
     if (env->dynamic_env.backquote_nest == 0) Kiss_Err(L"Out of place ,@");
     env->dynamic_env.backquote_nest--;
-    p = kiss_cread(in, KISS_NIL, KISS_EOS);
+    p = kiss_c_read(in, KISS_NIL, KISS_EOS);
     if (p == KISS_EOS) { Kiss_Err(L"Missing form after comma-at ,@"); }
     env->dynamic_env.backquote_nest++;
     return kiss_c_list(2, KISS_COMMA_AT, p);
@@ -307,7 +307,7 @@ static kiss_obj* kiss_read_comma(kiss_obj* in) {
     kiss_obj* p;
     if (env->dynamic_env.backquote_nest == 0) Kiss_Err(L"Out of place ,");
     env->dynamic_env.backquote_nest--;
-    p = kiss_cread(in, KISS_NIL, KISS_EOS);
+    p = kiss_c_read(in, KISS_NIL, KISS_EOS);
     if (p == KISS_EOS) { Kiss_Err(L"Missing form after comma ,"); }
     env->dynamic_env.backquote_nest++;
     return kiss_c_list(2, KISS_COMMA, p);
@@ -366,7 +366,7 @@ static kiss_obj* kiss_read_backquote(kiss_obj* in) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_obj* p;
     env->dynamic_env.backquote_nest++;
-    p = kiss_cread(in, KISS_NIL, KISS_EOS);
+    p = kiss_c_read(in, KISS_NIL, KISS_EOS);
     if (p == KISS_EOS) { Kiss_Err(L"Missing form after backquote `"); }
     env->dynamic_env.backquote_nest--;
     return kiss_expand_backquote(p);
@@ -406,7 +406,7 @@ static kiss_obj* kiss_read_lexeme(kiss_obj* in) {
 	case L'\'': {
 	    kiss_obj* obj;
 	    kiss_c_read_char(in, KISS_NIL, KISS_NIL);
-	    obj = kiss_cread(in, KISS_NIL, KISS_EOS);
+	    obj = kiss_c_read(in, KISS_NIL, KISS_EOS);
 	    if (obj == KISS_EOS) Kiss_Err(L"Stray quote '");
 	    return kiss_c_list(2, KISS_QUOTE, obj);
 	}
@@ -429,7 +429,7 @@ static kiss_obj* kiss_read_lexeme(kiss_obj* in) {
     }
 }
 
-kiss_obj* kiss_cread(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val) {
+kiss_obj* kiss_c_read(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val) {
     kiss_obj* p = kiss_read_lexeme(in);
     if (p == NULL) {
 	if (eos_err_p != KISS_NIL) {
@@ -452,7 +452,7 @@ kiss_obj* kiss_read(kiss_obj* args) {
     if (KISS_IS_CONS(args)) {
 	in = KISS_CAR(args);
 	args = KISS_CDR(args);
-	if (KISS_IS_CONS(args)) { /* process args */
+	if (KISS_IS_CONS(args)) {
 	    eos_err_p = KISS_CAR(args);
 	    args = KISS_CDR(args);
 	    if (KISS_IS_CONS(args)) {
@@ -460,5 +460,5 @@ kiss_obj* kiss_read(kiss_obj* args) {
 	    }
 	}
     }
-    return kiss_cread(in, eos_err_p, eos_val);
+    return kiss_c_read(in, eos_err_p, eos_val);
 }

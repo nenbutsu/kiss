@@ -200,7 +200,7 @@ kiss_symbol_t KISS_Scons;
 kiss_cfunction_t KISS_CFcons = {
     KISS_CFUNCTION, /* type */
     &KISS_Scons,    /* name */
-    kiss_cons,      /* C function name */
+    (kiss_cf_t*)kiss_cons,      /* C function name */
     2,         /* minimum argument number */
     2,         /* maximum argument number */
 };
@@ -218,11 +218,11 @@ kiss_symbol_t KISS_Scons = {
 
 kiss_symbol_t KISS_Scar;
 kiss_cfunction_t KISS_CFcar = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Scar,     /* name */
-    kiss_car,       /* C function name */
-    1,         /* minimum argument number */
-    1,         /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Scar,     /* name */
+     (kiss_cf_t*)kiss_car,       /* C function name */
+     1,         /* minimum argument number */
+     1,         /* maximum argument number */
 };
 kiss_symbol_t KISS_Scar = {
     KISS_SYMBOL,
@@ -239,7 +239,7 @@ kiss_symbol_t KISS_Scdr;
 kiss_cfunction_t KISS_CFcdr = {
     KISS_CFUNCTION, /* type */
     &KISS_Scdr,     /* name */
-    kiss_cdr,       /* C function name */
+    (kiss_cf_t*)kiss_cdr,       /* C function name */
     1,         /* minimum argument number */
     1,         /* maximum argument number */
 };
@@ -258,7 +258,7 @@ kiss_symbol_t KISS_Scadr;
 kiss_cfunction_t KISS_CFcadr = {
     KISS_CFUNCTION, /* type */
     &KISS_Scadr,    /* name */
-    kiss_cadr,      /* C function name */
+        (kiss_cf_t*)kiss_cadr,      /* C function name */
     1,         /* minimum argument number */
     1,         /* maximum argument number */
 };
@@ -278,7 +278,7 @@ kiss_symbol_t KISS_Scddr;
 kiss_cfunction_t KISS_CFcddr = {
     KISS_CFUNCTION, /* type */
     &KISS_Scddr,    /* name */
-    kiss_cddr,      /* C function name */
+        (kiss_cf_t*)kiss_cddr,      /* C function name */
     1,         /* minimum argument number */
     1,         /* maximum argument number */
 };
@@ -298,7 +298,7 @@ kiss_symbol_t KISS_Scaddr;
 kiss_cfunction_t KISS_CFcaddr = {
     KISS_CFUNCTION, /* type */
     &KISS_Scaddr,   /* name */
-    kiss_caddr,     /* C function name */
+        (kiss_cf_t*)kiss_caddr,     /* C function name */
     1,         /* minimum argument number */
     1,         /* maximum argument number */
 };
@@ -318,7 +318,7 @@ kiss_symbol_t KISS_Sconsp;
 kiss_cfunction_t KISS_CFconsp = {
     KISS_CFUNCTION, /* type */
     &KISS_Sconsp,   /* name */
-    kiss_consp,     /* C function name */
+        (kiss_cf_t*)kiss_consp,     /* C function name */
     1,         /* minimum argument number */
     1,         /* maximum argument number */
 };
@@ -338,7 +338,7 @@ kiss_symbol_t KISS_Sset_car;
 kiss_cfunction_t KISS_CFset_car = {
     KISS_CFUNCTION, /* type */
     &KISS_Sset_car, /* name */
-    kiss_set_car,   /* C function name */
+        (kiss_cf_t*)kiss_set_car,   /* C function name */
     2,         /* minimum argument number */
     2,         /* maximum argument number */
 };
@@ -358,7 +358,7 @@ kiss_symbol_t KISS_Sset_cdr;
 kiss_cfunction_t KISS_CFset_cdr = {
     KISS_CFUNCTION, /* type */
     &KISS_Sset_cdr, /* name */
-    kiss_set_cdr,   /* C function name */
+        (kiss_cf_t*)kiss_set_cdr,   /* C function name */
     2,         /* minimum argument number */
     2,         /* maximum argument number */
 };
@@ -378,7 +378,7 @@ kiss_symbol_t KISS_Slist;
 kiss_cfunction_t KISS_CFlist = {
     KISS_CFUNCTION, /* type */
     &KISS_Slist,    /* name */
-    kiss_list,      /* C function name */
+        (kiss_cf_t*)kiss_list,      /* C function name */
     0,         /* minimum argument number */
     -1,        /* maximum argument number */
 };
@@ -398,7 +398,7 @@ kiss_symbol_t KISS_Sappend;
 kiss_cfunction_t KISS_CFappend = {
     KISS_CFUNCTION, /* type */
     &KISS_Sappend,  /* name */
-    kiss_append,    /* C function name */
+        (kiss_cf_t*)kiss_append,    /* C function name */
     0,         /* minimum argument number */
     -1,        /* maximum argument number */
 };
@@ -417,7 +417,7 @@ kiss_symbol_t KISS_Sappend_s;
 kiss_cfunction_t KISS_CFappend_s = {
     KISS_CFUNCTION, /* type */
     &KISS_Sappend_s,  /* name */
-    kiss_append_s,    /* C function name */
+        (kiss_cf_t*)kiss_append_s,    /* C function name */
     0,         /* minimum argument number */
     -1,        /* maximum argument number */
 };
@@ -437,7 +437,7 @@ kiss_symbol_t KISS_Sreverse;
 kiss_cfunction_t KISS_CFreverse = {
     KISS_CFUNCTION, /* type */
     &KISS_Sreverse, /* name */
-    kiss_reverse,   /* C function name */
+        (kiss_cf_t*)kiss_reverse,   /* C function name */
     1,         /* minimum argument number */
     1,         /* maximum argument number */
 };
@@ -457,7 +457,7 @@ kiss_symbol_t KISS_Snreverse;
 kiss_cfunction_t KISS_CFnreverse = {
     KISS_CFUNCTION,  /* type */
     &KISS_Snreverse, /* name */
-    kiss_nreverse,   /* C function name */
+        (kiss_cf_t*)kiss_nreverse,   /* C function name */
     1,          /* minimum argument number */
     1,          /* maximum argument number */
 };
@@ -477,7 +477,7 @@ kiss_symbol_t KISS_Smember;
 kiss_cfunction_t KISS_CFmember = {
     KISS_CFUNCTION, /* type */
     &KISS_Smember,  /* name */
-    kiss_member,    /* C function name */
+        (kiss_cf_t*)kiss_member,    /* C function name */
     2,         /* minimum argument number */
     2,         /* maximum argument number */
 };
@@ -497,7 +497,7 @@ kiss_symbol_t KISS_Sassoc;
 kiss_cfunction_t KISS_CFassoc = {
     KISS_CFUNCTION, /* type */
     &KISS_Sassoc,   /* name */
-    kiss_assoc,     /* C function name */
+        (kiss_cf_t*)kiss_assoc,     /* C function name */
     2,         /* minimum argument number */
     2,         /* maximum argument number */
 };
@@ -517,7 +517,7 @@ kiss_symbol_t KISS_Scopy_list;
 kiss_cfunction_t KISS_CFcopy_list = {
     KISS_CFUNCTION, /* type */
     &KISS_Scopy_list,   /* name */
-    kiss_copy_list,     /* C function name */
+        (kiss_cf_t*)kiss_copy_list,     /* C function name */
     1,         /* minimum argument number */
     1,         /* maximum argument number */
 };
@@ -537,7 +537,7 @@ kiss_symbol_t KISS_Splist_member;
 kiss_cfunction_t KISS_CFplist_member = {
     KISS_CFUNCTION, /* type */
     &KISS_Splist_member,   /* name */
-    kiss_plist_member,     /* C function name */
+        (kiss_cf_t*)kiss_plist_member,     /* C function name */
     2,         /* minimum argument number */
     2,         /* maximum argument number */
 };
@@ -556,7 +556,7 @@ kiss_symbol_t KISS_Splist_get;
 kiss_cfunction_t KISS_CFplist_get = {
     KISS_CFUNCTION, /* type */
     &KISS_Splist_get,   /* name */
-    kiss_plist_get,     /* C function name */
+        (kiss_cf_t*)kiss_plist_get,     /* C function name */
     2,         /* minimum argument number */
     2,         /* maximum argument number */
 };
@@ -576,7 +576,7 @@ kiss_symbol_t KISS_Splist_put;
 kiss_cfunction_t KISS_CFplist_put = {
     KISS_CFUNCTION, /* type */
     &KISS_Splist_put,   /* name */
-    kiss_plist_put,     /* C function name */
+        (kiss_cf_t*)kiss_plist_put,     /* C function name */
     3,         /* minimum argument number */
     3,         /* maximum argument number */
 };
@@ -597,7 +597,7 @@ kiss_symbol_t KISS_Screate_array;
 kiss_cfunction_t KISS_CFcreate_array = {
     KISS_CFUNCTION,               /* type */
     &KISS_Screate_array, /* name */
-    kiss_create_array,   /* C function name */
+        (kiss_cf_t*)kiss_create_array,   /* C function name */
     1,         /* minimum argument number */
     2,         /* maximum argument number */
 };
@@ -616,7 +616,7 @@ kiss_symbol_t KISS_Sgaref;
 kiss_cfunction_t KISS_CFgaref = {
     KISS_CFUNCTION,               /* type */
     &KISS_Sgaref, /* name */
-    kiss_garef,   /* C function name */
+        (kiss_cf_t*)kiss_garef,   /* C function name */
     1,         /* minimum argument number */
     -1,         /* maximum argument number */
 };
@@ -635,7 +635,7 @@ kiss_symbol_t KISS_Saref;
 kiss_cfunction_t KISS_CFaref = {
     KISS_CFUNCTION,               /* type */
     &KISS_Saref, /* name */
-    kiss_aref,   /* C function name */
+        (kiss_cf_t*)kiss_aref,   /* C function name */
     1,         /* minimum argument number */
     -1,         /* maximum argument number */
 };
@@ -654,7 +654,7 @@ kiss_symbol_t KISS_Sset_garef;
 kiss_cfunction_t KISS_CFset_garef = {
     KISS_CFUNCTION,               /* type */
     &KISS_Sset_garef, /* name */
-    kiss_set_garef,   /* C function name */
+        (kiss_cf_t*)kiss_set_garef,   /* C function name */
     2,         /* minimum argument number */
     -1,         /* maximum argument number */
 };
@@ -673,7 +673,7 @@ kiss_symbol_t KISS_Sset_aref;
 kiss_cfunction_t KISS_CFset_aref = {
     KISS_CFUNCTION,               /* type */
     &KISS_Sset_aref, /* name */
-    kiss_set_aref,   /* C function name */
+        (kiss_cf_t*)kiss_set_aref,   /* C function name */
     2,         /* minimum argument number */
     -1,         /* maximum argument number */
 };
@@ -693,7 +693,7 @@ kiss_symbol_t KISS_Sbasic_array_p;
 kiss_cfunction_t KISS_CFbasic_array_p = {
     KISS_CFUNCTION,               /* type */
     &KISS_Sbasic_array_p, /* name */
-    kiss_basic_array_p,   /* C function name */
+        (kiss_cf_t*)kiss_basic_array_p,   /* C function name */
     1,         /* minimum argument number */
     1,         /* maximum argument number */
 };
@@ -712,7 +712,7 @@ kiss_symbol_t KISS_Sbasic_array_s_p;
 kiss_cfunction_t KISS_CFbasic_array_s_p = {
     KISS_CFUNCTION,               /* type */
     &KISS_Sbasic_array_s_p, /* name */
-    kiss_basic_array_s_p,   /* C function name */
+        (kiss_cf_t*)kiss_basic_array_s_p,   /* C function name */
     1,         /* minimum argument number */
     1,         /* maximum argument number */
 };
@@ -731,7 +731,7 @@ kiss_symbol_t KISS_Sgeneral_array_s_p;
 kiss_cfunction_t KISS_CFgeneral_array_s_p = {
     KISS_CFUNCTION,               /* type */
     &KISS_Sgeneral_array_s_p, /* name */
-    kiss_general_array_s_p,   /* C function name */
+        (kiss_cf_t*)kiss_general_array_s_p,   /* C function name */
     1,         /* minimum argument number */
     1,         /* maximum argument number */
 };
@@ -750,7 +750,7 @@ kiss_symbol_t KISS_Sarray_dimensions;
 kiss_cfunction_t KISS_CFarray_dimensions = {
     KISS_CFUNCTION,               /* type */
     &KISS_Sarray_dimensions, /* name */
-    kiss_array_dimensions,   /* C function name */
+        (kiss_cf_t*)kiss_array_dimensions,   /* C function name */
     1,         /* minimum argument number */
     1,         /* maximum argument number */
 };
@@ -769,7 +769,7 @@ kiss_symbol_t KISS_Sgeneral_array_s_to_list;
 kiss_cfunction_t KISS_CFgeneral_array_s_to_list = {
     KISS_CFUNCTION,               /* type */
     &KISS_Sgeneral_array_s_to_list, /* name */
-    kiss_general_array_s_to_list,   /* C function name */
+        (kiss_cf_t*)kiss_general_array_s_to_list,   /* C function name */
     1,         /* minimum argument number */
     1,         /* maximum argument number */
 };
@@ -790,7 +790,7 @@ kiss_symbol_t KISS_Screate_general_vector;
 kiss_cfunction_t KISS_CFcreate_general_vector = {
     KISS_CFUNCTION,               /* type */
     &KISS_Screate_general_vector, /* name */
-    kiss_create_general_vector,   /* C function name */
+        (kiss_cf_t*)kiss_create_general_vector,   /* C function name */
     1,         /* minimum argument number */
     2,         /* maximum argument number */
 };
@@ -809,7 +809,7 @@ kiss_symbol_t KISS_Svector;
 kiss_cfunction_t KISS_CFvector = {
     KISS_CFUNCTION,        /* type */
     &KISS_Svector, /* name */
-    kiss_vector,   /* C function name */
+        (kiss_cf_t*)kiss_vector,   /* C function name */
     0,                /* minimum argument number */
     -1,               /* maximum argument number */
 };
@@ -828,7 +828,7 @@ kiss_symbol_t KISS_Sgeneral_vector_p;
 kiss_cfunction_t KISS_CFgeneral_vector_p = {
     KISS_CFUNCTION,          /* type */
     &KISS_Sgeneral_vector_p, /* name */
-    kiss_general_vector_p,   /* C function name */
+        (kiss_cf_t*)kiss_general_vector_p,   /* C function name */
     1,                  /* minimum argument number */
     1,                  /* maximum argument number */
 };
@@ -847,7 +847,7 @@ kiss_symbol_t KISS_Sgvref;
 kiss_cfunction_t KISS_CFgvref = {
     KISS_CFUNCTION, /* type */
     &KISS_Sgvref,   /* name */
-    kiss_gvref,     /* C function name */
+        (kiss_cf_t*)kiss_gvref,     /* C function name */
     2,         /* minimum argument number */
     2,         /* maximum argument number */
 };
@@ -866,7 +866,7 @@ kiss_symbol_t KISS_Sset_gvref;
 kiss_cfunction_t KISS_CFset_gvref = {
     KISS_CFUNCTION, /* type */
     &KISS_Sset_gvref,   /* name */
-    kiss_set_gvref,     /* C function name */
+        (kiss_cf_t*)kiss_set_gvref,     /* C function name */
     3,         /* minimum argument number */
     3,         /* maximum argument number */
 };
@@ -887,7 +887,7 @@ kiss_symbol_t KISS_Ssimple_function_p;
 kiss_cfunction_t KISS_CFsimple_function_p = {
     KISS_CFUNCTION,   /* type */
     &KISS_Ssimple_function_p, /* name */
-    kiss_simple_function_p,   /* C function name */
+        (kiss_cf_t*)kiss_simple_function_p,   /* C function name */
     1,          /* minimum argument number */
     1,          /* maximum argument number */
 };
@@ -906,7 +906,7 @@ kiss_symbol_t KISS_Sfunction;
 kiss_cfunction_t KISS_CFfunction = {
     KISS_CMACRO,     /* type */
     &KISS_Sfunction, /* name */
-    kiss_function,   /* C function name */
+        (kiss_cf_t*)kiss_function,   /* C function name */
     1,          /* minimum argument number */
     1,          /* maximum argument number */
 };
@@ -926,7 +926,7 @@ kiss_symbol_t KISS_Slambda;
 kiss_cfunction_t KISS_CFlambda = {
     KISS_CMACRO,   /* type */
     &KISS_Slambda, /* name */
-    kiss_lambda,   /* C function name */
+        (kiss_cf_t*)kiss_lambda,   /* C function name */
     1,        /* minimum argument number */
     -1,       /* maximum argument number */
 };
@@ -946,7 +946,7 @@ kiss_symbol_t KISS_Sflet;
 kiss_cfunction_t KISS_CFflet = {
     KISS_CMACRO, /* type */
     &KISS_Sflet, /* name */
-    kiss_flet,   /* C function name */
+        (kiss_cf_t*)kiss_flet,   /* C function name */
     1,      /* minimum argument number */
     -1,     /* maximum argument number */
 };
@@ -966,7 +966,7 @@ kiss_symbol_t KISS_Slabels;
 kiss_cfunction_t KISS_CFlabels = {
     KISS_CMACRO,   /* type */
     &KISS_Slabels, /* name */
-    kiss_labels,   /* C function name */
+        (kiss_cf_t*)kiss_labels,   /* C function name */
     1,        /* minimum argument number */
     -1,       /* maximum argument number */
 };
@@ -986,7 +986,7 @@ kiss_symbol_t KISS_Sdefun;
 kiss_cfunction_t KISS_Cdefun = {
     KISS_CMACRO,  /* type */
     &KISS_Sdefun, /* name */
-    kiss_defun,   /* C function name */
+        (kiss_cf_t*)kiss_defun,   /* C function name */
     2,       /* minimum argument number */
     -1       /* maximum argument number */
 };
@@ -1006,7 +1006,7 @@ kiss_symbol_t KISS_Sdefmacro;
 kiss_cfunction_t KISS_Cdefmacro = {
     KISS_CMACRO,     /* type */
     &KISS_Sdefmacro, /* name */
-    kiss_defmacro,   /* C function name */
+        (kiss_cf_t*)kiss_defmacro,   /* C function name */
     2,          /* minimum argument number */
     -1          /* maximum argument number */
 };
@@ -1026,7 +1026,7 @@ kiss_symbol_t KISS_Sfuncall;
 kiss_cfunction_t KISS_CFfuncall = {
     KISS_CFUNCTION, /* type */
     &KISS_Sfuncall, /* name */
-    kiss_funcall,   /* C function name */
+        (kiss_cf_t*)kiss_funcall,   /* C function name */
     1,         /* minimum argument number */
     -1,        /* maximum argument number */
 };
@@ -1046,7 +1046,7 @@ kiss_symbol_t KISS_Sapply;
 kiss_cfunction_t KISS_CFapply = {
     KISS_CFUNCTION, /* type */
     &KISS_Sapply,   /* name */
-    kiss_apply,     /* C function name */
+        (kiss_cf_t*)kiss_apply,     /* C function name */
     2,         /* minimum argument number */
     -1,        /* maximum argument number */
 };
@@ -1066,7 +1066,7 @@ kiss_symbol_t KISS_Ssetq;
 kiss_cfunction_t KISS_CFsetq = {
     KISS_CMACRO, /* type */
     &KISS_Ssetq, /* name */
-    kiss_setq,   /* C function name */
+        (kiss_cf_t*)kiss_setq,   /* C function name */
     2,      /* minimum argument number */
     2,      /* maximum argument number */
 };
@@ -1086,7 +1086,7 @@ kiss_symbol_t KISS_Sdefglobal;
 kiss_cfunction_t KISS_CFdefglobal = {
     KISS_CMACRO,      /* type */
     &KISS_Sdefglobal, /* name */
-    kiss_defglobal,   /* C function name */
+        (kiss_cf_t*)kiss_defglobal,   /* C function name */
     2,           /* minimum argument number */
     2,           /* maximum argument number */
 };
@@ -1105,7 +1105,7 @@ kiss_symbol_t KISS_Sdefconstant;
 kiss_cfunction_t KISS_CFdefconstant = {
     KISS_CMACRO,        /* type */
     &KISS_Sdefconstant, /* name */
-    kiss_defconstant,   /* C function name */
+        (kiss_cf_t*)kiss_defconstant,   /* C function name */
     2,                  /* minimum argument number */
     2,                  /* maximum argument number */
 };
@@ -1125,7 +1125,7 @@ kiss_symbol_t KISS_Slet;
 kiss_cfunction_t KISS_CFlet = {
     KISS_CMACRO, /* type */
     &KISS_Slet,  /* name */
-    kiss_let,    /* C function name */
+        (kiss_cf_t*)kiss_let,    /* C function name */
     1,      /* minimum argument number */
     -1,     /* maximum argument number */
 };
@@ -1145,7 +1145,7 @@ kiss_symbol_t KISS_Slet_s;
 kiss_cfunction_t KISS_CFlet_s = {
     KISS_CMACRO,  /* type */
     &KISS_Slet_s, /* name */
-    kiss_let_s,   /* C function name */
+        (kiss_cf_t*)kiss_let_s,   /* C function name */
     1,       /* minimum argument number */
     -1,      /* maximum argument number */
 };
@@ -1165,7 +1165,7 @@ kiss_symbol_t KISS_Sdefdynamic;
 kiss_cfunction_t KISS_CFdefdynamic = {
     KISS_CMACRO,       /* type */
     &KISS_Sdefdynamic, /* name */
-    kiss_defdynamic,   /* C function name */
+        (kiss_cf_t*)kiss_defdynamic,   /* C function name */
     2,            /* minimum argument number */
     2,            /* maximum argument number */
 };
@@ -1184,7 +1184,7 @@ kiss_symbol_t KISS_Sdynamic;
 kiss_cfunction_t KISS_CFdynamic = {
     KISS_CMACRO,    /* type */
     &KISS_Sdynamic, /* name */
-    kiss_dynamic,   /* C function name */
+        (kiss_cf_t*)kiss_dynamic,   /* C function name */
     1,         /* minimum argument number */
     1,         /* maximum argument number */
 };
@@ -1204,7 +1204,7 @@ kiss_symbol_t KISS_Sdynamic_let;
 kiss_cfunction_t KISS_CFdynamic_let = {
     KISS_CMACRO,        /* type */
     &KISS_Sdynamic_let, /* name */
-    kiss_dynamic_let,   /* C function name */
+        (kiss_cf_t*)kiss_dynamic_let,   /* C function name */
     1,             /* minimum argument number */
     -1,            /* maximum argument number */
 };
@@ -1223,7 +1223,7 @@ kiss_symbol_t KISS_Sset_dynamic;
 kiss_cfunction_t KISS_CFset_dynamic = {
     KISS_CMACRO,        /* type */
     &KISS_Sset_dynamic, /* name */
-    kiss_set_dynamic,   /* C function name */
+        (kiss_cf_t*)kiss_set_dynamic,   /* C function name */
     2,             /* minimum argument number */
     2,            /* maximum argument number */
 };
@@ -1243,7 +1243,7 @@ kiss_symbol_t KISS_Squote;
 kiss_cfunction_t KISS_CFquote = {
     KISS_CMACRO,  /* type */
     &KISS_Squote, /* name */
-    kiss_quote,   /* C function name */
+        (kiss_cf_t*)kiss_quote,   /* C function name */
     1,       /* minimum argument number */
     1,       /* maximum argument number */
 };
@@ -1262,7 +1262,7 @@ kiss_symbol_t KISS_Sif;
 kiss_cfunction_t KISS_CFif = {
     KISS_CMACRO, /* type */
     &KISS_Sif,   /* name */
-    kiss_if,    /* C function name */
+        (kiss_cf_t*)kiss_if,    /* C function name */
     2,      /* minimum argument number */
     3,      /* maximum argument number */
 };
@@ -1281,7 +1281,7 @@ kiss_symbol_t KISS_Sprogn;
 kiss_cfunction_t KISS_CFprogn = {
     KISS_CMACRO,  /* type */
     &KISS_Sprogn, /* name */
-    kiss_progn,   /* C function name */
+        (kiss_cf_t*)kiss_progn,   /* C function name */
     0,       /* minimum argument number */
     -1,      /* maximum argument number */
 };
@@ -1301,7 +1301,7 @@ kiss_symbol_t KISS_Seq;
 kiss_cfunction_t KISS_CFeq = {
     KISS_CFUNCTION, /* type */
     &KISS_Seq,      /* name */
-    kiss_eq,        /* C function name */
+        (kiss_cf_t*)kiss_eq,        /* C function name */
     2,         /* minimum argument number */
     2,         /* maximum argument number */
 };
@@ -1321,7 +1321,7 @@ kiss_symbol_t KISS_Seql;
 kiss_cfunction_t KISS_CFeql = {
     KISS_CFUNCTION, /* type */
     &KISS_Seql,     /* name */
-    kiss_eql,       /* C function name */
+        (kiss_cf_t*)kiss_eql,       /* C function name */
     2,         /* minimum argument number */
     2,         /* maximum argument number */
 };
@@ -1340,7 +1340,7 @@ kiss_symbol_t KISS_Scatch;
 kiss_cfunction_t KISS_Ccatch = {
     KISS_CMACRO,  /* type */
     &KISS_Scatch, /* name */
-    kiss_catch,   /* C function name */
+        (kiss_cf_t*)kiss_catch,   /* C function name */
     1,       /* minimum argument number */
     -1,      /* maximum argument number */
 };
@@ -1360,7 +1360,7 @@ kiss_symbol_t KISS_Sthrow;
 kiss_cfunction_t KISS_Cthrow = {
     KISS_CMACRO,  /* type */
     &KISS_Sthrow, /* name */
-    kiss_throw,   /* C function name */
+        (kiss_cf_t*)kiss_throw,   /* C function name */
     2,       /* minimum argument number */
     2,       /* maximum argument number */
 };
@@ -1380,7 +1380,7 @@ kiss_symbol_t KISS_Sunwind_protect;
 kiss_cfunction_t KISS_Cunwind_protect = {
     KISS_CMACRO,           /* type */
     &KISS_Sunwind_protect, /* name */
-    kiss_unwind_protect,   /* C function name */
+        (kiss_cf_t*)kiss_unwind_protect,   /* C function name */
     1,                /* minimum argument number */
     -1,               /* maximum argument number */
 };
@@ -1400,7 +1400,7 @@ kiss_symbol_t KISS_Sblock;
 kiss_cfunction_t KISS_Cblock = {
     KISS_CMACRO,  /* type */
     &KISS_Sblock, /* name */
-    kiss_block,   /* C function name */
+        (kiss_cf_t*)kiss_block,   /* C function name */
     1,       /* minimum argument number */
     -1,      /* maximum argument number */
 };
@@ -1420,7 +1420,7 @@ kiss_symbol_t KISS_Sreturn_from;
 kiss_cfunction_t KISS_Creturn_from = {
     KISS_CMACRO,        /* type */
     &KISS_Sreturn_from, /* name */
-    kiss_return_from,   /* C function name */
+        (kiss_cf_t*)kiss_return_from,   /* C function name */
     2,             /* minimum argument number */
     2,             /* maximum argument number */
 };
@@ -1440,7 +1440,7 @@ kiss_symbol_t KISS_Stagbody;
 kiss_cfunction_t KISS_Ctagbody = {
     KISS_CMACRO,    /* type */
     &KISS_Stagbody, /* name */
-    kiss_tagbody,   /* C function name */
+        (kiss_cf_t*)kiss_tagbody,   /* C function name */
     0,         /* minimum argument number */
     -1,        /* maximum argument number */
 };
@@ -1460,7 +1460,7 @@ kiss_symbol_t KISS_Sgo;
 kiss_cfunction_t KISS_Cgo = {
     KISS_CMACRO, /* type */
     &KISS_Sgo,   /* name */
-    kiss_go,     /* C function name */
+        (kiss_cf_t*)kiss_go,     /* C function name */
     1,      /* minimum argument number */
     1,      /* maximum argument number */
 };
@@ -1481,7 +1481,7 @@ kiss_symbol_t KISS_Sintegerp;
 kiss_cfunction_t KISS_CFintegerp = {
     KISS_CFUNCTION, /* type */
     &KISS_Sintegerp,    /* name */
-    kiss_integerp,     /* C function name */
+        (kiss_cf_t*)kiss_integerp,     /* C function name */
     1,         /* minimum argument number */
     1,        /* maximum argument number */
 };
@@ -1500,7 +1500,7 @@ kiss_symbol_t KISS_Sfloatp;
 kiss_cfunction_t KISS_CFfloatp = {
     KISS_CFUNCTION,   /* type */
     &KISS_Sfloatp,    /* name */
-    kiss_floatp,      /* C function name */
+        (kiss_cf_t*)kiss_floatp,      /* C function name */
     1,                /* minimum argument number */
     1,                /* maximum argument number */
 };
@@ -1519,7 +1519,7 @@ kiss_symbol_t KISS_Sfloat;
 kiss_cfunction_t KISS_CFfloat = {
     KISS_CFUNCTION,   /* type */
     &KISS_Sfloat,     /* name */
-    kiss_float,       /* C function name */
+        (kiss_cf_t*)kiss_float,       /* C function name */
     1,                /* minimum argument number */
     1,                /* maximum argument number */
 };
@@ -1539,7 +1539,7 @@ kiss_symbol_t KISS_Splus;
 kiss_cfunction_t KISS_CFplus = {
     KISS_CFUNCTION, /* type */
     &KISS_Splus,    /* name */
-    kiss_Lplus,     /* C function name */
+        (kiss_cf_t*)kiss_Lplus,     /* C function name */
     0,         /* minimum argument number */
     -1,        /* maximum argument number */
 };
@@ -1558,7 +1558,7 @@ kiss_symbol_t KISS_Smultiply;
 kiss_cfunction_t KISS_CFmultiply = {
     KISS_CFUNCTION,  /* type */
     &KISS_Smultiply, /* name */
-    kiss_Lmultiply,  /* C function name */
+        (kiss_cf_t*)kiss_Lmultiply,  /* C function name */
     0,               /* minimum argument number */
     -1,              /* maximum argument number */
 };
@@ -1578,7 +1578,7 @@ kiss_symbol_t KISS_Sminus;
 kiss_cfunction_t KISS_CFminus = {
     KISS_CFUNCTION, /* type */
     &KISS_Sminus,   /* name */
-    kiss_Lminus,    /* C function name */
+        (kiss_cf_t*)kiss_Lminus,    /* C function name */
     1,              /* minimum argument number */
     -1,             /* maximum argument number */
 };
@@ -1598,7 +1598,7 @@ kiss_symbol_t KISS_Snum_eq;
 kiss_cfunction_t KISS_CFnum_eq = {
     KISS_CFUNCTION, /* type */
     &KISS_Snum_eq,  /* name */
-    kiss_Lnum_eq,   /* C function name */
+        (kiss_cf_t*)kiss_Lnum_eq,   /* C function name */
     2,         /* minimum argument number */
     2,         /* maximum argument number */
 };
@@ -1618,7 +1618,7 @@ kiss_symbol_t KISS_Snum_lessthan;
 kiss_cfunction_t KISS_CFnum_lessthan = {
     KISS_CFUNCTION,       /* type */
     &KISS_Snum_lessthan,  /* name */
-    kiss_Lnum_lessthan,   /* C function name */
+        (kiss_cf_t*)kiss_Lnum_lessthan,   /* C function name */
     2,               /* minimum argument number */
     2,               /* maximum argument number */
 };
@@ -1638,7 +1638,7 @@ kiss_symbol_t KISS_Sdiv;
 kiss_cfunction_t KISS_CFdiv = {
     KISS_CFUNCTION,       /* type */
     &KISS_Sdiv,  /* name */
-    kiss_div,   /* C function name */
+        (kiss_cf_t*)kiss_div,   /* C function name */
     2,               /* minimum argument number */
     2,               /* maximum argument number */
 };
@@ -1657,7 +1657,7 @@ kiss_symbol_t KISS_Smod;
 kiss_cfunction_t KISS_CFmod = {
     KISS_CFUNCTION,       /* type */
     &KISS_Smod,  /* name */
-    kiss_mod,   /* C function name */
+        (kiss_cf_t*)kiss_mod,   /* C function name */
     2,               /* minimum argument number */
     2,               /* maximum argument number */
 };
@@ -1676,7 +1676,7 @@ kiss_symbol_t KISS_Sgcd;
 kiss_cfunction_t KISS_CFgcd = {
     KISS_CFUNCTION,       /* type */
     &KISS_Sgcd,  /* name */
-    kiss_gcd,   /* C function name */
+        (kiss_cf_t*)kiss_gcd,   /* C function name */
     2,               /* minimum argument number */
     2,               /* maximum argument number */
 };
@@ -1695,7 +1695,7 @@ kiss_symbol_t KISS_Slcm;
 kiss_cfunction_t KISS_CFlcm = {
     KISS_CFUNCTION,       /* type */
     &KISS_Slcm,  /* name */
-    kiss_lcm,   /* C function name */
+        (kiss_cf_t*)kiss_lcm,   /* C function name */
     2,               /* minimum argument number */
     2,               /* maximum argument number */
 };
@@ -1714,7 +1714,7 @@ kiss_symbol_t KISS_Sparse_number;
 kiss_cfunction_t KISS_CFparse_number = {
     KISS_CFUNCTION,      /* type */
     &KISS_Sparse_number, /* name */
-    kiss_parse_number,   /* C function name */
+        (kiss_cf_t*)kiss_parse_number,   /* C function name */
     1,                   /* minimum argument number */
     1,                   /* maximum argument number */
 };
@@ -1733,7 +1733,7 @@ kiss_symbol_t KISS_Sabs;
 kiss_cfunction_t KISS_CFabs = {
     KISS_CFUNCTION,   /* type */
     &KISS_Sabs,       /* name */
-    kiss_abs,         /* C function name */
+        (kiss_cf_t*)kiss_abs,         /* C function name */
     1,                /* minimum argument number */
     1,                /* maximum argument number */
 };
@@ -1752,7 +1752,7 @@ kiss_symbol_t KISS_Sexp;
 kiss_cfunction_t KISS_CFexp = {
     KISS_CFUNCTION,   /* type */
     &KISS_Sexp,       /* name */
-    kiss_exp,         /* C function name */
+        (kiss_cf_t*)kiss_exp,         /* C function name */
     1,                /* minimum argument number */
     1,                /* maximum argument number */
 };
@@ -1771,7 +1771,7 @@ kiss_symbol_t KISS_Slog;
 kiss_cfunction_t KISS_CFlog = {
     KISS_CFUNCTION,   /* type */
     &KISS_Slog,       /* name */
-    kiss_log,         /* C function name */
+        (kiss_cf_t*)kiss_log,         /* C function name */
     1,                /* minimum argument number */
     1,                /* maximum argument number */
 };
@@ -1790,7 +1790,7 @@ kiss_symbol_t KISS_Sfloor;
 kiss_cfunction_t KISS_CFfloor = {
     KISS_CFUNCTION,   /* type */
     &KISS_Sfloor,     /* name */
-    kiss_floor,       /* C function name */
+        (kiss_cf_t*)kiss_floor,       /* C function name */
     1,                /* minimum argument number */
     1,                /* maximum argument number */
 };
@@ -1809,7 +1809,7 @@ kiss_symbol_t KISS_Sceiling;
 kiss_cfunction_t KISS_CFceiling = {
     KISS_CFUNCTION,   /* type */
     &KISS_Sceiling,   /* name */
-    kiss_ceiling,     /* C function name */
+        (kiss_cf_t*)kiss_ceiling,     /* C function name */
     1,                /* minimum argument number */
     1,                /* maximum argument number */
 };
@@ -1828,7 +1828,7 @@ kiss_symbol_t KISS_Struncate;
 kiss_cfunction_t KISS_CFtruncate = {
     KISS_CFUNCTION,   /* type */
     &KISS_Struncate,  /* name */
-    kiss_truncate,    /* C function name */
+        (kiss_cf_t*)kiss_truncate,    /* C function name */
     1,                /* minimum argument number */
     1,                /* maximum argument number */
 };
@@ -1847,7 +1847,7 @@ kiss_symbol_t KISS_Sround;
 kiss_cfunction_t KISS_CFround = {
     KISS_CFUNCTION, /* type */
     &KISS_Sround,   /* name */
-    kiss_round,     /* C function name */
+        (kiss_cf_t*)kiss_round,     /* C function name */
     1,              /* minimum argument number */
     1,              /* maximum argument number */
 };
@@ -1867,7 +1867,7 @@ kiss_symbol_t KISS_Ssin;
 kiss_cfunction_t KISS_CFsin = {
     KISS_CFUNCTION,   /* type */
     &KISS_Ssin,       /* name */
-    kiss_sin,         /* C function name */
+        (kiss_cf_t*)kiss_sin,         /* C function name */
     1,                /* minimum argument number */
     1,                /* maximum argument number */
 };
@@ -1886,7 +1886,7 @@ kiss_symbol_t KISS_Scos;
 kiss_cfunction_t KISS_CFcos = {
     KISS_CFUNCTION,   /* type */
     &KISS_Scos,       /* name */
-    kiss_cos,         /* C function name */
+        (kiss_cf_t*)kiss_cos,         /* C function name */
     1,                /* minimum argument number */
     1,                /* maximum argument number */
 };
@@ -1905,7 +1905,7 @@ kiss_symbol_t KISS_Stan;
 kiss_cfunction_t KISS_CFtan = {
     KISS_CFUNCTION,   /* type */
     &KISS_Stan,       /* name */
-    kiss_tan,         /* C function name */
+        (kiss_cf_t*)kiss_tan,         /* C function name */
     1,                /* minimum argument number */
     1,                /* maximum argument number */
 };
@@ -1925,7 +1925,7 @@ kiss_symbol_t KISS_Ssymbolp;
 kiss_cfunction_t KISS_CFsymbolp = {
     KISS_CFUNCTION, /* type */
     &KISS_Ssymbolp,  /* name */
-    kiss_symbolp,    /* C function name */
+        (kiss_cf_t*)kiss_symbolp,    /* C function name */
     1,         /* minimum argument number */
     1,         /* maximum argument number */
 };
@@ -1945,7 +1945,7 @@ kiss_symbol_t KISS_Sgensym;
 kiss_cfunction_t KISS_CFgensym = {
     KISS_CFUNCTION, /* type */
     &KISS_Sgensym,  /* name */
-    kiss_gensym,    /* C function name */
+        (kiss_cf_t*)kiss_gensym,    /* C function name */
     0,         /* minimum argument number */
     0,         /* maximum argument number */
 };
@@ -1964,7 +1964,7 @@ kiss_symbol_t KISS_Ssymbol_function;
 kiss_cfunction_t KISS_CFsymbol_function = {
     KISS_CFUNCTION, /* type */
     &KISS_Ssymbol_function,  /* name */
-    kiss_symbol_function,    /* C function name */
+        (kiss_cf_t*)kiss_symbol_function,    /* C function name */
     1,         /* minimum argument number */
     1,         /* maximum argument number */
 };
@@ -1983,7 +1983,7 @@ kiss_symbol_t KISS_Sset_symbol_function;
 kiss_cfunction_t KISS_CFset_symbol_function = {
     KISS_CFUNCTION, /* type */
     &KISS_Sset_symbol_function,  /* name */
-    kiss_set_symbol_function,    /* C function name */
+        (kiss_cf_t*)kiss_set_symbol_function,    /* C function name */
     2,         /* minimum argument number */
     2,         /* maximum argument number */
 };
@@ -2002,7 +2002,7 @@ kiss_symbol_t KISS_Sfboundp;
 kiss_cfunction_t KISS_CFfboundp = {
     KISS_CFUNCTION, /* type */
     &KISS_Sfboundp,  /* name */
-    kiss_fboundp,    /* C function name */
+        (kiss_cf_t*)kiss_fboundp,    /* C function name */
     1,         /* minimum argument number */
     1,         /* maximum argument number */
 };
@@ -2021,7 +2021,7 @@ kiss_symbol_t KISS_Sfmakunbound;
 kiss_cfunction_t KISS_CFfmakunbound = {
     KISS_CFUNCTION, /* type */
     &KISS_Sfmakunbound,  /* name */
-    kiss_fmakunbound,    /* C function name */
+        (kiss_cf_t*)kiss_fmakunbound,    /* C function name */
     1,         /* minimum argument number */
     1,         /* maximum argument number */
 };
@@ -2040,7 +2040,7 @@ kiss_symbol_t KISS_Sproperty;
 kiss_cfunction_t KISS_CFproperty = {
     KISS_CFUNCTION, /* type */
     &KISS_Sproperty,  /* name */
-    kiss_property,    /* C function name */
+        (kiss_cf_t*)kiss_property,    /* C function name */
     2,         /* minimum argument number */
     3,         /* maximum argument number */
 };
@@ -2059,7 +2059,7 @@ kiss_symbol_t KISS_Sset_property;
 kiss_cfunction_t KISS_CFset_property = {
     KISS_CFUNCTION, /* type */
     &KISS_Sset_property,  /* name */
-    kiss_set_property,    /* C function name */
+        (kiss_cf_t*)kiss_set_property,    /* C function name */
     3,         /* minimum argument number */
     3,         /* maximum argument number */
 };
@@ -2078,7 +2078,7 @@ kiss_symbol_t KISS_Sremove_property;
 kiss_cfunction_t KISS_CFremove_property = {
     KISS_CFUNCTION, /* type */
     &KISS_Sremove_property,  /* name */
-    kiss_remove_property,    /* C function name */
+        (kiss_cf_t*)kiss_remove_property,    /* C function name */
     2,         /* minimum argument number */
     2,         /* maximum argument number */
 };
@@ -2100,7 +2100,7 @@ kiss_symbol_t KISS_Sformat;
 kiss_cfunction_t KISS_CFformat = {
     KISS_CFUNCTION,       /* type */
     &KISS_Sformat, /* name */
-    kiss_format,   /* C function name */
+        (kiss_cf_t*)kiss_format,   /* C function name */
     2,               /* minimum argument number */
     -1,               /* maximum argument number */
 };
@@ -2119,7 +2119,7 @@ kiss_symbol_t KISS_Sformat_object;
 kiss_cfunction_t KISS_CFformat_object = {
     KISS_CFUNCTION,       /* type */
     &KISS_Sformat_object, /* name */
-    kiss_format_object,   /* C function name */
+        (kiss_cf_t*)kiss_format_object,   /* C function name */
     3,               /* minimum argument number */
     3,               /* maximum argument number */
 };
@@ -2139,7 +2139,7 @@ kiss_symbol_t KISS_Sformat_pointer;
 kiss_cfunction_t KISS_CFformat_pointer = {
     KISS_CFUNCTION,       /* type */
     &KISS_Sformat_pointer, /* name */
-    kiss_format_pointer,   /* C function name */
+        (kiss_cf_t*)kiss_format_pointer,   /* C function name */
     2,               /* minimum argument number */
     2,               /* maximum argument number */
 };
@@ -2158,7 +2158,7 @@ kiss_symbol_t KISS_Sformat_fresh_line;
 kiss_cfunction_t KISS_CFformat_fresh_line = {
     KISS_CFUNCTION,       /* type */
     &KISS_Sformat_fresh_line, /* name */
-    kiss_format_fresh_line,   /* C function name */
+        (kiss_cf_t*)kiss_format_fresh_line,   /* C function name */
     1,               /* minimum argument number */
     1,               /* maximum argument number */
 };
@@ -2178,7 +2178,7 @@ kiss_symbol_t KISS_Sprint;
 kiss_cfunction_t KISS_CFprint = {
     KISS_CFUNCTION, /* type */
     &KISS_Sprint,   /* name */
-    kiss_print,     /* C function name */
+        (kiss_cf_t*)kiss_print,     /* C function name */
     1,         /* minimum argument number */
     1,         /* maximum argument number */
 };
@@ -2198,7 +2198,7 @@ kiss_symbol_t KISS_Sread;
 kiss_cfunction_t KISS_CFread = {
     KISS_CFUNCTION, /* type */
     &KISS_Sread,    /* name */
-    kiss_read,     /* C function name */
+        (kiss_cf_t*)kiss_read,     /* C function name */
     0,         /* minimum argument number */
     3,         /* maximum argument number */
 };
@@ -2218,7 +2218,7 @@ kiss_symbol_t KISS_Sstringp;
 kiss_cfunction_t KISS_CFstringp = {
     KISS_CFUNCTION,    /* type */
     &KISS_Sstringp,    /* name */
-    kiss_stringp,      /* C function name */
+        (kiss_cf_t*)kiss_stringp,      /* C function name */
     1,                 /* minimum argument number */
     1,                 /* maximum argument number */
 };
@@ -2237,7 +2237,7 @@ kiss_symbol_t KISS_Screate_string;
 kiss_cfunction_t KISS_CFcreate_string = {
     KISS_CFUNCTION,       /* type */
     &KISS_Screate_string, /* name */
-    kiss_create_string,   /* C function name */
+        (kiss_cf_t*)kiss_create_string,   /* C function name */
     1,                    /* minimum argument number */
     2,                    /* maximum argument number */
 };
@@ -2256,7 +2256,7 @@ kiss_symbol_t KISS_Sstring_append;
 kiss_cfunction_t KISS_CFstring_append = {
     KISS_CFUNCTION,       /* type */
     &KISS_Sstring_append, /* name */
-    kiss_string_append,   /* C function name */
+        (kiss_cf_t*)kiss_string_append,   /* C function name */
     0,                    /* minimum argument number */
     -1,                   /* maximum argument number */
 };
@@ -2277,7 +2277,7 @@ kiss_symbol_t KISS_Slength;
 kiss_cfunction_t KISS_CFlength = {
     KISS_CFUNCTION, /* type */
     &KISS_Slength,    /* name */
-    kiss_length,     /* C function name */
+        (kiss_cf_t*)kiss_length,     /* C function name */
     1,         /* minimum argument number */
     1,         /* maximum argument number */
 };
@@ -2296,7 +2296,7 @@ kiss_symbol_t KISS_Selt;
 kiss_cfunction_t KISS_CFelt = {
     KISS_CFUNCTION, /* type */
     &KISS_Selt,    /* name */
-    kiss_elt,     /* C function name */
+        (kiss_cf_t*)kiss_elt,     /* C function name */
     2,         /* minimum argument number */
     2,         /* maximum argument number */
 };
@@ -2315,7 +2315,7 @@ kiss_symbol_t KISS_Sset_elt;
 kiss_cfunction_t KISS_CFset_elt = {
     KISS_CFUNCTION, /* type */
     &KISS_Sset_elt,    /* name */
-    kiss_set_elt,     /* C function name */
+        (kiss_cf_t*)kiss_set_elt,     /* C function name */
     3,         /* minimum argument number */
     3,         /* maximum argument number */
 };
@@ -2334,7 +2334,7 @@ kiss_symbol_t KISS_Ssubseq;
 kiss_cfunction_t KISS_CFsubseq = {
     KISS_CFUNCTION, /* type */
     &KISS_Ssubseq,    /* name */
-    kiss_subseq,     /* C function name */
+        (kiss_cf_t*)kiss_subseq,     /* C function name */
     3,         /* minimum argument number */
     3,         /* maximum argument number */
 };
@@ -2353,7 +2353,7 @@ kiss_symbol_t KISS_Smap_into;
 kiss_cfunction_t KISS_CFmap_into = {
     KISS_CFUNCTION, /* type */
     &KISS_Smap_into,    /* name */
-    kiss_map_into,     /* C function name */
+        (kiss_cf_t*)kiss_map_into,     /* C function name */
     2,         /* minimum argument number */
     -1,         /* maximum argument number */
 };
@@ -2373,7 +2373,7 @@ kiss_symbol_t KISS_Seval;
 kiss_cfunction_t KISS_CFeval = {
     KISS_CFUNCTION,        /* type */
     &KISS_Seval, /* name */
-    kiss_eval,   /* C function name */
+        (kiss_cf_t*)kiss_eval,   /* C function name */
     1,                /* minimum argument number */
     1,                /* maximum argument number */
 };
@@ -2392,7 +2392,7 @@ kiss_symbol_t KISS_Sload;
 kiss_cfunction_t KISS_CFload = {
     KISS_CFUNCTION,        /* type */
     &KISS_Sload, /* name */
-    kiss_load,   /* C function name */
+        (kiss_cf_t*)kiss_load,   /* C function name */
     1,                /* minimum argument number */
     1,                /* maximum argument number */
 };
@@ -2413,7 +2413,7 @@ kiss_symbol_t KISS_Sstandard_input;
 kiss_cfunction_t KISS_CFstandard_input = {
     KISS_CFUNCTION,        /* type */
     &KISS_Sstandard_input, /* name */
-    kiss_standard_input,   /* C function name */
+        (kiss_cf_t*)kiss_standard_input,   /* C function name */
     0,                /* minimum argument number */
     0,                /* maximum argument number */
 };
@@ -2433,7 +2433,7 @@ kiss_symbol_t KISS_Sstandard_output;
 kiss_cfunction_t KISS_CFstandard_output = {
     KISS_CFUNCTION,         /* type */
     &KISS_Sstandard_output, /* name */
-    kiss_standard_output,   /* C function name */
+        (kiss_cf_t*)kiss_standard_output,   /* C function name */
     0,                 /* minimum argument number */
     0,                 /* maximum argument number */
 };
@@ -2453,7 +2453,7 @@ kiss_symbol_t KISS_Serror_output;
 kiss_cfunction_t KISS_CFerror_output = {
     KISS_CFUNCTION,      /* type */
     &KISS_Serror_output, /* name */
-    kiss_error_output,   /* C function name */
+        (kiss_cf_t*)kiss_error_output,   /* C function name */
     0,              /* minimum argument number */
     0,              /* maximum argument number */
 };
@@ -2509,7 +2509,7 @@ kiss_symbol_t KISS_Sstreamp;
 kiss_cfunction_t KISS_CFstreamp = {
     KISS_CFUNCTION,      /* type */
     &KISS_Sstreamp, /* name */
-    kiss_streamp,   /* C function name */
+        (kiss_cf_t*)kiss_streamp,   /* C function name */
     1,              /* minimum argument number */
     1,              /* maximum argument number */
 };
@@ -2528,7 +2528,7 @@ kiss_symbol_t KISS_Sopen_stream_p;
 kiss_cfunction_t KISS_CFopen_stream_p = {
     KISS_CFUNCTION,      /* type */
     &KISS_Sopen_stream_p, /* name */
-    kiss_open_stream_p,   /* C function name */
+        (kiss_cf_t*)kiss_open_stream_p,   /* C function name */
     1,              /* minimum argument number */
     1,              /* maximum argument number */
 };
@@ -2548,7 +2548,7 @@ kiss_symbol_t KISS_Sinput_stream_p;
 kiss_cfunction_t KISS_CFinput_stream_p = {
     KISS_CFUNCTION,      /* type */
     &KISS_Sinput_stream_p, /* name */
-    kiss_input_stream_p,   /* C function name */
+        (kiss_cf_t*)kiss_input_stream_p,   /* C function name */
     1,              /* minimum argument number */
     1,              /* maximum argument number */
 };
@@ -2567,7 +2567,7 @@ kiss_symbol_t KISS_Soutput_stream_p;
 kiss_cfunction_t KISS_CFoutput_stream_p = {
     KISS_CFUNCTION,      /* type */
     &KISS_Soutput_stream_p, /* name */
-    kiss_output_stream_p,   /* C function name */
+        (kiss_cf_t*)kiss_output_stream_p,   /* C function name */
     1,              /* minimum argument number */
     1,              /* maximum argument number */
 };
@@ -2586,7 +2586,7 @@ kiss_symbol_t KISS_Sstream_ready_p;
 kiss_cfunction_t KISS_CFstream_ready_p = {
     KISS_CFUNCTION,      /* type */
     &KISS_Sstream_ready_p, /* name */
-    kiss_stream_ready_p,   /* C function name */
+        (kiss_cf_t*)kiss_stream_ready_p,   /* C function name */
     1,              /* minimum argument number */
     1,              /* maximum argument number */
 };
@@ -2606,7 +2606,7 @@ kiss_symbol_t KISS_Screate_string_input_stream;
 kiss_cfunction_t KISS_CFcreate_string_input_stream = {
     KISS_CFUNCTION,      /* type */
     &KISS_Screate_string_input_stream, /* name */
-    kiss_create_string_input_stream,   /* C function name */
+        (kiss_cf_t*)kiss_create_string_input_stream,   /* C function name */
     1,              /* minimum argument number */
     1,              /* maximum argument number */
 };
@@ -2626,7 +2626,7 @@ kiss_symbol_t KISS_Screate_string_output_stream;
 kiss_cfunction_t KISS_CFcreate_string_output_stream = {
     KISS_CFUNCTION,      /* type */
     &KISS_Screate_string_output_stream, /* name */
-    kiss_create_string_output_stream,   /* C function name */
+        (kiss_cf_t*)kiss_create_string_output_stream,   /* C function name */
     0,              /* minimum argument number */
     0,              /* maximum argument number */
 };
@@ -2646,7 +2646,7 @@ kiss_symbol_t KISS_Sread_char;
 kiss_cfunction_t KISS_CFread_char = {
     KISS_CFUNCTION,      /* type */
     &KISS_Sread_char, /* name */
-    kiss_read_char,   /* C function name */
+        (kiss_cf_t*)kiss_read_char,   /* C function name */
     0,              /* minimum argument number */
     3,              /* maximum argument number */
 };
@@ -2665,7 +2665,7 @@ kiss_symbol_t KISS_Spreview_char;
 kiss_cfunction_t KISS_CFpreview_char = {
     KISS_CFUNCTION,      /* type */
     &KISS_Spreview_char, /* name */
-    kiss_preview_char,   /* C function name */
+        (kiss_cf_t*)kiss_preview_char,   /* C function name */
     0,              /* minimum argument number */
     3,              /* maximum argument number */
 };
@@ -2684,7 +2684,7 @@ kiss_symbol_t KISS_Sread_line;
 kiss_cfunction_t KISS_CFread_line = {
     KISS_CFUNCTION,      /* type */
     &KISS_Sread_line, /* name */
-    kiss_read_line,   /* C function name */
+        (kiss_cf_t*)kiss_read_line,   /* C function name */
     0,              /* minimum argument number */
     3,              /* maximum argument number */
 };
@@ -2703,7 +2703,7 @@ kiss_symbol_t KISS_Sread_byte;
 kiss_cfunction_t KISS_CFread_byte = {
     KISS_CFUNCTION,      /* type */
     &KISS_Sread_byte, /* name */
-    kiss_read_byte,   /* C function name */
+        (kiss_cf_t*)kiss_read_byte,   /* C function name */
     1,              /* minimum argument number */
     3,              /* maximum argument number */
 };
@@ -2718,11 +2718,31 @@ kiss_symbol_t KISS_Sread_byte = {
     KISS_NIL,                        /* plist */
 };
 
+kiss_symbol_t KISS_Swrite_byte;
+kiss_cfunction_t KISS_CFwrite_byte = {
+    KISS_CFUNCTION,      /* type */
+    &KISS_Swrite_byte, /* name */
+        (kiss_cf_t*)kiss_write_byte,   /* C function name */
+    2,              /* minimum argument number */
+    2,              /* maximum argument number */
+};
+kiss_symbol_t KISS_Swrite_byte = {
+    KISS_SYMBOL,
+    0,                 /* gc_flag */
+    NULL,              /* gc_next */
+    L"write-byte",
+    KISS_CONSTANT_FUN,
+    NULL,                       /* var */
+    (kiss_obj*)&KISS_CFwrite_byte, /* fun */
+    KISS_NIL,                        /* plist */
+};
+
+
 kiss_symbol_t KISS_Sget_output_stream_string;
 kiss_cfunction_t KISS_CFget_output_stream_string = {
     KISS_CFUNCTION,      /* type */
     &KISS_Sget_output_stream_string, /* name */
-    kiss_get_output_stream_string,   /* C function name */
+        (kiss_cf_t*)kiss_get_output_stream_string,   /* C function name */
     1,              /* minimum argument number */
     1,              /* maximum argument number */
 };
@@ -2742,7 +2762,7 @@ kiss_symbol_t KISS_Sformat_char;
 kiss_cfunction_t KISS_CFformat_char = {
     KISS_CFUNCTION,      /* type */
     &KISS_Sformat_char, /* name */
-    kiss_format_char,   /* C function name */
+        (kiss_cf_t*)kiss_format_char,   /* C function name */
     2,              /* minimum argument number */
     2,              /* maximum argument number */
 };
@@ -2762,7 +2782,7 @@ kiss_symbol_t KISS_Sformat_integer;
 kiss_cfunction_t KISS_CFformat_integer = {
     KISS_CFUNCTION,      /* type */
     &KISS_Sformat_integer, /* name */
-    kiss_format_integer,   /* C function name */
+        (kiss_cf_t*)kiss_format_integer,   /* C function name */
     3,              /* minimum argument number */
     3,              /* maximum argument number */
 };
@@ -2782,7 +2802,7 @@ kiss_symbol_t KISS_Sformat_float;
 kiss_cfunction_t KISS_CFformat_float = {
     KISS_CFUNCTION,      /* type */
     &KISS_Sformat_float, /* name */
-    kiss_format_float,   /* C function name */
+        (kiss_cf_t*)kiss_format_float,   /* C function name */
     2,              /* minimum argument number */
     2,              /* maximum argument number */
 };
@@ -2802,7 +2822,7 @@ kiss_symbol_t KISS_Sopen_input_file;
 kiss_cfunction_t KISS_CFopen_input_file = {
     KISS_CFUNCTION,      /* type */
     &KISS_Sopen_input_file, /* name */
-    kiss_open_input_file,   /* C function name */
+        (kiss_cf_t*)kiss_open_input_file,   /* C function name */
     1,              /* minimum argument number */
     2,              /* maximum argument number */
 };
@@ -2821,7 +2841,7 @@ kiss_symbol_t KISS_Sopen_output_file;
 kiss_cfunction_t KISS_CFopen_output_file = {
     KISS_CFUNCTION,      /* type */
     &KISS_Sopen_output_file, /* name */
-    kiss_open_output_file,   /* C function name */
+        (kiss_cf_t*)kiss_open_output_file,   /* C function name */
     1,              /* minimum argument number */
     2,              /* maximum argument number */
 };
@@ -2840,7 +2860,7 @@ kiss_symbol_t KISS_Sopen_io_file;
 kiss_cfunction_t KISS_CFopen_io_file = {
     KISS_CFUNCTION,      /* type */
     &KISS_Sopen_io_file, /* name */
-    kiss_open_io_file,   /* C function name */
+        (kiss_cf_t*)kiss_open_io_file,   /* C function name */
     1,              /* minimum argument number */
     2,              /* maximum argument number */
 };
@@ -2859,7 +2879,7 @@ kiss_symbol_t KISS_Sfinish_output;
 kiss_cfunction_t KISS_CFfinish_output = {
     KISS_CFUNCTION,      /* type */
     &KISS_Sfinish_output, /* name */
-    kiss_finish_output,   /* C function name */
+        (kiss_cf_t*)kiss_finish_output,   /* C function name */
     1,              /* minimum argument number */
     1,              /* maximum argument number */
 };
@@ -2879,7 +2899,7 @@ kiss_symbol_t KISS_Sclose;
 kiss_cfunction_t KISS_CFclose = {
     KISS_CFUNCTION,      /* type */
     &KISS_Sclose, /* name */
-    kiss_close,   /* C function name */
+        (kiss_cf_t*)kiss_close,   /* C function name */
     1,              /* minimum argument number */
     1,              /* maximum argument number */
 };
@@ -2900,7 +2920,7 @@ kiss_symbol_t KISS_Sassure_list;
 kiss_cfunction_t KISS_CFassure_list = {
     KISS_CFUNCTION, /* type */
     &KISS_Sassure_list,   /* name */
-    Kiss_List,    /* C function name */
+        (kiss_cf_t*)Kiss_List,    /* C function name */
     1,         /* minimum argument number */
     1,        /* maximum argument number */
 };
@@ -2924,7 +2944,7 @@ kiss_symbol_t KISS_Scharacterp;
 kiss_cfunction_t KISS_CFcharacterp = {
     KISS_CFUNCTION, /* type */
     &KISS_Scharacterp,   /* name */
-    kiss_characterp,    /* C function name */
+        (kiss_cf_t*)kiss_characterp,    /* C function name */
     1,         /* minimum argument number */
     1,        /* maximum argument number */
 };
@@ -2943,7 +2963,7 @@ kiss_symbol_t KISS_Schar_eq;
 kiss_cfunction_t KISS_CFchar_eq = {
     KISS_CFUNCTION, /* type */
     &KISS_Schar_eq,   /* name */
-    kiss_char_eq,    /* C function name */
+        (kiss_cf_t*)kiss_char_eq,    /* C function name */
     2,         /* minimum argument number */
     2,        /* maximum argument number */
 };
@@ -2963,7 +2983,7 @@ kiss_symbol_t KISS_Schar_lessthan;
 kiss_cfunction_t KISS_CFchar_lessthan = {
     KISS_CFUNCTION, /* type */
     &KISS_Schar_lessthan,   /* name */
-    kiss_char_lessthan,    /* C function name */
+        (kiss_cf_t*)kiss_char_lessthan,    /* C function name */
     2,         /* minimum argument number */
     2,        /* maximum argument number */
 };
@@ -2985,7 +3005,7 @@ kiss_symbol_t KISS_Sfeaturep;
 kiss_cfunction_t KISS_CFfeaturep = {
     KISS_CFUNCTION, /* type */
     &KISS_Sfeaturep,   /* name */
-    kiss_featurep,    /* C function name */
+        (kiss_cf_t*)kiss_featurep,    /* C function name */
     1,         /* minimum argument number */
     1,        /* maximum argument number */
 };
@@ -3005,7 +3025,7 @@ kiss_symbol_t KISS_Sprovide;
 kiss_cfunction_t KISS_CFprovide = {
     KISS_CFUNCTION, /* type */
     &KISS_Sprovide,   /* name */
-    kiss_provide,    /* C function name */
+        (kiss_cf_t*)kiss_provide,    /* C function name */
     1,         /* minimum argument number */
     1,        /* maximum argument number */
 };
@@ -3025,7 +3045,7 @@ kiss_symbol_t KISS_Smake_object;
 kiss_cfunction_t KISS_CFmake_object = {
     KISS_CFUNCTION, /* type */
     &KISS_Smake_object,   /* name */
-    kiss_make_object,    /* C function name */
+        (kiss_cf_t*)kiss_make_object,    /* C function name */
     1,         /* minimum argument number */
     1,        /* maximum argument number */
 };
@@ -3044,7 +3064,7 @@ kiss_symbol_t KISS_Sobject_p;
 kiss_cfunction_t KISS_CFobject_p = {
     KISS_CFUNCTION, /* type */
     &KISS_Sobject_p,   /* name */
-    kiss_object_p,    /* C function name */
+        (kiss_cf_t*)kiss_object_p,    /* C function name */
     1,         /* minimum argument number */
     1,        /* maximum argument number */
 };
@@ -3063,7 +3083,7 @@ kiss_symbol_t KISS_Sobject_plist;
 kiss_cfunction_t KISS_CFobject_plist = {
     KISS_CFUNCTION, /* type */
     &KISS_Sobject_plist,   /* name */
-    kiss_object_plist,    /* C function name */
+        (kiss_cf_t*)kiss_object_plist,    /* C function name */
     1,         /* minimum argument number */
     1,        /* maximum argument number */
 };
@@ -3083,7 +3103,7 @@ kiss_symbol_t KISS_Sset_object_plist;
 kiss_cfunction_t KISS_CFset_object_plist = {
     KISS_CFUNCTION, /* type */
     &KISS_Sset_object_plist,   /* name */
-    kiss_set_object_plist,    /* C function name */
+        (kiss_cf_t*)kiss_set_object_plist,    /* C function name */
     2,         /* minimum argument number */
     2,        /* maximum argument number */
 };
@@ -3103,7 +3123,7 @@ kiss_symbol_t KISS_Smethod_invoke;
 kiss_cfunction_t KISS_CFmethod_invoke = {
     KISS_CFUNCTION, /* type */
     &KISS_Smethod_invoke,   /* name */
-    kiss_method_invoke,    /* C function name */
+        (kiss_cf_t*)kiss_method_invoke,    /* C function name */
     1,         /* minimum argument number */
     1,        /* maximum argument number */
 };
@@ -3193,7 +3213,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sinput_stream_p, &KISS_Soutput_stream_p, 
     &KISS_Sread_char, &KISS_Spreview_char, &KISS_Sformat_char, &KISS_Sformat_integer,
     &KISS_Sformat_float,
-    &KISS_Sread_byte,
+    &KISS_Sread_byte, &KISS_Swrite_byte,
     &KISS_Ss_standard_input_s, &KISS_Ss_standard_output_s, &KISS_Ss_error_output_s,
     &KISS_Sclose, &KISS_Sopen_stream_p,
     &KISS_Sopen_input_file, &KISS_Sopen_output_file, &KISS_Sopen_io_file,

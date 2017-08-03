@@ -39,7 +39,7 @@ static wchar_t* libraries[] = {
 };
 
 kiss_obj* kiss_re(kiss_obj* in) {
-     return kiss_cread(in, KISS_NIL, KISS_EOS);
+     return kiss_c_read(in, KISS_NIL, KISS_EOS);
 }
 
 kiss_obj* kiss_load(kiss_obj* filename) {
@@ -97,7 +97,7 @@ int kiss_read_eval_print_loop(void) {
 	       fwprintf(stdout, L"\nKISS>");
 	       fflush(stdout);
 
-	       form = kiss_cread(kiss_standard_input(), KISS_NIL, KISS_EOS);
+	       form = kiss_c_read(kiss_standard_input(), KISS_NIL, KISS_EOS);
 
 	       if (form == KISS_EOS) break;
 

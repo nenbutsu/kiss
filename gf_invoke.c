@@ -30,7 +30,7 @@ static kiss_obj* kiss_true(void) { return KISS_T; }
 kiss_cfunction_t KISS_CFtrue = {
     KISS_CFUNCTION, /* type */
     NULL,      /* name */
-    kiss_true,      /* C function name */
+        (kiss_cf_t*)kiss_true,      /* C function name */
     0,         /* minimum argument number */
     0,         /* maximum argument number */
 };
@@ -39,7 +39,7 @@ static kiss_obj* kiss_false(void) { return KISS_NIL; }
 kiss_cfunction_t KISS_CFfalse = {
     KISS_CFUNCTION, /* type */
     NULL,      /* name */
-    kiss_false,    /* C function name */
+        (kiss_cf_t*)kiss_false,    /* C function name */
     0,         /* minimum argument number */
     0,         /* maximum argument number */
 };
@@ -50,7 +50,7 @@ kiss_obj* kiss_next_method_error(void) {
 kiss_cfunction_t KISS_CFnext_method_error = {
     KISS_CFUNCTION,          /* type */
     NULL,               /* name */
-    kiss_next_method_error, /* C function name */
+        (kiss_cf_t*)kiss_next_method_error, /* C function name */
     0,                  /* minimum argument number */
     0,                  /* maximum argument number */
 };

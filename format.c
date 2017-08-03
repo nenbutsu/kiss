@@ -253,7 +253,7 @@ static kiss_obj* kiss_format_cmacro(kiss_obj* out, kiss_obj* obj) {
 			KISS_NIL);
      kiss_format_symbol(out, (kiss_obj*)f->name, KISS_T);
      kiss_format_string(out, (kiss_obj*)kiss_make_string(L": "), KISS_NIL);
-     kiss_format_pointer(out, f->fun);
+     kiss_format_pointer(out, (kiss_obj*)f->fun);
      kiss_format_string(out, (kiss_obj*)kiss_make_string(L">"), KISS_NIL);
      return KISS_NIL;
 }
