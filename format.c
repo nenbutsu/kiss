@@ -27,7 +27,7 @@ static kiss_obj* kiss_format_string(kiss_obj* out, kiss_obj* str, kiss_obj* esca
 	       case L'"': case L'\\':
 		    kiss_format_char(out, (kiss_obj*)kiss_make_character(L'\\'));
 		    break;
-	       defalut:
+	       default:
 		    break;
 	       }
 	  }
