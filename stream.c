@@ -322,7 +322,7 @@ kiss_obj* kiss_get_output_stream_string(kiss_obj* stream) {
      kiss_string_stream_t* string_stream = Kiss_String_Output_Stream(stream);
      kiss_string_t* string = kiss_chars_to_str(kiss_reverse(string_stream->list));
      string_stream->list = KISS_NIL;
-     return (kiss_obj*) string;
+     return (kiss_obj*)string;
 }
 
 kiss_obj* kiss_c_read_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val) {
