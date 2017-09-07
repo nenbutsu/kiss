@@ -1,5 +1,5 @@
 /*  -*- coding: utf-8 -*-
-  object.c --- defines the object mechanism of ISLisp processor KISS.
+  oo_obj.c --- defines the object mechanism of ISLisp processor KISS.
 
   Copyright (C) 2017 Yuji Minejima.
 

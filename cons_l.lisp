@@ -1,5 +1,5 @@
 ;;; -*- mode: lisp; coding: utf-8 -*- 
-;;; cons.lisp --- defines the cons handling mechanism of ISLisp processor KISS.
+;;; cons_l.lisp --- defines the cons handling mechanism of ISLisp processor KISS.
 
 ;; Copyright (C) 2017 Yuji Minejima.
 

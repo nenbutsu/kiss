@@ -1,5 +1,5 @@
 ;;; -*- mode: lisp; coding: utf-8 -*- 
-;;; class.lisp --- defines class handling mechanism of ISLisp processor KISS.
+;;; class_l.lisp --- defines class handling mechanism of ISLisp processor KISS.
 
 ;; Copyright (C) 2017 Yuji Minejima.
 

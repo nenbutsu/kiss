@@ -1,5 +1,5 @@
 ;;; -*- mode: lisp; coding: utf-8 -*- 
-;;; sequence.lisp --- defines the sequence handling mechanism of ISLisp processor KISS.
+;;; sequence_l.lisp --- defines the sequence handling mechanism of ISLisp processor KISS.
 
 ;; Copyright (C) 2017 Yuji Minejima.
 

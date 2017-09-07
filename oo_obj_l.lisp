@@ -1,5 +1,5 @@
 ;;; -*- mode: lisp; coding: utf-8 -*- 
-;;; object.lisp --- defines the object mechanism of ISLisp processor KISS.
+;;; oo_obj_l.lisp --- defines the object mechanism of ISLisp processor KISS.
 
 ;; Copyright (C) 2017 Yuji Minejima.
 

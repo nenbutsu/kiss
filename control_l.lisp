@@ -1,5 +1,5 @@
 ;;; -*- mode: lisp; coding: utf-8 -*- 
-;;; control.lisp --- defines the control mechanism of ISLisp processor KISS.
+;;; control_l.lisp --- defines the control mechanism of ISLisp processor KISS.
 
 ;; Copyright (C) 2017 Yuji Minejima.
 

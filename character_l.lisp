@@ -1,5 +1,5 @@
 ;;; -*- mode: lisp; coding: utf-8 -*- 
-;;; character.lisp --- defines character handling mechanism of ISLisp processor KISS.
+;;; character_l.lisp --- defines character handling mechanism of ISLisp processor KISS.
 
 ;; Copyright (C) 2017 Yuji Minejima.
 

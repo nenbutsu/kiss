@@ -1,5 +1,5 @@
 ;;; -*- mode: lisp; coding: utf-8 -*- 
-;;; number.lisp --- defines the number handling mechanism of ISLisp processor KISS.
+;;; number_l.lisp --- defines the number handling mechanism of ISLisp processor KISS.
 
 ;; Copyright (C) 2017 Yuji Minejima.
 

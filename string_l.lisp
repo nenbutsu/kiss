@@ -1,5 +1,5 @@
 ;;; -*- mode: lisp; coding: utf-8 -*- 
-;;; string.lisp --- defines the string handling mechanism of ISLisp processor KISS.
+;;; string_l.lisp --- defines the string handling mechanism of ISLisp processor KISS.
 
 ;; Copyright (C) 2017 Yuji Minejima.
 

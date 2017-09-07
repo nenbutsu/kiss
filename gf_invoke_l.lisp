@@ -1,5 +1,5 @@
 ;;; -*- mode: lisp; coding: utf-8 -*- 
-;;; gf_invoke.lisp --- defines the generic function invocation mechanism of ISLisp processor KISS.
+;;; gf_invoke_l.lisp --- defines the generic function invocation mechanism of ISLisp processor KISS.
 
 ;; Copyright (C) 2017 Yuji Minejima.
 
