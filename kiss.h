@@ -66,28 +66,7 @@ struct kiss_gc_obj {
      int gc_flag;
      struct kiss_gc_obj* gc_next;
 };
-
 typedef struct kiss_gc_obj kiss_gc_obj;
-
-typedef kiss_obj* (*kiss_cf0_t)(void);
-typedef kiss_obj* (*kiss_cf1_t)(kiss_obj*);
-typedef kiss_obj* (*kiss_cf2_t)(kiss_obj*, kiss_obj*);
-typedef kiss_obj* (*kiss_cf3_t)(kiss_obj*, kiss_obj*, kiss_obj*);
-typedef kiss_obj* (*kiss_cf4_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*);
-typedef kiss_obj* (*kiss_cf5_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*, 
-				kiss_obj*);
-typedef kiss_obj* (*kiss_cf6_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
-				kiss_obj*, kiss_obj*);
-typedef kiss_obj* (*kiss_cf7_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
-				kiss_obj*, kiss_obj*, kiss_obj*);
-typedef kiss_obj* (*kiss_cf8_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
-				kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*);
-typedef kiss_obj* (*kiss_cf9_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
-				kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
-				kiss_obj*);
-typedef kiss_obj* (*kiss_cf10_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
-				 kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
-				 kiss_obj*, kiss_obj*);
 
 typedef struct {
      kiss_type type;
@@ -157,6 +136,26 @@ typedef struct {
      kiss_obj* vector;
      size_t rank;
 } kiss_general_array_t;
+
+typedef kiss_obj* (*kiss_cf0_t)(void);
+typedef kiss_obj* (*kiss_cf1_t)(kiss_obj*);
+typedef kiss_obj* (*kiss_cf2_t)(kiss_obj*, kiss_obj*);
+typedef kiss_obj* (*kiss_cf3_t)(kiss_obj*, kiss_obj*, kiss_obj*);
+typedef kiss_obj* (*kiss_cf4_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*);
+typedef kiss_obj* (*kiss_cf5_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*, 
+				kiss_obj*);
+typedef kiss_obj* (*kiss_cf6_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
+				kiss_obj*, kiss_obj*);
+typedef kiss_obj* (*kiss_cf7_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
+				kiss_obj*, kiss_obj*, kiss_obj*);
+typedef kiss_obj* (*kiss_cf8_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
+				kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*);
+typedef kiss_obj* (*kiss_cf9_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
+				kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
+				kiss_obj*);
+typedef kiss_obj* (*kiss_cf10_t)(kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
+				 kiss_obj*, kiss_obj*, kiss_obj*, kiss_obj*,
+				 kiss_obj*, kiss_obj*);
 
 typedef union {
      kiss_cf0_t f0;
@@ -298,8 +297,7 @@ typedef struct {
      kiss_obj* features;
 } kiss_environment_t;
 
-kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda,
-    KISS_Skw_rest, KISS_Samp_rest, KISS_Ueos;
+kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda, KISS_Skw_rest, KISS_Samp_rest, KISS_Ueos;
 #define KISS_T        ((kiss_obj*)(&KISS_St))
 #define KISS_NIL      ((kiss_obj*)(&KISS_Snil))
 #define KISS_QUOTE    ((kiss_obj*)(&KISS_Squote))
@@ -339,11 +337,11 @@ kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda,
 #define KISS_IS_INPUT_STREAM(x)     (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_INPUT_STREAM))
 #define KISS_IS_OUTPUT_STREAM(x)    (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_OUTPUT_STREAM))
 #define KISS_IS_CHARACTER_STREAM(x) (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_CHARACTER_STREAM))
-#define KISS_IS_BYTE_STREAM(x) (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_BYTE_STREAM))
+#define KISS_IS_BYTE_STREAM(x)      (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_BYTE_STREAM))
 #define KISS_IS_FILE_STREAM(x)      (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_FILE_STREAM))
 #define KISS_IS_STRING_STREAM(x)    (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_STRING_STREAM))
 
-#define KISS_IS_GC_OBJ(x)           (KISS_IS_CONS(x) || KISS_IS_SYMBOL(x) || KISS_IS_INTEGER(x) || KISS_IS_FLOAT(x) || KISS_IS_CHARACTER(x) || KISS_IS_STRING(x) || KISS_IS_GENERAL_VECTOR(x) || KISS_IS_FUNCTION(x) || KISS_IS_MACRO(x) || KISS_IS_CATCHER(x) || KISS_IS_CLEANUP(x) || KISS_IS_BLOCK(x) || KISS_IS_TAGBODY(x) || KISS_IS_OBJECT(x) || KISS_IS_STREAM(x))
+#define KISS_IS_GC_OBJ(x)           !(KISS_IS_CFUNCTION(x) || KISS_IS_CMACRO(x))
 
 
 /* character.c */
