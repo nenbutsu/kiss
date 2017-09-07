@@ -355,7 +355,7 @@ kiss_obj* kiss_cinvoke(kiss_cfunction_t* cfun, kiss_obj* args);
 
 /* cons.c */
 kiss_obj* kiss_cons(kiss_obj* const car, kiss_obj* const cdr);
-kiss_obj* kiss_consp(kiss_obj* const obj);
+kiss_obj* kiss_consp(const kiss_obj* const obj);
 kiss_obj* kiss_car(const kiss_obj* const p);
 kiss_obj* kiss_cdr(const kiss_obj* const p);
 kiss_obj* kiss_cadr(const kiss_obj* const p);

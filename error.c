@@ -18,14 +18,14 @@
  */
 #include "kiss.h"
 
-static int condition_working_p(void) {
+static int is_condition_working(void) {
      return kiss_featurep(kiss_symbol(L"condition")) == KISS_T;
 }
 
 void Kiss_System_Error (void) {
      perror(NULL);
      kiss_obj* msg = (kiss_obj*)kiss_make_string(L"system error");
-     if (condition_working_p()) {
+     if (is_condition_working()) {
 	  kiss_cfuncall(L"kiss::signal-simple-error", kiss_c_list(3, msg, KISS_NIL, KISS_NIL));
      } else {
 	  kiss_throw(kiss_c_list(2, kiss_symbol(L"quote"), kiss_symbol(L"kiss::error")), msg);
@@ -42,7 +42,7 @@ void Kiss_Err(wchar_t* str, ...) {
      va_start(args, str);
      for (p = str; *p != L'\0'; p++) {
 	  if (*p == L'~' && *(p+1) == L'S') {
-	       if (condition_working_p()) {
+	       if (is_condition_working()) {
 		    kiss_push(va_arg(args, kiss_obj*), &rest);
 		    kiss_format_char(out, (kiss_obj*)kiss_make_character(L'~'));
 		    kiss_format_char(out, (kiss_obj*)kiss_make_character(L'S'));
@@ -57,7 +57,7 @@ void Kiss_Err(wchar_t* str, ...) {
      va_end(args);
 
      string = kiss_get_output_stream_string(out);
-     if (condition_working_p()) {
+     if (is_condition_working()) {
 	  rest = kiss_nreverse(rest);
 	  kiss_cfuncall(L"kiss::signal-simple-error",
 			kiss_c_list(3, (kiss_obj*)string, rest, KISS_NIL));
@@ -69,8 +69,8 @@ void Kiss_Err(wchar_t* str, ...) {
 
 /* assure primitive type */
 void kiss_primitive_assure(const kiss_type t, const kiss_obj* const obj) {
-     if (t != obj->type) {
-	  if (condition_working_p()) {
+     if (t != KISS_OBJ_TYPE(obj)) {
+	  if (is_condition_working()) {
 	       kiss_cfuncall(L"kiss::assure", kiss_c_list(2, kiss_type_to_class_name(t), obj));
 	  } else {
 	       Kiss_Err(L"~S expected ~S", kiss_type_to_class_name(t), obj);
@@ -135,7 +135,7 @@ kiss_function_t* Kiss_Function(kiss_obj* obj) {
 
 kiss_obj* Kiss_Number(kiss_obj* obj) {
      if (!KISS_IS_INTEGER(obj) && !KISS_IS_FLOAT(obj)) {
-	  if (condition_working_p()) {
+	  if (is_condition_working()) {
 	       kiss_cfuncall(L"kiss::assure", kiss_c_list(2, kiss_symbol(L"<number>"), obj));
 	  } else {
 	       Kiss_Err(L"Number expected ~S", obj);
@@ -146,7 +146,7 @@ kiss_obj* Kiss_Number(kiss_obj* obj) {
 
 kiss_obj* Kiss_List(kiss_obj* const obj) {
      if (obj != KISS_NIL && !KISS_IS_CONS(obj)) {
-	  if (condition_working_p()) {
+	  if (is_condition_working()) {
 	       kiss_cfuncall(L"kiss::assure", kiss_c_list(2, kiss_symbol(L"<list>"), obj));
 	  } else {
 	       Kiss_Err(L"List expected ~S", obj);
@@ -182,7 +182,7 @@ kiss_obj* Kiss_Basic_Array(kiss_obj* obj) {
      if (KISS_IS_GENERAL_VECTOR(obj) || KISS_IS_GENERAL_ARRAY(obj) || KISS_IS_STRING(obj)) {
 	  return obj;
      }
-     if (condition_working_p()) {
+     if (is_condition_working()) {
 	  kiss_cfuncall(L"kiss::assure", kiss_c_list(2, kiss_symbol(L"<basic-array>"), obj));
      } else {
 	       Kiss_Err(L"Number expected ~S", obj);
@@ -338,7 +338,7 @@ void Kiss_End_Of_Stream_Error(kiss_obj* stream) {
 }
 
 void Kiss_Unbound_Variable_Error(kiss_obj* name) {
-     if (condition_working_p()) {
+     if (is_condition_working()) {
 	  kiss_cfuncall(L"kiss::signal-unbound-variable", kiss_c_list(2, name, KISS_NIL));
      } else {
 	  Kiss_Err(L"Unbound variable ~S", name);
@@ -346,7 +346,7 @@ void Kiss_Unbound_Variable_Error(kiss_obj* name) {
 }
 
 void Kiss_Catcher_Not_Found_Error(kiss_obj* tag) {
-     if (condition_working_p()) {
+     if (is_condition_working()) {
 	  kiss_cfuncall(L"kiss::signal-catcher-not-found", kiss_c_list(2, tag, KISS_NIL));
      } else {
 	  Kiss_Err(L"Catcher not found for ~S", tag);
@@ -354,7 +354,7 @@ void Kiss_Catcher_Not_Found_Error(kiss_obj* tag) {
 }
 
 void Kiss_Block_Not_Found_Error(kiss_obj* tag) {
-     if (condition_working_p()) {
+     if (is_condition_working()) {
 	  kiss_cfuncall(L"kiss::signal-block-not-found", kiss_c_list(2, tag, KISS_NIL));
      } else {
 	  Kiss_Err(L"Block not found ~S", tag);
@@ -362,7 +362,7 @@ void Kiss_Block_Not_Found_Error(kiss_obj* tag) {
 }
 
 void Kiss_Tagbody_Not_Found_Error(kiss_obj* tag) {
-     if (condition_working_p()) {
+     if (is_condition_working()) {
 	  kiss_cfuncall(L"kiss::signal-tagbody-not-found", kiss_c_list(2, tag, KISS_NIL));
      } else {
 	  Kiss_Err(L"Tagbody not found ~S", tag);

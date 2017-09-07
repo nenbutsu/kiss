@@ -35,7 +35,7 @@ inline kiss_obj* kiss_cons(kiss_obj* const car, kiss_obj* const cdr) {
 /* function: (consp obj) -> boolean
    Returns t if OBJ is a cons (instance of class <cons>); otherwise, returns nil.
    OBJ may be any ISLISP object. */
-inline kiss_obj* kiss_consp(kiss_obj* const obj) {
+inline kiss_obj* kiss_consp(const kiss_obj* const obj) {
      return KISS_IS_CONS(obj) ? KISS_T : KISS_NIL;
 }
 
@@ -48,7 +48,6 @@ inline kiss_obj* kiss_car(const kiss_obj* const p) { return KISS_CAR(Kiss_Cons(p
    Returns the right component of the CONS.
    An error shall be signaled if CONS is not a cons (error-id. domain-error). */
 inline kiss_obj* kiss_cdr(const kiss_obj* const p) { return KISS_CDR(Kiss_Cons(p)); }
-
 inline kiss_obj* kiss_cadr(const kiss_obj* const p)  { return kiss_car(kiss_cdr(p)); }
 inline kiss_obj* kiss_cddr(const kiss_obj* const p)  { return kiss_cdr(kiss_cdr(p)); }
 inline kiss_obj* kiss_caddr(const kiss_obj* const p) { return kiss_car(kiss_cddr(p)); }
