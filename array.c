@@ -86,7 +86,7 @@ kiss_obj* kiss_create_array(kiss_obj* dimensions, kiss_obj* rest) {
 	  return kiss_create_general_vector(kiss_car(dimensions), rest);
      } else {
 	  kiss_obj* obj = (rest == KISS_NIL) ? KISS_NIL : kiss_car(rest);
-	  kiss_make_general_array(dimensions, obj);
+	  return (kiss_obj*)kiss_make_general_array(dimensions, obj);
      }
 }
 
@@ -289,6 +289,7 @@ kiss_obj* kiss_basic_array_p (kiss_obj* obj) {
 	  return KISS_T;
      default:
 	  fwprintf(stderr, L"basic-array-p: unknown primitive obj type %d", KISS_OBJ_TYPE(obj));
+	  exit(EXIT_FAILURE);
      }
 }
 
@@ -321,6 +322,7 @@ kiss_obj* kiss_basic_array_s_p (kiss_obj* obj) {
 	  return KISS_T;
      default:
 	  fwprintf(stderr, L"basic-array*-p: unknown primitive obj type %d", KISS_OBJ_TYPE(obj));
+	  exit(EXIT_FAILURE);
      }
 }
 
@@ -352,6 +354,7 @@ kiss_obj* kiss_general_array_s_p (kiss_obj* obj) {
 	  return KISS_T;
      default:
 	  fwprintf(stderr, L"general-array*-p: unknown primitive obj type %d", KISS_OBJ_TYPE(obj));
+	  exit(EXIT_FAILURE);
      }
 }
 

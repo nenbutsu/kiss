@@ -397,28 +397,30 @@ kiss_obj* kiss_tagbody(kiss_obj* args);
 kiss_obj* kiss_go(kiss_obj* tag);
 
 /* error.c */
-void Kiss_System_Error (void);
-void Kiss_Err(wchar_t* str, ...);
-kiss_obj* Kiss_Valid_Sequence_Index(kiss_obj* sequence, kiss_obj* index);
+_Noreturn void Kiss_System_Error (void);
+_Noreturn void Kiss_Err(const wchar_t* const str, ...);
 kiss_cons_t* Kiss_Cons(const kiss_obj* const obj);
+kiss_integer_t* Kiss_Integer(const kiss_obj* const obj);
+kiss_float_t* Kiss_Float(const kiss_obj* const obj);
+kiss_character_t* Kiss_Character(const kiss_obj* const obj);
+kiss_symbol_t* Kiss_Symbol(const kiss_obj* const obj);
+kiss_string_t* Kiss_String(const kiss_obj* const obj);
+kiss_stream_t* Kiss_Stream(const kiss_obj* const obj);
+kiss_general_vector_t* Kiss_General_Vector(const kiss_obj* const obj);
+kiss_general_array_t* Kiss_General_Array_S(const kiss_obj* const obj);
+kiss_function_t* Kiss_Function(const kiss_obj* const obj);
+
+kiss_obj* Kiss_Number(kiss_obj* const obj);
+
+kiss_obj* Kiss_Valid_Sequence_Index(kiss_obj* sequence, kiss_obj* index);
 kiss_obj* Kiss_List(kiss_obj* const obj);
-kiss_stream_t* Kiss_Stream(kiss_obj* obj);
 kiss_obj* Kiss_Proper_List(kiss_obj* obj);
 kiss_cons_t* Kiss_Proper_List_2(kiss_obj* obj);
-kiss_integer_t* Kiss_Integer(kiss_obj* obj);
 kiss_integer_t* Kiss_Non_Negative_Integer(kiss_obj* obj);
 kiss_integer_t* Kiss_Non_Zero_Integer(kiss_obj* obj);
-kiss_float_t* Kiss_Float(kiss_obj* obj);
-kiss_obj* Kiss_Number(kiss_obj* obj);
-kiss_character_t* Kiss_Character(kiss_obj* obj);
-kiss_symbol_t* Kiss_Symbol(kiss_obj* obj);
-kiss_string_t* Kiss_String(kiss_obj* obj);
-kiss_general_vector_t* Kiss_General_Vector(kiss_obj* obj);
-kiss_general_array_t* Kiss_General_Array_S(kiss_obj* obj);
 kiss_obj* Kiss_General_Array(kiss_obj* obj);
 kiss_obj* Kiss_Basic_Array(kiss_obj* obj);
 kiss_obj* Kiss_Sequence(kiss_obj* obj);
-kiss_function_t* Kiss_Function(kiss_obj* obj);
 kiss_function_t* Kiss_Macro(kiss_obj* obj);
 kiss_cfunction_t* Kiss_CFunction(kiss_obj* obj);
 kiss_cfunction_t* Kiss_CMacro(kiss_obj* obj);

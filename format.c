@@ -200,6 +200,7 @@ kiss_obj* kiss_format_float(kiss_obj* out, kiss_obj* obj) {
      for (p = buff; *p != L'\0'; p++) {
 	  kiss_format_char(out, (kiss_obj*)kiss_make_character(*p));
      }
+     return KISS_NIL;
 }
 
 static kiss_obj* kiss_format_function(kiss_obj* out, kiss_obj* obj) {

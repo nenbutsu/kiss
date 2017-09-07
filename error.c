@@ -22,7 +22,7 @@ static int is_condition_working(void) {
      return kiss_featurep(kiss_symbol(L"condition")) == KISS_T;
 }
 
-void Kiss_System_Error (void) {
+_Noreturn void Kiss_System_Error (void) {
      perror(NULL);
      kiss_obj* msg = (kiss_obj*)kiss_make_string(L"system error");
      if (is_condition_working()) {
@@ -30,12 +30,13 @@ void Kiss_System_Error (void) {
      } else {
 	  kiss_throw(kiss_c_list(2, kiss_symbol(L"quote"), kiss_symbol(L"kiss::error")), msg);
      }
+     exit(EXIT_FAILURE); // not reach here
 }
 
-void Kiss_Err(wchar_t* str, ...) {
+_Noreturn void Kiss_Err(const wchar_t* const str, ...) {
      va_list args;
-     wchar_t* p;
-     kiss_obj* out = kiss_create_string_output_stream();
+     const wchar_t* p;
+     kiss_obj* const out = kiss_create_string_output_stream();
      kiss_obj* string;
      kiss_obj* rest = KISS_NIL;
 
@@ -44,8 +45,7 @@ void Kiss_Err(wchar_t* str, ...) {
 	  if (*p == L'~' && *(p+1) == L'S') {
 	       if (is_condition_working()) {
 		    kiss_push(va_arg(args, kiss_obj*), &rest);
-		    kiss_format_char(out, (kiss_obj*)kiss_make_character(L'~'));
-		    kiss_format_char(out, (kiss_obj*)kiss_make_character(L'S'));
+		    kiss_format_object(out, (kiss_obj*)kiss_make_string(L"~S"), KISS_NIL);
 	       } else {
 		    kiss_format_object(out, va_arg(args, kiss_obj*), KISS_NIL);
 	       }
@@ -64,6 +64,7 @@ void Kiss_Err(wchar_t* str, ...) {
      } else {
 	  kiss_throw(kiss_c_list(2, kiss_symbol(L"quote"), kiss_symbol(L"kiss::error")), string);
      }
+     exit(EXIT_FAILURE); // not reach here
 }
 
 
@@ -83,48 +84,47 @@ kiss_cons_t* Kiss_Cons(const kiss_obj* const obj) {
      return (kiss_cons_t*)obj;
 }
 
-kiss_integer_t* Kiss_Integer(kiss_obj* obj) {
+kiss_integer_t* Kiss_Integer(const kiss_obj* const obj) {
      kiss_primitive_assure(KISS_INTEGER, obj);
      return (kiss_integer_t*)obj;
 }
 
-kiss_float_t* Kiss_Float(kiss_obj* obj) {
+kiss_float_t* Kiss_Float(const kiss_obj* const obj) {
      kiss_primitive_assure(KISS_FLOAT, obj);
      return (kiss_float_t*)obj;
 }
 
-kiss_character_t* Kiss_Character(kiss_obj* obj) {
+kiss_character_t* Kiss_Character(const kiss_obj* const obj) {
      kiss_primitive_assure(KISS_CHARACTER, obj);
      return (kiss_character_t*)obj;
 }
 
-kiss_symbol_t* Kiss_Symbol(kiss_obj* obj) {
+kiss_symbol_t* Kiss_Symbol(const kiss_obj* const obj) {
      kiss_primitive_assure(KISS_SYMBOL, obj);
      return (kiss_symbol_t*)obj;
 }
 
-kiss_string_t* Kiss_String(kiss_obj* obj) {
+kiss_string_t* Kiss_String(const kiss_obj* const obj) {
      kiss_primitive_assure(KISS_STRING, obj);
     return (kiss_string_t*)obj;
 }
 
-kiss_stream_t* Kiss_Stream(kiss_obj* obj) {
+kiss_stream_t* Kiss_Stream(const kiss_obj* const obj) {
      kiss_primitive_assure(KISS_STREAM, obj);
      return (kiss_stream_t*)obj;
 }
 
-
-kiss_general_vector_t* Kiss_General_Vector(kiss_obj* obj) {
+kiss_general_vector_t* Kiss_General_Vector(const kiss_obj* const obj) {
      kiss_primitive_assure(KISS_GENERAL_VECTOR, obj);
     return (kiss_general_vector_t*)obj;
 }
 
-kiss_general_array_t* Kiss_General_Array_S(kiss_obj* obj) {
+kiss_general_array_t* Kiss_General_Array_S(const kiss_obj* const obj) {
      kiss_primitive_assure(KISS_GENERAL_ARRAY, obj);
     return (kiss_general_array_t*)obj;
 }
 
-kiss_function_t* Kiss_Function(kiss_obj* obj) {
+kiss_function_t* Kiss_Function(const kiss_obj* const obj) {
      kiss_primitive_assure(KISS_FUNCTION, obj);
      return (kiss_function_t*)obj;
 }
@@ -133,7 +133,7 @@ kiss_function_t* Kiss_Function(kiss_obj* obj) {
 
 /* assure non-primitive type */
 
-kiss_obj* Kiss_Number(kiss_obj* obj) {
+kiss_obj* Kiss_Number(kiss_obj* const obj) {
      if (!KISS_IS_INTEGER(obj) && !KISS_IS_FLOAT(obj)) {
 	  if (is_condition_working()) {
 	       kiss_cfuncall(L"kiss::assure", kiss_c_list(2, kiss_symbol(L"<number>"), obj));
@@ -176,6 +176,7 @@ kiss_obj* Kiss_General_Array(kiss_obj* obj) {
 	  return obj;
      }
      Kiss_Err(L"<general-vector> or <general-array*> expected ~S", obj);
+     exit(EXIT_FAILURE); // not reach here
 }
 
 kiss_obj* Kiss_Basic_Array(kiss_obj* obj) {
@@ -187,6 +188,7 @@ kiss_obj* Kiss_Basic_Array(kiss_obj* obj) {
      } else {
 	       Kiss_Err(L"Number expected ~S", obj);
      }
+     exit(EXIT_FAILURE); // not reach here
 }
 
 kiss_obj* Kiss_Valid_Sequence_Index(kiss_obj* sequence, kiss_obj* index) {
@@ -257,6 +259,7 @@ kiss_file_stream_t* Kiss_Open_File_Stream(kiss_obj* obj) {
 	  return (kiss_file_stream_t*)obj;
      }
      Kiss_Err(L"Open file stream expected ~S", obj);
+     exit(EXIT_FAILURE); // not reach here
 }
 
 kiss_string_stream_t* Kiss_String_Output_Stream(kiss_obj* obj) {
@@ -271,6 +274,7 @@ kiss_obj* Kiss_Sequence(kiss_obj* obj) {
 	  return obj;
      }
      Kiss_Err(L"Sequence expected ~S", obj);
+     exit(EXIT_FAILURE); // not reach here
 }
 
 kiss_function_t* Kiss_Macro(kiss_obj* obj) {

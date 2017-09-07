@@ -211,5 +211,6 @@ kiss_obj* kiss_cinvoke(kiss_cfunction_t* cfun, kiss_obj* args) {
 		  cfun->name);
 	}
     }
+    exit(EXIT_FAILURE); // not reach here
 }
 

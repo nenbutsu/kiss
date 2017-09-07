@@ -352,9 +352,8 @@ kiss_obj* kiss_c_read_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val)
 eos:
      if (eos_err_p != KISS_NIL) {
 	  Kiss_End_Of_Stream_Error(in);
-     } else {
-	  return eos_val;
      }
+     return eos_val;
 }
 
 
@@ -445,9 +444,8 @@ kiss_obj* kiss_c_preview_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_v
 eos:
      if (eos_err_p != KISS_NIL) {
 	  Kiss_End_Of_Stream_Error(in);
-     } else {
-	  return eos_val;
      }
+     return eos_val;
 }
 
 /* function: (preview-char [input-stream [eos-error-p [eos-value]]]) -> <object>
@@ -459,7 +457,6 @@ kiss_obj* kiss_preview_char(kiss_obj* args) {
      kiss_obj* in = kiss_standard_input();
      kiss_obj* eos_err_p = KISS_T;
      kiss_obj* eos_val = KISS_NIL;
-     wint_t c;
      if (KISS_IS_CONS(args)) {
 	  in = KISS_CAR(args);
 	  args = KISS_CDR(args);
@@ -560,9 +557,8 @@ kiss_obj* kiss_c_read_byte(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val)
 eos:
      if (eos_err_p != KISS_NIL) {
 	  Kiss_End_Of_Stream_Error(in);
-     } else {
-	  return eos_val;
      }
+     return eos_val;
 }
 
 /* function: (read-byte input-stream [eos-error-p [eos-value]]) -> <integer>

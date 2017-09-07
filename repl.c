@@ -101,7 +101,9 @@ int kiss_read_eval_print_loop(void) {
 
 	       if (form == KISS_EOS) break;
 
-	       kiss_print(kiss_eval(form));
+	       kiss_obj* result = kiss_eval(form);
+	       kiss_format_fresh_line(kiss_standard_output());
+	       kiss_print(result);
 	       fflush(stdout);
 	  } else {
 	       kiss_obj* result = env->throw_result;
@@ -123,4 +125,5 @@ int kiss_read_eval_print_loop(void) {
 	  }
 	  env->heap_index = saved_heap_index;
      }
+     return 0;
 }

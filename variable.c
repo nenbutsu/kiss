@@ -38,12 +38,11 @@ kiss_obj* kiss_setq(kiss_obj* name, kiss_obj* form) {
 	  return value;
      } else if (symbol->var == NULL) {
 	  Kiss_Unbound_Variable_Error(name);
-     } else {
-	  kiss_obj* value;
-	  value = kiss_eval(form);
-	  symbol->var = value;
-	  return value;
      }
+     kiss_obj* value;
+     value = kiss_eval(form);
+     symbol->var = value;
+     return value;
 }
 
 /* defining operator: (defglobal name form) -> <symbol> */
@@ -102,7 +101,6 @@ kiss_obj* kiss_let_s(kiss_obj* vspecs, kiss_obj* body) {
 /* defining operator: (defdynamic name form) -> <symbol> */
 kiss_obj* kiss_defdynamic(kiss_obj* name, kiss_obj* form) {
     kiss_environment_t* env = Kiss_Get_Environment();
-    kiss_symbol_t* symbol = Kiss_Symbol(name);
     kiss_obj* value = kiss_eval(form);
     kiss_obj* binding = kiss_assoc(name, env->global_dynamic_vars);
     if (KISS_IS_CONS(binding)) {
@@ -122,6 +120,7 @@ kiss_obj* kiss_dynamic(kiss_obj* name) {
     binding = kiss_assoc(name, env->global_dynamic_vars);
     if (KISS_IS_CONS(binding)) { return KISS_CDR(binding); }
     Kiss_Unbound_Variable_Error((kiss_obj*)name);
+    exit(EXIT_FAILURE); // not reach here     
 }
 
 /* special operator: (set-dynamic form var) -> <object>
@@ -146,6 +145,7 @@ kiss_obj* kiss_set_dynamic(kiss_obj* form, kiss_obj* name) {
 	return value;
     }
     Kiss_Unbound_Variable_Error((kiss_obj*)name);
+    exit(EXIT_FAILURE); // not reach here     
 }
 
 

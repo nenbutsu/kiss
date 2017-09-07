@@ -87,6 +87,7 @@ kiss_obj* kiss_parse_number(kiss_obj* p) {
 	  if (tailptr == str->str + str->n) { return (kiss_obj*)kiss_make_float(f); }
 	  else { Kiss_Cannot_Parse_Number_Error(p); }
      }
+     exit(EXIT_FAILURE); // not reach here
 }
 
 

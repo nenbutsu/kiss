@@ -77,10 +77,10 @@ static kiss_obj* kiss_eval_compound_form(kiss_cons_t* p) {
      }
      default: Kiss_Err(L"Invalid compound expression ~S", p);
      }
+     exit(EXIT_FAILURE); // not reach here
 }
 
 kiss_obj* kiss_eval(kiss_obj* form) {
-    kiss_environment_t* env = Kiss_Get_Environment();
     kiss_obj* result;
     switch (KISS_OBJ_TYPE(form)) {
     case KISS_CONS: {
@@ -99,7 +99,6 @@ kiss_obj* kiss_eval(kiss_obj* form) {
 }
 
 kiss_obj* kiss_eval_body(kiss_obj* body) {
-     kiss_environment_t* env = Kiss_Get_Environment();
      kiss_obj* result = KISS_NIL;
      for (body = Kiss_Proper_List(body); KISS_IS_CONS(body); body = KISS_CDR(body)) {
 	  result = kiss_eval(KISS_CAR(body));

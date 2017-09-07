@@ -93,6 +93,7 @@ static kiss_catcher_t* kiss_catcher_ref(kiss_obj* tag) {
 	}
     }
     Kiss_Catcher_Not_Found_Error(tag);
+    exit(EXIT_FAILURE); // not reach here
 }
 
 static void kiss_eval_cleanups(kiss_obj* stop, kiss_obj* jumpers) {
@@ -175,6 +176,7 @@ static kiss_block_t* kiss_block_ref(kiss_symbol_t* name) {
      }
 error:
      Kiss_Block_Not_Found_Error((kiss_obj*)name);
+     exit(EXIT_FAILURE); // not reach here
 }
 
 /* special operator: (return-from name result-form) transfers control and data
@@ -223,7 +225,6 @@ kiss_obj* kiss_tagbody(kiss_obj* args) {
     kiss_dynamic_environment_t saved_dynamic_env = env->dynamic_env;
     kiss_lexical_environment_t tagbody_lexical_env = env->lexical_env;
     kiss_dynamic_environment_t tagbody_dynamic_env = env->dynamic_env;
-    kiss_obj* result;
     jmp_buf jmp;
     kiss_obj* stack = kiss_make_tagbodies(args, jmp);
     kiss_obj* p = stack;
@@ -270,6 +271,7 @@ static kiss_tagbody_t* kiss_tagbody_ref(kiss_symbol_t* tag) {
     }
     error:
     Kiss_Tagbody_Not_Found_Error((kiss_obj*)tag);
+    exit(EXIT_FAILURE); // not reach here
 }
 
 /* special operator: (go tagbody-tag) transfers control */
