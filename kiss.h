@@ -354,15 +354,16 @@ kiss_obj* kiss_char_lessthan(kiss_obj* character1, kiss_obj* character2);
 kiss_obj* kiss_cinvoke(kiss_cfunction_t* cfun, kiss_obj* args);
 
 /* cons.c */
-kiss_obj* kiss_cons(kiss_obj* car, kiss_obj* cdr);
-kiss_obj* kiss_consp(kiss_obj* obj);
-kiss_obj* kiss_car(kiss_obj* p);
-kiss_obj* kiss_cdr(kiss_obj* p);
-kiss_obj* kiss_cadr(kiss_obj* p);
-kiss_obj* kiss_cddr(kiss_obj* p);
-kiss_obj* kiss_caddr(kiss_obj* p);
-kiss_obj* kiss_set_car(kiss_obj* obj, kiss_obj* cons);
-kiss_obj* kiss_set_cdr(kiss_obj* obj, kiss_obj* cons);
+kiss_obj* kiss_cons(kiss_obj* const car, kiss_obj* const cdr);
+kiss_obj* kiss_consp(kiss_obj* const obj);
+kiss_obj* kiss_car(const kiss_obj* const p);
+kiss_obj* kiss_cdr(const kiss_obj* const p);
+kiss_obj* kiss_cadr(const kiss_obj* const p);
+kiss_obj* kiss_cddr(const kiss_obj* const p);
+kiss_obj* kiss_caddr(const kiss_obj* const p);
+kiss_obj* kiss_set_car(kiss_obj* const obj, kiss_obj* const cons);
+kiss_obj* kiss_set_cdr(kiss_obj* const obj, kiss_obj* const cons);
+kiss_obj* kiss_copy_list(kiss_obj* p);
 kiss_obj* kiss_list(kiss_obj* p);
 kiss_obj* kiss_c_list(int nargs, ...);
 kiss_obj* kiss_append(kiss_obj* p);
@@ -378,7 +379,6 @@ kiss_obj* kiss_plist_member (kiss_obj* plist, kiss_obj* property);
 kiss_obj* kiss_plist_remove(kiss_obj* plist, kiss_obj* property);
 kiss_obj* kiss_plist_get (kiss_obj* plist, kiss_obj* property);
 kiss_obj* kiss_plist_put (kiss_obj* plist, kiss_obj* property, kiss_obj* value);
-kiss_obj* kiss_copy_list(kiss_obj* p);
 void kiss_push(kiss_obj* elm, kiss_obj** list);
 
 /* control.c */
@@ -400,8 +400,8 @@ kiss_obj* kiss_go(kiss_obj* tag);
 void Kiss_System_Error (void);
 void Kiss_Err(wchar_t* str, ...);
 kiss_obj* Kiss_Valid_Sequence_Index(kiss_obj* sequence, kiss_obj* index);
-kiss_cons_t* Kiss_Cons(kiss_obj* obj);
-kiss_obj* Kiss_List(kiss_obj* obj);
+kiss_cons_t* Kiss_Cons(const kiss_obj* const obj);
+kiss_obj* Kiss_List(kiss_obj* const obj);
 kiss_stream_t* Kiss_Stream(kiss_obj* obj);
 kiss_obj* Kiss_Proper_List(kiss_obj* obj);
 kiss_cons_t* Kiss_Proper_List_2(kiss_obj* obj);

@@ -18,14 +18,14 @@
  */
 #include "kiss.h"
 
-/* function: (cons obj1 obj2) -> <cons
-   This function builds a cons from two objects, with obj1 as its car (or ‘left’) part and
-   with obj2 as its cdr (or ‘right’) part.
+/* function: (cons obj1 obj2) -> <cons>
+   Builds a cons from two objects, with OBJ1 as its car (or `left') part and
+   with OBJ2 as its cdr (or `right') part.
    An error shall be signaled if the requested cons cannot be allocated 
-   (error-id. cannot-create-cons). Both obj1 and obj2 may be any ISLISP object.
-*/
-kiss_obj* kiss_cons(kiss_obj* car, kiss_obj* cdr) {
-    kiss_cons_t* p = Kiss_GC_Malloc(sizeof(kiss_cons_t));
+   (error-id. cannot-create-cons). 
+   Both OBJ1 and OBJ2 may be any ISLISP object. */
+inline kiss_obj* kiss_cons(kiss_obj* const car, kiss_obj* const cdr) {
+    kiss_cons_t* const p = Kiss_GC_Malloc(sizeof(kiss_cons_t));
     p->type = KISS_CONS;
     p->car  = car;
     p->cdr  = cdr;
@@ -33,60 +33,54 @@ kiss_obj* kiss_cons(kiss_obj* car, kiss_obj* cdr) {
 }
 
 /* function: (consp obj) -> boolean
-   Returns t if obj is a cons (instance of class <cons>); otherwise, returns nil.
-   obj may be any ISLISP object.
-*/
-kiss_obj* kiss_consp(kiss_obj* obj) {
-    if (KISS_IS_CONS(obj)) { return KISS_T; }
-    else                   { return KISS_NIL; }
+   Returns t if OBJ is a cons (instance of class <cons>); otherwise, returns nil.
+   OBJ may be any ISLISP object. */
+inline kiss_obj* kiss_consp(kiss_obj* const obj) {
+     return KISS_IS_CONS(obj) ? KISS_T : KISS_NIL;
 }
 
 /* function: (car cons) -> <object>
-   The function car returns the left component of the cons.
-   An error shall be signaled if cons is not a cons (error-id. domain-error).
-*/
-kiss_obj* kiss_car(kiss_obj* p) { return KISS_CAR(Kiss_Cons(p)); }
+   Returns the left component of the CONS.
+   An error shall be signaled if CONS is not a cons (error-id. domain-error). */
+inline kiss_obj* kiss_car(const kiss_obj* const p) { return KISS_CAR(Kiss_Cons(p)); }
 
 /* function: (cdr cons) -> <object>
-   The function cdr returns the right component of the cons.
-   An error shall be signaled if cons is not a cons (error-id. domain-error).
-*/
-kiss_obj* kiss_cdr(kiss_obj* p) { return KISS_CDR(Kiss_Cons(p)); }
+   Returns the right component of the CONS.
+   An error shall be signaled if CONS is not a cons (error-id. domain-error). */
+inline kiss_obj* kiss_cdr(const kiss_obj* const p) { return KISS_CDR(Kiss_Cons(p)); }
 
-kiss_obj* kiss_cadr(kiss_obj* p)  { return kiss_car(kiss_cdr(p)); }
-kiss_obj* kiss_cddr(kiss_obj* p)  { return kiss_cdr(kiss_cdr(p)); }
-kiss_obj* kiss_caddr(kiss_obj* p) { return kiss_car(kiss_cddr(p)); }
+inline kiss_obj* kiss_cadr(const kiss_obj* const p)  { return kiss_car(kiss_cdr(p)); }
+inline kiss_obj* kiss_cddr(const kiss_obj* const p)  { return kiss_cdr(kiss_cdr(p)); }
+inline kiss_obj* kiss_caddr(const kiss_obj* const p) { return kiss_car(kiss_cddr(p)); }
 
 /* function: (set-car obj cons) -> <object>
-   Updates the left component of cons with obj.
-   The returned value is obj.
-   An error shall be signaled if cons is not a cons (error-id. domain-error).
-   obj may be any ISLISP object
-*/
-kiss_obj* kiss_set_car(kiss_obj* obj, kiss_obj* cons) {
-    kiss_cons_t* p = Kiss_Cons(cons);
+   Updates the left component of CONS with OBJ.
+   The returned value is OBJ.
+   An error shall be signaled if CONS is not a cons (error-id. domain-error).
+   OBJ may be any ISLISP object */
+inline kiss_obj* kiss_set_car(kiss_obj* const obj, kiss_obj* const cons) {
+    kiss_cons_t* const p = Kiss_Cons(cons);
     p->car = obj;
     return obj;
 }
 
 /* function: (set-cdr obj cons) -> <object>
-   Updates the right component of cons with obj. The returned value is obj.
-   An error shall be signaled if cons is not a cons (error-id. domain-error).
-   obj may be any ISLISP object. */
-kiss_obj* kiss_set_cdr(kiss_obj* obj, kiss_obj* cons) {
-    kiss_cons_t* p = Kiss_Cons(cons);
+   Updates the right component of CONS with OBJ. The returned value is OBJ.
+   An error shall be signaled if CONS is not a cons (error-id. domain-error).
+   OBJ may be any ISLISP object. */
+inline kiss_obj* kiss_set_cdr(kiss_obj* const obj, kiss_obj* const cons) {
+    kiss_cons_t* const p = Kiss_Cons(cons);
     p->cdr = obj;
     return obj;
 }
 
-/* Common Lisp
-   Function: Copy-list list => copy
-   Returns a copy of list. If list is a dotted list, the resulting list will
-   also be a dotted list. Only the list structure of list is copied;
+/* CL function: copy-list list -> copy
+   Returns a copy of LIST. If LIST is a dotted list, the resulting list will
+   also be a dotted list. Only the list structure of LIST is copied;
    the elements of the resulting list are the same as the corresponding
-   elements of the given list. */
+   elements of the given LIST. */
 kiss_obj* kiss_copy_list(kiss_obj* p) {
-    kiss_obj* result = kiss_cons(KISS_NIL, KISS_NIL);
+    kiss_obj* const result = kiss_cons(KISS_NIL, KISS_NIL);
     kiss_obj* here = result;
     for (p = Kiss_List(p); KISS_IS_CONS(p); p = KISS_CDR(p)) {
 	kiss_set_cdr(kiss_cons(KISS_CAR(p), KISS_NIL), here);

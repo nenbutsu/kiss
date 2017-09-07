@@ -68,10 +68,8 @@ void Kiss_Err(wchar_t* str, ...) {
 
 
 /* assure primitive type */
-kiss_obj* kiss_primitive_assure(kiss_type t, kiss_obj* obj) {
-     if (t == obj->type) {
-	  return obj;
-     } else {
+void kiss_primitive_assure(const kiss_type t, const kiss_obj* const obj) {
+     if (t != obj->type) {
 	  if (condition_working_p()) {
 	       kiss_cfuncall(L"kiss::assure", kiss_c_list(2, kiss_type_to_class_name(t), obj));
 	  } else {
@@ -80,7 +78,7 @@ kiss_obj* kiss_primitive_assure(kiss_type t, kiss_obj* obj) {
      }
 }
 
-kiss_cons_t* Kiss_Cons(kiss_obj* obj) {
+kiss_cons_t* Kiss_Cons(const kiss_obj* const obj) {
      kiss_primitive_assure(KISS_CONS, obj);
      return (kiss_cons_t*)obj;
 }
@@ -146,7 +144,7 @@ kiss_obj* Kiss_Number(kiss_obj* obj) {
      return obj;
 }
 
-kiss_obj* Kiss_List(kiss_obj* obj) {
+kiss_obj* Kiss_List(kiss_obj* const obj) {
      if (obj != KISS_NIL && !KISS_IS_CONS(obj)) {
 	  if (condition_working_p()) {
 	       kiss_cfuncall(L"kiss::assure", kiss_c_list(2, kiss_symbol(L"<list>"), obj));
