@@ -355,5 +355,3 @@ kiss_obj* kiss_plist_put (kiss_obj* plist, const kiss_obj* const property, const
         return plist;
     }
 }
-
-

@@ -42,9 +42,9 @@ static kiss_obj* kiss_invoke(kiss_obj* f, kiss_obj* args) {
 	  break;
      }
      case KISS_OO_OBJ:
-	  if (kiss_cfuncall(L"generic-function-p", kiss_c_list(1, f)) == KISS_T) {
+	  if (kiss_c_funcall(L"generic-function-p", kiss_c_list(1, f)) == KISS_T) {
 	       /* fwprintf(stderr, "calling generic-function\n"); fflush(stderr); */
-	       result = kiss_cfuncall(L"generic-function-invoke",
+	       result = kiss_c_funcall(L"generic-function-invoke",
 				      kiss_c_list(2, f, kiss_eval_args(args)));
 	  } else {
 	       result = kiss_method_invoke(f);

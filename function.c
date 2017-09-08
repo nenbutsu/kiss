@@ -135,8 +135,8 @@ kiss_obj* kiss_funcall(kiss_obj* f, kiss_obj* args) {
      case KISS_FUNCTION:
 	  return kiss_linvoke((kiss_function_t*)f, args);
      case KISS_OO_OBJ:
-	  if (kiss_cfuncall(L"generic-function-p", kiss_c_list(1, f)) == KISS_T) {
-	       return kiss_cfuncall(L"generic-function-invoke", kiss_c_list(2, f, args));
+	  if (kiss_c_funcall(L"generic-function-p", kiss_c_list(1, f)) == KISS_T) {
+	       return kiss_c_funcall(L"generic-function-invoke", kiss_c_list(2, f, args));
 	  }
 	  // fall through
      default:
@@ -145,7 +145,7 @@ kiss_obj* kiss_funcall(kiss_obj* f, kiss_obj* args) {
     
 }
 
-kiss_obj* kiss_cfuncall(wchar_t* function_name, kiss_obj* args) {
+kiss_obj* kiss_c_funcall(wchar_t* function_name, kiss_obj* args) {
     return kiss_funcall(kiss_symbol_function(kiss_symbol(function_name)), args);
 }
 

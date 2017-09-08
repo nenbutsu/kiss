@@ -162,7 +162,7 @@ char* kiss_wcstombs(const wchar_t* src) {
 
 static int kiss_is_character_class(kiss_obj* obj) {
      if (!KISS_IS_OBJECT(obj)) { return 0; }
-     kiss_obj* class = kiss_cfuncall(L"kiss::class", kiss_c_list(1, kiss_symbol(L"<character>")));
+     kiss_obj* class = kiss_c_funcall(L"kiss::class", kiss_c_list(1, kiss_symbol(L"<character>")));
      if (obj == class) {
 	  return 1;
      } else {

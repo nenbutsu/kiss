@@ -16,13 +16,13 @@
 ;; GNU General Public License for more details.
 
 ;; function: (null obj) -> boolean
-;; Returns t if obj is nil; otherwise, returns nil. obj may be any
-;; ISLISP object.
+;; Returns t if OBJ is nil; otherwise, returns nil.
+;; OBJ may be any ISLISP object.
 (defun null (obj) (eq obj nil))
 
 ;; function: (listp obj) -> boolean
-;; Returns t if obj is a list (instance of class <list>); otherwise,
-;; returns nil. obj may be any ISLISP object.
+;; Returns t if OBJ is a list (instance of class <list>);
+;; otherwise, returns nil. OBJ may be any ISLISP object.
 (defun listp (obj)
   (if (or (null obj) (consp obj))
       t
@@ -30,13 +30,13 @@
 
 
 ;; (create-list i [initial-element]) -> <list>
-;; Returns a list of length i. If initial-element is given,
+;; Returns a list of length I. If INITIAL-ELEMENT is given,
 ;; the elements of the new list are initialized with this object;
 ;; otherwise, the initialization is implementation defined.
 ;; An error shall be signaled if the requested list cannot be allocated
 ;; (error-id. cannot-create-list).
-;; An error shall be signaled if i is not a non-negative integer (error-id. domain-error).
-;; initial-element may be any ISLISP object.
+;; An error shall be signaled if I is not a non-negative integer (error-id. domain-error).
+;; INITIAL-ELEMENT may be any ISLISP object.
 (defun create-list (i &rest rest)
   (let ((initial-element (if rest (car rest) nil))
 	(result nil))

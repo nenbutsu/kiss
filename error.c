@@ -22,18 +22,20 @@ static int is_condition_working(void) {
      return kiss_featurep(kiss_symbol(L"condition")) == KISS_T;
 }
 
-_Noreturn void Kiss_System_Error (void) {
+_Noreturn
+void Kiss_System_Error (void) {
      perror(NULL);
      kiss_obj* msg = (kiss_obj*)kiss_make_string(L"system error");
      if (is_condition_working()) {
-	  kiss_cfuncall(L"kiss::signal-simple-error", kiss_c_list(3, msg, KISS_NIL, KISS_NIL));
+	  kiss_c_funcall(L"kiss::signal-simple-error", kiss_c_list(3, msg, KISS_NIL, KISS_NIL));
      } else {
 	  kiss_throw(kiss_c_list(2, kiss_symbol(L"quote"), kiss_symbol(L"kiss::error")), msg);
      }
      exit(EXIT_FAILURE); // not reach here
 }
 
-_Noreturn void Kiss_Err(const wchar_t* const str, ...) {
+_Noreturn
+void Kiss_Err(const wchar_t* const str, ...) {
      va_list args;
      const wchar_t* p;
      kiss_obj* const out = kiss_create_string_output_stream();
@@ -59,7 +61,7 @@ _Noreturn void Kiss_Err(const wchar_t* const str, ...) {
      string = kiss_get_output_stream_string(out);
      if (is_condition_working()) {
 	  rest = kiss_nreverse(rest);
-	  kiss_cfuncall(L"kiss::signal-simple-error",
+	  kiss_c_funcall(L"kiss::signal-simple-error",
 			kiss_c_list(3, (kiss_obj*)string, rest, KISS_NIL));
      } else {
 	  kiss_throw(kiss_c_list(2, kiss_symbol(L"quote"), kiss_symbol(L"kiss::error")), string);
@@ -72,7 +74,7 @@ _Noreturn void Kiss_Err(const wchar_t* const str, ...) {
 void kiss_primitive_assure(const kiss_type t, const kiss_obj* const obj) {
      if (t != KISS_OBJ_TYPE(obj)) {
 	  if (is_condition_working()) {
-	       kiss_cfuncall(L"kiss::assure", kiss_c_list(2, kiss_type_to_class_name(t), obj));
+	       kiss_c_funcall(L"kiss::assure", kiss_c_list(2, kiss_type_to_class_name(t), obj));
 	  } else {
 	       Kiss_Err(L"~S expected ~S", kiss_type_to_class_name(t), obj);
 	  }
@@ -129,6 +131,21 @@ inline kiss_function_t* Kiss_Function(const kiss_obj* const obj) {
      return (kiss_function_t*)obj;
 }
 
+kiss_function_t* Kiss_Macro(const kiss_obj* const obj) {
+     kiss_primitive_assure(KISS_MACRO, obj);
+     return (kiss_function_t*)obj;
+}
+
+kiss_cfunction_t* Kiss_CFunction(const kiss_obj* const obj) {
+     kiss_primitive_assure(KISS_CFUNCTION, obj);
+     return (kiss_cfunction_t*)obj;
+}
+
+kiss_cfunction_t* Kiss_CMacro(const kiss_obj* const obj) {
+     kiss_primitive_assure(KISS_CMACRO, obj);
+     return (kiss_cfunction_t*)obj;
+}
+
 
 
 /* assure non-primitive type */
@@ -136,7 +153,7 @@ inline kiss_function_t* Kiss_Function(const kiss_obj* const obj) {
 inline kiss_obj* Kiss_Number(const kiss_obj* const obj) {
      if (!KISS_IS_INTEGER(obj) && !KISS_IS_FLOAT(obj)) {
 	  if (is_condition_working()) {
-	       kiss_cfuncall(L"kiss::assure", kiss_c_list(2, kiss_symbol(L"<number>"), obj));
+	       kiss_c_funcall(L"kiss::assure", kiss_c_list(2, kiss_symbol(L"<number>"), obj));
 	  } else {
 	       Kiss_Err(L"Number expected ~S", obj);
 	  }
@@ -147,7 +164,7 @@ inline kiss_obj* Kiss_Number(const kiss_obj* const obj) {
 inline kiss_obj* Kiss_List(const kiss_obj* const obj) {
      if (obj != KISS_NIL && !KISS_IS_CONS(obj)) {
 	  if (is_condition_working()) {
-	       kiss_cfuncall(L"kiss::assure", kiss_c_list(2, kiss_symbol(L"<list>"), obj));
+	       kiss_c_funcall(L"kiss::assure", kiss_c_list(2, kiss_symbol(L"<list>"), obj));
 	  } else {
 	       Kiss_Err(L"List expected ~S", obj);
 	  }
@@ -173,7 +190,7 @@ inline kiss_integer_t* Kiss_Non_Zero_Integer(const kiss_obj* const obj) {
 
 inline kiss_obj* Kiss_General_Array(const kiss_obj* const obj) {
      if (!KISS_IS_GENERAL_VECTOR(obj) && !KISS_IS_GENERAL_ARRAY(obj)) {
-          Kiss_Err(L"<general-vector> or <general-array*> expected ~S", obj);
+          Kiss_Err(L"general array(<general-vector> or <general-array*>) expected ~S", obj);
      }
      return (kiss_obj*)obj;
 }
@@ -181,7 +198,7 @@ inline kiss_obj* Kiss_General_Array(const kiss_obj* const obj) {
 inline kiss_obj* Kiss_Basic_Array(const kiss_obj* const obj) {
      if (!KISS_IS_GENERAL_VECTOR(obj) && !KISS_IS_GENERAL_ARRAY(obj) && !KISS_IS_STRING(obj)) {
           if (is_condition_working()) {
-               kiss_cfuncall(L"kiss::assure", kiss_c_list(2, kiss_symbol(L"<basic-array>"), obj));
+               kiss_c_funcall(L"kiss::assure", kiss_c_list(2, kiss_symbol(L"<basic-array>"), obj));
           } else {
 	       Kiss_Err(L"<basic-array> expected ~S", obj);
           }
@@ -189,81 +206,14 @@ inline kiss_obj* Kiss_Basic_Array(const kiss_obj* const obj) {
      return (kiss_obj*)obj;
 }
 
-kiss_obj* Kiss_Valid_Sequence_Index(const kiss_obj* const sequence, const kiss_obj* const index) {
+inline kiss_obj* Kiss_Valid_Sequence_Index(const kiss_obj* const sequence, const kiss_obj* const index)
+{
      const size_t n = kiss_c_length(sequence);
      const long int i = Kiss_Integer(index)->i;
      if (i < 0 || i >= n) {
           Kiss_Err(L"Invalid sequence index ~S ~S", sequence, index);
      }
      return (kiss_obj*)index;
-}
-
-/* Proper list is a list terminated by the empty list. (The empty list is a proper list.) */
-kiss_obj* Kiss_Proper_List(const kiss_obj* const obj) {
-     const kiss_obj* p = obj;
-     while (KISS_IS_CONS(p)) { p = KISS_CDR(p); }
-     if (p != KISS_NIL) {
-          Kiss_Err(L"Proper list expected ~S", obj);
-     }
-     return (kiss_obj*)obj;
-}
-
-kiss_cons_t* Kiss_Proper_List_2(kiss_obj* obj) {
-    Kiss_Proper_List(obj);
-    if (kiss_c_length(obj) != 2) {
-	Kiss_Err(L"Proper list of length 2 expected ~S", obj);
-    }
-    return (kiss_cons_t*)obj;
-}
-
-kiss_oo_obj_t* Kiss_Object(kiss_obj* obj) {
-    if (!KISS_IS_OBJECT(obj)) { Kiss_Err(L"Object expected ~S", obj); }
-    return (kiss_oo_obj_t*)obj;
-}
-
-kiss_stream_t* Kiss_Input_Char_Stream(kiss_obj* obj) {
-    if (!KISS_IS_INPUT_STREAM(obj) || !KISS_IS_CHARACTER_STREAM(obj)) {
-	Kiss_Err(L"Input character stream expected ~S", obj);
-    }
-    return (kiss_stream_t*)obj;
-}
-
-kiss_stream_t* Kiss_Output_Char_Stream(kiss_obj* obj) {
-    if (!KISS_IS_OUTPUT_STREAM(obj) || !KISS_IS_CHARACTER_STREAM(obj)){
-	Kiss_Err(L"Output character stream expected ~S", obj);
-    }
-    return (kiss_stream_t*)obj;
-}
-
-kiss_stream_t* Kiss_Input_Byte_Stream(kiss_obj* obj) {
-    if (!KISS_IS_INPUT_STREAM(obj) || !KISS_IS_BYTE_STREAM(obj)) {
-	Kiss_Err(L"Input byte stream expected ~S", obj);
-    }
-    return (kiss_stream_t*)obj;
-}
-
-kiss_stream_t* Kiss_Output_Byte_Stream(kiss_obj* obj) {
-    if (!KISS_IS_OUTPUT_STREAM(obj) || !KISS_IS_BYTE_STREAM(obj)){
-	Kiss_Err(L"Output byte stream expected ~S", obj);
-    }
-    return (kiss_stream_t*)obj;
-}
-
-
-kiss_file_stream_t* Kiss_Open_File_Stream(kiss_obj* obj) {
-     Kiss_Stream(obj);
-     if (KISS_IS_FILE_STREAM(obj) || ((kiss_file_stream_t*)obj)->file_ptr) {
-	  return (kiss_file_stream_t*)obj;
-     }
-     Kiss_Err(L"Open file stream expected ~S", obj);
-     exit(EXIT_FAILURE); // not reach here
-}
-
-kiss_string_stream_t* Kiss_String_Output_Stream(kiss_obj* obj) {
-    if (!KISS_IS_OUTPUT_STREAM(obj) || !KISS_IS_STRING_STREAM(obj)) {
-	Kiss_Err(L"String output stream expected ~S", obj);
-    }
-    return (kiss_string_stream_t*)obj;
 }
 
 kiss_obj* Kiss_Sequence(const kiss_obj* const obj) {
@@ -273,99 +223,165 @@ kiss_obj* Kiss_Sequence(const kiss_obj* const obj) {
      return (kiss_obj*)obj;
 }
 
-kiss_function_t* Kiss_Macro(kiss_obj* obj) {
-/* implementation of macro currently uses function_t */
-    if (!KISS_IS_MACRO(obj)) { Kiss_Err(L"Macro expected ~S", obj); }
-    return (kiss_function_t*)obj;
+/* Proper list is a list terminated by the empty list. (The empty list is a proper list.) */
+inline kiss_obj* Kiss_Proper_List(const kiss_obj* const obj) {
+     const kiss_obj* p = obj;
+     while (KISS_IS_CONS(p)) { p = KISS_CDR(p); }
+     if (p != KISS_NIL) {
+          Kiss_Err(L"Proper list expected ~S", obj);
+     }
+     return (kiss_obj*)obj;
 }
 
-kiss_cfunction_t* Kiss_CFunction(kiss_obj* obj) {
-    if (!KISS_IS_CFUNCTION(obj)) { Kiss_Err(L"C function expected ~S", obj); }
-    return (kiss_cfunction_t*)obj;
+inline kiss_cons_t* Kiss_Proper_List_2(const kiss_obj* const obj) {
+    Kiss_Proper_List(obj);
+    if (kiss_c_length(obj) != 2) {
+	Kiss_Err(L"Proper list of length 2 expected ~S", obj);
+    }
+    return (kiss_cons_t*)obj;
 }
 
-kiss_cfunction_t* Kiss_CMacro(kiss_obj* obj) {
-    if (!KISS_IS_CMACRO(obj)) { Kiss_Err(L"C macro expected ~S", obj); }
-    return (kiss_cfunction_t*)obj;
+inline kiss_oo_obj_t* Kiss_Object(const kiss_obj* const obj) {
+    if (!KISS_IS_OBJECT(obj)) { Kiss_Err(L"ILOS object expected ~S", obj); }
+    return (kiss_oo_obj_t*)obj;
+}
+
+inline kiss_stream_t* Kiss_Input_Char_Stream(const kiss_obj* const obj) {
+    if (!KISS_IS_INPUT_STREAM(obj) || !KISS_IS_CHARACTER_STREAM(obj)) {
+	Kiss_Err(L"Input character stream expected ~S", obj);
+    }
+    return (kiss_stream_t*)obj;
+}
+
+inline kiss_stream_t* Kiss_Output_Char_Stream(const kiss_obj* const obj) {
+    if (!KISS_IS_OUTPUT_STREAM(obj) || !KISS_IS_CHARACTER_STREAM(obj)){
+	Kiss_Err(L"Output character stream expected ~S", obj);
+    }
+    return (kiss_stream_t*)obj;
+}
+
+inline kiss_stream_t* Kiss_Input_Byte_Stream(const kiss_obj* const obj) {
+    if (!KISS_IS_INPUT_STREAM(obj) || !KISS_IS_BYTE_STREAM(obj)) {
+	Kiss_Err(L"Input byte stream expected ~S", obj);
+    }
+    return (kiss_stream_t*)obj;
+}
+
+kiss_stream_t* Kiss_Output_Byte_Stream(const kiss_obj* const obj) {
+    if (!KISS_IS_OUTPUT_STREAM(obj) || !KISS_IS_BYTE_STREAM(obj)){
+	Kiss_Err(L"Output byte stream expected ~S", obj);
+    }
+    return (kiss_stream_t*)obj;
+}
+
+
+kiss_file_stream_t* Kiss_Open_File_Stream(const kiss_obj* const obj) {
+     Kiss_Stream(obj);
+     if (KISS_IS_FILE_STREAM(obj) || ((kiss_file_stream_t*)obj)->file_ptr) {
+	  return (kiss_file_stream_t*)obj;
+     }
+     Kiss_Err(L"Open file stream expected ~S", obj);
+     exit(EXIT_FAILURE); // not reach here
+}
+
+kiss_string_stream_t* Kiss_String_Output_Stream(const kiss_obj* const obj) {
+    if (!KISS_IS_OUTPUT_STREAM(obj) || !KISS_IS_STRING_STREAM(obj)) {
+	Kiss_Err(L"String output stream expected ~S", obj);
+    }
+    return (kiss_string_stream_t*)obj;
 }
 
 /* lambda-list ::= (identifier* [:rest identifier]) */
-kiss_obj* Kiss_Lambda_List(kiss_obj* list) {
-    kiss_obj* p;
-    kiss_obj* stack = KISS_NIL;
-    for (p = Kiss_Proper_List(list); KISS_IS_CONS(p); p = KISS_CDR(p)) {
-	kiss_symbol_t* name = Kiss_Symbol(KISS_CAR(p));
-	if (name == &KISS_Samp_rest) {
-	    if (kiss_c_length(p) != 2) {
-		Kiss_Err(L":rest must be followed by one variable name ~S",
-			   list);
-	    }
-	    p = KISS_CDR(p);
-	    name = Kiss_Symbol(KISS_CAR(p));
-	}
-	if (name == &KISS_Samp_rest) {
-	    Kiss_Err(L":rest cannot be used as a variable name ~S", list);
-	}
-	if (kiss_member((kiss_obj*)name, stack) != KISS_NIL) {
-	    Kiss_Err(L"Same variable name ~S occurs more than once", name);
-	}
-	kiss_push((kiss_obj*)name, &stack);
-    }
-    return list;
+kiss_obj* Kiss_Lambda_List(const kiss_obj* const list) {
+     kiss_obj* stack = KISS_NIL;
+     for (const kiss_obj* p = Kiss_Proper_List(list); KISS_IS_CONS(p); p = KISS_CDR(p)) {
+          const kiss_symbol_t* name = Kiss_Symbol(KISS_CAR(p));
+          if (name == &KISS_Samp_rest || name == &KISS_Skw_rest) {
+               if (kiss_c_length(p) != 2) {
+                    Kiss_Err(L"~S must be followed by one variable name ~S",
+                             name == &KISS_Samp_rest ? &KISS_Samp_rest : &KISS_Skw_rest, list);
+               }
+               p = KISS_CDR(p);
+               name = Kiss_Symbol(KISS_CAR(p));
+          }
+          if (name == &KISS_Samp_rest || name == &KISS_Skw_rest) {
+               Kiss_Err(L"~S cannot be used as a variable name ~S",
+                        name == &KISS_Samp_rest ? &KISS_Samp_rest : &KISS_Skw_rest, list);
+          }
+          if (kiss_member((kiss_obj*)name, stack) != KISS_NIL) {
+               Kiss_Err(L"Same variable name ~S occurs more than once", name);
+          }
+          kiss_push((kiss_obj*)name, &stack);
+     }
+     return (kiss_obj*)list;
 }
                                                                                 
 /* lambda-expression :: = (lambda LAMBDA-LIST form*) */
-kiss_obj* Kiss_Lambda_Expression(kiss_obj* p) {
-    p = Kiss_Proper_List(p);
+kiss_obj* Kiss_Lambda_Expression(const kiss_obj* const p) {
+    Kiss_Proper_List(p);
     if (kiss_c_length(p) < 2 || KISS_CAR(p) != KISS_LAMBDA) {
-	Kiss_Err(L"Illegal lambda expression ~S", p);
+	Kiss_Err(L"Invalid lambda expression ~S", p);
     }
     Kiss_Lambda_List(kiss_cadr(p));
-    return p;
+    return (kiss_obj*)p;
 }
 
-// -----------
-void Kiss_Cannot_Parse_Number_Error(kiss_obj* str) {
+// signaling errors
+_Noreturn
+void Kiss_Cannot_Parse_Number_Error(const kiss_obj* const str) {
      Kiss_Err(L"Cannot parse number ~S", str);
+     exit(EXIT_FAILURE);
 }
 
-void Kiss_Division_By_Zero_Error(kiss_obj* i) {
+_Noreturn
+void Kiss_Division_By_Zero_Error(const kiss_obj* const i) {
      Kiss_Err(L"Division by zero: ~S", i);
+     exit(EXIT_FAILURE);
 }
 
-void Kiss_End_Of_Stream_Error(kiss_obj* stream) {
+_Noreturn
+void Kiss_End_Of_Stream_Error(const kiss_obj* const stream) {
      Kiss_Err(L"End of stream ~S", stream);
+     exit(EXIT_FAILURE);
 }
 
-void Kiss_Unbound_Variable_Error(kiss_obj* name) {
+_Noreturn
+void Kiss_Unbound_Variable_Error(const kiss_obj* const name) {
      if (is_condition_working()) {
-	  kiss_cfuncall(L"kiss::signal-unbound-variable", kiss_c_list(2, name, KISS_NIL));
+	  kiss_c_funcall(L"kiss::signal-unbound-variable", kiss_c_list(2, name, KISS_NIL));
      } else {
 	  Kiss_Err(L"Unbound variable ~S", name);
      }
+     exit(EXIT_FAILURE);
 }
 
-void Kiss_Catcher_Not_Found_Error(kiss_obj* tag) {
+_Noreturn
+void Kiss_Catcher_Not_Found_Error(const kiss_obj* const tag) {
      if (is_condition_working()) {
-	  kiss_cfuncall(L"kiss::signal-catcher-not-found", kiss_c_list(2, tag, KISS_NIL));
+	  kiss_c_funcall(L"kiss::signal-catcher-not-found", kiss_c_list(2, tag, KISS_NIL));
      } else {
 	  Kiss_Err(L"Catcher not found for ~S", tag);
      }
+     exit(EXIT_FAILURE);
 }
 
-void Kiss_Block_Not_Found_Error(kiss_obj* tag) {
+_Noreturn
+void Kiss_Block_Not_Found_Error(const kiss_obj* const tag) {
      if (is_condition_working()) {
-	  kiss_cfuncall(L"kiss::signal-block-not-found", kiss_c_list(2, tag, KISS_NIL));
+	  kiss_c_funcall(L"kiss::signal-block-not-found", kiss_c_list(2, tag, KISS_NIL));
      } else {
 	  Kiss_Err(L"Block not found ~S", tag);
      }
+     exit(EXIT_FAILURE);
 }
 
-void Kiss_Tagbody_Not_Found_Error(kiss_obj* tag) {
+_Noreturn
+void Kiss_Tagbody_Not_Found_Error(const kiss_obj* const tag) {
      if (is_condition_working()) {
-	  kiss_cfuncall(L"kiss::signal-tagbody-not-found", kiss_c_list(2, tag, KISS_NIL));
+	  kiss_c_funcall(L"kiss::signal-tagbody-not-found", kiss_c_list(2, tag, KISS_NIL));
      } else {
 	  Kiss_Err(L"Tagbody not found ~S", tag);
      }
+     exit(EXIT_FAILURE);
 }
 

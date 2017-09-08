@@ -22,7 +22,7 @@ static int GCing = 0;
 
 static size_t GC_Counter = 0;
 
-#define HEAP_STACK_SIZE (1024 * 100)
+#define HEAP_STACK_SIZE (1024 * 1024)
 kiss_gc_obj* Kiss_Heap_Stack[HEAP_STACK_SIZE];
 static kiss_gc_obj* GC_Objects = NULL;
 
@@ -41,7 +41,8 @@ void* Kiss_GC_Malloc(size_t size) {
     kiss_environment_t* env = Kiss_Get_Environment();
 
     GC_Counter += size;
-    if (GC_Counter > 1024 * 1024) {
+    if (GC_Counter > 1024 * 1024 * 10) {
+         fwprintf(stderr, L"\ngc...\n");
 	 kiss_gc();
 	 GC_Counter = 0;
     }
