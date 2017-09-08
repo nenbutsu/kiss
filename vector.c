@@ -67,7 +67,7 @@ kiss_obj* kiss_create_general_vector(kiss_obj* i, kiss_obj* rest) {
    vector cannot be allocated (error-id. cannot-create-vector ).
    Each obj may be any LISP object. */
 kiss_obj* kiss_vector(kiss_obj* objs) {
-    size_t n = kiss_clength(objs);
+    size_t n = kiss_c_length(objs);
     kiss_general_vector_t* v = kiss_make_general_vector(n, KISS_NIL);
     size_t i;
     for (i = 0; i < n; i++) {

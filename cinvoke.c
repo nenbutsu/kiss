@@ -23,7 +23,7 @@ kiss_obj* kiss_cinvoke(kiss_cfunction_t* cfun, kiss_obj* args) {
     long int max = cfun->max_args; /* maximum number of args permitted
 				      -1 means any number of args is permitted
 				    */
-    long int narg = kiss_clength(args);
+    long int narg = kiss_c_length(args);
     if (narg < min) { Kiss_Err(L"Too few arguments ~S", cfun->name); }
     if (max >= 0 && narg > max) { Kiss_Err(L"Too many arguments ~S", cfun->name); }
     if (min == max) { /* exact number of argumets must be given  */

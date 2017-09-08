@@ -190,7 +190,7 @@ static kiss_obj* kiss_read_sharp_reader_macro_char(kiss_obj* in) {
     }
 
     /* given a single character */
-    if (kiss_clength(env->lexeme_chars) == 1) {
+    if (kiss_c_length(env->lexeme_chars) == 1) {
 	return KISS_CAR(env->lexeme_chars);
     }
 
@@ -214,7 +214,7 @@ static kiss_obj* kiss_read_sharp_reader_macro_char(kiss_obj* in) {
 static kiss_obj* kiss_list_to_array_dimensions(size_t rank, kiss_obj* list) {
      kiss_obj* p = KISS_NIL;
      for (size_t i = 0; i < rank; i++) {
-	  size_t n = kiss_clength(list);
+	  size_t n = kiss_c_length(list);
 	  kiss_push((kiss_obj*)kiss_make_integer(n), &p);
 	  list = kiss_car(list);
      }

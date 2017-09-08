@@ -354,38 +354,40 @@ kiss_obj* kiss_char_lessthan(kiss_obj* character1, kiss_obj* character2);
 kiss_obj* kiss_cinvoke(kiss_cfunction_t* cfun, kiss_obj* args);
 
 /* cons.c */
-kiss_obj* kiss_cons(kiss_obj* const car, kiss_obj* const cdr);
+kiss_cons_t* kiss_init_cons(kiss_cons_t* const p, const kiss_obj* const left, const kiss_obj* const right);
+void kiss_push(const kiss_obj* const elm, kiss_obj** const list);
+kiss_obj* kiss_cons(const kiss_obj* const car, const kiss_obj* const cdr);
 kiss_obj* kiss_consp(const kiss_obj* const obj);
 kiss_obj* kiss_car(const kiss_obj* const p);
 kiss_obj* kiss_cdr(const kiss_obj* const p);
 kiss_obj* kiss_cadr(const kiss_obj* const p);
 kiss_obj* kiss_cddr(const kiss_obj* const p);
 kiss_obj* kiss_caddr(const kiss_obj* const p);
-kiss_obj* kiss_set_car(kiss_obj* const obj, kiss_obj* const cons);
-kiss_obj* kiss_set_cdr(kiss_obj* const obj, kiss_obj* const cons);
-kiss_obj* kiss_copy_list(kiss_obj* p);
-kiss_obj* kiss_list(kiss_obj* p);
+kiss_obj* kiss_set_car(const kiss_obj* const obj, kiss_obj* const cons);
+kiss_obj* kiss_set_cdr(const kiss_obj* const obj, kiss_obj* const cons);
+kiss_obj* kiss_copy_list(const kiss_obj* p);
+kiss_obj* kiss_list(kiss_obj* const p);
 kiss_obj* kiss_c_list(int nargs, ...);
-kiss_obj* kiss_append(kiss_obj* p);
+kiss_obj* kiss_c_mapcar(const kiss_cf1_t f, kiss_obj* list);
+kiss_obj* kiss_c_mapc(const kiss_cf1_t f, kiss_obj* const list);
+kiss_obj* kiss_append(kiss_obj* const p);
 kiss_obj* kiss_append_s(kiss_obj* p);
-kiss_obj* kiss_cappend(int nargs, ...);
+kiss_obj* kiss_c_append(int nargs, ...);
 kiss_obj* kiss_reverse(kiss_obj* p);
 kiss_obj* kiss_nreverse(kiss_obj* p);
-kiss_obj* kiss_member(kiss_obj* obj, kiss_obj* list);
-kiss_obj* kiss_assoc(kiss_obj* obj, kiss_obj* alist);
-kiss_obj* kiss_cmapcar(kiss_cf1_t f, kiss_obj* list);
-kiss_obj* kiss_cmapc(kiss_cf1_t f, kiss_obj* list);
-kiss_obj* kiss_plist_member (kiss_obj* plist, kiss_obj* property);
-kiss_obj* kiss_plist_remove(kiss_obj* plist, kiss_obj* property);
-kiss_obj* kiss_plist_get (kiss_obj* plist, kiss_obj* property);
-kiss_obj* kiss_plist_put (kiss_obj* plist, kiss_obj* property, kiss_obj* value);
-void kiss_push(kiss_obj* elm, kiss_obj** list);
+kiss_obj* kiss_member(kiss_obj* const obj, kiss_obj* const list);
+kiss_obj* kiss_assoc(const kiss_obj* const obj, kiss_obj* const alist);
+kiss_obj* kiss_plist_member (kiss_obj* plist, const kiss_obj* const property);
+kiss_obj* kiss_plist_remove(kiss_obj* plist, const kiss_obj* const property);
+kiss_obj* kiss_plist_get (kiss_obj* plist, const kiss_obj* const property);
+kiss_obj* kiss_plist_put (kiss_obj* plist, const kiss_obj* const property, const kiss_obj* const value);
+
 
 /* control.c */
 kiss_obj* kiss_quote(kiss_obj* obj);
 kiss_obj* kiss_if(kiss_obj* test_form, kiss_obj* then_form, kiss_obj* rest);
-kiss_obj* kiss_eq(kiss_obj* obj1, kiss_obj* obj2);
-kiss_obj* kiss_eql(kiss_obj* obj1, kiss_obj* obj2);
+kiss_obj* kiss_eq(const kiss_obj* const obj1, const kiss_obj* const obj2);
+kiss_obj* kiss_eql(const kiss_obj* const obj1, const kiss_obj* const obj2);
 kiss_obj* kiss_progn(kiss_obj* body);
 kiss_catcher_t* kiss_make_catcher(kiss_obj* tag, jmp_buf jmp);
 kiss_obj* kiss_catch(kiss_obj* tag_form, kiss_obj* body);
@@ -410,17 +412,16 @@ kiss_general_vector_t* Kiss_General_Vector(const kiss_obj* const obj);
 kiss_general_array_t* Kiss_General_Array_S(const kiss_obj* const obj);
 kiss_function_t* Kiss_Function(const kiss_obj* const obj);
 
-kiss_obj* Kiss_Number(kiss_obj* const obj);
-
-kiss_obj* Kiss_Valid_Sequence_Index(kiss_obj* sequence, kiss_obj* index);
-kiss_obj* Kiss_List(kiss_obj* const obj);
-kiss_obj* Kiss_Proper_List(kiss_obj* obj);
+kiss_obj* Kiss_Number(const kiss_obj* const obj);
+kiss_obj* Kiss_List(const kiss_obj* const obj);
+kiss_integer_t* Kiss_Non_Negative_Integer(const kiss_obj* const obj);
+kiss_integer_t* Kiss_Non_Zero_Integer(const kiss_obj* const obj);
+kiss_obj* Kiss_General_Array(const kiss_obj* const obj);
+kiss_obj* Kiss_Basic_Array(const kiss_obj* const obj);
+kiss_obj* Kiss_Valid_Sequence_Index(const kiss_obj* const sequence, const kiss_obj* const index);
+kiss_obj* Kiss_Sequence(const kiss_obj* const obj);
+kiss_obj* Kiss_Proper_List(const kiss_obj* const obj);
 kiss_cons_t* Kiss_Proper_List_2(kiss_obj* obj);
-kiss_integer_t* Kiss_Non_Negative_Integer(kiss_obj* obj);
-kiss_integer_t* Kiss_Non_Zero_Integer(kiss_obj* obj);
-kiss_obj* Kiss_General_Array(kiss_obj* obj);
-kiss_obj* Kiss_Basic_Array(kiss_obj* obj);
-kiss_obj* Kiss_Sequence(kiss_obj* obj);
 kiss_function_t* Kiss_Macro(kiss_obj* obj);
 kiss_cfunction_t* Kiss_CFunction(kiss_obj* obj);
 kiss_cfunction_t* Kiss_CMacro(kiss_obj* obj);
@@ -543,7 +544,7 @@ kiss_obj* kiss_read(kiss_obj* args);
 int kiss_read_eval_print_loop(void);
 
 /* sequence.c */
-size_t kiss_clength(kiss_obj* p);
+size_t kiss_c_length(const kiss_obj* const p);
 kiss_obj* kiss_length(kiss_obj* sequence);
 kiss_obj* kiss_elt(kiss_obj* sequence, kiss_obj* z);
 kiss_obj* kiss_set_elt(kiss_obj* obj, kiss_obj* sequence, kiss_obj* z);

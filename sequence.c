@@ -18,21 +18,21 @@
 */
 #include "kiss.h"
 
-size_t kiss_clength(kiss_obj* p) {
-     p = Kiss_Sequence(p);
+size_t kiss_c_length(const kiss_obj* const p) {
+     Kiss_Sequence(p);
      switch (KISS_OBJ_TYPE(p)) {
      case KISS_SYMBOL:
 	  assert(p == KISS_NIL);
 	  return 0;
      case KISS_CONS: {
 	  size_t n = 0;
-	  for (; KISS_IS_CONS(p); p = KISS_CDR(p)) { n++; }
+	  for (const kiss_obj* q = p; KISS_IS_CONS(q); q = KISS_CDR(q)) { n++; }
 	  return n;
      }
      case KISS_STRING: return ((kiss_string_t*)p)->n;
      case KISS_GENERAL_VECTOR: return ((kiss_general_vector_t*)p)->n;
      default:
-	  fwprintf(stderr, L"kiss_clength: unknown primitive type %d", KISS_OBJ_TYPE(p));
+	  fwprintf(stderr, L"kiss_c_length: unknown primitive type %d", KISS_OBJ_TYPE(p));
 	  exit(EXIT_FAILURE);
      }
 }
@@ -50,7 +50,7 @@ size_t kiss_clength(kiss_obj* p) {
    (error-id. domain-error ).
  */
 kiss_obj* kiss_length(kiss_obj* sequence) {
-    return (kiss_obj*)kiss_make_integer(kiss_clength(sequence));
+    return (kiss_obj*)kiss_make_integer(kiss_c_length(sequence));
 }
 
 /* function: (elt sequence z) -> <object>
@@ -149,7 +149,7 @@ kiss_obj* kiss_set_elt(kiss_obj* obj, kiss_obj* sequence, kiss_obj* z) {
 kiss_obj* kiss_subseq(kiss_obj* sequence, kiss_obj* z1, kiss_obj* z2) {
      long int i1 = Kiss_Integer(z1)->i;
      long int i2 = Kiss_Integer(z2)->i;
-     size_t n = kiss_clength(sequence);
+     size_t n = kiss_c_length(sequence);
      if (i1 < 0) {
 	  Kiss_Err(L"Invalid sequence index = ~S", z1);
      }
@@ -216,9 +216,9 @@ kiss_obj* kiss_subseq(kiss_obj* sequence, kiss_obj* z1, kiss_obj* z2) {
    (error-id. domain-error).
  */
 kiss_obj* kiss_map_into(kiss_obj* destination, kiss_obj* function, kiss_obj* rest) {
-     size_t n = kiss_clength(destination);
+     size_t n = kiss_c_length(destination);
      for (kiss_obj* p = rest; p != KISS_NIL; p = KISS_CDR(p)) {
-	  size_t a = kiss_clength(kiss_car(p));
+	  size_t a = kiss_c_length(kiss_car(p));
 	  if (a < n) { n = a; }
      }
      size_t i;

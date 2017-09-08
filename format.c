@@ -309,7 +309,7 @@ kiss_obj* kiss_format_object(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
 /* function: (format output-stream format-string obj*) -> <null> */
 kiss_obj* kiss_format(kiss_obj* out, kiss_obj* format, kiss_obj* args) {
      size_t i = 0;
-     size_t n = kiss_clength(format);
+     size_t n = kiss_c_length(format);
      kiss_string_t* str = Kiss_String(format);
      wchar_t c;
      while (i < n) {

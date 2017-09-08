@@ -45,8 +45,8 @@ kiss_obj* kiss_simple_function_p(kiss_obj* obj) {
 
 void kiss_bind_funargs(kiss_obj* params, kiss_obj* args) {
     kiss_environment_t* env = Kiss_Get_Environment();
-    int nparam = kiss_clength(params);
-    int narg = kiss_clength(args);
+    int nparam = kiss_c_length(params);
+    int narg = kiss_c_length(args);
     int rest = kiss_member(KISS_KW_REST,  params) != KISS_NIL ||
 	kiss_member(KISS_AMP_REST, params) != KISS_NIL;
     if (!rest && nparam < narg) {
@@ -86,7 +86,7 @@ kiss_obj* kiss_linvoke(kiss_function_t* fun, kiss_obj* args) {
 kiss_obj* kiss_lambda(kiss_obj* params, kiss_obj* body) {
     kiss_obj* lambda =
 	kiss_c_list(3, KISS_LAMBDA, params,
-		   kiss_cappend(2, kiss_c_list(2, &KISS_Sblock, KISS_LAMBDA), body));
+		   kiss_c_append(2, kiss_c_list(2, &KISS_Sblock, KISS_LAMBDA), body));
     /* (lambda () . body) -> (lambda () (block lambda . body)) */
     return (kiss_obj*)kiss_make_function(NULL, lambda);
 }
@@ -95,7 +95,7 @@ kiss_obj* kiss_lambda(kiss_obj* params, kiss_obj* body) {
 kiss_obj* kiss_defun(kiss_obj* name, kiss_obj* params, kiss_obj* body) {
     kiss_symbol_t* fname = Kiss_Symbol(name);
     kiss_obj* lambda = kiss_c_list(3, KISS_LAMBDA, params,
-				  kiss_cappend(2, kiss_c_list(2, &KISS_Sblock, name), body));
+				  kiss_c_append(2, kiss_c_list(2, &KISS_Sblock, name), body));
     /* (defun foo () . body) -> (defun foo () (block foo . body)) */
     fname->fun = (kiss_obj*)kiss_make_function(fname, lambda);
     return name;
@@ -105,7 +105,7 @@ kiss_obj* kiss_defun(kiss_obj* name, kiss_obj* params, kiss_obj* body) {
 kiss_obj* kiss_defmacro(kiss_obj* name, kiss_obj* params, kiss_obj* body) {
     kiss_symbol_t* fname = Kiss_Symbol(name);
     kiss_obj* lambda = kiss_c_list(3, KISS_LAMBDA, params,
-				  kiss_cappend(2, kiss_c_list(2, &KISS_Sblock, name), body));
+				  kiss_c_append(2, kiss_c_list(2, &KISS_Sblock, name), body));
     /* (defmacro foo () . body) -> (defmacro foo () (block foo . body)) */
     fname->fun = (kiss_obj*)kiss_make_macro(fname, lambda);
     return name;
@@ -188,7 +188,7 @@ kiss_obj* kiss_flet(kiss_obj* fspecs, kiss_obj* body) {
 	kiss_function_t* fun = kiss_make_function(name, lambda);
 	kiss_push(kiss_cons((kiss_obj*)name, (kiss_obj*)fun), &stack);
     }
-    env->lexical_env.funs = kiss_cappend(2, stack, env->lexical_env.funs);
+    env->lexical_env.funs = kiss_c_append(2, stack, env->lexical_env.funs);
     result = kiss_eval_body(body);
     env->lexical_env.funs = saved_funs;
     return result;
@@ -223,7 +223,7 @@ kiss_obj* kiss_labels(kiss_obj* fspecs, kiss_obj* body) {
 
     /* make local function names visible to the following make_function call
        which captures the current lexical environment. */
-    env->lexical_env.funs = kiss_cappend(2, stack, env->lexical_env.funs);
+    env->lexical_env.funs = kiss_c_append(2, stack, env->lexical_env.funs);
     while (KISS_IS_CONS(stack)) {
 	kiss_cons_t* binding = (kiss_cons_t*)KISS_CAR(stack);
 	kiss_function_t* fun =

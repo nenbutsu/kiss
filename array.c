@@ -36,7 +36,7 @@
 static kiss_general_vector_t* kiss_make_ga(kiss_obj* dimensions, kiss_general_vector_t* vector,
 				    kiss_obj* obj)
 {
-     size_t rank = kiss_clength(dimensions);
+     size_t rank = kiss_c_length(dimensions);
      if (rank == 0) {
 	  for (size_t i = 0; i < vector->n; i++) {
 	       vector->v[i] = obj;
@@ -53,7 +53,7 @@ static kiss_general_vector_t* kiss_make_ga(kiss_obj* dimensions, kiss_general_ve
 static kiss_general_array_t* kiss_make_general_array(kiss_obj* dimensions, kiss_obj* obj) {
     kiss_general_array_t* array = Kiss_GC_Malloc(sizeof(kiss_general_array_t));
     array->type = KISS_GENERAL_ARRAY;
-    array->rank = kiss_clength(dimensions);
+    array->rank = kiss_c_length(dimensions);
     if (array->rank == 0) {
 	 array->vector = obj;
 	 return array;
@@ -79,8 +79,8 @@ static kiss_general_array_t* kiss_make_general_array(kiss_obj* dimensions, kiss_
 */
 kiss_obj* kiss_create_array(kiss_obj* dimensions, kiss_obj* rest) {
      dimensions = Kiss_Proper_List(dimensions);
-     kiss_cmapc((kiss_cf1_t)Kiss_Non_Negative_Integer, dimensions);
-     size_t rank = kiss_clength(dimensions);
+     kiss_c_mapc((kiss_cf1_t)Kiss_Non_Negative_Integer, dimensions);
+     size_t rank = kiss_c_length(dimensions);
 
      if (rank == 1) {
 	  return kiss_create_general_vector(kiss_car(dimensions), rest);
@@ -96,7 +96,7 @@ static kiss_obj* kiss_ga_s_ref(kiss_obj* vector, kiss_obj* rest) {
 }
 
 static kiss_obj* kiss_set_ga_s_ref(kiss_obj* obj, kiss_obj* vector, kiss_obj* rest) {
-     size_t rank = kiss_clength(rest);
+     size_t rank = kiss_c_length(rest);
      if (rank == 1) {
 	  return kiss_set_gvref(obj, vector, kiss_car(rest));
      }
@@ -112,7 +112,7 @@ kiss_obj* kiss_garef(kiss_obj* array, kiss_obj* rest) {
      array = Kiss_General_Array(array);
      switch (KISS_OBJ_TYPE(array)) {
      case KISS_GENERAL_VECTOR:
-	  if (kiss_clength(rest) != 1) {
+	  if (kiss_c_length(rest) != 1) {
 	       Kiss_Err(L"Invalid vector index dimension ~S", kiss_length(rest));
 	  }
 	  return kiss_gvref(array, kiss_car(rest));
@@ -142,7 +142,7 @@ kiss_obj* kiss_aref(kiss_obj* array, kiss_obj* rest) {
      array = Kiss_Basic_Array(array);
      switch (KISS_OBJ_TYPE(array)) {
      case KISS_STRING: {
-	  if (kiss_clength(rest) != 1) {
+	  if (kiss_c_length(rest) != 1) {
 	       Kiss_Err(L"Invalid string dimension ~S", kiss_length(rest));
 	  }
 	  return kiss_elt(array, kiss_car(rest));
@@ -160,7 +160,7 @@ kiss_obj* kiss_set_aref(kiss_obj* obj, kiss_obj* array, kiss_obj* rest) {
      array = Kiss_Basic_Array(array);
      switch (KISS_OBJ_TYPE(array)) {
      case KISS_STRING: {
-	  if (kiss_clength(rest) != 1) {
+	  if (kiss_c_length(rest) != 1) {
 	       Kiss_Err(L"Invalid string dimension ~S", kiss_length(rest));
 	  }
 	  return kiss_set_elt(obj, array, kiss_car(rest));
@@ -183,7 +183,7 @@ kiss_obj* kiss_set_garef(kiss_obj* obj, kiss_obj* array, kiss_obj* rest) {
      array = Kiss_General_Array(array);
      switch (KISS_OBJ_TYPE(array)) {
      case KISS_GENERAL_VECTOR:
-	  if (kiss_clength(rest) != 1) {
+	  if (kiss_c_length(rest) != 1) {
 	       Kiss_Err(L"Invalid vector dimension ~S", kiss_length(rest));
 	  }
 	  return kiss_set_gvref(obj, array, kiss_car(rest));

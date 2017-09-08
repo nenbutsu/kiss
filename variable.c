@@ -75,7 +75,7 @@ kiss_obj* kiss_let(kiss_obj* vspecs, kiss_obj* body) {
 	kiss_obj* value = kiss_eval(KISS_CADR(spec));
 	kiss_push(kiss_cons((kiss_obj*)name, value), &stack);
     }
-    env->lexical_env.vars = kiss_cappend(2, stack, env->lexical_env.vars);
+    env->lexical_env.vars = kiss_c_append(2, stack, env->lexical_env.vars);
     result = kiss_eval_body(body);
     env->lexical_env.vars = saved_lexical_vars;
     return result;
@@ -162,7 +162,7 @@ kiss_obj* kiss_dynamic_let(kiss_obj* vspecs, kiss_obj* body) {
 	kiss_obj* value = kiss_eval(KISS_CADR(spec));
 	kiss_push(kiss_cons((kiss_obj*)name, value), &stack);
     }
-    env->dynamic_env.vars = kiss_cappend(2, stack, env->dynamic_env.vars);
+    env->dynamic_env.vars = kiss_c_append(2, stack, env->dynamic_env.vars);
     result = kiss_eval_body(body);
     env->dynamic_env.vars = saved_dynamic_vars;
     return result;

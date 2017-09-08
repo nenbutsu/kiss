@@ -60,7 +60,7 @@ kiss_obj* kiss_stringp(kiss_obj* obj) {
 
 
 kiss_string_t* kiss_chars_to_str(kiss_obj* chars) {
-    size_t n = kiss_clength(chars);
+    size_t n = kiss_c_length(chars);
     wchar_t* str = Kiss_Malloc(sizeof(wchar_t) * n + 1);
     wchar_t* s = str;
     kiss_obj* p = chars;

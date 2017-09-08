@@ -228,10 +228,10 @@ kiss_obj* kiss_tagbody(kiss_obj* args) {
     jmp_buf jmp;
     kiss_obj* stack = kiss_make_tagbodies(args, jmp);
     kiss_obj* p = stack;
-    tagbody_lexical_env.jumpers = kiss_cappend(2, stack,
-					       tagbody_lexical_env.jumpers);
-    tagbody_dynamic_env.jumpers = kiss_cappend(2, stack,
-					       tagbody_dynamic_env.jumpers);
+    tagbody_lexical_env.jumpers = kiss_c_append(2, stack,
+						tagbody_lexical_env.jumpers);
+    tagbody_dynamic_env.jumpers = kiss_c_append(2, stack,
+						tagbody_dynamic_env.jumpers);
     for (; KISS_IS_CONS(p); p = KISS_CDR(p)) {
 	kiss_tagbody_t* t = KISS_CAR(p);
 	t->dynamic_env.jumpers = tagbody_dynamic_env.jumpers;
@@ -298,7 +298,7 @@ kiss_obj* kiss_if(kiss_obj* test_form, kiss_obj* then_form, kiss_obj* rest) {
 /* function: (eq obj1 obj2) -> boolean
    the consequences are implementation defined if both obj1 and obj2 are
    numbers or both are characters.*/
-kiss_obj* kiss_eq(kiss_obj* obj1, kiss_obj* obj2) {
+inline kiss_obj* kiss_eq(const kiss_obj* const obj1, const kiss_obj* const obj2) {
     if (obj1 == obj2) { return KISS_T; }
     else              { return KISS_NIL; }
 }
@@ -313,7 +313,7 @@ kiss_obj* kiss_eq(kiss_obj* obj1, kiss_obj* obj2) {
    • If obj1 and obj2 are characters, eql tests whether they are the same
    character (see char=).
  */
-kiss_obj* kiss_eql(kiss_obj* obj1, kiss_obj* obj2) {
+kiss_obj* kiss_eql(const kiss_obj* const obj1, const kiss_obj* const obj2) {
      if (KISS_IS_INTEGER(obj1) && KISS_IS_INTEGER(obj2)) {
 	  if (((kiss_integer_t*)obj1)->i == ((kiss_integer_t*)obj2)->i) {
 	       return KISS_T;
