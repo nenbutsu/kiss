@@ -483,11 +483,11 @@ kiss_obj* kiss_aref(const kiss_obj* const array, const kiss_obj* const rest);
 kiss_obj* kiss_set_aref(const kiss_obj* const obj, kiss_obj* const array, const kiss_obj* const rest);
 kiss_obj* kiss_garef(const kiss_obj* const array, const kiss_obj* const rest);
 kiss_obj* kiss_set_garef(const kiss_obj* const obj, kiss_obj* const array, const kiss_obj* const rest);
-kiss_obj* kiss_general_array_s_to_list (kiss_obj* obj);
-kiss_obj* kiss_array_dimensions(kiss_obj* array);
-kiss_obj* kiss_basic_array_p (kiss_obj* obj);
-kiss_obj* kiss_basic_array_s_p (kiss_obj* obj);
-kiss_obj* kiss_general_array_s_p (kiss_obj* obj);
+kiss_obj* kiss_general_array_s_to_list (const kiss_obj* const garray);
+kiss_obj* kiss_array_dimensions(const kiss_obj* const array);
+kiss_obj* kiss_basic_array_p (const kiss_obj* const obj);
+kiss_obj* kiss_basic_array_s_p (const kiss_obj* const obj);
+kiss_obj* kiss_general_array_s_p (const kiss_obj* const obj);
 
 /* environment.c */
 kiss_environment_t* Kiss_Get_Environment(void);

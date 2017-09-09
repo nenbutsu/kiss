@@ -42,7 +42,7 @@ void* Kiss_GC_Malloc(size_t size) {
 
     GC_Counter += size;
     if (GC_Counter > 1024 * 1024 * 10) {
-         fwprintf(stderr, L"\ngc...\n");
+         // fwprintf(stderr, L"\ngc...\n");
 	 kiss_gc();
 	 GC_Counter = 0;
     }

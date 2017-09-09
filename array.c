@@ -204,8 +204,8 @@ kiss_obj* kiss_set_garef(const kiss_obj* const obj, kiss_obj* const array, const
      }
 }
 
-kiss_obj* kiss_ga_s_to_list(size_t rank, kiss_obj* obj) {
-     kiss_general_vector_t* vector = Kiss_General_Vector(obj);
+static kiss_obj* kiss_ga_s_to_list(const size_t rank, const kiss_obj* const gv) {
+     const kiss_general_vector_t* const vector = Kiss_General_Vector(gv);
      kiss_obj* p = KISS_NIL;
      if (rank == 1) {
 	  for (size_t i = 0; i < vector->n; i++) {
@@ -219,16 +219,16 @@ kiss_obj* kiss_ga_s_to_list(size_t rank, kiss_obj* obj) {
      return kiss_nreverse(p);
 }
 
-kiss_obj* kiss_general_array_s_to_list (kiss_obj* obj) {
-     kiss_general_array_t* array = Kiss_General_Array_S(obj);
-     if (array->rank == 0) {
-	  return array->vector;
+kiss_obj* kiss_general_array_s_to_list (const kiss_obj* const garray) {
+     const kiss_general_array_t* const p = Kiss_General_Array_S(garray);
+     if (p->rank == 0) {
+	  return p->vector;
+     } else {
+          return kiss_ga_s_to_list(p->rank, p->vector);
      }
-
-     return kiss_ga_s_to_list(array->rank, array->vector); 
 }
 
-kiss_obj* kiss_ga_dimensions(kiss_general_array_t* array) {
+static kiss_obj* kiss_ga_dimensions(const kiss_general_array_t* const array) {
      if (array->rank == 0) { return KISS_NIL; }
 
      kiss_obj* dimensions = KISS_NIL;
@@ -241,34 +241,30 @@ kiss_obj* kiss_ga_dimensions(kiss_general_array_t* array) {
 }
 
 /* function: (array-dimensions basic-array) -> <list>
-   Returns a list of the dimensions of a given basic-array.
-   An error shall be signaled if basic-array is not a basic-array 
-   (error-id. domain-error).
-   The consequences are undefined if the returned list is modified.
-*/
-kiss_obj* kiss_array_dimensions(kiss_obj* array) {
-     array = Kiss_Basic_Array(array);
+   Returns a list of the dimensions of a given BASIC-ARRAY.
+   An error shall be signaled if BASIC-ARRAY is not a basic-array  (error-id. domain-error).
+   The consequences are undefined if the returned list is modified. */
+kiss_obj* kiss_array_dimensions(const kiss_obj* const array) {
+     Kiss_Basic_Array(array);
      switch (KISS_OBJ_TYPE(array)) {
-     case KISS_STRING: {
+     case KISS_STRING:
 	  return kiss_cons((kiss_obj*)kiss_make_integer(Kiss_String(array)->n), KISS_NIL);
-     }
      case KISS_GENERAL_VECTOR:
 	  return kiss_cons((kiss_obj*)kiss_make_integer(Kiss_General_Vector(array)->n), KISS_NIL);
      case KISS_GENERAL_ARRAY:
 	  return kiss_ga_dimensions((kiss_general_array_t*)array);
      default:
 	  fwprintf(stderr, L"array-dimensions: unexpected primitive obj type %d",
-		   KISS_OBJ_TYPE(array));
+                   KISS_OBJ_TYPE(array));
 	  exit(EXIT_FAILURE);
      }
      
 }
 
 /* function: (basic-array-p obj) -> boolean
-   basic-array-p returns t if obj is a basic-array (instance of class <basic-array>);
-   otherwise, returns nil. obj may be any ISLISP object.
- */
-kiss_obj* kiss_basic_array_p (kiss_obj* obj) {
+   Rturns t if OBJ is a basic-array (instance of class <basic-array>);
+   otherwise, returns nil. OBJ may be any ISLISP object. */
+kiss_obj* kiss_basic_array_p (const kiss_obj* const obj) {
      switch (KISS_OBJ_TYPE(obj)) {
      case KISS_CONS:
      case KISS_SYMBOL:
@@ -301,7 +297,7 @@ kiss_obj* kiss_basic_array_p (kiss_obj* obj) {
    otherwise, returns nil. obj may be any ISLISP object.
 */
 
-kiss_obj* kiss_basic_array_s_p (kiss_obj* obj) {
+kiss_obj* kiss_basic_array_s_p (const kiss_obj* const obj) {
      switch (KISS_OBJ_TYPE(obj)) {
      case KISS_CONS:
      case KISS_SYMBOL:
@@ -333,7 +329,7 @@ kiss_obj* kiss_basic_array_s_p (kiss_obj* obj) {
    general-array*-p returns t if obj is a general-array* (instance of class <general-array*>);
    otherwise, returns nil. obj may be any ISLISP object.
 */
-kiss_obj* kiss_general_array_s_p (kiss_obj* obj) {
+kiss_obj* kiss_general_array_s_p (const kiss_obj* const obj) {
      switch (KISS_OBJ_TYPE(obj)) {
      case KISS_CONS:
      case KISS_SYMBOL:
