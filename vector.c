@@ -33,85 +33,88 @@
                        +--> <string>
  */
 
-kiss_general_vector_t* kiss_make_general_vector(size_t n, kiss_obj* obj) {
+kiss_general_vector_t* kiss_make_general_vector(const size_t n, const kiss_obj* const obj) {
     kiss_general_vector_t* p = Kiss_GC_Malloc(sizeof(kiss_general_vector_t));
     kiss_obj** v = Kiss_Malloc(n * sizeof(kiss_obj*));
-    size_t i;
     p->type = KISS_GENERAL_VECTOR;
     p->v = v;
     p->n = n;
-    for (i = 0; i < n; i++) { v[i] = obj; }
+    for (size_t i = 0; i < n; i++) { v[i] = (kiss_obj*)obj; }
     return p;
 }
 
 /* function: (create-general-vector i [initial-element]) -> <general-vector>
-   Returns a general-vector of length i. If initial-element is given,
+   Returns a general-vector of length I. If INITIAL-ELEMENT is given,
    the elements of the new vector are initialized with this object, otherwise
    it is initialized with nil. An error shall be signaled if the requested
    vector cannot be allocated (error-id. cannot-create-vector ).
-   An error shall be signaled if i is not a non-negative integer
-   (error-id. domain-error ). initial-element may be any LISP object.*/
-kiss_obj* kiss_create_general_vector(kiss_obj* i, kiss_obj* rest) {
+   An error shall be signaled if I is not a non-negative integer
+   (error-id. domain-error ). INITIAL-ELEMENT may be any LISP object.*/
+kiss_obj* kiss_create_general_vector(const kiss_obj* const i, const kiss_obj* const rest) {
     long int n = Kiss_Non_Negative_Integer(i);
-    kiss_obj* obj;
-    if (rest == KISS_NIL) { obj = KISS_NIL; }
-    else                  { obj = KISS_CAR(rest); }
+    kiss_obj* obj = rest == KISS_NIL ? KISS_NIL : KISS_CAR(rest);
     return (kiss_obj*)kiss_make_general_vector(n, obj);
 }
 
 /* function: (vector obj*) -> <general-vector> 
-   Returns a new general-vector whose elements are its obj arguments.
+   Returns a new general-vector whose elements are its OBJ arguments.
    The length of the newly created vector is, therefore, the number of
-   objs passed as arguments. The vector is indexed by integers ranging
+   OBJs passed as arguments. The vector is indexed by integers ranging
    from 0 to dimension−1. An error shall be signaled if the requested
    vector cannot be allocated (error-id. cannot-create-vector ).
-   Each obj may be any LISP object. */
-kiss_obj* kiss_vector(kiss_obj* objs) {
+   Each OBJ may be any LISP object. */
+kiss_obj* kiss_vector(const kiss_obj* objs) {
     size_t n = kiss_c_length(objs);
     kiss_general_vector_t* v = kiss_make_general_vector(n, KISS_NIL);
-    size_t i;
-    for (i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
 	v->v[i] = KISS_CAR(objs);
 	objs = KISS_CDR(objs);
     }
     return (kiss_obj*)v;
 }
 
+/* function: (basic-vector-p obj) -> boolean
+   Returns t if OBJ is a basic-vector (instance of class <basic-vector>);
+   otherwise, returns nil. OBJ may be any ISLISP object. */
+inline kiss_obj* kiss_basic_vector_p(const kiss_obj* const obj) {
+     return kiss_general_vector_p(obj) || kiss_stringp(obj) ? KISS_T : KISS_NIL;
+}
+
+
 /* function: (general-vector-p obj) -> boolean
-   general-vector-p returns t if obj is a general vector; otherwise,
-   returns nil. obj may be any LISP object. */
-kiss_obj* kiss_general_vector_p(kiss_obj* obj) {
-    if (KISS_IS_GENERAL_VECTOR(obj)) { return KISS_T; }
-    else { return KISS_NIL; }
+   Returns t if OBJ is a general vector; otherwise, returns nil.
+   OBJ may be any LISP object. */
+inline kiss_obj* kiss_general_vector_p(const kiss_obj* const obj) {
+     return KISS_IS_GENERAL_VECTOR(obj) ? KISS_T : KISS_NIL;
 }
 
 /* function: (gvref general-vector index) -> <object>
-   gvref returns the object stored in the component of the general-vector
-   specified by integer index.
-   An error shall be signaled if general-vector is not a general-vector
-   (error-id. domain-error ). An error shall be signaled if index is not
+   Returns the object stored in the component of the GENERAL-VECTOR
+   specified by integer INDEX.
+   An error shall be signaled if GENERAL-VECTOR is not a general-vector
+   (error-id. domain-error ). An error shall be signaled if INDEX is not
    a non-negative integer (error-id. domain-error ).
  */
-kiss_obj* kiss_gvref(kiss_obj* general_vector, kiss_obj* index) {
-    kiss_general_vector_t* gv = Kiss_General_Vector(general_vector);
-    long int i = Kiss_Non_Negative_Integer(index);
-    if (i >= gv->n) {
-	Kiss_Err(L"index is too large. ~S", index);
-    }
-    return gv->v[i];
+kiss_obj* kiss_gvref(const kiss_obj* const general_vector, const kiss_obj* const index) {
+     const kiss_general_vector_t* const gv = Kiss_General_Vector(general_vector);
+     long int i = Kiss_Non_Negative_Integer(index);
+     if (i >= gv->n) {
+          Kiss_Err(L"Index is too large. ~S", index);
+     }
+     return gv->v[i];
 }
 
 /* function: (set-gvref obj general-vector index) -> <object>
    Replace the object obtainable by gvref with obj . The returned value is
    obj. The constraints on the general-vector and index are the same as for
    gvref. */
-kiss_obj* kiss_set_gvref(kiss_obj* obj, kiss_obj* general_vector, kiss_obj* index)
+kiss_obj* kiss_set_gvref(const kiss_obj* const obj, kiss_obj* general_vector, const kiss_obj* const index)
 {
-    kiss_general_vector_t* gv = Kiss_General_Vector(general_vector);
+    kiss_general_vector_t* const gv = Kiss_General_Vector(general_vector);
     long int i = Kiss_Non_Negative_Integer(index);
     if (i >= gv->n) {
-	Kiss_Err(L"index is too large. ~S", index);
+	Kiss_Err(L"Index is too large. ~S", index);
     }
-    gv->v[i] = obj;
-    return obj;
+    gv->v[i] = (kiss_obj*)obj;
+    return (kiss_obj*)obj;
 }

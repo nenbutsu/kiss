@@ -341,9 +341,9 @@ kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda, KISS_Skw_rest, KISS
 
 
 /* character.c */
-kiss_obj* kiss_characterp (kiss_obj* obj);
+kiss_obj* kiss_characterp (const kiss_obj* const obj);
 kiss_obj* kiss_char_eq(const kiss_obj* const character1, const kiss_obj* const character2);
-kiss_obj* kiss_char_lessthan(kiss_obj* character1, kiss_obj* character2);
+kiss_obj* kiss_char_lessthan(const kiss_obj* const character1, const kiss_obj* const character2);
 
 /* cinvoke.c */
 kiss_obj* kiss_cinvoke(const kiss_cfunction_t* const cfun, kiss_obj* args);
@@ -364,8 +364,8 @@ kiss_obj* kiss_create_list(const kiss_obj* const i, const kiss_obj* const rest);
 kiss_obj* kiss_copy_list(const kiss_obj* p);
 kiss_obj* kiss_list(kiss_obj* const p);
 kiss_obj* kiss_c_list(int nargs, ...);
-kiss_obj* kiss_c_mapcar(const kiss_cf1_t f, kiss_obj* list);
-kiss_obj* kiss_c_mapc(const kiss_cf1_t f, kiss_obj* const list);
+kiss_obj* kiss_c_mapcar(const kiss_cf1_t f, const kiss_obj* list);
+kiss_obj* kiss_c_mapc(const kiss_cf1_t f, const kiss_obj* const list);
 kiss_obj* kiss_append(kiss_obj* const p);
 kiss_obj* kiss_append_s(kiss_obj* p);
 kiss_obj* kiss_c_append(int nargs, ...);
@@ -469,22 +469,22 @@ kiss_obj* kiss_labels(kiss_obj* fspecs, kiss_obj* body);
 void kiss_bind_funargs(kiss_obj* params, kiss_obj* args);
 
 /* vector.c */
-kiss_general_vector_t* kiss_make_general_vector(size_t n, kiss_obj* obj);
-kiss_obj* kiss_create_general_vector(kiss_obj* i, kiss_obj* rest);
-kiss_obj* kiss_vector(kiss_obj* objs);
-kiss_obj* kiss_general_vector_p(kiss_obj* obj);
-kiss_obj* kiss_gvref(kiss_obj* general_vector, kiss_obj* index);
-kiss_obj* kiss_set_gvref(kiss_obj* obj, kiss_obj* general_vector, kiss_obj* index);
+kiss_general_vector_t* kiss_make_general_vector(const size_t n, const kiss_obj* const obj);
+kiss_obj* kiss_create_general_vector(const kiss_obj* const i, const kiss_obj* const rest);
+kiss_obj* kiss_vector(const kiss_obj* objs);
+kiss_obj* kiss_basic_vector_p(const kiss_obj* const obj);
+kiss_obj* kiss_general_vector_p(const kiss_obj* const obj);
+kiss_obj* kiss_gvref(const kiss_obj* const general_vector, const kiss_obj* const index);
+kiss_obj* kiss_set_gvref(const kiss_obj* const obj, kiss_obj* general_vector, const kiss_obj* const index);
 
 /* array.c */
-kiss_obj* kiss_create_array(kiss_obj* dimensions, kiss_obj* rest);
-kiss_obj* kiss_aref(kiss_obj* array, kiss_obj* rest);
-kiss_obj* kiss_set_aref(kiss_obj* obj, kiss_obj* array, kiss_obj* rest);
-kiss_obj* kiss_garef(kiss_obj* array, kiss_obj* rest);
-kiss_obj* kiss_set_garef(kiss_obj* obj, kiss_obj* array, kiss_obj* rest);
+kiss_obj* kiss_create_array(const kiss_obj* const dimensions, const kiss_obj* const rest);
+kiss_obj* kiss_aref(const kiss_obj* const array, const kiss_obj* const rest);
+kiss_obj* kiss_set_aref(const kiss_obj* const obj, kiss_obj* const array, const kiss_obj* const rest);
+kiss_obj* kiss_garef(const kiss_obj* const array, const kiss_obj* const rest);
+kiss_obj* kiss_set_garef(const kiss_obj* const obj, kiss_obj* const array, const kiss_obj* const rest);
 kiss_obj* kiss_general_array_s_to_list (kiss_obj* obj);
 kiss_obj* kiss_array_dimensions(kiss_obj* array);
-kiss_obj* kiss_general_array_s_to_list (kiss_obj* obj);
 kiss_obj* kiss_basic_array_p (kiss_obj* obj);
 kiss_obj* kiss_basic_array_s_p (kiss_obj* obj);
 kiss_obj* kiss_general_array_s_p (kiss_obj* obj);

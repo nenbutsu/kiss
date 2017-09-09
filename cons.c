@@ -141,7 +141,7 @@ kiss_obj* kiss_c_list(int nargs, ...) {
 }
 
 /* kiss_c_mapcar(function, list) -> new_list */
-kiss_obj* kiss_c_mapcar(const kiss_cf1_t f, kiss_obj* list) {
+kiss_obj* kiss_c_mapcar(const kiss_cf1_t f, const kiss_obj* list) {
      kiss_cons_t head;
      kiss_init_cons(&head, KISS_NIL, KISS_NIL);
      kiss_obj* const result = (kiss_obj*)&head;
@@ -154,11 +154,11 @@ kiss_obj* kiss_c_mapcar(const kiss_cf1_t f, kiss_obj* list) {
 }
 
 /* kiss_c_mapc(function, list) -> list */
-kiss_obj* kiss_c_mapc(const kiss_cf1_t f, kiss_obj* const list) {
+kiss_obj* kiss_c_mapc(const kiss_cf1_t f, const kiss_obj* const list) {
     for (kiss_obj* p = Kiss_List(list); KISS_IS_CONS(p); p = KISS_CDR(p)) {
         f(KISS_CAR(p));
     }
-    return list;
+    return (kiss_obj*)list;
 }
 
 /* function: (append list*) -> <list>
@@ -260,6 +260,8 @@ kiss_obj* kiss_nreverse(kiss_obj* p) {
           return p;
      }
 }
+
+
 
 /* function: (member obj list) -> <list>
    If LIST contains at least one occurrence of OBJ (as determined by eql),

@@ -28,8 +28,7 @@
       t
     nil))
 
-;; Common Lisp, Emacs Lisp
-;; fucntion: last list &optional n => tail
+;; Common Lisp, Emacs Lisp fucntion: last list &optional n => tail
 ;; Arguments and Values:
 ;; list---a list, which might be a dotted list but must not be a circular list.
 ;; n---a non-negative integer. The default is 1.
@@ -51,8 +50,7 @@
         (setq list (cdr list)))
       list)))
 
-;; Common Lisp, Emacs Lisp
-;; function: nconc &rest lists => concatenated-list
+;; Common Lisp, Emacs Lisp function: nconc &rest lists => concatenated-list
 ;; Arguments and Values:
 ;; list---each but the last must be a list (which might be a dotted list
 ;; but must not be a circular list); the last list may be any object.

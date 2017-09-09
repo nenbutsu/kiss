@@ -33,13 +33,12 @@
                        +--> <string>
  */
 
-static kiss_general_vector_t* kiss_make_ga(kiss_obj* dimensions, kiss_general_vector_t* vector,
-				    kiss_obj* obj)
+static kiss_general_vector_t* kiss_make_ga(const kiss_obj* const dimensions, kiss_general_vector_t* const vector, const kiss_obj* const obj)
 {
      size_t rank = kiss_c_length(dimensions);
      if (rank == 0) {
 	  for (size_t i = 0; i < vector->n; i++) {
-	       vector->v[i] = obj;
+	       vector->v[i] = (kiss_obj*)obj;
 	  }
 	  return vector;
      }
@@ -50,12 +49,13 @@ static kiss_general_vector_t* kiss_make_ga(kiss_obj* dimensions, kiss_general_ve
      return vector;
 }
 
-static kiss_general_array_t* kiss_make_general_array(kiss_obj* dimensions, kiss_obj* obj) {
+static kiss_general_array_t* kiss_make_general_array(const kiss_obj* const dimensions, const kiss_obj* const obj)
+{
     kiss_general_array_t* array = Kiss_GC_Malloc(sizeof(kiss_general_array_t));
     array->type = KISS_GENERAL_ARRAY;
     array->rank = kiss_c_length(dimensions);
     if (array->rank == 0) {
-	 array->vector = obj;
+	 array->vector = (kiss_obj*)obj;
 	 return array;
     }
     
@@ -65,20 +65,19 @@ static kiss_general_array_t* kiss_make_general_array(kiss_obj* dimensions, kiss_
 }
 
 /* function: (create-array dimensions [initial-element]) -> <basic-array>
-   This function creates an array of the given dimensions.
-   The dimensions argument is a list of non-negative integers.
+   This function creates an array of the given DIMENSIONS.
+   The DIMENSIONS argument is a list of non-negative integers.
    The result is of class <general-vector> if there is only one dimension, 
    or of class <general-array*> otherwise.
-   If initial-element is given, the elements of the new array are initialized with this object,
+   If INITIAL-ELEMENT is given, the elements of the new array are initialized with this object,
    otherwise the initialization is implementation defined.
-   An error shall be signaled if the requested array cannot be allocated
+   An error shall be signaled if the requested array cannot be allocated 
    (error-id. cannot-create-array).
-   An error shall be signaled if dimensions is not a proper list of non-negative integers
+   An error shall be signaled if DIMENSIONS is not a proper list of non-negative integers
    (error-id. domain-error).
-   initial-element may be any ISLISP object.
-*/
-kiss_obj* kiss_create_array(kiss_obj* dimensions, kiss_obj* rest) {
-     dimensions = Kiss_Proper_List(dimensions);
+   INITIAL-ELEMENT may be any ISLISP object. */
+kiss_obj* kiss_create_array(const kiss_obj* const dimensions, const kiss_obj* const rest) {
+     Kiss_Proper_List(dimensions);
      kiss_c_mapc((kiss_cf1_t)Kiss_Non_Negative_Integer, dimensions);
      size_t rank = kiss_c_length(dimensions);
 
@@ -90,12 +89,16 @@ kiss_obj* kiss_create_array(kiss_obj* dimensions, kiss_obj* rest) {
      }
 }
 
-static kiss_obj* kiss_ga_s_ref(kiss_obj* vector, kiss_obj* rest) {
-     if (!KISS_IS_CONS(rest)) { return vector; }
-     return kiss_ga_s_ref(kiss_gvref(vector, kiss_car(rest)), kiss_cdr(rest));
+static kiss_obj* kiss_ga_s_ref(const kiss_obj* const vector, const kiss_obj* const rest) {
+     if (!KISS_IS_CONS(rest)) {
+          return (kiss_obj*)vector;
+     } else {
+          return kiss_ga_s_ref(kiss_gvref(vector, kiss_car(rest)), kiss_cdr(rest));
+     }
 }
 
-static kiss_obj* kiss_set_ga_s_ref(kiss_obj* obj, kiss_obj* vector, kiss_obj* rest) {
+static kiss_obj* kiss_set_ga_s_ref(const kiss_obj* const obj, kiss_obj* const vector, const kiss_obj* const rest)
+{
      size_t rank = kiss_c_length(rest);
      if (rank == 1) {
 	  return kiss_set_gvref(obj, vector, kiss_car(rest));
@@ -104,12 +107,11 @@ static kiss_obj* kiss_set_ga_s_ref(kiss_obj* obj, kiss_obj* vector, kiss_obj* re
 }
 
 /* function (garef general-array z*) -> <object>
-   garef is like aref but an error shall be signaled if its first argument,
-   general-array, is not an object of class <general-vector> or of class <general-array*>
-   (error-id. domain-error).
- */
-kiss_obj* kiss_garef(kiss_obj* array, kiss_obj* rest) {
-     array = Kiss_General_Array(array);
+   Is like aref but an error shall be signaled if its first argument,
+   GENERAL-ARRAY, is not an object of class <general-vector> or of class <general-array*>
+   (error-id. domain-error). */
+kiss_obj* kiss_garef(const kiss_obj* const array, const kiss_obj* const rest) {
+     Kiss_General_Array(array);
      switch (KISS_OBJ_TYPE(array)) {
      case KISS_GENERAL_VECTOR:
 	  if (kiss_c_length(rest) != 1) {
@@ -117,8 +119,7 @@ kiss_obj* kiss_garef(kiss_obj* array, kiss_obj* rest) {
 	  }
 	  return kiss_gvref(array, kiss_car(rest));
      case KISS_GENERAL_ARRAY: {
-	  kiss_general_array_t* gv = ((kiss_general_array_t*)array);
-	  return kiss_ga_s_ref(gv->vector, rest);
+	  return kiss_ga_s_ref(((kiss_general_array_t*)array)->vector, rest);
      }
      default:
 	  fwprintf(stderr, L"garef: unexpeced primitive obj type %d", KISS_OBJ_TYPE(array));
@@ -127,19 +128,16 @@ kiss_obj* kiss_garef(kiss_obj* array, kiss_obj* rest) {
 }
 
 /* function: (aref basic-array z*) -> <object>
-   aref returns the object stored in the component of the basic-array specified
-   by the sequence of integers z.
+   Returns the object stored in the component of the BASIC-ARRAY specified
+   by the sequence of integers Z.
    This sequence must have exactly as many elements as there are dimensions in the
-   basic-array, and each one must satisfy 0 <= zi < di, di the i th dimension and
+   BASIC-ARRAY, and each one must satisfy 0 <= Zi < di, di the i th dimension and
    0 <= i < d, d the number of dimensions.
    Arrays are indexed 0 based, so the ith row is accessed via the index i − 1.
-   An error shall be signaled if basic-array is not a basic-array 
-   (error-id. domain-error).
-   An error shall be signaled if any z is not a non-negative integer
-   (error-id. domain-error).
- */
-kiss_obj* kiss_aref(kiss_obj* array, kiss_obj* rest) {
-     array = Kiss_Basic_Array(array);
+   An error shall be signaled if BASIC-ARRAY is not a basic-array  (error-id. domain-error).
+   An error shall be signaled if any Z is not a non-negative integer (error-id. domain-error). */
+kiss_obj* kiss_aref(const kiss_obj* const array, const kiss_obj* const rest) {
+     Kiss_Basic_Array(array);
      switch (KISS_OBJ_TYPE(array)) {
      case KISS_STRING: {
 	  if (kiss_c_length(rest) != 1) {
@@ -156,8 +154,13 @@ kiss_obj* kiss_aref(kiss_obj* array, kiss_obj* rest) {
      }
 }
 
-kiss_obj* kiss_set_aref(kiss_obj* obj, kiss_obj* array, kiss_obj* rest) {
-     array = Kiss_Basic_Array(array);
+/* (set-aref obj basic-array z*) → <object>
+   Replace the object obtainable by aref with OBJ.
+   The returned value is OBJ. The constraints on the BASIC-ARRAY and 
+   the sequence of indices Z is the same as for aref. */
+kiss_obj* kiss_set_aref(const kiss_obj* const obj, kiss_obj* const array, const kiss_obj* const rest)
+{
+     Kiss_Basic_Array(array);
      switch (KISS_OBJ_TYPE(array)) {
      case KISS_STRING: {
 	  if (kiss_c_length(rest) != 1) {
@@ -177,10 +180,10 @@ kiss_obj* kiss_set_aref(kiss_obj* obj, kiss_obj* array, kiss_obj* rest) {
 /* function: (set-garef obj general-array z*) -> <object>
    Replace the object obtainable by garef with obj.
    The returned value is obj. The constraints on the general-array,
-   and the sequence of indices z is the same as for garef.
-*/
-kiss_obj* kiss_set_garef(kiss_obj* obj, kiss_obj* array, kiss_obj* rest) {
-     array = Kiss_General_Array(array);
+   and the sequence of indices z is the same as for garef. */
+kiss_obj* kiss_set_garef(const kiss_obj* const obj, kiss_obj* const array, const kiss_obj* const rest)
+{
+     Kiss_General_Array(array);
      switch (KISS_OBJ_TYPE(array)) {
      case KISS_GENERAL_VECTOR:
 	  if (kiss_c_length(rest) != 1) {
@@ -190,8 +193,8 @@ kiss_obj* kiss_set_garef(kiss_obj* obj, kiss_obj* array, kiss_obj* rest) {
      case KISS_GENERAL_ARRAY: {
 	  kiss_general_array_t* a = (kiss_general_array_t*)array;
 	  if (a->rank == 0) {
-	       a->vector = obj;
-	       return obj;
+	       a->vector = (kiss_obj*)obj;
+	       return (kiss_obj*)obj;
 	  }
 	  return kiss_set_ga_s_ref(obj, a->vector, rest);
      }

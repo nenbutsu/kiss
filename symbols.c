@@ -862,6 +862,25 @@ kiss_symbol_t KISS_Sgeneral_vector_p = {
     KISS_NIL,                            /* plist */
 };
 
+kiss_symbol_t KISS_Sbasic_vector_p;
+kiss_cfunction_t KISS_CFbasic_vector_p = {
+    KISS_CFUNCTION,          /* type */
+    &KISS_Sbasic_vector_p, /* name */
+        (kiss_cf_t*)kiss_basic_vector_p,   /* C function name */
+    1,                  /* minimum argument number */
+    1,                  /* maximum argument number */
+};
+kiss_symbol_t KISS_Sbasic_vector_p = {
+    KISS_SYMBOL,                         /* type */
+    0,                 /* gc_flag */
+    NULL,              /* gc_next */
+    L"basic-vector-p",            /* name */
+    KISS_CONSTANT_FUN,                   /* flags */
+    NULL,                           /* var */
+    (kiss_obj*)&KISS_CFbasic_vector_p, /* fun */
+    KISS_NIL,                            /* plist */
+};
+
 kiss_symbol_t KISS_Sgvref;
 kiss_cfunction_t KISS_CFgvref = {
     KISS_CFUNCTION, /* type */
@@ -3180,7 +3199,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     
     /* vector.c */
     &KISS_Screate_general_vector, &KISS_Svector,
-    &KISS_Sgeneral_vector_p, &KISS_Sgvref, &KISS_Sset_gvref,
+    &KISS_Sgeneral_vector_p, &KISS_Sbasic_vector_p, &KISS_Sgvref, &KISS_Sset_gvref,
 
     /* function.c */
     &KISS_Ssimple_function_p, &KISS_Sfunction, &KISS_Squote, &KISS_Slambda,
