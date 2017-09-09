@@ -18,17 +18,9 @@
  */
 #include "kiss.h"
 
-kiss_character_t* kiss_make_character(wchar_t c) {
-    kiss_character_t* p = Kiss_GC_Malloc(sizeof(kiss_character_t));
-    p->type = KISS_CHARACTER;
-    p->c = c;
-    return p;
-}
-
-/* function: (characterp obj) -> boolean
-     Returns t if obj is a character (instance of class <character>);
-     otherwise, returns nil. obj may be any ISLISP object.
- */
+/*  function: (characterp obj) -> boolean
+     Returns t if OBJ is a character (instance of class <character>);
+     otherwise, returns nil. OBJ may be any ISLISP object. */
 kiss_obj* kiss_characterp (kiss_obj* obj) {
     if (KISS_IS_CHARACTER(obj)) {
 	return KISS_T;
@@ -38,10 +30,10 @@ kiss_obj* kiss_characterp (kiss_obj* obj) {
 }
 
 /* An error shall be signaled if either char1 or char2 is not a character (error-id. domain-error ).*/
-kiss_obj* kiss_char_eq(kiss_obj* character1, kiss_obj* character2) {
-    kiss_character_t* char1 = Kiss_Character(character1);
-    kiss_character_t* char2 = Kiss_Character(character2);
-    if (char1->c == char2->c) {
+kiss_obj* kiss_char_eq(const kiss_obj* const character1, const kiss_obj* const character2) {
+    wchar_t char1 = Kiss_Character(character1);
+    wchar_t char2 = Kiss_Character(character2);
+    if (char1 == char2) {
 	return KISS_T;
     } else {
 	return KISS_NIL;
@@ -49,9 +41,9 @@ kiss_obj* kiss_char_eq(kiss_obj* character1, kiss_obj* character2) {
 }
 
 kiss_obj* kiss_char_lessthan(kiss_obj* character1, kiss_obj* character2) {
-    kiss_character_t* char1 = Kiss_Character(character1);
-    kiss_character_t* char2 = Kiss_Character(character2);
-    if (char1->c < char2->c) {
+    wchar_t char1 = Kiss_Character(character1);
+    wchar_t char2 = Kiss_Character(character2);
+    if (char1 < char2) {
 	return KISS_T;
     } else {
 	return KISS_NIL;

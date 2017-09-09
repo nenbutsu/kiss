@@ -128,12 +128,12 @@ kiss_obj* kiss_function(kiss_obj* name) { return kiss_fun_ref(Kiss_Symbol(name))
 
 
 /* function: (funcall function obj*) -> <object> */
-kiss_obj* kiss_funcall(kiss_obj* f, kiss_obj* args) {
+kiss_obj* kiss_funcall(const kiss_obj* const f, const kiss_obj* const args) {
      switch (KISS_OBJ_TYPE(f)) {
      case KISS_CFUNCTION:
-	  return kiss_cinvoke((kiss_cfunction_t*)f, args);
+	  return kiss_cinvoke((kiss_cfunction_t*)f, (kiss_obj*)args);
      case KISS_FUNCTION:
-	  return kiss_linvoke((kiss_function_t*)f, args);
+	  return kiss_linvoke((kiss_function_t*)f, (kiss_obj*)args);
      case KISS_OO_OBJ:
 	  if (kiss_c_funcall(L"generic-function-p", kiss_c_list(1, f)) == KISS_T) {
 	       return kiss_c_funcall(L"generic-function-invoke", kiss_c_list(2, f, args));

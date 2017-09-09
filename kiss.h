@@ -32,11 +32,21 @@
 #include <wchar.h>
 #include <wctype.h>
 
+#define kiss_int(x)        (((long int)x)>>2)
+#define kiss_wchar(x)      kiss_int(x)
+#define kiss_fixnum(x)     (kiss_obj*)((((long int)x)<<2) | 1)
+#define kiss_fixchar(x)    (kiss_obj*)((((long int)x)<<2) | 2)
+#define kiss_is_fixnum(x)  ((long int)x & 1)
+#define kiss_is_char(x)    ((long int)x & 2)
+
+#define kiss_make_character(x)  kiss_fixchar(x)
+#define kiss_make_integer(x) kiss_fixnum(x)
+
 typedef enum {
+     KISS_INTEGER = 1,
+     KISS_CHARACTER = 2,
      KISS_CONS,
      KISS_SYMBOL,
-     KISS_CHARACTER,
-     KISS_INTEGER,
      KISS_FLOAT,
      KISS_STRING,
      KISS_GENERAL_VECTOR,
@@ -91,20 +101,6 @@ typedef struct {
      kiss_obj* fun;
      kiss_obj* plist;
 } kiss_symbol_t;
-
-typedef struct {
-     kiss_type type;
-     int gc_flag;
-     kiss_gc_obj* gc_next;
-     wchar_t c;
-} kiss_character_t;
-
-typedef struct {
-     kiss_type type;
-     int gc_flag;
-     kiss_gc_obj* gc_next;
-     long int i;
-} kiss_integer_t;
 
 typedef struct {
      kiss_type type;
@@ -312,14 +308,14 @@ kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda, KISS_Skw_rest, KISS
 #define KISS_CADR(x)   KISS_CAR(KISS_CDR(x))
 #define KISS_CADDR(x)  KISS_CAR(KISS_CDR(KISS_CDR(x)))
 
-#define KISS_OBJ_TYPE(x) (((kiss_obj*)x)->type)
+#define KISS_OBJ_TYPE(x) (((long int)x & 3) ? ((long int)x & 3) : (((kiss_obj*)x)->type))
 
+#define KISS_IS_INTEGER(x)           (kiss_is_fixnum(x))
+#define KISS_IS_CHARACTER(x)         (kiss_is_char(x))
 #define KISS_IS_CONS(x)              (KISS_OBJ_TYPE(x) == KISS_CONS)
-#define KISS_IS_LIST(x)              (KISS_IS_CONS(x) || (((kiss_obj*)x) == KISS_NIL))
+#define KISS_IS_LIST(x)              (KISS_IS_CONS(x) || (((void*)x) == KISS_NIL))
 #define KISS_IS_SYMBOL(x)            (KISS_OBJ_TYPE(x) == KISS_SYMBOL)
-#define KISS_IS_INTEGER(x)           (KISS_OBJ_TYPE(x) == KISS_INTEGER)
 #define KISS_IS_FLOAT(x)             (KISS_OBJ_TYPE(x) == KISS_FLOAT)
-#define KISS_IS_CHARACTER(x)         (KISS_OBJ_TYPE(x) == KISS_CHARACTER)
 #define KISS_IS_STRING(x)            (KISS_OBJ_TYPE(x) == KISS_STRING)
 #define KISS_IS_GENERAL_VECTOR(x)    (KISS_OBJ_TYPE(x) == KISS_GENERAL_VECTOR)
 #define KISS_IS_GENERAL_ARRAY(x)     (KISS_OBJ_TYPE(x) == KISS_GENERAL_ARRAY)
@@ -341,17 +337,16 @@ kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda, KISS_Skw_rest, KISS
 #define KISS_IS_FILE_STREAM(x)      (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_FILE_STREAM))
 #define KISS_IS_STRING_STREAM(x)    (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_STRING_STREAM))
 
-#define KISS_IS_GC_OBJ(x)           !(KISS_IS_CFUNCTION(x) || KISS_IS_CMACRO(x))
+#define KISS_IS_GC_OBJ(x)           !(kiss_is_fixnum(x) || kiss_is_char(x) || KISS_IS_CFUNCTION(x) || KISS_IS_CMACRO(x))
 
 
 /* character.c */
-kiss_character_t* kiss_make_character(wchar_t c);
 kiss_obj* kiss_characterp (kiss_obj* obj);
-kiss_obj* kiss_char_eq(kiss_obj* character1, kiss_obj* character2);
+kiss_obj* kiss_char_eq(const kiss_obj* const character1, const kiss_obj* const character2);
 kiss_obj* kiss_char_lessthan(kiss_obj* character1, kiss_obj* character2);
 
 /* cinvoke.c */
-kiss_obj* kiss_cinvoke(kiss_cfunction_t* cfun, kiss_obj* args);
+kiss_obj* kiss_cinvoke(const kiss_cfunction_t* const cfun, kiss_obj* args);
 
 /* cons.c */
 kiss_cons_t* kiss_init_cons(kiss_cons_t* const p, const kiss_obj* const left, const kiss_obj* const right);
@@ -402,9 +397,9 @@ kiss_obj* kiss_go(kiss_obj* tag);
 _Noreturn void Kiss_System_Error (void);
 _Noreturn void Kiss_Err(const wchar_t* const str, ...);
 kiss_cons_t* Kiss_Cons(const kiss_obj* const obj);
-kiss_integer_t* Kiss_Integer(const kiss_obj* const obj);
+long int Kiss_Integer(const kiss_obj* const obj);
 kiss_float_t* Kiss_Float(const kiss_obj* const obj);
-kiss_character_t* Kiss_Character(const kiss_obj* const obj);
+wchar_t Kiss_Character(const kiss_obj* const obj);
 kiss_symbol_t* Kiss_Symbol(const kiss_obj* const obj);
 kiss_string_t* Kiss_String(const kiss_obj* const obj);
 kiss_stream_t* Kiss_Stream(const kiss_obj* const obj);
@@ -417,8 +412,8 @@ kiss_cfunction_t* Kiss_CMacro(const kiss_obj* const obj);
 
 kiss_obj* Kiss_Number(const kiss_obj* const obj);
 kiss_obj* Kiss_List(const kiss_obj* const obj);
-kiss_integer_t* Kiss_Non_Negative_Integer(const kiss_obj* const obj);
-kiss_integer_t* Kiss_Non_Zero_Integer(const kiss_obj* const obj);
+long int Kiss_Non_Negative_Integer(const kiss_obj* const obj);
+long int Kiss_Non_Zero_Integer(const kiss_obj* const obj);
 kiss_obj* Kiss_General_Array(const kiss_obj* const obj);
 kiss_obj* Kiss_Basic_Array(const kiss_obj* const obj);
 kiss_obj* Kiss_Valid_Sequence_Index(const kiss_obj* const sequence, const kiss_obj* const index);
@@ -465,7 +460,7 @@ kiss_obj* kiss_defun(kiss_obj* name, kiss_obj* params, kiss_obj* body);
 kiss_obj* kiss_defmacro(kiss_obj* name, kiss_obj* params, kiss_obj* body);
 kiss_obj* kiss_fun_ref(kiss_symbol_t* name);
 kiss_obj* kiss_function(kiss_obj* name);
-kiss_obj* kiss_funcall(kiss_obj* f, kiss_obj* args);
+kiss_obj* kiss_funcall(const kiss_obj* const f, const kiss_obj* const args);
 kiss_obj* kiss_c_funcall(wchar_t* function_name, kiss_obj* args);
 kiss_obj* kiss_apply(kiss_obj* f, kiss_obj* obj, kiss_obj* rest);
 kiss_obj* kiss_flet(kiss_obj* fspecs, kiss_obj* body);
@@ -500,12 +495,11 @@ kiss_environment_t* Kiss_Get_Environment(void);
 void kiss_initialize(void);
 
 /* number.c */
-kiss_integer_t* kiss_make_integer(long int i);
 kiss_obj* kiss_integerp(kiss_obj* obj);
 kiss_obj* kiss_Lplus(kiss_obj* p);
 kiss_obj* kiss_Lmultiply(kiss_obj* p);
 kiss_obj* kiss_Lminus(kiss_obj* number, kiss_obj* rest);
-kiss_obj* kiss_Lnum_eq(kiss_obj* x, kiss_obj* y);
+kiss_obj* kiss_Lnum_eq(const kiss_obj* const x, const kiss_obj* const y);
 kiss_obj* kiss_Lnum_lessthan(kiss_obj* x, kiss_obj* y);
 
 kiss_float_t* kiss_make_float(float f);
@@ -535,19 +529,19 @@ void* Kiss_Malloc(size_t size);
 void* Kiss_Malloc_Atomic(size_t size);
 
 /* read.c */
-kiss_obj* kiss_c_read(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val);
-kiss_obj* kiss_read(kiss_obj* args);
+kiss_obj* kiss_c_read(const kiss_obj* const in, const kiss_obj* const eos_err_p, const kiss_obj* const eos_val);
+kiss_obj* kiss_read(const kiss_obj* args);
 
 /* repl.c */
 int kiss_read_eval_print_loop(void);
 
 /* sequence.c */
 size_t kiss_c_length(const kiss_obj* const p);
-kiss_obj* kiss_length(kiss_obj* sequence);
-kiss_obj* kiss_elt(kiss_obj* sequence, kiss_obj* z);
-kiss_obj* kiss_set_elt(kiss_obj* obj, kiss_obj* sequence, kiss_obj* z);
+kiss_obj* kiss_length(const kiss_obj* const sequence);
+kiss_obj* kiss_elt(const kiss_obj* const sequence, const kiss_obj* const z);
+kiss_obj* kiss_set_elt(const kiss_obj* const obj, kiss_obj* const sequence, const kiss_obj* const z);
 kiss_obj* kiss_subseq(kiss_obj* sequence, kiss_obj* z1, kiss_obj* z2);
-kiss_obj* kiss_map_into(kiss_obj* destination, kiss_obj* function, kiss_obj* rest);
+kiss_obj* kiss_map_into(kiss_obj* const destination, const kiss_obj* const function, const kiss_obj* const rest);
 
 /* stream.c */
 void kiss_init_streams(void);
@@ -564,9 +558,9 @@ kiss_obj* kiss_output_stream_p(kiss_obj* p);
 kiss_obj* kiss_char_stream_p(kiss_obj* p);
 kiss_obj* kiss_input_char_stream_p(kiss_obj* p);
 kiss_obj* kiss_output_char_stream_p(kiss_obj* p);
-kiss_obj* kiss_c_read_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val);
-kiss_obj* kiss_c_preview_char(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val);
-kiss_obj* kiss_read_char(kiss_obj* args);
+kiss_obj* kiss_c_read_char(const kiss_obj* const in, const kiss_obj* const eos_err_p, const kiss_obj* const eos_val);
+kiss_obj* kiss_c_preview_char(const kiss_obj* const in, const kiss_obj* const eos_err_p, const kiss_obj* const eos_val);
+kiss_obj* kiss_read_char(const kiss_obj* args);
 kiss_obj* kiss_c_read_byte(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val);
 kiss_obj* kiss_read_byte(kiss_obj* input_stream, kiss_obj* args);
 kiss_obj* kiss_write_byte(kiss_obj* z, kiss_obj* output);
@@ -582,12 +576,12 @@ kiss_obj* kiss_finish_output (kiss_obj* obj);
 kiss_obj* kiss_stream_ready_p(kiss_obj* obj);
 
 /* string.c */
-kiss_string_t* kiss_make_string(wchar_t* s);
-kiss_obj* kiss_create_string(kiss_obj* i, kiss_obj* rest);
-kiss_obj* kiss_stringp(kiss_obj* obj);
-kiss_string_t* kiss_chars_to_str(kiss_obj* chars);
-kiss_obj* kiss_str_to_chars(kiss_string_t* str);
-kiss_obj* kiss_string_append(kiss_obj* rest);
+kiss_string_t* kiss_make_string(const wchar_t* const s);
+kiss_obj* kiss_create_string(const kiss_obj* const i, const kiss_obj* const rest);
+kiss_obj* kiss_stringp(const kiss_obj* const obj);
+kiss_string_t* kiss_chars_to_str(const kiss_obj* const chars);
+kiss_obj* kiss_str_to_chars(const kiss_string_t* const str);
+kiss_obj* kiss_string_append(const kiss_obj* const rest);
 
 /* symbols.c */
 extern size_t Kiss_Symbol_Number;

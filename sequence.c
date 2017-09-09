@@ -38,32 +38,31 @@ size_t kiss_c_length(const kiss_obj* const p) {
 }
 
 /* function: (length sequence) -> <integer> 
-   Returns the length of sequence as an integer greater than or equal to 0.
-   When sequence is a vector, length returns its dimension.
-   When sequence is a list, the result is the number of elements in the list;
+   Returns the length of SEQUENCE as an integer greater than or equal to 0.
+   When SEQUENCE is a vector, length returns its dimension.
+   When SEQUENCE is a list, the result is the number of elements in the list;
    if an element is itself a list, the elements within this sublist are not
    counted. In the case of dotted lists, length returns the number of
    conses at the uppermost level of the list. For example,
-   (length ’(a b . c)) ⇒ 2,
-   since ’(a b . c) ≡ (cons ’a (cons ’b ’c)).
-   An error shall be signaled if sequence is not a basic-vector or a list
-   (error-id. domain-error ).
- */
-kiss_obj* kiss_length(kiss_obj* sequence) {
+   (length '(a b . c)) ⇒ 2,
+   since '(a b . c) ≡ (cons ’a (cons ’b ’c)).
+   An error shall be signaled if SEQUENCE is not a basic-vector or a list
+   (error-id. domain-error ). */
+kiss_obj* kiss_length(const kiss_obj* const sequence) {
     return (kiss_obj*)kiss_make_integer(kiss_c_length(sequence));
 }
 
 /* function: (elt sequence z) -> <object>
-   Given a sequence and an integer z satisfying 0 <= z < (length sequence),
-   elt returns the element of sequence that has index z. Indexing is
-   0-based; i.e., z = 0 designates the first element. An error shall be
-   signaled if z is an integer outside of the mentioned range
+   Given a SEQUENCE and an integer Z satisfying 0 <= z < (length sequence),
+   elt returns the element of SEQUENCE that has index Z. Indexing is
+   0-based; i.e., Z = 0 designates the first element. An error shall be
+   signaled if Z is an integer outside of the mentioned range
    (error-id. index-out-of-range).
-   An error shall be signaled if sequence is not a basic-vector or a list or
-   if z is not an integer (error-id. domain-error). */
-kiss_obj* kiss_elt(kiss_obj* sequence, kiss_obj* z) {
-     z = Kiss_Valid_Sequence_Index(sequence, z);
-     size_t i = ((kiss_integer_t*)z)->i;
+   An error shall be signaled if SEQUENCE is not a basic-vector or a list or
+   if Z is not an integer (error-id. domain-error). */
+kiss_obj* kiss_elt(const kiss_obj* const sequence, const kiss_obj* const z) {
+     Kiss_Valid_Sequence_Index(sequence, z);
+     size_t i = kiss_int(z);
      switch (KISS_OBJ_TYPE(sequence)) {
      case KISS_SYMBOL: {
 	  assert(sequence == KISS_NIL);
@@ -72,16 +71,16 @@ kiss_obj* kiss_elt(kiss_obj* sequence, kiss_obj* z) {
 	  exit(EXIT_FAILURE);
      }
      case KISS_CONS: {
-	  kiss_obj* list = sequence;
+	  const kiss_obj* list = sequence;
 	  for (; i > 0; i--) { list = KISS_CDR(list); }
 	  return KISS_CAR(list);
      }
      case KISS_STRING: {
-	  kiss_string_t* string = ((kiss_string_t*)sequence);
-	  return (kiss_obj*)kiss_make_character(string->str[i]);
+	  kiss_string_t* string = (kiss_string_t*)sequence;
+	  return kiss_make_character(string->str[i]);
      }
      case KISS_GENERAL_VECTOR: {
-	  kiss_general_vector_t* vector = ((kiss_general_vector_t*)sequence);
+	  kiss_general_vector_t* vector = (kiss_general_vector_t*)sequence;
 	  return vector->v[i];
      }
      default:
@@ -92,17 +91,17 @@ kiss_obj* kiss_elt(kiss_obj* sequence, kiss_obj* z) {
 }
 
 /* function: (set-elt obj sequence z) -> <object>
-   Replace the object obtainable by elt with obj.
-   The returned value is obj. 
-   An error shall be signaled if z is an integer outside of the valid range of indices 
+   Replace the object obtainable by elt with OBJ.
+   The returned value is OBJ. 
+   An error shall be signaled if Z is an integer outside of the valid range of indices 
    (error-id. index-out-of-range).
-   An error shall be signaled if sequence is not a basic-vector or a list or 
-   if z is not an integer (error-id. domain-error).
-   obj may be any ISLISP object.
+   An error shall be signaled if SEQUENCE is not a basic-vector or a list or 
+   if Z is not an integer (error-id. domain-error).
+   OBJ may be any ISLISP object.
 */
-kiss_obj* kiss_set_elt(kiss_obj* obj, kiss_obj* sequence, kiss_obj* z) {
-     z = Kiss_Valid_Sequence_Index(sequence, z);
-     size_t i = ((kiss_integer_t*)z)->i;
+kiss_obj* kiss_set_elt(const kiss_obj* const obj, kiss_obj* const sequence, const kiss_obj* const z) {
+     Kiss_Valid_Sequence_Index(sequence, z);
+     size_t i = kiss_int(z);
      switch (KISS_OBJ_TYPE(sequence)) {
      case KISS_SYMBOL: {
 	  assert(sequence == KISS_NIL);
@@ -118,20 +117,20 @@ kiss_obj* kiss_set_elt(kiss_obj* obj, kiss_obj* sequence, kiss_obj* z) {
      }
      case KISS_STRING: {
 	  kiss_string_t* string = ((kiss_string_t*)sequence);
-	  wchar_t c = Kiss_Character(obj)->c;
+	  wchar_t c = Kiss_Character(obj);
 	  string->str[i] = c;
 	  break;
      }
      case KISS_GENERAL_VECTOR: {
 	  kiss_general_vector_t* vector = ((kiss_general_vector_t*)sequence);
-	  vector->v[i] = obj;
+	  vector->v[i] = (kiss_obj*)obj;
 	  break;
      }
      default:
 	  fwprintf(stderr, L"set-elt:unknown sequence type = %d", KISS_OBJ_TYPE(sequence));
 	  exit(EXIT_FAILURE);
      }
-     return obj;
+     return (kiss_obj*)obj;
 }
 
 /* function: (subseq sequence z1 z2) -> sequence
@@ -147,8 +146,8 @@ kiss_obj* kiss_set_elt(kiss_obj* obj, kiss_obj* sequence, kiss_obj* z) {
    or if Z1 is not an integer, or if Z2 is not an integer (error-id. domain-error).
  */
 kiss_obj* kiss_subseq(kiss_obj* sequence, kiss_obj* z1, kiss_obj* z2) {
-     long int i1 = Kiss_Integer(z1)->i;
-     long int i2 = Kiss_Integer(z2)->i;
+     long int i1 = Kiss_Integer(z1);
+     long int i2 = Kiss_Integer(z2);
      size_t n = kiss_c_length(sequence);
      if (i1 < 0) {
 	  Kiss_Err(L"Invalid sequence index = ~S", z1);
@@ -215,24 +214,20 @@ kiss_obj* kiss_subseq(kiss_obj* sequence, kiss_obj* z1, kiss_obj* z2) {
    An error shall be signaled if any sequence is not a basic-vector or a list
    (error-id. domain-error).
  */
-kiss_obj* kiss_map_into(kiss_obj* destination, kiss_obj* function, kiss_obj* rest) {
+kiss_obj* kiss_map_into(kiss_obj* const destination, const kiss_obj* const function, const kiss_obj* const rest) {
      size_t n = kiss_c_length(destination);
-     for (kiss_obj* p = rest; p != KISS_NIL; p = KISS_CDR(p)) {
+     for (const kiss_obj* p = rest; p != KISS_NIL; p = KISS_CDR(p)) {
 	  size_t a = kiss_c_length(kiss_car(p));
 	  if (a < n) { n = a; }
      }
-     size_t i;
-     kiss_integer_t* integer;
-     kiss_obj* args;
-     for (i = 0; i < n; i++) {
-	  args = KISS_NIL;
-	  integer = kiss_make_integer(i);
-	  for (kiss_obj* p = rest; p != KISS_NIL; p = kiss_cdr(p)) {
-	       kiss_push(kiss_elt(kiss_car(p), (kiss_obj*)integer), &args);
+     for (size_t i = 0; i < n; i++) {
+	  kiss_obj* args = KISS_NIL;
+	  for (const kiss_obj* p = rest; p != KISS_NIL; p = kiss_cdr(p)) {
+	       kiss_push(kiss_elt(kiss_car(p), kiss_make_integer(i)), &args);
 	  }
 	  args = kiss_nreverse(args);
 	  kiss_obj* result = kiss_funcall(function, args);
-	  kiss_set_elt(result, destination, (kiss_obj*)integer);
+	  kiss_set_elt(result, destination, kiss_make_integer(i));
      }
      return destination;
 }

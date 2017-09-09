@@ -18,7 +18,7 @@
  */
 #include "kiss.h"
 
-kiss_obj* kiss_cinvoke(kiss_cfunction_t* cfun, kiss_obj* args) {
+kiss_obj* kiss_cinvoke(const kiss_cfunction_t* const cfun, kiss_obj* args) {
     long int min = cfun->min_args; /* minimum number of args required */
     long int max = cfun->max_args; /* maximum number of args permitted
 				      -1 means any number of args is permitted

@@ -18,13 +18,6 @@
 */
 #include "kiss.h"
 
-kiss_integer_t* kiss_make_integer(long int i) {
-    kiss_integer_t* p = Kiss_GC_Malloc(sizeof(kiss_integer_t));
-    p->type = KISS_INTEGER;
-    p->i = i;
-    return p;
-}
-
 kiss_float_t* kiss_make_float(float f) {
     kiss_float_t* p = Kiss_GC_Malloc(sizeof(kiss_float_t));
     p->type = KISS_FLOAT;
@@ -54,7 +47,7 @@ kiss_obj* kiss_floatp(kiss_obj* obj) {
 kiss_obj* kiss_float(kiss_obj* x) {
      Kiss_Number(x);
      if (KISS_IS_INTEGER(x)) {
-	  return (kiss_obj*)kiss_make_float(Kiss_Integer(x)->i);
+	  return (kiss_obj*)kiss_make_float(Kiss_Integer(x));
      } else {
 	  return x;
      }
@@ -80,7 +73,7 @@ static int kiss_all_int(kiss_obj* p) {
 kiss_obj* kiss_parse_number(kiss_obj* p) {
      kiss_string_t* str = Kiss_String(p);
      wchar_t* tailptr;
-     long i = wcstol(str->str, &tailptr, 10);
+     long int i = wcstol(str->str, &tailptr, 10);
      if (tailptr == str->str + str->n) { return (kiss_obj*)kiss_make_integer(i); }
      else {
 	  float f = wcstof(str->str, &tailptr);
@@ -102,8 +95,8 @@ kiss_obj* kiss_Lplus(kiss_obj* p) {
      if (kiss_all_int(p)) {
 	  long int sum = 0;
 	  while (KISS_IS_CONS(p)) {
-	       kiss_integer_t* x = Kiss_Integer(KISS_CAR(p));
-	       sum += x->i;
+	       long int x = Kiss_Integer(KISS_CAR(p));
+	       sum += x;
 	       p = KISS_CDR(p);
 	  }
 	  return (kiss_obj*)kiss_make_integer(sum);
@@ -112,7 +105,7 @@ kiss_obj* kiss_Lplus(kiss_obj* p) {
 	  while (KISS_IS_CONS(p)) {
 	       kiss_obj* obj = Kiss_Number(KISS_CAR(p));
 	       if (KISS_IS_INTEGER(obj)) {
-		    sum += ((kiss_integer_t*)obj)->i;
+		    sum += kiss_int(obj);
 	       } else {
 		    sum += ((kiss_float_t*)obj)->f;
 	       }
@@ -133,7 +126,7 @@ kiss_obj* kiss_Lmultiply(kiss_obj* p) {
      if (kiss_all_int(p)) {
 	  long int product = 1;
 	  while (KISS_IS_CONS(p)) {
-	       product *= Kiss_Integer(KISS_CAR(p))->i;
+	       product *= Kiss_Integer(KISS_CAR(p));
 	       p = KISS_CDR(p);
 	  }
 	  return (kiss_obj*)kiss_make_integer(product);
@@ -142,7 +135,7 @@ kiss_obj* kiss_Lmultiply(kiss_obj* p) {
 	  while (KISS_IS_CONS(p)) {
 	       kiss_obj* obj = Kiss_Number(KISS_CAR(p));
 	       if (KISS_IS_INTEGER(obj)) {
-		    product *= ((kiss_integer_t*)obj)->i;
+		    product *= kiss_int(obj);
 	       } else {
 		    product *= ((kiss_float_t*)obj)->f;
 	       }
@@ -163,12 +156,12 @@ kiss_obj* kiss_Lminus(kiss_obj* number, kiss_obj* rest) {
      if (kiss_all_int(kiss_cons(number, rest))) {
 	  if (rest == KISS_NIL) {
 	       /* (- 10) => -10 */
-	       return (kiss_obj*)kiss_make_integer( - Kiss_Integer(number)->i);
+	       return (kiss_obj*)kiss_make_integer(- Kiss_Integer(number));
 	  } else {
 	       /* (- 10 1 1) => 8 */
-	       long int remainder = Kiss_Integer(number)->i;
+	       long int remainder = Kiss_Integer(number);
 	       while (KISS_IS_CONS(rest)) {
-		    long int i = Kiss_Integer(KISS_CAR(rest))->i;
+		    long int i = Kiss_Integer(KISS_CAR(rest));
 		    remainder -= i;
 		    rest = KISS_CDR(rest);
 	       }
@@ -195,17 +188,17 @@ kiss_obj* kiss_Lminus(kiss_obj* number, kiss_obj* rest) {
    Note: = differs from eql because = compares only the mathematical values of its arguments,
    whereas eql also compares the representations. 
 */
-kiss_obj* kiss_Lnum_eq(kiss_obj* x, kiss_obj* y) {
+kiss_obj* kiss_Lnum_eq(const kiss_obj* const x, const kiss_obj* const y) {
      Kiss_Number(x);
      Kiss_Number(y);
      if (KISS_IS_INTEGER(x)) {
 	  if (KISS_IS_INTEGER(y)) {
-	       return Kiss_Integer(x)->i == Kiss_Integer(y)->i ? KISS_T : KISS_NIL;
+	       return Kiss_Integer(x) == Kiss_Integer(y) ? KISS_T : KISS_NIL;
 	  } else {
-	       return Kiss_Integer(x)->i == Kiss_Float(y)->f ? KISS_T : KISS_NIL;
+	       return Kiss_Integer(x) == Kiss_Float(y)->f ? KISS_T : KISS_NIL;
 	  }
      } else if (KISS_IS_INTEGER(y)) {
-	  return Kiss_Float(x)->f == Kiss_Integer(y)->i ? KISS_T : KISS_NIL;
+	  return Kiss_Float(x)->f == Kiss_Integer(y) ? KISS_T : KISS_NIL;
      } else {
 	  return Kiss_Float(x)->f == Kiss_Float(y)->f ? KISS_T : KISS_NIL;
      }
@@ -221,12 +214,12 @@ kiss_obj* kiss_Lnum_lessthan(kiss_obj* x, kiss_obj* y) {
      Kiss_Number(y);
      if (KISS_IS_INTEGER(x)) {
 	  if (KISS_IS_INTEGER(y)) {
-	       return Kiss_Integer(x)->i < Kiss_Integer(y)->i ? KISS_T : KISS_NIL;
+	       return Kiss_Integer(x) < Kiss_Integer(y) ? KISS_T : KISS_NIL;
 	  } else {
-	       return Kiss_Integer(x)->i < Kiss_Float(y)->f ? KISS_T : KISS_NIL;
+	       return Kiss_Integer(x) < Kiss_Float(y)->f ? KISS_T : KISS_NIL;
 	  }
      } else if (KISS_IS_INTEGER(y)) {
-	  return Kiss_Float(x)->f < Kiss_Integer(y)->i ? KISS_T : KISS_NIL;
+	  return Kiss_Float(x)->f < Kiss_Integer(y) ? KISS_T : KISS_NIL;
      } else {
 	  return Kiss_Float(x)->f < Kiss_Float(y)->f ? KISS_T : KISS_NIL;
      }
@@ -238,8 +231,8 @@ kiss_obj* kiss_Lnum_lessthan(kiss_obj* x, kiss_obj* y) {
    An error shall be signaled if z2 is zero (error-id. division-by-zero).
 */
 kiss_obj* kiss_div(kiss_obj* z1, kiss_obj* z2) {
-     float f1 = Kiss_Integer(z1)->i;
-     float f2 = Kiss_Non_Zero_Integer(z2)->i;
+     float f1 = Kiss_Integer(z1);
+     float f2 = Kiss_Non_Zero_Integer(z2);
      
      return (kiss_obj*)kiss_make_integer(floorf(f1 / f2));
 }
@@ -251,10 +244,10 @@ kiss_obj* kiss_div(kiss_obj* z1, kiss_obj* z2) {
    and the difference of z1 and this result is divisible by z2 without remainder.
 */
 kiss_obj* kiss_mod(kiss_obj* z1, kiss_obj* z2) {
-     long int i1 = Kiss_Integer(z1)->i;
-     long int i2 = Kiss_Non_Zero_Integer(z2)->i;
+     long int i1 = Kiss_Integer(z1);
+     long int i2 = Kiss_Non_Zero_Integer(z2);
      
-     return (kiss_obj*)kiss_make_integer(i1 - (((kiss_integer_t*)kiss_div(z1, z2))->i * i2));
+     return (kiss_obj*)kiss_make_integer(i1 - (kiss_int(kiss_div(z1, z2)) * i2));
 }
 
 /* function: (gcd z1 z2) -> <integer>
@@ -266,8 +259,8 @@ kiss_obj* kiss_mod(kiss_obj* z1, kiss_obj* z2) {
    (error-id. domain-error).
 */
 kiss_obj* kiss_gcd(kiss_obj* z1, kiss_obj* z2) {
-     long i1 = Kiss_Integer(z1)->i;
-     long i2 = Kiss_Integer(z2)->i;
+     long int i1 = Kiss_Integer(z1);
+     long int i2 = Kiss_Integer(z2);
      long remainder;
      long tmp;
 
@@ -299,9 +292,9 @@ kiss_obj* kiss_gcd(kiss_obj* z1, kiss_obj* z2) {
    (error-id. domain-error).
 */
 kiss_obj* kiss_lcm(kiss_obj* z1, kiss_obj* z2) {
-     long gcd = ((kiss_integer_t*)kiss_gcd(z1, z2))->i;
-     long i1 = Kiss_Integer(z1)->i;
-     long i2 = Kiss_Integer(z2)->i;
+     long int gcd = kiss_int(kiss_gcd(z1, z2));
+     long int i1 = Kiss_Integer(z1);
+     long int i2 = Kiss_Integer(z2);
      if (i1 < 0) { i1 = -i1; }
      if (i2 < 0) { i2 = -i2; }
      if (gcd == 0) {
@@ -319,7 +312,7 @@ kiss_obj* kiss_lcm(kiss_obj* z1, kiss_obj* z2) {
 kiss_obj* kiss_abs(kiss_obj* x) {
      Kiss_Number(x);
      if (KISS_IS_INTEGER(x)) {
-	  return (kiss_obj*)kiss_make_integer(abs(Kiss_Integer(x)->i));
+	  return (kiss_obj*)kiss_make_integer(abs(Kiss_Integer(x)));
      } else {
 	  return (kiss_obj*)kiss_make_float(fabs(Kiss_Float(x)->f));
      }
@@ -332,7 +325,7 @@ kiss_obj* kiss_abs(kiss_obj* x) {
 kiss_obj* kiss_exp(kiss_obj* x) {
      Kiss_Number(x);
      if (KISS_IS_INTEGER(x)) {
-	  return (kiss_obj*)kiss_make_float(expf(Kiss_Integer(x)->i));
+	  return (kiss_obj*)kiss_make_float(expf(Kiss_Integer(x)));
      } else {
 	  return (kiss_obj*)kiss_make_float(expf(Kiss_Float(x)->f));
      }
@@ -346,7 +339,7 @@ kiss_obj* kiss_exp(kiss_obj* x) {
 kiss_obj* kiss_floor(kiss_obj* x) {
      Kiss_Number(x);
      if (KISS_IS_INTEGER(x)) {
-	  return (kiss_obj*)kiss_make_integer(floorf(Kiss_Integer(x)->i));
+	  return (kiss_obj*)kiss_make_integer(floorf(Kiss_Integer(x)));
      } else {
 	  return (kiss_obj*)kiss_make_integer(floorf(Kiss_Float(x)->f));
      }
@@ -360,7 +353,7 @@ kiss_obj* kiss_floor(kiss_obj* x) {
 kiss_obj* kiss_ceiling(kiss_obj* x) {
      Kiss_Number(x);
      if (KISS_IS_INTEGER(x)) {
-	  return (kiss_obj*)kiss_make_integer(ceilf(Kiss_Integer(x)->i));
+	  return (kiss_obj*)kiss_make_integer(ceilf(Kiss_Integer(x)));
      } else {
 	  return (kiss_obj*)kiss_make_integer(ceilf(Kiss_Float(x)->f));
      }
@@ -374,7 +367,7 @@ kiss_obj* kiss_ceiling(kiss_obj* x) {
 kiss_obj* kiss_truncate(kiss_obj* x) {
      Kiss_Number(x);
      if (KISS_IS_INTEGER(x)) {
-	  return (kiss_obj*)kiss_make_integer(truncf(Kiss_Integer(x)->i));
+	  return (kiss_obj*)kiss_make_integer(truncf(Kiss_Integer(x)));
      } else {
 	  return (kiss_obj*)kiss_make_integer(truncf(Kiss_Float(x)->f));
      }
@@ -406,7 +399,7 @@ kiss_obj* kiss_round(kiss_obj* x) {
 kiss_obj* kiss_log(kiss_obj* x) {
      Kiss_Number(x);
      if (KISS_IS_INTEGER(x)) {
-	  return (kiss_obj*)kiss_make_float(logf(Kiss_Integer(x)->i));
+	  return (kiss_obj*)kiss_make_float(logf(Kiss_Integer(x)));
      } else {
 	  return (kiss_obj*)kiss_make_float(logf(Kiss_Float(x)->f));
      }
@@ -419,7 +412,7 @@ kiss_obj* kiss_log(kiss_obj* x) {
 kiss_obj* kiss_sin(kiss_obj* x) {
      Kiss_Number(x);
      if (KISS_IS_INTEGER(x)) {
-	  return (kiss_obj*)kiss_make_float(sinf(Kiss_Integer(x)->i));
+	  return (kiss_obj*)kiss_make_float(sinf(Kiss_Integer(x)));
      } else {
 	  return (kiss_obj*)kiss_make_float(sinf(Kiss_Float(x)->f));
      }
@@ -432,7 +425,7 @@ kiss_obj* kiss_sin(kiss_obj* x) {
 kiss_obj* kiss_cos(kiss_obj* x) {
      Kiss_Number(x);
      if (KISS_IS_INTEGER(x)) {
-	  return (kiss_obj*)kiss_make_float(cosf(Kiss_Integer(x)->i));
+	  return (kiss_obj*)kiss_make_float(cosf(Kiss_Integer(x)));
      } else {
 	  return (kiss_obj*)kiss_make_float(cosf(Kiss_Float(x)->f));
      }
@@ -445,7 +438,7 @@ kiss_obj* kiss_cos(kiss_obj* x) {
 kiss_obj* kiss_tan(kiss_obj* x) {
      Kiss_Number(x);
      if (KISS_IS_INTEGER(x)) {
-	  return (kiss_obj*)kiss_make_float(tanf(Kiss_Integer(x)->i));
+	  return (kiss_obj*)kiss_make_float(tanf(Kiss_Integer(x)));
      } else {
 	  return (kiss_obj*)kiss_make_float(tanf(Kiss_Float(x)->f));
      }

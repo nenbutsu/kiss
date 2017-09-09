@@ -40,7 +40,7 @@
 (eql 2 2)
 (not (eql 2 2.0))
 (not (eq  2 2.0))
-(eql 100000000 100000000)
+(eql 10000 10000)
 (eql 10.00000 10.0)
 (not (eql (cons 1 2) (cons 1 2)))
 (not (eq  (cons 1 2) (cons 1 2)))

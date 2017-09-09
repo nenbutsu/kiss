@@ -315,7 +315,7 @@ inline kiss_obj* kiss_eq(const kiss_obj* const obj1, const kiss_obj* const obj2)
  */
 kiss_obj* kiss_eql(const kiss_obj* const obj1, const kiss_obj* const obj2) {
      if (KISS_IS_INTEGER(obj1) && KISS_IS_INTEGER(obj2)) {
-	  if (((kiss_integer_t*)obj1)->i == ((kiss_integer_t*)obj2)->i) {
+	  if (kiss_Lnum_eq(obj1, obj2)) {
 	       return KISS_T;
 	  } else {
 	       return KISS_NIL;
@@ -329,7 +329,7 @@ kiss_obj* kiss_eql(const kiss_obj* const obj1, const kiss_obj* const obj2) {
 	  }
      }
      if (KISS_IS_CHARACTER(obj1) && KISS_IS_CHARACTER(obj2)) {
-	  if (((kiss_character_t*)obj1)->c == ((kiss_character_t*)obj2)->c) {
+	  if (kiss_char_eq(obj1, obj2)) {
 	       return KISS_T;
 	  } else {
 	       return KISS_NIL;

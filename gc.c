@@ -185,6 +185,7 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
 	       break;
 	  case KISS_CHARACTER:
 	  case KISS_INTEGER:
+               break;
 	  case KISS_FLOAT:
 	  case KISS_STRING:
 	       if (gc_marked((kiss_gc_obj*)obj)) { return; }
@@ -272,6 +273,9 @@ void kiss_gc_free_obj(kiss_gc_obj* obj) {
 	  return;
      } else {
 	  switch (KISS_OBJ_TYPE(obj)) {
+	  case KISS_CHARACTER:
+	  case KISS_INTEGER:
+               break;
 	  case KISS_SYMBOL:
 	       kiss_gc_free_symbol((kiss_symbol_t*)obj);
 	       break;
@@ -282,8 +286,6 @@ void kiss_gc_free_obj(kiss_gc_obj* obj) {
 	       kiss_gc_free_stream((kiss_stream_t*)obj);
 	       break;
 	  case KISS_CONS:
-	  case KISS_CHARACTER:
-	  case KISS_INTEGER:
 	  case KISS_FLOAT:
 	  case KISS_GENERAL_VECTOR:
 	  case KISS_GENERAL_ARRAY:

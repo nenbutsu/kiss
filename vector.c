@@ -52,11 +52,11 @@ kiss_general_vector_t* kiss_make_general_vector(size_t n, kiss_obj* obj) {
    An error shall be signaled if i is not a non-negative integer
    (error-id. domain-error ). initial-element may be any LISP object.*/
 kiss_obj* kiss_create_general_vector(kiss_obj* i, kiss_obj* rest) {
-    kiss_integer_t* n = Kiss_Non_Negative_Integer(i);
+    long int n = Kiss_Non_Negative_Integer(i);
     kiss_obj* obj;
     if (rest == KISS_NIL) { obj = KISS_NIL; }
     else                  { obj = KISS_CAR(rest); }
-    return (kiss_obj*)kiss_make_general_vector(n->i, obj);
+    return (kiss_obj*)kiss_make_general_vector(n, obj);
 }
 
 /* function: (vector obj*) -> <general-vector> 
@@ -94,11 +94,11 @@ kiss_obj* kiss_general_vector_p(kiss_obj* obj) {
  */
 kiss_obj* kiss_gvref(kiss_obj* general_vector, kiss_obj* index) {
     kiss_general_vector_t* gv = Kiss_General_Vector(general_vector);
-    kiss_integer_t* i = Kiss_Non_Negative_Integer(index);
-    if (i->i >= gv->n) {
+    long int i = Kiss_Non_Negative_Integer(index);
+    if (i >= gv->n) {
 	Kiss_Err(L"index is too large. ~S", index);
     }
-    return gv->v[i->i];
+    return gv->v[i];
 }
 
 /* function: (set-gvref obj general-vector index) -> <object>
@@ -108,10 +108,10 @@ kiss_obj* kiss_gvref(kiss_obj* general_vector, kiss_obj* index) {
 kiss_obj* kiss_set_gvref(kiss_obj* obj, kiss_obj* general_vector, kiss_obj* index)
 {
     kiss_general_vector_t* gv = Kiss_General_Vector(general_vector);
-    kiss_integer_t* i = Kiss_Non_Negative_Integer(index);
-    if (i->i >= gv->n) {
+    long int i = Kiss_Non_Negative_Integer(index);
+    if (i >= gv->n) {
 	Kiss_Err(L"index is too large. ~S", index);
     }
-    gv->v[i->i] = obj;
+    gv->v[i] = obj;
     return obj;
 }

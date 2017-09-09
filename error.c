@@ -53,7 +53,7 @@ void Kiss_Err(const wchar_t* const str, ...) {
 	       }
 	       p++;
 	  } else {
-	       kiss_format_char(out, (kiss_obj*)kiss_make_character(*p));
+	       kiss_format_char(out, kiss_make_character(*p));
 	  }
      }
      va_end(args);
@@ -86,9 +86,9 @@ inline kiss_cons_t* Kiss_Cons(const kiss_obj* const obj) {
      return (kiss_cons_t*)obj;
 }
 
-inline kiss_integer_t* Kiss_Integer(const kiss_obj* const obj) {
+inline long int Kiss_Integer(const kiss_obj* const obj) {
      kiss_primitive_assure(KISS_INTEGER, obj);
-     return (kiss_integer_t*)obj;
+     return kiss_int(obj);
 }
 
 inline kiss_float_t* Kiss_Float(const kiss_obj* const obj) {
@@ -96,9 +96,9 @@ inline kiss_float_t* Kiss_Float(const kiss_obj* const obj) {
      return (kiss_float_t*)obj;
 }
 
-inline kiss_character_t* Kiss_Character(const kiss_obj* const obj) {
+inline wchar_t Kiss_Character(const kiss_obj* const obj) {
      kiss_primitive_assure(KISS_CHARACTER, obj);
-     return (kiss_character_t*)obj;
+     return kiss_wchar(obj);
 }
 
 inline kiss_symbol_t* Kiss_Symbol(const kiss_obj* const obj) {
@@ -172,20 +172,20 @@ inline kiss_obj* Kiss_List(const kiss_obj* const obj) {
      return (kiss_obj*)obj;
 }
 
-inline kiss_integer_t* Kiss_Non_Negative_Integer(const kiss_obj* const obj) {
-    const long int i = Kiss_Integer(obj)->i;
+inline long int Kiss_Non_Negative_Integer(const kiss_obj* const obj) {
+    const long int i = Kiss_Integer(obj);
     if (i < 0) {
 	 Kiss_Err(L"Non negative integer expected ~S", obj);
     }
-    return (kiss_integer_t*)obj;
+    return i;
 }
 
-inline kiss_integer_t* Kiss_Non_Zero_Integer(const kiss_obj* const obj) {
-    const long int i = Kiss_Integer(obj)->i;
+inline long int Kiss_Non_Zero_Integer(const kiss_obj* const obj) {
+    const long int i = Kiss_Integer(obj);
     if (i == 0) {
 	 Kiss_Err(L"Non zero integer expected ~S", obj);
     }
-    return (kiss_integer_t*)obj;
+    return i;
 }
 
 inline kiss_obj* Kiss_General_Array(const kiss_obj* const obj) {
@@ -209,7 +209,7 @@ inline kiss_obj* Kiss_Basic_Array(const kiss_obj* const obj) {
 inline kiss_obj* Kiss_Valid_Sequence_Index(const kiss_obj* const sequence, const kiss_obj* const index)
 {
      const size_t n = kiss_c_length(sequence);
-     const long int i = Kiss_Integer(index)->i;
+     const long int i = Kiss_Integer(index);
      if (i < 0 || i >= n) {
           Kiss_Err(L"Invalid sequence index ~S ~S", sequence, index);
      }
