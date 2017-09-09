@@ -373,6 +373,25 @@ kiss_symbol_t KISS_Sset_cdr = {
     KISS_NIL,                   /* plist */
 };
 
+kiss_symbol_t KISS_Screate_list;
+kiss_cfunction_t KISS_CFcreate_list = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Screate_list, /* name */
+        (kiss_cf_t*)kiss_create_list,   /* C function name */
+    1,         /* minimum argument number */
+    2,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Screate_list = {
+    KISS_SYMBOL,
+    0,                 /* gc_flag */
+    NULL,              /* gc_next */
+    L"create-list",
+    KISS_CONSTANT_FUN,
+    NULL,                  /* var */
+    (kiss_obj*)&KISS_CFcreate_list, /* fun */
+    KISS_NIL,                   /* plist */
+};
+
 
 kiss_symbol_t KISS_Slist;
 kiss_cfunction_t KISS_CFlist = {
@@ -3148,7 +3167,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     /* cons.c */
     &KISS_Scar, &KISS_Scdr, &KISS_Scons, &KISS_Scadr, &KISS_Scddr,
     &KISS_Scaddr, &KISS_Sconsp,
-    &KISS_Sset_car, &KISS_Sset_cdr,
+    &KISS_Sset_car, &KISS_Sset_cdr, &KISS_Screate_list,
     &KISS_Slist, &KISS_Sappend, &KISS_Sappend_s,
     &KISS_Sreverse, &KISS_Snreverse,
     &KISS_Smember, &KISS_Sassoc, &KISS_Scopy_list,

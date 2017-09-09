@@ -81,6 +81,25 @@ inline kiss_obj* kiss_set_cdr(const kiss_obj* const obj, kiss_obj* const cons) {
     return (kiss_obj*)obj;
 }
 
+/* function: (create-list i [initial-element]) -> <list>
+   Returns a list of length I. If INITIAL-ELEMENT is given,
+   the elements of the new list are initialized with this object;
+   otherwise, the initialization is implementation defined.
+   An error shall be signaled if the requested list cannot be allocated
+   (error-id. cannot-create-list).
+   An error shall be signaled if I is not a non-negative integer (error-id. domain-error).
+   INITIAL-ELEMENT may be any ISLISP object. */
+kiss_obj* kiss_create_list(const kiss_obj* const i, const kiss_obj* const rest) {
+    long int n = Kiss_Non_Negative_Integer(i);
+    kiss_obj* init = rest == KISS_NIL ? KISS_NIL : KISS_CAR(rest);
+    kiss_obj* p = KISS_NIL;
+    for (; n > 0; n--) {
+         kiss_push(init, &p);
+    }
+    return p;
+}
+
+
 /* CL function: (copy-list list) -> copy
    Returns a copy of LIST. If LIST is a dotted list, the resulting list will
    also be a dotted list. Only the list structure of LIST is copied;

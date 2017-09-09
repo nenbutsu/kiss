@@ -360,6 +360,7 @@ kiss_obj* kiss_cddr(const kiss_obj* const p);
 kiss_obj* kiss_caddr(const kiss_obj* const p);
 kiss_obj* kiss_set_car(const kiss_obj* const obj, kiss_obj* const cons);
 kiss_obj* kiss_set_cdr(const kiss_obj* const obj, kiss_obj* const cons);
+kiss_obj* kiss_create_list(const kiss_obj* const i, const kiss_obj* const rest);
 kiss_obj* kiss_copy_list(const kiss_obj* p);
 kiss_obj* kiss_list(kiss_obj* const p);
 kiss_obj* kiss_c_list(int nargs, ...);

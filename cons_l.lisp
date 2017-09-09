@@ -28,25 +28,6 @@
       t
     nil))
 
-
-;; (create-list i [initial-element]) -> <list>
-;; Returns a list of length I. If INITIAL-ELEMENT is given,
-;; the elements of the new list are initialized with this object;
-;; otherwise, the initialization is implementation defined.
-;; An error shall be signaled if the requested list cannot be allocated
-;; (error-id. cannot-create-list).
-;; An error shall be signaled if I is not a non-negative integer (error-id. domain-error).
-;; INITIAL-ELEMENT may be any ISLISP object.
-(defun create-list (i &rest rest)
-  (let ((initial-element (if rest (car rest) nil))
-	(result nil))
-    (if (< i 0)
-	(kiss::signal-non-negative-integer i nil))
-    (while (> i 0)
-      (setq result (cons initial-element result))
-      (setq i (- i 1)))
-    result))
-
 ;; Common Lisp, Emacs Lisp
 ;; fucntion: last list &optional n => tail
 ;; Arguments and Values:
