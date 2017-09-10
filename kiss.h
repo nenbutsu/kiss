@@ -32,6 +32,9 @@
 #include <wchar.h>
 #include <wctype.h>
 
+#include <readline/readline.h>
+#include <readline/history.h>
+
 extern size_t Kiss_Heap_Top;
 
 #define kiss_int(x)        (((long int)x)>>2)
@@ -247,17 +250,18 @@ typedef struct {
      void* gc_ptr;
      kiss_stream_flags flags;
      size_t column;
-     FILE* file_ptr;
-     size_t pos;
-} kiss_file_stream_t;
+     kiss_obj* list;
+} kiss_string_stream_t;
 
 typedef struct {
      kiss_type type;
      void* gc_ptr;
      kiss_stream_flags flags;
      size_t column;
-     kiss_obj* list;
-} kiss_string_stream_t;
+     FILE* file_ptr;
+     size_t pos;
+     kiss_string_stream_t* line;
+} kiss_file_stream_t;
 
 typedef struct {
      kiss_type type;
@@ -529,6 +533,11 @@ kiss_obj* kiss_elt(const kiss_obj* const sequence, const kiss_obj* const z);
 kiss_obj* kiss_set_elt(const kiss_obj* const obj, kiss_obj* const sequence, const kiss_obj* const z);
 kiss_obj* kiss_subseq(kiss_obj* sequence, kiss_obj* z1, kiss_obj* z2);
 kiss_obj* kiss_map_into(kiss_obj* const destination, const kiss_obj* const function, const kiss_obj* const rest);
+
+/* wcs.c */
+char* kiss_wctombs(const wchar_t c);
+wchar_t* kiss_mbstowcs(const char* const src);
+char* kiss_wcstombs(const wchar_t* const src);
 
 /* stream.c */
 void kiss_init_streams(void);

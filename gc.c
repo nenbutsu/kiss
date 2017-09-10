@@ -45,7 +45,7 @@ void* Kiss_GC_Malloc(size_t size) {
 
     GC_Amount += size;
     if (GC_Amount > 1024 * 1024 * 2) {
-         //fwprintf(stderr, L"\ngc...\n");
+         //fprintf(stderr, "\ngc...\n");
 	 kiss_gc();
 	 GC_Amount = 0;
     }
@@ -177,7 +177,7 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
      if (obj == NULL) {
 	  return;
      } else {
-	  /* fwprintf(stderr, L"type = %d\n", KISS_OBJ_TYPE(obj)); */
+	  /* fprintf(stderr, "type = %d\n", KISS_OBJ_TYPE(obj)); */
 	  switch (KISS_OBJ_TYPE(obj)) {
 	  case KISS_CONS:
 	       kiss_gc_mark_cons((kiss_cons_t*)obj);
@@ -226,7 +226,7 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
 	       kiss_gc_mark_oo_obj((kiss_oo_obj_t*)obj);
 	       break;
 	  default:
-	       fwprintf(stderr, L"GC unknown primitive object type = %d\n", KISS_OBJ_TYPE(obj));
+	       fprintf(stderr, "GC unknown primitive object type = %ld\n", KISS_OBJ_TYPE(obj));
 	       exit(EXIT_FAILURE);
 	  }
      }
@@ -305,7 +305,7 @@ void kiss_gc_free_obj(kiss_gc_obj* obj) {
 	       free(obj);
 	       break;
 	  default:
-	       fwprintf(stderr, L"GC unknown object type = %d\n", KISS_OBJ_TYPE(obj));
+	       fprintf(stderr, "GC unknown object type = %ld\n", KISS_OBJ_TYPE(obj));
 	       exit(EXIT_FAILURE);
 	  }
      }
@@ -328,21 +328,21 @@ void kiss_gc_sweep(void) {
 }
 
 kiss_obj* kiss_gc_info(void) {
-     fwprintf(stderr, L"Kiss_Heap_Top = %d\n", Kiss_Heap_Top);
-     fwprintf(stderr, L"Kiss_GC_Flag = %d\n", Kiss_GC_Flag);
+     fprintf(stderr, "Kiss_Heap_Top = %ld\n", Kiss_Heap_Top);
+     fprintf(stderr, "Kiss_GC_Flag = %ld\n", Kiss_GC_Flag);
      return KISS_NIL;
 }
 
 kiss_obj* kiss_gc(void) {
      assert(!GCing);
      GCing = 1;
-     //fwprintf(stderr, L"GC entered\n");
-     //fwprintf(stderr, L"gc_mark\n");
+     //fprintf(stderr, "GC entered\n");
+     //fprintf(stderr, "gc_mark\n");
      kiss_gc_mark();
-     //fwprintf(stderr, L"gc_sweep\n");
+     //fprintf(stderr, "gc_sweep\n");
      kiss_gc_sweep();
      Kiss_GC_Flag = Kiss_GC_Flag ? 0 : 1;
-     //fwprintf(stderr, L"GC leaving\n\n");
+     //fprintf(stderr, "GC leaving\n\n");
      GCing = 0;
      return KISS_NIL;
 }

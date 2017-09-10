@@ -32,7 +32,7 @@ size_t kiss_c_length(const kiss_obj* const p) {
      case KISS_STRING: return ((kiss_string_t*)p)->n;
      case KISS_GENERAL_VECTOR: return ((kiss_general_vector_t*)p)->n;
      default:
-	  fwprintf(stderr, L"kiss_c_length: unknown primitive type %d", KISS_OBJ_TYPE(p));
+	  fprintf(stderr, "kiss_c_length: unknown primitive type %ld", KISS_OBJ_TYPE(p));
 	  exit(EXIT_FAILURE);
      }
 }
@@ -66,7 +66,7 @@ kiss_obj* kiss_elt(const kiss_obj* const sequence, const kiss_obj* const z) {
      switch (KISS_OBJ_TYPE(sequence)) {
      case KISS_SYMBOL: {
 	  assert(sequence == KISS_NIL);
-	  fwprintf(stderr, L"elt: nil has no elements.");
+	  fprintf(stderr, "elt: nil has no elements.");
 	  // Kiss_Valid_Sequence_Index(sequence, z) above must have signaled error
 	  exit(EXIT_FAILURE);
      }
@@ -84,7 +84,7 @@ kiss_obj* kiss_elt(const kiss_obj* const sequence, const kiss_obj* const z) {
 	  return vector->v[i];
      }
      default:
-	  fwprintf(stderr, L"elt: unknown primitive type = %d", KISS_OBJ_TYPE(sequence));
+	  fprintf(stderr, "elt: unknown primitive type = %ld", KISS_OBJ_TYPE(sequence));
 	  exit(EXIT_FAILURE);
      }
     
@@ -105,7 +105,7 @@ kiss_obj* kiss_set_elt(const kiss_obj* const obj, kiss_obj* const sequence, cons
      switch (KISS_OBJ_TYPE(sequence)) {
      case KISS_SYMBOL: {
 	  assert(sequence == KISS_NIL);
-	  fwprintf(stderr, L"set-elt: nil has no elements.");
+	  fprintf(stderr, "set-elt: nil has no elements.");
 	  // Kiss_Valid_Sequence_Index(sequence, z) above must have signaled error
 	  exit(EXIT_FAILURE);
      }
@@ -127,7 +127,7 @@ kiss_obj* kiss_set_elt(const kiss_obj* const obj, kiss_obj* const sequence, cons
 	  break;
      }
      default:
-	  fwprintf(stderr, L"set-elt:unknown sequence type = %d", KISS_OBJ_TYPE(sequence));
+	  fprintf(stderr, "set-elt:unknown sequence type = %ld", KISS_OBJ_TYPE(sequence));
 	  exit(EXIT_FAILURE);
      }
      return (kiss_obj*)obj;
@@ -194,7 +194,7 @@ kiss_obj* kiss_subseq(kiss_obj* sequence, kiss_obj* z1, kiss_obj* z2) {
 	  return (kiss_obj*)p;
      }
      default:
-	  fwprintf(stderr, L"subseq: unknown sequence = %d", KISS_OBJ_TYPE(sequence));
+	  fprintf(stderr, "subseq: unknown sequence = %ld", KISS_OBJ_TYPE(sequence));
 	  exit(EXIT_FAILURE);
      }
 }

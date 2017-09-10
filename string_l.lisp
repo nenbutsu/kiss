@@ -15,10 +15,10 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
-;; function: (string= string1 string2) → quasi-boolean
+;; function: (string= string1 string2) -> quasi-boolean
 ;; Tests whether STRING1 is the same string as STRING2.
 ;; Two strings are string= if they are of the same length l, and if for every i,
-;; where 0 ≤ i < l, (char= (elt string1 i ) (elt string2 i)) holds.
+;; where 0 <= i < l, (char= (elt string1 i ) (elt string2 i)) holds.
 ;; if the test is satisfied, an implementation-defined non-nil value is returned; otherwise,
 ;; nil is returned.
 (defun string= (string1 string2)

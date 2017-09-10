@@ -58,7 +58,7 @@ kiss_cfunction_t KISS_CFnext_method_error = {
 static void kiss_bind_methodargs(kiss_obj* m) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_obj *binding, *next;
-    /* fwprintf(stderr, "bind_methodargs\n"); fflush(stderr); */
+    /* fprintf(stderr, "bind_methodargs\n"); fflush(stderr); */
     /* kiss_print(kiss_plist_get(kiss_object_plist(m),
        kiss_symbol(":lambda-list"))); */
     kiss_bind_funargs(kiss_object_plist_get(m, kiss_symbol(L":lambda-list")),

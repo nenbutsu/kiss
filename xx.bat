@@ -1,2 +1,1 @@
-gcc *.c -o kiss -lm
-
+gcc *.c -o kiss -L/usr/lib/ -lm -lreadline -lhistory

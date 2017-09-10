@@ -53,7 +53,7 @@ kiss_obj* kiss_gensym(void) {
      kiss_environment_t* env = Kiss_Get_Environment();
      wchar_t name[30];
      if (swprintf(name, 30, L"#:%x", env->gensym_number++) < 0) {
-	  fwprintf(stderr, L"kiss_gensym: swprintf error\n");
+	  fprintf(stderr, "kiss_gensym: swprintf error\n");
 	  exit(EXIT_FAILURE);
      }
      return (kiss_obj*)kiss_make_symbol(name);

@@ -46,7 +46,7 @@
                     nil))
 
 ;; function: (CERROR CONTINUE-STRING ERROR-STRING OBJ*) -> <object>
-;;   Like error, but the error that it signals is “continuable” (see
+;;   Like error, but the error that it signals is `continuable' (see
 ;;   continue-condition). The extra argument CONTINUE-STRING describes
 ;;   what happens if this function returns.
 (defun cerror (continue-string error-string obj*)
@@ -59,7 +59,7 @@
 
 ;; function: (SIGNAL-CONDITION CONDITION CONTINUABLE) -> <object>
 ;;   Invokes the condition handling system on CONDITION. If CONTINUABLE is
-;;   nil, the results of attempting to “continue” (see
+;;   nil, the results of attempting to `continue' (see
 ;;   continue-condition) are not defined except that the call to
 ;;   signal-condition will not return normally.  If CONTINUABLE is not nil,
 ;;   it will be possible to return from the call to signal-condition (see
@@ -82,9 +82,9 @@
       (throw 'kiss::error (get-output-stream-string string-stream)))))
 
 ;; special operator: (with-handler handler form*) -> <object>
-;;  Evaluates handler, which must yield a function (called the “handler
-;;  function”). The handler function is established as active handler
-;;  (see §29.2) and then the forms are executed. If execution of forms
+;;  Evaluates handler, which must yield a function (called the `handler
+;;  function'). The handler function is established as active handler
+;;  (see 29.2) and then the forms are executed. If execution of forms
 ;;  finishes normally, the value of the last form (or nil if there are no
 ;;  forms) is returned.
 (defmacro with-handler (handler &rest form*)
@@ -93,7 +93,7 @@
      ,@form*))
 
 ;; function: (continue-condition condition [value]) transfers control and data
-;;  “Continues” from condition by finding the call to signal-condition
+;;  `Continues' from condition by finding the call to signal-condition
 ;;  and arranging for it to perform a normal return of the value, which
 ;;  defaults to nil.
 ;;  The consequences are undefined if the condition is not continuable.

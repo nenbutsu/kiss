@@ -42,7 +42,7 @@ static kiss_obj* kiss_invoke(kiss_obj* f, kiss_obj* args) {
      }
      case KISS_OO_OBJ:
 	  if (kiss_c_funcall(L"generic-function-p", kiss_c_list(1, f)) == KISS_T) {
-	       /* fwprintf(stderr, "calling generic-function\n"); fflush(stderr); */
+	       /* fprintf(stderr, "calling generic-function\n"); fflush(stderr); */
 	       result = kiss_c_funcall(L"generic-function-invoke",
 				      kiss_c_list(2, f, kiss_eval_args(args)));
 	  } else {
@@ -50,7 +50,7 @@ static kiss_obj* kiss_invoke(kiss_obj* f, kiss_obj* args) {
 	  }
 	  break;
      default:
-	  fwprintf(stderr, L"Can't invoke function like object ~S", f);
+	  fprintf(stderr, "Can't invoke function like object %p", f);
 	  exit(EXIT_FAILURE);
      }
      assert(saved_heap_top <= Kiss_Heap_Top);
