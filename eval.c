@@ -24,8 +24,7 @@ static kiss_obj* kiss_eval_args(kiss_obj* args);
 
 static kiss_obj* kiss_invoke(kiss_obj* f, kiss_obj* args) {
      kiss_obj* result = KISS_NIL;
-     kiss_environment_t* env = Kiss_Get_Environment();
-     size_t saved_heap_top = env->heap_top;
+     size_t saved_heap_top = Kiss_Heap_Top;
      switch (KISS_OBJ_TYPE(f)) {
      case KISS_CFUNCTION:
 	  result = kiss_cinvoke((kiss_cfunction_t*)f, kiss_eval_args(args));
@@ -54,12 +53,12 @@ static kiss_obj* kiss_invoke(kiss_obj* f, kiss_obj* args) {
 	  fwprintf(stderr, L"Can't invoke function like object ~S", f);
 	  exit(EXIT_FAILURE);
      }
-     assert(saved_heap_top <= env->heap_top);
-     if (saved_heap_top < env->heap_top) {
+     assert(saved_heap_top <= Kiss_Heap_Top);
+     if (saved_heap_top < Kiss_Heap_Top) {
 	  if (KISS_IS_GC_OBJ(result)) {
 	       Kiss_Heap_Stack[saved_heap_top++] = (kiss_gc_obj*)result;
 	  }
-	  env->heap_top = saved_heap_top;
+	  Kiss_Heap_Top = saved_heap_top;
      }
      return result;
 }

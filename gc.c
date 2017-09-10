@@ -18,6 +18,9 @@
  */
 #include "kiss.h"
 
+size_t Kiss_Heap_Top = 0;
+kiss_ptr_int Kiss_GC_Flag = 0;
+
 static int GCing = 0;
 static size_t GC_Amount = 0;
 #define HEAP_STACK_SIZE (1024 * 1024)
@@ -39,7 +42,6 @@ void* Kiss_Malloc(size_t size) {
 
 void* Kiss_GC_Malloc(size_t size) {
     void* p = Kiss_Malloc(size);
-    kiss_environment_t* env = Kiss_Get_Environment();
 
     GC_Amount += size;
     if (GC_Amount > 1024 * 1024 * 2) {
@@ -48,22 +50,20 @@ void* Kiss_GC_Malloc(size_t size) {
 	 GC_Amount = 0;
     }
 
-    Kiss_Heap_Stack[env->heap_top++] = p;
-    assert(env->heap_top < HEAP_STACK_SIZE);
+    Kiss_Heap_Stack[Kiss_Heap_Top++] = p;
+    assert(Kiss_Heap_Top < HEAP_STACK_SIZE);
     ((kiss_gc_obj*)p)->gc_ptr = GC_Objects;
-    GC_Objects = (void*)((kiss_ptr_int)p | env->gc_flag);
+    GC_Objects = (void*)((kiss_ptr_int)p | Kiss_GC_Flag);
     return p;
 }
 
-static int is_marked(kiss_gc_obj* obj) {
-     kiss_environment_t* env = Kiss_Get_Environment();
-     return (gc_flag(obj->gc_ptr) != env->gc_flag);
+inline static int is_marked(kiss_gc_obj* obj) {
+     return gc_flag(obj->gc_ptr) != Kiss_GC_Flag;
 }
 
 
 static void mark_flag(kiss_gc_obj* obj) {
-     kiss_environment_t* env = Kiss_Get_Environment();
-     if (env->gc_flag) {
+     if (Kiss_GC_Flag) {
           kiss_ptr_int p = (kiss_ptr_int)obj->gc_ptr & ~0<<1;
 	  obj->gc_ptr = (void*)p;
      } else {
@@ -245,7 +245,7 @@ void kiss_gc_mark(void) {
      kiss_gc_mark_obj((kiss_obj*)(env->current_tagbody));
      kiss_gc_mark_obj((kiss_obj*)(env->global_dynamic_vars));
      kiss_gc_mark_obj((kiss_obj*)(env->features));
-     for (i = 0; i < env->heap_top; i++) {
+     for (i = 0; i < Kiss_Heap_Top; i++) {
 	  obj = (kiss_obj*)Kiss_Heap_Stack[i];
 	  kiss_gc_mark_obj(obj);
      }
@@ -312,7 +312,6 @@ void kiss_gc_free_obj(kiss_gc_obj* obj) {
 }
 
 void kiss_gc_sweep(void) {
-     kiss_environment_t* env = Kiss_Get_Environment();
      void** prev = &GC_Objects;
      kiss_gc_obj* obj = gc_ptr(GC_Objects);
      while (obj != NULL) {
@@ -321,7 +320,7 @@ void kiss_gc_sweep(void) {
 	       obj = gc_ptr(obj->gc_ptr);
           } else {
                kiss_gc_obj* tmp = obj;
-	       *prev = (void*)((kiss_ptr_int)gc_ptr(obj->gc_ptr) | (env->gc_flag ? 0 : 1));
+	       *prev = (void*)((kiss_ptr_int)gc_ptr(obj->gc_ptr) | (Kiss_GC_Flag ? 0 : 1));
 	       obj = gc_ptr(*prev);
 	       kiss_gc_free_obj(tmp);
 	  }
@@ -329,14 +328,12 @@ void kiss_gc_sweep(void) {
 }
 
 kiss_obj* kiss_gc_info(void) {
-     kiss_environment_t* env = Kiss_Get_Environment();
-     fwprintf(stderr, L"heap_top = %d\n", env->heap_top);
-     fwprintf(stderr, L"gc_flag = %d\n", env->gc_flag);
+     fwprintf(stderr, L"Kiss_Heap_Top = %d\n", Kiss_Heap_Top);
+     fwprintf(stderr, L"Kiss_GC_Flag = %d\n", Kiss_GC_Flag);
      return KISS_NIL;
 }
 
 kiss_obj* kiss_gc(void) {
-     kiss_environment_t* env = Kiss_Get_Environment();
      assert(!GCing);
      GCing = 1;
      //fwprintf(stderr, L"GC entered\n");
@@ -344,7 +341,7 @@ kiss_obj* kiss_gc(void) {
      kiss_gc_mark();
      //fwprintf(stderr, L"gc_sweep\n");
      kiss_gc_sweep();
-     env->gc_flag = env->gc_flag ? 0 : 1;
+     Kiss_GC_Flag = Kiss_GC_Flag ? 0 : 1;
      //fwprintf(stderr, L"GC leaving\n\n");
      GCing = 0;
      return KISS_NIL;

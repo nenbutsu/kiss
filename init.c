@@ -20,11 +20,11 @@
 
 void kiss_init_error_catcher(void) {
     kiss_environment_t* env = Kiss_Get_Environment();
-    size_t saved_heap_top = env->heap_top;
+    size_t saved_heap_top = Kiss_Heap_Top;
     kiss_obj* tag = kiss_symbol(L"kiss::error");
     kiss_catcher_t* c = kiss_make_catcher(tag, env->top_level);
     env->dynamic_env.jumpers = kiss_cons((kiss_obj*)c, env->dynamic_env.jumpers);
-    env->heap_top = saved_heap_top;
+    Kiss_Heap_Top = saved_heap_top;
 }
 
 void kiss_initialize(void) {

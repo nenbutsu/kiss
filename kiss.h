@@ -32,6 +32,8 @@
 #include <wchar.h>
 #include <wctype.h>
 
+extern size_t Kiss_Heap_Top;
+
 #define kiss_int(x)        (((long int)x)>>2)
 #define kiss_wchar(x)      kiss_int(x)
 #define kiss_fixnum(x)     (kiss_obj*)((((long int)x)<<2) | 1)
@@ -271,8 +273,6 @@ typedef struct {
      kiss_obj* lexeme_chars;
      kiss_obj* throw_result;
      kiss_obj* block_result;
-     size_t heap_top;
-     kiss_ptr_int gc_flag;
      kiss_tagbody_t* current_tagbody;
      void* top_level;
      kiss_obj* global_dynamic_vars;
