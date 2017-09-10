@@ -24,23 +24,20 @@ kiss_file_stream_t Kiss_Error_Output;
 
 void kiss_init_streams(void) {
      Kiss_Standard_Input.type      = KISS_STREAM;
-     Kiss_Standard_Input.gc_flag   = 0;
-     Kiss_Standard_Input.gc_next   = NULL;
+     Kiss_Standard_Input.gc_ptr    = NULL;
      Kiss_Standard_Input.flags     = KISS_INPUT_STREAM | KISS_CHARACTER_STREAM | KISS_FILE_STREAM;
      Kiss_Standard_Input.file_ptr  = stdin;
      Kiss_Standard_Input.column    = 0;
 
      Kiss_Standard_Output.type     = KISS_STREAM;
-     Kiss_Standard_Output.gc_flag   = 0;
-     Kiss_Standard_Output.gc_next   = NULL;
+     Kiss_Standard_Output.gc_ptr   = NULL;
      Kiss_Standard_Output.flags    = KISS_OUTPUT_STREAM | KISS_CHARACTER_STREAM | KISS_FILE_STREAM;
      Kiss_Standard_Output.file_ptr = stdout;
      Kiss_Standard_Output.column   = 0;
     
     
      Kiss_Error_Output.type        = KISS_STREAM;
-     Kiss_Error_Output.gc_flag     = 0;
-     Kiss_Error_Output.gc_next     = NULL;
+     Kiss_Error_Output.gc_ptr      = NULL;
      Kiss_Error_Output.flags       = KISS_OUTPUT_STREAM | KISS_CHARACTER_STREAM | KISS_FILE_STREAM;
      Kiss_Error_Output.file_ptr    = stderr;
      Kiss_Error_Output.column      = 0;

@@ -44,14 +44,14 @@ kiss_obj* kiss_re(kiss_obj* in) {
 
 kiss_obj* kiss_load(kiss_obj* filename) {
      kiss_environment_t* env = Kiss_Get_Environment();
-     size_t saved_heap_index = env->heap_index;
+     size_t saved_heap_top = env->heap_top;
      kiss_obj* in = kiss_open_input_file(filename, KISS_NIL);
      kiss_obj* form = kiss_re(in);
      while (form != KISS_EOS) {
 	  kiss_eval(form);
 	  form = kiss_re(in);
      }
-     env->heap_index = saved_heap_index;
+     env->heap_top = saved_heap_top;
      return KISS_T;
 }
 
@@ -83,7 +83,7 @@ int kiss_read_eval_print_loop(void) {
      kiss_obj* form;
      kiss_lexical_environment_t saved_lexical_env;
      kiss_dynamic_environment_t saved_dynamic_env;
-     size_t i, saved_heap_index;
+     size_t i, saved_heap_top;
 
      for (i = 0; libraries[i] != NULL; i++) {
 	  kiss_load_library(libraries[i]);
@@ -92,7 +92,7 @@ int kiss_read_eval_print_loop(void) {
      while (1) {
 	  saved_dynamic_env = env->dynamic_env;
 	  saved_lexical_env = env->lexical_env;
-	  saved_heap_index = env->heap_index;
+	  saved_heap_top = env->heap_top;
 	  if (setjmp(env->top_level) == 0) {
 	       fwprintf(stdout, L"\nKISS>");
 	       fflush(stdout);
@@ -123,7 +123,7 @@ int kiss_read_eval_print_loop(void) {
 		    env->lexical_env = saved_lexical_env;
 	       }
 	  }
-	  env->heap_index = saved_heap_index;
+	  env->heap_top = saved_heap_top;
      }
      return 0;
 }

@@ -42,6 +42,8 @@
 #define kiss_make_character(x)  kiss_fixchar(x)
 #define kiss_make_integer(x) kiss_fixnum(x)
 
+typedef unsigned long int kiss_ptr_int;
+
 typedef enum {
      KISS_INTEGER = 1,
      KISS_CHARACTER = 2,
@@ -73,15 +75,13 @@ typedef struct {
 
 struct kiss_gc_obj {
      kiss_type type;
-     int gc_flag;
-     struct kiss_gc_obj* gc_next;
+     void* gc_ptr;
 };
 typedef struct kiss_gc_obj kiss_gc_obj;
 
 typedef struct {
      kiss_type type;
-     int gc_flag;
-     kiss_gc_obj* gc_next;
+     void* gc_ptr;
      kiss_obj* car;
      kiss_obj* cdr;
 } kiss_cons_t;
@@ -93,8 +93,7 @@ typedef enum {
 
 typedef struct {
      kiss_type type;
-     int gc_flag;
-     kiss_gc_obj* gc_next;
+     void* gc_ptr;
      wchar_t* name;
      kiss_symbol_flags flags;
      kiss_obj* var;
@@ -104,31 +103,27 @@ typedef struct {
 
 typedef struct {
      kiss_type type;
-     int gc_flag;
-     kiss_gc_obj* gc_next;
+     void* gc_ptr;
      float f;
 } kiss_float_t;
 
 typedef struct {
      kiss_type type;
-     int gc_flag;
-     kiss_gc_obj* gc_next;
+     void* gc_ptr;
      wchar_t* str;
      size_t n;
 } kiss_string_t;
 
 typedef struct {
      kiss_type type;
-     int gc_flag;
-     kiss_gc_obj* gc_next;
+     void* gc_ptr;
      kiss_obj** v;
      size_t n;
 } kiss_general_vector_t;
 
 typedef struct {
      kiss_type type;
-     int gc_flag;
-     kiss_gc_obj* gc_next;
+     void* gc_ptr;
      kiss_obj* vector;
      size_t rank;
 } kiss_general_array_t;
@@ -189,8 +184,7 @@ typedef struct {
 
 typedef struct {
      kiss_type type;
-     int gc_flag;
-     kiss_gc_obj* gc_next;
+     void* gc_ptr;
      kiss_symbol_t* name;
      kiss_obj* lambda;
      kiss_lexical_environment_t lexical_env;
@@ -198,8 +192,7 @@ typedef struct {
 
 typedef struct {
      kiss_type type;
-     int gc_flag;
-     kiss_gc_obj* gc_next;
+     void* gc_ptr;
      kiss_obj* tag;
      void*     jmp;
      kiss_dynamic_environment_t dynamic_env;
@@ -207,8 +200,7 @@ typedef struct {
 
 typedef struct {
      kiss_type type;
-     int gc_flag;
-     kiss_gc_obj* gc_next;
+     void* gc_ptr;
      kiss_symbol_t* name;
      void*          jmp;
      kiss_dynamic_environment_t dynamic_env;
@@ -216,8 +208,7 @@ typedef struct {
 
 typedef struct {
      kiss_type type;
-     int gc_flag;
-     kiss_gc_obj* gc_next;
+     void* gc_ptr;
      kiss_obj* body;
      kiss_lexical_environment_t lexical_env;
      kiss_dynamic_environment_t dynamic_env;
@@ -225,8 +216,7 @@ typedef struct {
 
 typedef struct {
      kiss_type type;
-     int gc_flag;
-     kiss_gc_obj* gc_next;
+     void* gc_ptr;
      kiss_symbol_t* tag;
      void* jmp;
      kiss_dynamic_environment_t dynamic_env;
@@ -245,16 +235,14 @@ typedef enum {
 
 typedef struct {
      kiss_type type;
-     int gc_flag;
-     kiss_gc_obj* gc_next;
+     void* gc_ptr;
      kiss_stream_flags flags;
      size_t column;
 } kiss_stream_t;
 
 typedef struct {
      kiss_type type;
-     int gc_flag;
-     kiss_gc_obj* gc_next;
+     void* gc_ptr;
      kiss_stream_flags flags;
      size_t column;
      FILE* file_ptr;
@@ -263,8 +251,7 @@ typedef struct {
 
 typedef struct {
      kiss_type type;
-     int gc_flag;
-     kiss_gc_obj* gc_next;
+     void* gc_ptr;
      kiss_stream_flags flags;
      size_t column;
      kiss_obj* list;
@@ -272,8 +259,7 @@ typedef struct {
 
 typedef struct {
      kiss_type type;
-     int gc_flag;
-     kiss_gc_obj* gc_next;
+     void* gc_ptr;
      kiss_obj* plist;
 } kiss_oo_obj_t;
 
@@ -285,8 +271,8 @@ typedef struct {
      kiss_obj* lexeme_chars;
      kiss_obj* throw_result;
      kiss_obj* block_result;
-     size_t heap_index;
-     int gc_flag;
+     size_t heap_top;
+     kiss_ptr_int gc_flag;
      kiss_tagbody_t* current_tagbody;
      void* top_level;
      kiss_obj* global_dynamic_vars;

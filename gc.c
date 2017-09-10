@@ -19,12 +19,13 @@
 #include "kiss.h"
 
 static int GCing = 0;
-
-static size_t GC_Counter = 0;
-
+static size_t GC_Amount = 0;
 #define HEAP_STACK_SIZE (1024 * 1024)
 kiss_gc_obj* Kiss_Heap_Stack[HEAP_STACK_SIZE];
-static kiss_gc_obj* GC_Objects = NULL;
+static void* GC_Objects = NULL;
+
+#define gc_flag(x)  ((kiss_ptr_int)((kiss_ptr_int)x & 1))
+#define gc_ptr(x)   ((kiss_gc_obj*)((kiss_ptr_int)x & (~0<<1)))
 
 kiss_obj* kiss_gc(void);
 
@@ -40,33 +41,34 @@ void* Kiss_GC_Malloc(size_t size) {
     void* p = Kiss_Malloc(size);
     kiss_environment_t* env = Kiss_Get_Environment();
 
-    GC_Counter += size;
-    if (GC_Counter > 1024 * 1024 * 10) {
-         // fwprintf(stderr, L"\ngc...\n");
+    GC_Amount += size;
+    if (GC_Amount > 1024 * 1024 * 2) {
+         //fwprintf(stderr, L"\ngc...\n");
 	 kiss_gc();
-	 GC_Counter = 0;
+	 GC_Amount = 0;
     }
 
-    Kiss_Heap_Stack[env->heap_index++] = p;
-    assert(env->heap_index < HEAP_STACK_SIZE);
-    ((kiss_gc_obj*)p)->gc_next = GC_Objects;
-    GC_Objects = p;
-    ((kiss_gc_obj*)p)->gc_flag = env->gc_flag;
+    Kiss_Heap_Stack[env->heap_top++] = p;
+    assert(env->heap_top < HEAP_STACK_SIZE);
+    ((kiss_gc_obj*)p)->gc_ptr = GC_Objects;
+    GC_Objects = (void*)((kiss_ptr_int)p | env->gc_flag);
     return p;
 }
 
-static int gc_marked(kiss_gc_obj* obj) {
+static int is_marked(kiss_gc_obj* obj) {
      kiss_environment_t* env = Kiss_Get_Environment();
-     return (obj->gc_flag != env->gc_flag);
+     return (gc_flag(obj->gc_ptr) != env->gc_flag);
 }
 
 
-void kiss_gc_mark_obj_flag(kiss_gc_obj* obj) {
+static void mark_flag(kiss_gc_obj* obj) {
      kiss_environment_t* env = Kiss_Get_Environment();
      if (env->gc_flag) {
-	  obj->gc_flag = 0;
+          kiss_ptr_int p = (kiss_ptr_int)obj->gc_ptr & ~0<<1;
+	  obj->gc_ptr = (void*)p;
      } else {
-	  obj->gc_flag = 1;
+          kiss_ptr_int p = (kiss_ptr_int)obj->gc_ptr | 1;
+	  obj->gc_ptr = (void*)p;
      }
 }
 
@@ -84,8 +86,8 @@ void kiss_gc_mark_dynamic_environment(kiss_dynamic_environment_t* dynamic_env) {
 }
 
 void kiss_gc_mark_cons(kiss_cons_t* obj) {
-     if (gc_marked((kiss_gc_obj*)obj)) { return; }
-     kiss_gc_mark_obj_flag((kiss_gc_obj*)obj);
+     if (is_marked((kiss_gc_obj*)obj)) { return; }
+     mark_flag((kiss_gc_obj*)obj);
      
      kiss_gc_mark_obj(obj->car);
      kiss_gc_mark_obj(obj->cdr);
@@ -93,22 +95,22 @@ void kiss_gc_mark_cons(kiss_cons_t* obj) {
 
 void kiss_gc_mark_general_vector(kiss_general_vector_t* obj) {
      size_t i;
-     if (gc_marked((kiss_gc_obj*)obj)) { return; }
-     kiss_gc_mark_obj_flag((kiss_gc_obj*)obj);
+     if (is_marked((kiss_gc_obj*)obj)) { return; }
+     mark_flag((kiss_gc_obj*)obj);
      for (i = 0; i < obj->n; i++) {
 	  kiss_gc_mark_obj(obj->v[i]);
      }
 }
 
 void kiss_gc_mark_general_array(kiss_general_array_t* obj) {
-     if (gc_marked((kiss_gc_obj*)obj)) { return; }
-     kiss_gc_mark_obj_flag((kiss_gc_obj*)obj);
+     if (is_marked((kiss_gc_obj*)obj)) { return; }
+     mark_flag((kiss_gc_obj*)obj);
      kiss_gc_mark_obj(obj->vector);
 }
 
 void kiss_gc_mark_symbol(kiss_symbol_t* symbol) {
-     if (gc_marked((kiss_gc_obj*)symbol)) { return; }
-     kiss_gc_mark_obj_flag((kiss_gc_obj*)symbol);
+     if (is_marked((kiss_gc_obj*)symbol)) { return; }
+     mark_flag((kiss_gc_obj*)symbol);
      
      kiss_gc_mark_obj(symbol->var);
      kiss_gc_mark_obj(symbol->fun);
@@ -116,8 +118,8 @@ void kiss_gc_mark_symbol(kiss_symbol_t* symbol) {
 }
 
 void kiss_gc_mark_function(kiss_function_t* f) {
-     if (gc_marked((kiss_gc_obj*)f)) { return; }
-     kiss_gc_mark_obj_flag((kiss_gc_obj*)f);
+     if (is_marked((kiss_gc_obj*)f)) { return; }
+     mark_flag((kiss_gc_obj*)f);
      kiss_gc_mark_obj(f->lambda);
      kiss_gc_mark_lexical_environment(&(f->lexical_env));
 }
@@ -127,38 +129,38 @@ void kiss_gc_mark_cfunction(kiss_cfunction_t* f) {
 }
 
 void kiss_gc_mark_catcher(kiss_catcher_t* catcher) {
-     if (gc_marked((kiss_gc_obj*)catcher)) { return; }
-     kiss_gc_mark_obj_flag((kiss_gc_obj*)catcher);
+     if (is_marked((kiss_gc_obj*)catcher)) { return; }
+     mark_flag((kiss_gc_obj*)catcher);
      kiss_gc_mark_obj(catcher->tag);
      kiss_gc_mark_dynamic_environment(&(catcher->dynamic_env));
 }
 
 void kiss_gc_mark_block(kiss_block_t* block) {
-     if (gc_marked((kiss_gc_obj*)block)) { return; }
-     kiss_gc_mark_obj_flag((kiss_gc_obj*)block);
+     if (is_marked((kiss_gc_obj*)block)) { return; }
+     mark_flag((kiss_gc_obj*)block);
      kiss_gc_mark_obj((kiss_obj*)block->name);
      kiss_gc_mark_dynamic_environment(&(block->dynamic_env));
 }
 
 void kiss_gc_mark_cleanup(kiss_cleanup_t* cleanup) {
-     if (gc_marked((kiss_gc_obj*)cleanup)) { return; }
-     kiss_gc_mark_obj_flag((kiss_gc_obj*)cleanup);
+     if (is_marked((kiss_gc_obj*)cleanup)) { return; }
+     mark_flag((kiss_gc_obj*)cleanup);
      kiss_gc_mark_obj(cleanup->body);
      kiss_gc_mark_lexical_environment(&(cleanup->lexical_env));
      kiss_gc_mark_dynamic_environment(&(cleanup->dynamic_env));
 }
 
 void kiss_gc_mark_tagbody(kiss_tagbody_t* tagbody) {
-     if (gc_marked((kiss_gc_obj*)tagbody)) { return; }
-     kiss_gc_mark_obj_flag((kiss_gc_obj*)tagbody);
+     if (is_marked((kiss_gc_obj*)tagbody)) { return; }
+     mark_flag((kiss_gc_obj*)tagbody);
      kiss_gc_mark_obj((kiss_obj*)tagbody->tag);
      kiss_gc_mark_dynamic_environment(&(tagbody->dynamic_env));
      kiss_gc_mark_obj(tagbody->body);
 }
 
 void kiss_gc_mark_stream(kiss_stream_t* obj) {
-     if (gc_marked((kiss_gc_obj*)obj)) { return; }
-     kiss_gc_mark_obj_flag((kiss_gc_obj*)obj);
+     if (is_marked((kiss_gc_obj*)obj)) { return; }
+     mark_flag((kiss_gc_obj*)obj);
      if (KISS_IS_STRING_STREAM(obj)) {
 	  kiss_string_stream_t* str_stream = (kiss_string_stream_t*)obj;
 	  kiss_gc_mark_obj(str_stream->list);
@@ -166,8 +168,8 @@ void kiss_gc_mark_stream(kiss_stream_t* obj) {
 }
 
 void kiss_gc_mark_oo_obj(kiss_oo_obj_t* obj) {
-     if (gc_marked((kiss_gc_obj*)obj)) { return; }
-     kiss_gc_mark_obj_flag((kiss_gc_obj*)obj);
+     if (is_marked((kiss_gc_obj*)obj)) { return; }
+     mark_flag((kiss_gc_obj*)obj);
      kiss_gc_mark_obj(obj->plist);
 }
 
@@ -188,8 +190,8 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
                break;
 	  case KISS_FLOAT:
 	  case KISS_STRING:
-	       if (gc_marked((kiss_gc_obj*)obj)) { return; }
-	       kiss_gc_mark_obj_flag((kiss_gc_obj*)obj);
+	       if (is_marked((kiss_gc_obj*)obj)) { return; }
+	       mark_flag((kiss_gc_obj*)obj);
 	       break;
 	  case KISS_GENERAL_VECTOR:
 	       kiss_gc_mark_general_vector((kiss_general_vector_t*)obj);
@@ -224,7 +226,7 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
 	       kiss_gc_mark_oo_obj((kiss_oo_obj_t*)obj);
 	       break;
 	  default:
-	       fwprintf(stderr, L"GC unknown object type = %d\n", KISS_OBJ_TYPE(obj));
+	       fwprintf(stderr, L"GC unknown primitive object type = %d\n", KISS_OBJ_TYPE(obj));
 	       exit(EXIT_FAILURE);
 	  }
      }
@@ -243,7 +245,7 @@ void kiss_gc_mark(void) {
      kiss_gc_mark_obj((kiss_obj*)(env->current_tagbody));
      kiss_gc_mark_obj((kiss_obj*)(env->global_dynamic_vars));
      kiss_gc_mark_obj((kiss_obj*)(env->features));
-     for (i = 0; i < env->heap_index; i++) {
+     for (i = 0; i < env->heap_top; i++) {
 	  obj = (kiss_obj*)Kiss_Heap_Stack[i];
 	  kiss_gc_mark_obj(obj);
      }
@@ -310,17 +312,17 @@ void kiss_gc_free_obj(kiss_gc_obj* obj) {
 }
 
 void kiss_gc_sweep(void) {
-     kiss_gc_obj** prev = &GC_Objects;
-     kiss_gc_obj* obj = GC_Objects;
+     kiss_environment_t* env = Kiss_Get_Environment();
+     void** prev = &GC_Objects;
+     kiss_gc_obj* obj = gc_ptr(GC_Objects);
      while (obj != NULL) {
-	  if (gc_marked(obj)) {
-	       prev = &(obj->gc_next);
-	       obj = obj->gc_next;
-	  } else {
-	       kiss_gc_obj* tmp;
-	       *prev = obj->gc_next;
-	       tmp = obj;
-	       obj = obj->gc_next;
+	  if (is_marked(obj)) {
+               prev = &(obj->gc_ptr);
+	       obj = gc_ptr(obj->gc_ptr);
+          } else {
+               kiss_gc_obj* tmp = obj;
+	       *prev = (void*)((kiss_ptr_int)gc_ptr(obj->gc_ptr) | (env->gc_flag ? 0 : 1));
+	       obj = gc_ptr(*prev);
 	       kiss_gc_free_obj(tmp);
 	  }
      }
@@ -328,7 +330,8 @@ void kiss_gc_sweep(void) {
 
 kiss_obj* kiss_gc_info(void) {
      kiss_environment_t* env = Kiss_Get_Environment();
-     fwprintf(stderr, L"heap_index = %d\n", env->heap_index);
+     fwprintf(stderr, L"heap_top = %d\n", env->heap_top);
+     fwprintf(stderr, L"gc_flag = %d\n", env->gc_flag);
      return KISS_NIL;
 }
 
@@ -337,8 +340,6 @@ kiss_obj* kiss_gc(void) {
      assert(!GCing);
      GCing = 1;
      //fwprintf(stderr, L"GC entered\n");
-     //fwprintf(stderr, L"heap_index = %d\n", env->heap_index);
-     //fwprintf(stderr, L"gc_flag = %d\n", env->gc_flag);
      //fwprintf(stderr, L"gc_mark\n");
      kiss_gc_mark();
      //fwprintf(stderr, L"gc_sweep\n");
@@ -348,4 +349,3 @@ kiss_obj* kiss_gc(void) {
      GCing = 0;
      return KISS_NIL;
 }
-
