@@ -193,8 +193,10 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
 	       break;
 	  case KISS_GENERAL_VECTOR:
 	       kiss_gc_mark_general_vector((kiss_general_vector_t*)obj);
+               break;
 	  case KISS_GENERAL_ARRAY:
 	       kiss_gc_mark_general_array((kiss_general_array_t*)obj);
+               break;
 	  case KISS_STREAM:
 	       kiss_gc_mark_stream((kiss_stream_t*)obj);
 	       break;
