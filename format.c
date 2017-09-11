@@ -161,7 +161,7 @@ static kiss_obj* kiss_format_escaped_char(kiss_obj* out, kiss_obj* obj) {
 /* function: (format-integer output-stream integer radix) -> <null> */
 kiss_obj* kiss_format_integer(kiss_obj* out, kiss_obj* obj, kiss_obj* radix) {
      long int i = Kiss_Integer(obj);
-     long int r= Kiss_Integer(radix);
+     long int r = Kiss_Integer(radix);
      int is_minus = i < 0 ? 1 : 0;
      wchar_t* digits = L"0123456789ABCDEFGHIJKLMNOPQRSTUV";
      kiss_obj* stack = KISS_NIL;

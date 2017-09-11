@@ -37,7 +37,7 @@
 
 extern size_t Kiss_Heap_Top;
 
-typedef unsigned long int kiss_ptr_int;
+typedef long int kiss_ptr_int;
 
 #define kiss_int(x)        (((kiss_ptr_int)x)>>2)
 #define kiss_wchar(x)      kiss_int(x)
