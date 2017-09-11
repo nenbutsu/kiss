@@ -164,10 +164,7 @@
     ;;                                clause1
     (flet ((make-test (pred var keys)
              (let ((test nil))
-               (while (consp keys)
-                 (setq test `((funcall ,pred ,var (quote ,(car keys))) ,@test))
-                 (setq keys (cdr keys)))
-               `(or ,@(nreverse test)))))
+                 `(funcall #'member-using ,pred ,var ',keys))))
       (let* ((pred (gensym))
              (var (gensym))
              (clause1 (car clauses))

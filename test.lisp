@@ -22,10 +22,11 @@
       (with-handler (lambda (c)
 		      (format (standard-output) "Unhandled error signaled: ~S~%" form)
 		      (signal-condition c nil))
-		    (eval form))
+                    (if (not (eval form))
+                        (progn
+                          (format (standard-output) "NIL returned. test: ~S~%" form)
+                          (return-from test-file nil))))
       (setq form (read file nil 'eof)))
-    (if (not (eq form 'eof))
-	(format (standard-output) "NIL returned. test: ~S~%" form))
     (format (standard-output) "OK~%"))
   nil)
 

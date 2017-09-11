@@ -23,12 +23,12 @@ kiss_ptr_int Kiss_GC_Flag = 0;
 
 static int GCing = 0;
 static size_t GC_Amount = 0;
-#define HEAP_STACK_SIZE (1024 * 1024)
+#define HEAP_STACK_SIZE (1024 * 1024 * 2)
 kiss_gc_obj* Kiss_Heap_Stack[HEAP_STACK_SIZE];
 static void* GC_Objects = NULL;
 
 #define gc_flag(x)  ((kiss_ptr_int)((kiss_ptr_int)x & 1))
-#define gc_ptr(x)   ((kiss_gc_obj*)((kiss_ptr_int)x & (~0<<1)))
+#define gc_ptr(x)   ((void*)((kiss_ptr_int)x & (~0<<1)))
 
 kiss_obj* kiss_gc(void);
 
@@ -44,16 +44,16 @@ void* Kiss_GC_Malloc(size_t size) {
     void* p = Kiss_Malloc(size);
 
     GC_Amount += size;
-    if (GC_Amount > 1024 * 1024 * 2) {
-         //fprintf(stderr, "\ngc...\n");
+    if (GC_Amount > 1024 * 1024) {
+         fprintf(stderr, "\ngc...\n");
 	 kiss_gc();
 	 GC_Amount = 0;
     }
 
     Kiss_Heap_Stack[Kiss_Heap_Top++] = p;
     assert(Kiss_Heap_Top < HEAP_STACK_SIZE);
-    ((kiss_gc_obj*)p)->gc_ptr = GC_Objects;
-    GC_Objects = (void*)((kiss_ptr_int)p | Kiss_GC_Flag);
+    ((kiss_gc_obj*)p)->gc_ptr = (void*)((kiss_ptr_int)gc_ptr(GC_Objects) | Kiss_GC_Flag);
+    GC_Objects = p;
     return p;
 }
 
@@ -62,9 +62,9 @@ inline static int is_marked(kiss_gc_obj* obj) {
 }
 
 
-static void mark_flag(kiss_gc_obj* obj) {
+static void mark_flag(kiss_gc_obj* const obj) {
      if (Kiss_GC_Flag) {
-          kiss_ptr_int p = (kiss_ptr_int)obj->gc_ptr & ~0<<1;
+          kiss_ptr_int p = (kiss_ptr_int)obj->gc_ptr & (~0<<1);
 	  obj->gc_ptr = (void*)p;
      } else {
           kiss_ptr_int p = (kiss_ptr_int)obj->gc_ptr | 1;
@@ -164,6 +164,9 @@ void kiss_gc_mark_stream(kiss_stream_t* obj) {
      if (KISS_IS_STRING_STREAM(obj)) {
 	  kiss_string_stream_t* str_stream = (kiss_string_stream_t*)obj;
 	  kiss_gc_mark_obj(str_stream->list);
+     } else if (KISS_IS_FILE_STREAM(obj)) {
+          kiss_file_stream_t* file_stream = (kiss_file_stream_t*)obj;
+          kiss_gc_mark_obj((kiss_obj*)file_stream->line);
      }
 }
 
@@ -226,7 +229,7 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
 	       kiss_gc_mark_oo_obj((kiss_oo_obj_t*)obj);
 	       break;
 	  default:
-	       fprintf(stderr, "GC unknown primitive object type = %ld\n", KISS_OBJ_TYPE(obj));
+	       fprintf(stderr, "gc_mark: unknown primitive object type = %ld\n", KISS_OBJ_TYPE(obj));
 	       exit(EXIT_FAILURE);
 	  }
      }
@@ -305,7 +308,7 @@ void kiss_gc_free_obj(kiss_gc_obj* obj) {
 	       free(obj);
 	       break;
 	  default:
-	       fprintf(stderr, "GC unknown object type = %ld\n", KISS_OBJ_TYPE(obj));
+	       fprintf(stderr, "gc_free: unknown object type = %ld\n", KISS_OBJ_TYPE(obj));
 	       exit(EXIT_FAILURE);
 	  }
      }
@@ -320,8 +323,8 @@ void kiss_gc_sweep(void) {
 	       obj = gc_ptr(obj->gc_ptr);
           } else {
                kiss_gc_obj* tmp = obj;
-	       *prev = (void*)((kiss_ptr_int)gc_ptr(obj->gc_ptr) | (Kiss_GC_Flag ? 0 : 1));
-	       obj = gc_ptr(*prev);
+	       obj = gc_ptr(obj->gc_ptr);
+	       *prev = (void*)((kiss_ptr_int)obj | (Kiss_GC_Flag ? 0 : 1));
 	       kiss_gc_free_obj(tmp);
 	  }
      }

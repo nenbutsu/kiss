@@ -37,17 +37,18 @@
 
 extern size_t Kiss_Heap_Top;
 
-#define kiss_int(x)        (((long int)x)>>2)
+typedef unsigned long int kiss_ptr_int;
+
+#define kiss_int(x)        (((kiss_ptr_int)x)>>2)
 #define kiss_wchar(x)      kiss_int(x)
-#define kiss_fixnum(x)     (kiss_obj*)((((long int)x)<<2) | 1)
-#define kiss_fixchar(x)    (kiss_obj*)((((long int)x)<<2) | 2)
-#define kiss_is_fixnum(x)  ((long int)x & 1)
-#define kiss_is_char(x)    ((long int)x & 2)
+#define kiss_fixnum(x)     (kiss_obj*)((((kiss_ptr_int)x)<<2) | 1)
+#define kiss_fixchar(x)    (kiss_obj*)((((kiss_ptr_int)x)<<2) | 2)
+#define kiss_is_fixnum(x)  ((kiss_ptr_int)x & 1)
+#define kiss_is_char(x)    ((kiss_ptr_int)x & 2)
 
 #define kiss_make_character(x)  kiss_fixchar(x)
-#define kiss_make_integer(x) kiss_fixnum(x)
+#define kiss_make_integer(x)    kiss_fixnum(x)
 
-typedef unsigned long int kiss_ptr_int;
 
 typedef enum {
      KISS_INTEGER = 1,
@@ -273,7 +274,6 @@ typedef struct {
 typedef struct {
      kiss_lexical_environment_t lexical_env;
      kiss_dynamic_environment_t dynamic_env;
-     size_t gensym_number;
      kiss_obj* lexeme_chars;
      kiss_obj* throw_result;
      kiss_obj* block_result;
@@ -298,7 +298,7 @@ kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda, KISS_Skw_rest, KISS
 #define KISS_CADR(x)   KISS_CAR(KISS_CDR(x))
 #define KISS_CADDR(x)  KISS_CAR(KISS_CDR(KISS_CDR(x)))
 
-#define KISS_OBJ_TYPE(x) (((long int)x & 3) ? ((long int)x & 3) : (((kiss_obj*)x)->type))
+#define KISS_OBJ_TYPE(x) (((kiss_ptr_int)x & 3) ? ((kiss_ptr_int)x & 3) : (((kiss_obj*)x)->type))
 
 #define KISS_IS_INTEGER(x)           (kiss_is_fixnum(x))
 #define KISS_IS_CHARACTER(x)         (kiss_is_char(x))
@@ -362,6 +362,7 @@ kiss_obj* kiss_c_append(int nargs, ...);
 kiss_obj* kiss_reverse(kiss_obj* p);
 kiss_obj* kiss_nreverse(kiss_obj* p);
 kiss_obj* kiss_member(kiss_obj* const obj, kiss_obj* const list);
+kiss_obj* kiss_member_using(const kiss_obj* const predicate, kiss_obj* const obj, kiss_obj* const list);
 kiss_obj* kiss_assoc(const kiss_obj* const obj, kiss_obj* const alist);
 kiss_obj* kiss_plist_member (kiss_obj* plist, const kiss_obj* const property);
 kiss_obj* kiss_plist_remove(kiss_obj* plist, const kiss_obj* const property);
@@ -428,9 +429,11 @@ void Kiss_Catcher_Not_Found_Error(const kiss_obj* const tag);
 void Kiss_Block_Not_Found_Error(const kiss_obj* const name);
 void Kiss_Tagbody_Not_Found_Error(const kiss_obj* const name);
 
+/* load.c */
+kiss_obj* kiss_load(const kiss_obj* const filename);
+
 /* eval.c */
 kiss_obj* kiss_eval(kiss_obj* form);
-kiss_obj* kiss_load(kiss_obj* filename);
 kiss_obj* kiss_eval_body(kiss_obj* body);
 
 /* format.c */
@@ -564,7 +567,7 @@ kiss_obj* kiss_preview_char(kiss_obj* args);
 kiss_obj* kiss_c_read_line(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val);
 kiss_obj* kiss_read_line(kiss_obj* args);
 kiss_obj* kiss_format_char(kiss_obj* out, kiss_obj* obj);
-kiss_obj* kiss_open_input_file(kiss_obj* filename, kiss_obj* rest);
+kiss_obj* kiss_open_input_file(const kiss_obj* const filename, const kiss_obj* const rest);
 kiss_obj* kiss_open_output_file(kiss_obj* filename, kiss_obj* rest);
 kiss_obj* kiss_open_io_file(kiss_obj* filename, kiss_obj* rest);
 kiss_obj* kiss_close(kiss_obj* obj);
@@ -638,4 +641,5 @@ kiss_obj* kiss_provide(kiss_obj* feature);
 /* gc.c */
 void* Kiss_Malloc(size_t size);
 void* Kiss_GC_Malloc(size_t size);
-
+kiss_obj* kiss_gc_info(void);
+kiss_obj* kiss_gc(void);

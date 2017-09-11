@@ -38,23 +38,10 @@ static char* libraries[] = {
      NULL,
 };
 
-kiss_obj* kiss_load(kiss_obj* filename) {
-     size_t saved_heap_top = Kiss_Heap_Top;
-     kiss_obj* in = kiss_open_input_file(filename, KISS_NIL);
-     kiss_obj* form = kiss_c_read(in, KISS_NIL, KISS_EOS);
-     while (form != KISS_EOS) {
-	  kiss_eval(form);
-	  form = kiss_c_read(in, KISS_NIL, KISS_EOS);
-     }
-     Kiss_Heap_Top = saved_heap_top;
-     return KISS_T;
-}
-
 void kiss_load_library(char* name) {
      kiss_environment_t* env = Kiss_Get_Environment();
      if (setjmp(env->top_level) == 0) {
-	  fprintf(stderr, "loading %s ... ", name);
-	  fflush(stderr);
+	  fprintf(stderr, "loading %s ... ", name); fflush(stderr);
           wchar_t* buf = kiss_mbstowcs(name);
 	  kiss_load((kiss_obj*)kiss_make_string(buf));
           free(buf);
@@ -65,37 +52,18 @@ void kiss_load_library(char* name) {
 	  if (!KISS_IS_STRING(result)) {
 	       fprintf(stderr, "\nKISS| Internal error. Kiss_Err threw non-string object.\n");
 	       fprintf(stderr, "\n");
+               fflush(stderr);
 	  } else {
-	       fprintf(stderr, "initialization failed\n"); fflush(stderr);
+	       fprintf(stderr, "initialization failed\n");
 	       kiss_string_t* msg = (kiss_string_t*)result;
 	       fprintf(stderr, "\nKISS| ");
                char* buf = kiss_wcstombs(msg->str);
 	       fprintf(stderr, "%s\n", buf);
                free(buf);
+               fflush(stderr);
 	  }
 	  exit(EXIT_FAILURE);
      }
-}
-
-static char *line_read = (char *)NULL;
-
-wchar_t* rl_gets () {
-     /* If the buffer has already been allocated,
-        return the memory to the free pool. */
-     if (line_read) {
-          free (line_read);
-          line_read = (char *)NULL;
-     }
-
-     /* Get a line from the user. */
-     line_read = readline ("KISS>");
-
-     /* If the line has any text in it,
-        save it on the history. */
-     if (line_read && *line_read)
-          add_history (line_read);
-
-     return kiss_mbstowcs(line_read);
 }
 
 int kiss_read_eval_print_loop(void) {
@@ -103,9 +71,9 @@ int kiss_read_eval_print_loop(void) {
      kiss_obj* form;
      kiss_lexical_environment_t saved_lexical_env;
      kiss_dynamic_environment_t saved_dynamic_env;
-     size_t i, saved_heap_top;
+     size_t saved_heap_top;
 
-     for (i = 0; libraries[i] != NULL; i++) {
+     for (size_t i = 0; libraries[i] != NULL; i++) {
 	  kiss_load_library(libraries[i]);
      }
 
@@ -116,19 +84,14 @@ int kiss_read_eval_print_loop(void) {
 	  saved_heap_top = Kiss_Heap_Top;
 	  if (setjmp(env->top_level) == 0) {
 	       fflush(stdout);
-
-               wchar_t* str = NULL;
-               if (isatty(fileno(stdin))) {
-                    str = rl_gets();
-               } else {
-                    fprintf(stdout, "\nKISS>");
-                    fflush(stdout);
-                    str = ((kiss_string_t*)kiss_c_read_line(kiss_standard_input(), KISS_T, KISS_EOS))->str;
+               
+               if (!isatty(fileno(stdin))) {
+                    fprintf(stdout, "\nKISS>"); fflush(stdout);
                }
-               if (str == NULL) break;
-               kiss_obj* in = kiss_create_string_input_stream((kiss_obj*)kiss_make_string(str));
-               free(str);
-               form = kiss_c_read(in, KISS_T, KISS_EOS);
+               form = kiss_c_read(kiss_standard_input(), KISS_NIL, KISS_EOS);
+               if (form == KISS_EOS) {
+                    break;
+               }
 
 	       kiss_obj* result = kiss_eval(form);
 	       kiss_format_fresh_line(kiss_standard_output());
