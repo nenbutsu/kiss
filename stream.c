@@ -135,8 +135,16 @@ kiss_obj* kiss_close(kiss_obj* obj) {
 	       Kiss_System_Error();
 	  }
 	  fs->file_ptr = NULL;
+          fs->line = NULL;
      }
      return KISS_T;
+}
+
+static FILE * kiss_fopen(const kiss_obj* const filename, const char* const opentype) {
+     char* name = kiss_wcstombs(Kiss_String(filename)->str);
+     FILE* fp = fopen(name, opentype);
+     free(name);
+     return fp;
 }
 
 static int kiss_is_character_class(kiss_obj* obj) {
@@ -155,10 +163,8 @@ static int kiss_is_character_class(kiss_obj* obj) {
    that is a number of bits in a byte to be used for a binary stream.
    All implementations must support a value of 8 (denoting integer byte values from 0 to 255),
    but some implementations might support other byte sizes as well. */
-kiss_obj* kiss_open_input_file(kiss_obj* filename, kiss_obj* rest) {
-     char* name = kiss_wcstombs(Kiss_String(filename)->str);
-     FILE* fp = fopen(name, "r");
-     free(name);
+kiss_obj* kiss_open_input_file(const kiss_obj* const filename, const kiss_obj* const rest) {
+     FILE* fp = kiss_fopen(filename, "r");
      if (fp == NULL) { Kiss_System_Error(); }
      else {
 	  kiss_file_stream_t* stream = kiss_make_file_stream(fp);
@@ -187,9 +193,7 @@ kiss_obj* kiss_open_input_file(kiss_obj* filename, kiss_obj* rest) {
    All implementations must support a value of 8 (denoting integer byte values from 0 to 255),
    but some implementations might support other byte sizes as well. */
 kiss_obj* kiss_open_output_file(kiss_obj* filename, kiss_obj* rest) {
-     char* name = kiss_wcstombs(Kiss_String(filename)->str);
-     FILE* fp = fopen(name, "w");
-     free(name);
+     FILE* fp = kiss_fopen(filename, "w");
      if (fp == NULL) { Kiss_System_Error(); }
      else {
 	  kiss_file_stream_t* stream = kiss_make_file_stream(fp);
@@ -218,9 +222,7 @@ kiss_obj* kiss_open_output_file(kiss_obj* filename, kiss_obj* rest) {
    All implementations must support a value of 8 (denoting integer byte values from 0 to 255),
    but some implementations might support other byte sizes as well. */
 kiss_obj* kiss_open_io_file(kiss_obj* filename, kiss_obj* rest) {
-     char* name = kiss_wcstombs(Kiss_String(filename)->str);
-     FILE* fp = fopen(name, "r+");
-     free(name);
+     FILE* fp = kiss_fopen(filename, "r+");
      if (fp == NULL) { Kiss_System_Error(); }
      else {
 	  kiss_file_stream_t* stream = kiss_make_file_stream(fp);
@@ -293,16 +295,54 @@ kiss_obj* kiss_get_output_stream_string(kiss_obj* stream) {
      return (kiss_obj*)string;
 }
 
+static char *line_read = (char *)NULL;
+static wchar_t* kiss_terminal_gets () {
+     /* If the buffer has already been allocated,
+        return the memory to the free pool. */
+     if (line_read) {
+          free(line_read);
+          line_read = (char *)NULL;
+     }
+
+     /* Get a line from the user. */
+     line_read = readline("kiss>");
+
+     if (feof(stdin) || ferror(stdin)) {
+          exit(EXIT_SUCCESS);
+     }
+     
+     /* If the line has any text in it,
+        save it on the history. */
+     if (line_read && *line_read) {
+          add_history(line_read);
+     }
+
+     size_t n = strlen(line_read);
+     char* str = Kiss_Malloc(sizeof(char) * (n + 2));
+     strcpy(str, line_read);
+     str[n] = '\n';
+     str[n+1] = '\0';
+
+     wchar_t* wcs = kiss_mbstowcs(str);
+     free(str);
+     return wcs;
+}
+
 static void kiss_buffer_input_file_stream(kiss_file_stream_t* in) {
      FILE* fp = in->file_ptr;
-     char buff[10000];
-     if (fgets(buff, 10000, fp) == NULL) {
-          if (ferror(fp)) {
-               Kiss_System_Error();
+     wchar_t* wbuff = NULL;
+     if (fp == stdin && isatty(fileno(fp))) {
+          wbuff = kiss_terminal_gets(fp);
+     } else {
+          char buff[1000];
+          if (fgets(buff, 1000, fp) == NULL) {
+               if (ferror(fp)) {
+                    Kiss_System_Error();
+               }
+               buff[0] = '\0';
           }
-          buff[0] = '\0';
+          wbuff = kiss_mbstowcs(buff);
      }
-     wchar_t* wbuff = kiss_mbstowcs(buff);
      kiss_string_t* str = kiss_make_string(wbuff);
      free(wbuff);
      in->line = (kiss_string_stream_t*)kiss_create_string_input_stream((kiss_obj*)str);

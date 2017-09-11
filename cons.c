@@ -272,10 +272,25 @@ kiss_obj* kiss_nreverse(kiss_obj* p) {
    Example: (member 'c '(a b c d e f)) => (c d e f) */
 inline kiss_obj* kiss_member(kiss_obj* const obj, kiss_obj* const list) {
      for (const kiss_obj* p = Kiss_List(list); KISS_IS_CONS(p); p = KISS_CDR(p)) {
-          if (KISS_CAR(p) == obj) { return (kiss_obj*)p; }
+          if (kiss_eql(KISS_CAR(p), obj) == KISS_T) { return (kiss_obj*)p; }
      }
      return KISS_NIL;
 }
+
+/* function: (member-using predicate obj list) -> <list>
+   If LIST contains at least one occurrence of OBJ (as determined by PREDICATE),
+   the first sublist of LIST whose car is OBJ is returned.
+   Otherwise, nil is returned.
+   An error shall be signaled if LIST is not a list (error-id. domain-error ).
+
+   Example: (member-using #'eq 'c '(a b c d e f)) => (c d e f) */
+inline kiss_obj* kiss_member_using(const kiss_obj* const predicate, kiss_obj* const obj, kiss_obj* const list) {
+     for (const kiss_obj* p = Kiss_List(list); KISS_IS_CONS(p); p = KISS_CDR(p)) {
+          if (kiss_funcall(predicate, kiss_c_list(2, KISS_CAR(p), obj)) != KISS_NIL) { return (kiss_obj*)p; }
+     }
+     return KISS_NIL;
+}
+
 
 /* function: (assoc obj association-list) -> <list>
    If ASSOCATION-LIST contains at least one cons whose car is OBJ (as
