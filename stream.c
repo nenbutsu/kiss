@@ -295,54 +295,17 @@ kiss_obj* kiss_get_output_stream_string(kiss_obj* stream) {
      return (kiss_obj*)string;
 }
 
-static char *line_read = (char *)NULL;
-static wchar_t* kiss_terminal_gets () {
-     /* If the buffer has already been allocated,
-        return the memory to the free pool. */
-     if (line_read) {
-          free(line_read);
-          line_read = (char *)NULL;
-     }
-
-     /* Get a line from the user. */
-     line_read = readline("kiss>");
-
-     if (feof(stdin) || ferror(stdin)) {
-          exit(EXIT_SUCCESS);
-     }
-     
-     /* If the line has any text in it,
-        save it on the history. */
-     if (line_read && *line_read) {
-          add_history(line_read);
-     }
-
-     size_t n = strlen(line_read);
-     char* str = Kiss_Malloc(sizeof(char) * (n + 2));
-     strcpy(str, line_read);
-     str[n] = '\n';
-     str[n+1] = '\0';
-
-     wchar_t* wcs = kiss_mbstowcs(str);
-     free(str);
-     return wcs;
-}
-
 static void kiss_buffer_input_file_stream(kiss_file_stream_t* in) {
      FILE* fp = in->file_ptr;
      wchar_t* wbuff = NULL;
-     if (fp == stdin && isatty(fileno(fp))) {
-          wbuff = kiss_terminal_gets(fp);
-     } else {
-          char buff[1000];
-          if (fgets(buff, 1000, fp) == NULL) {
-               if (ferror(fp)) {
-                    Kiss_System_Error();
-               }
-               buff[0] = '\0';
+     char buff[1000];
+     if (fgets(buff, 1000, fp) == NULL) {
+          if (ferror(fp)) {
+               Kiss_System_Error();
           }
-          wbuff = kiss_mbstowcs(buff);
+          buff[0] = '\0';
      }
+     wbuff = kiss_mbstowcs(buff);
      kiss_string_t* str = kiss_make_string(wbuff);
      free(wbuff);
      in->line = (kiss_string_stream_t*)kiss_create_string_input_stream((kiss_obj*)str);

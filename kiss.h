@@ -32,9 +32,6 @@
 #include <wchar.h>
 #include <wctype.h>
 
-#include <readline/readline.h>
-#include <readline/history.h>
-
 extern size_t Kiss_Heap_Top;
 
 typedef long int kiss_ptr_int;
