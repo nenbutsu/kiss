@@ -35,7 +35,10 @@
 extern size_t Kiss_Heap_Top;
 
 typedef long int kiss_ptr_int;
+<<<<<<< HEAD
 _Static_assert (sizeof(kiss_ptr_int) == sizeof(void*), "We need an int with the same width as void*");
+=======
+>>>>>>> 97652face6ae902c8a982eacb9c136093fc645ea
 
 #define kiss_int(x)        (((kiss_ptr_int)x)>>2)
 #define kiss_wchar(x)      kiss_int(x)
