@@ -1,2 +1,2 @@
-gcc *.c -Wall -o kiss -L/usr/lib/ -lm -lreadline -lhistory -g -O0 
+gcc *.c -Wall -o kiss -L/usr/lib/ -lm -g -O0 
 

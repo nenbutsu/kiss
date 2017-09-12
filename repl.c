@@ -85,9 +85,7 @@ int kiss_read_eval_print_loop(void) {
 	  if (setjmp(env->top_level) == 0) {
 	       fflush(stdout);
                
-               if (!isatty(fileno(stdin))) {
-                    fprintf(stdout, "\nKISS>"); fflush(stdout);
-               }
+               fprintf(stdout, "\nKISS>"); fflush(stdout);
                form = kiss_c_read(kiss_standard_input(), KISS_NIL, KISS_EOS);
                if (form == KISS_EOS) {
                     break;
