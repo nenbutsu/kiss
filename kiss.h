@@ -532,7 +532,7 @@ size_t kiss_c_length(const kiss_obj* const p);
 kiss_obj* kiss_length(const kiss_obj* const sequence);
 kiss_obj* kiss_elt(const kiss_obj* const sequence, const kiss_obj* const z);
 kiss_obj* kiss_set_elt(const kiss_obj* const obj, kiss_obj* const sequence, const kiss_obj* const z);
-kiss_obj* kiss_subseq(kiss_obj* sequence, kiss_obj* z1, kiss_obj* z2);
+kiss_obj* kiss_subseq(const kiss_obj* const sequence, const kiss_obj* const z1, const kiss_obj* const z2);
 kiss_obj* kiss_map_into(kiss_obj* const destination, const kiss_obj* const function, const kiss_obj* const rest);
 
 /* wcs.c */
@@ -584,18 +584,18 @@ kiss_obj* kiss_string_append(const kiss_obj* const rest);
 extern size_t Kiss_Symbol_Number;
 extern kiss_symbol_t* Kiss_Symbols[];
 void kiss_init_symbols(void);
-kiss_obj* kiss_symbolp(kiss_obj* obj);
+kiss_obj* kiss_symbolp(const kiss_obj* const obj);
 kiss_obj* kiss_gensym(void);
-kiss_obj* kiss_symbol_function (kiss_obj* obj);
-kiss_obj* kiss_set_symbol_function (kiss_obj* sym, kiss_obj* definition);
-kiss_obj* kiss_fboundp (kiss_obj* obj);
-kiss_obj* kiss_fmakunbound (kiss_obj* obj);
-int kiss_is_interned(kiss_symbol_t* p);
-kiss_obj* kiss_symbol(wchar_t* name);
-kiss_obj* kiss_intern(kiss_obj* name);
-kiss_obj* kiss_property(kiss_obj* symbol, kiss_obj* property, kiss_obj* rest);
-kiss_obj* kiss_set_property(kiss_obj* obj, kiss_obj* symbol, kiss_obj* property);
-kiss_obj* kiss_remove_property(kiss_obj* symbol, kiss_obj* property);
+kiss_obj* kiss_symbol_function (const kiss_obj* const obj);
+kiss_obj* kiss_set_symbol_function (const kiss_obj* const definition, kiss_obj* const sym);
+kiss_obj* kiss_fboundp (const kiss_obj* const obj);
+kiss_obj* kiss_fmakunbound (kiss_obj* const obj);
+int kiss_is_interned(const kiss_symbol_t* const p);
+kiss_obj* kiss_symbol(const wchar_t* const name);
+kiss_obj* kiss_intern(const kiss_obj* const name);
+kiss_obj* kiss_property(const kiss_obj* const symbol, const kiss_obj* const property, const kiss_obj* const rest);
+kiss_obj* kiss_set_property(const kiss_obj* const obj, kiss_obj* const symbol, const kiss_obj* const property);
+kiss_obj* kiss_remove_property(kiss_obj* const symbol, const kiss_obj* const property);
 extern kiss_symbol_t KISS_Sblock;
 extern kiss_symbol_t KISS_Serror;
 

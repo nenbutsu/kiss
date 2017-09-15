@@ -143,11 +143,11 @@ kiss_obj* kiss_set_elt(const kiss_obj* const obj, kiss_obj* const sequence, cons
    An error shall be signaled if Z1 or Z2 are outside of the bounds mentioned
    (error-id. index-out-of-range).
    An error shall be signaled if sequence is not a basic-vector or a list, 
-   or if Z1 is not an integer, or if Z2 is not an integer (error-id. domain-error).
- */
-kiss_obj* kiss_subseq(kiss_obj* sequence, kiss_obj* z1, kiss_obj* z2) {
-     long int i1 = Kiss_Integer(z1);
-     long int i2 = Kiss_Integer(z2);
+   or if Z1 is not an integer, or if Z2 is not an integer (error-id. domain-error). */
+kiss_obj* kiss_subseq(const kiss_obj* const sequence, const kiss_obj* const z1, const kiss_obj* const z2)
+{
+     kiss_ptr_int i1 = Kiss_Integer(z1);
+     kiss_ptr_int i2 = Kiss_Integer(z2);
      size_t n = kiss_c_length(sequence);
      if (i1 < 0) {
 	  Kiss_Err(L"Invalid sequence index = ~S", z1);
@@ -161,11 +161,11 @@ kiss_obj* kiss_subseq(kiss_obj* sequence, kiss_obj* z1, kiss_obj* z2) {
      switch (KISS_OBJ_TYPE(sequence)) {
      case KISS_SYMBOL: {
 	  assert(sequence == KISS_NIL);
-	  assert(i1 == 0 && i2 == 0);
+	  assert(i1 == 0 && i2 == 0); // should've trapped above
 	  return KISS_NIL;
      }
      case KISS_CONS: {
-	  kiss_obj* list = sequence;
+	  const kiss_obj* list = sequence;
 	  kiss_obj* p = KISS_NIL;
 	  size_t i;
 	  for (i = 0; i < i1; i++) { list = KISS_CDR(list); }
@@ -179,7 +179,7 @@ kiss_obj* kiss_subseq(kiss_obj* sequence, kiss_obj* z1, kiss_obj* z2) {
 	  kiss_string_t* string = (kiss_string_t*)sequence;
 	  kiss_obj* n = (kiss_obj*)kiss_make_integer(i2 - i1);
 	  kiss_string_t* p = (kiss_string_t*)kiss_create_string(n, KISS_NIL);
-	  for (long int i = i1; i < i2; i++) {
+	  for (kiss_ptr_int i = i1; i < i2; i++) {
 	       p->str[i - i1] = string->str[i];
 	  }
 	  return (kiss_obj*)p;
@@ -187,7 +187,7 @@ kiss_obj* kiss_subseq(kiss_obj* sequence, kiss_obj* z1, kiss_obj* z2) {
      case KISS_GENERAL_VECTOR: {
 	  kiss_general_vector_t* vector = (kiss_general_vector_t*)sequence;
 	  kiss_general_vector_t* p = kiss_make_general_vector(i2 - i1, KISS_NIL);
-	  long int i;
+	  kiss_ptr_int i;
 	  for (i = i1; i < i2; i++) {
 	       p->v[i - i1] = vector->v[i];
 	  }
@@ -212,8 +212,7 @@ kiss_obj* kiss_subseq(kiss_obj* sequence, kiss_obj* z1, kiss_obj* z2) {
    An error shall be signaled if destination is not a basic-vector or a list
    (error-id. domain-error).
    An error shall be signaled if any sequence is not a basic-vector or a list
-   (error-id. domain-error).
- */
+   (error-id. domain-error). */
 kiss_obj* kiss_map_into(kiss_obj* const destination, const kiss_obj* const function, const kiss_obj* const rest) {
      size_t n = kiss_c_length(destination);
      for (const kiss_obj* p = rest; p != KISS_NIL; p = KISS_CDR(p)) {

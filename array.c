@@ -293,10 +293,8 @@ kiss_obj* kiss_basic_array_p (const kiss_obj* const obj) {
 }
 
 /* function: (basic-array*-p obj) -> boolean
-   basic-array*-p returns t if obj is a basic-array* (instance of class <basic-array*>);
-   otherwise, returns nil. obj may be any ISLISP object.
-*/
-
+   basic-array*-p returns t if OBJ is a basic-array* (instance of class <basic-array*>);
+   otherwise, returns nil. OBJ may be any ISLISP object. */
 kiss_obj* kiss_basic_array_s_p (const kiss_obj* const obj) {
      switch (KISS_OBJ_TYPE(obj)) {
      case KISS_CONS:
@@ -326,9 +324,8 @@ kiss_obj* kiss_basic_array_s_p (const kiss_obj* const obj) {
 }
 
 /* function: (general-array*-p obj) -> boolean
-   general-array*-p returns t if obj is a general-array* (instance of class <general-array*>);
-   otherwise, returns nil. obj may be any ISLISP object.
-*/
+   general-array*-p returns t if OBJ is a general-array* (instance of class <general-array*>);
+   otherwise, returns nil. OBJ may be any ISLISP object. */
 kiss_obj* kiss_general_array_s_p (const kiss_obj* const obj) {
      switch (KISS_OBJ_TYPE(obj)) {
      case KISS_CONS:

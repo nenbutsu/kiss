@@ -31,7 +31,7 @@ void kiss_init_symbols(void) {
     Kiss_Symbol_Number = i;
 }
 
-static kiss_symbol_t* kiss_make_symbol(wchar_t* name) {
+static kiss_symbol_t* kiss_make_symbol(const wchar_t* const name) {
     kiss_symbol_t* p = Kiss_GC_Malloc(sizeof(kiss_symbol_t));
     p->type  = KISS_SYMBOL;
     p->name  = wcscpy(Kiss_Malloc(sizeof(wchar_t) * (wcslen(name) + 1)), name);
@@ -45,7 +45,7 @@ static kiss_symbol_t* kiss_make_symbol(wchar_t* name) {
 /* function: (symbolp obj) -> boolean 
    Returns t if obj is a symbol; otherwise, returns nil. The obj may
    be any LISP object */
-kiss_obj* kiss_symbolp(kiss_obj* obj) {
+kiss_obj* kiss_symbolp(const kiss_obj* const obj) {
      return KISS_IS_SYMBOL(obj) ? KISS_T : KISS_NIL;
 }
 
@@ -58,7 +58,8 @@ kiss_obj* kiss_gensym(void) {
      return (kiss_obj*)kiss_make_symbol(name);
 }
 
-kiss_obj* kiss_symbol_function (kiss_obj* obj) {
+/* kiss function: (symbol-function obj) => <function> */
+kiss_obj* kiss_symbol_function (const kiss_obj* const obj) {
     kiss_symbol_t* symbol = Kiss_Symbol(obj);
     if (symbol->fun == NULL) {
 	Kiss_Err(L"Unbound function ~S", obj);
@@ -66,21 +67,24 @@ kiss_obj* kiss_symbol_function (kiss_obj* obj) {
     return (kiss_obj*)symbol->fun;
 }
 
-kiss_obj* kiss_fboundp (kiss_obj* obj) {
+/* kiss function: (fboundp obj) => t or nil */
+kiss_obj* kiss_fboundp (const kiss_obj* const obj) {
      return Kiss_Symbol(obj)->fun == NULL ? KISS_NIL : KISS_T;
 }
 
-kiss_obj* kiss_fmakunbound (kiss_obj* obj) {
+/* kiss function: (fmakunbound obj) => obj */
+kiss_obj* kiss_fmakunbound (kiss_obj* const obj) {
     Kiss_Symbol(obj)->fun = NULL;
     return obj;
 }
 
-kiss_obj* kiss_set_symbol_function (kiss_obj* definition, kiss_obj* sym) {
-    Kiss_Symbol(sym)->fun = definition;
-    return definition;
+/* kiss function: (set-symbol-function definition symbol) => definition */
+kiss_obj* kiss_set_symbol_function (const kiss_obj* const definition, kiss_obj* const sym) {
+     Kiss_Symbol(sym)->fun = (kiss_obj*)definition;
+     return (kiss_obj*)definition;
 }
 
-int kiss_is_interned(kiss_symbol_t* p) {
+int kiss_is_interned(const kiss_symbol_t* const p) {
     size_t i;
     for (i = 0; i < Kiss_Symbol_Number; i++) {
 	if (p == Kiss_Symbols[i]) return 1;
@@ -88,7 +92,7 @@ int kiss_is_interned(kiss_symbol_t* p) {
     return 0;
 }
 
-kiss_obj* kiss_intern(kiss_obj* name) {
+kiss_obj* kiss_intern(const kiss_obj* const name) {
     kiss_string_t* str = Kiss_String(name);
     size_t i;
     kiss_symbol_t* p;
@@ -105,37 +109,35 @@ kiss_obj* kiss_intern(kiss_obj* name) {
 }
 
 // function: (property symbol property-name [obj]) -> <object>
-kiss_obj* kiss_property(kiss_obj* symbol, kiss_obj* property, kiss_obj* rest) {
-     kiss_symbol_t* s = Kiss_Symbol(symbol);
-     kiss_obj* p = kiss_plist_member(s->plist, (kiss_obj*)Kiss_Symbol(property));
+kiss_obj* kiss_property(const kiss_obj* const symbol, const kiss_obj* const property, const kiss_obj* const rest)
+{
+     const kiss_symbol_t* const s = Kiss_Symbol(symbol);
+     const kiss_obj* const p = kiss_plist_member(s->plist, (kiss_obj*)Kiss_Symbol(property));
      if (KISS_IS_CONS(p)) {
 	  return kiss_car(KISS_CDR(p));
      } else {
-	  if (rest == KISS_NIL) {
-	       return KISS_NIL;
-	  } else {
-	       return kiss_car(rest);
-	  }
+          return rest == KISS_NIL ? KISS_NIL : kiss_car(rest);
      }
 }
 
 // function: (set-property obj symbol property-name) -> <object>
-kiss_obj* kiss_set_property(kiss_obj* obj, kiss_obj* symbol, kiss_obj* property) {
-     kiss_symbol_t* s = Kiss_Symbol(symbol);
+kiss_obj* kiss_set_property(const kiss_obj* const obj, kiss_obj* const symbol, const kiss_obj* const property)
+{
+     kiss_symbol_t* const s = Kiss_Symbol(symbol);
      s->plist = kiss_plist_put(s->plist, (kiss_obj*)Kiss_Symbol(property), obj);
-     return obj;     
+     return (kiss_obj*)obj;
 }
 
 // function: (remove-property symbol property-name) -> <object>
-kiss_obj* kiss_remove_property(kiss_obj* symbol, kiss_obj* property) {
-     kiss_symbol_t* s = Kiss_Symbol(symbol);
-     kiss_obj* obj = kiss_plist_get(s->plist, property);
+kiss_obj* kiss_remove_property(kiss_obj* const symbol, const kiss_obj* const property) {
+     kiss_symbol_t* const s = Kiss_Symbol(symbol);
+     const kiss_obj* const obj = kiss_plist_get(s->plist, property);
      s->plist = kiss_plist_remove(s->plist, (kiss_obj*)Kiss_Symbol(property));
-     return obj;
+     return (kiss_obj*)obj;
 }
 
 
-kiss_obj* kiss_symbol(wchar_t* name) {
+kiss_obj* kiss_symbol(const wchar_t* const name) {
     return kiss_intern((kiss_obj*)kiss_make_string(name));
 }
 
