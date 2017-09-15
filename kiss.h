@@ -32,10 +32,17 @@
 #include <wchar.h>
 #include <wctype.h>
 
+#include <gmp.h>
+
 extern size_t Kiss_Heap_Top;
 
 typedef long int kiss_ptr_int;
+#define KISS_FIXNUM_MAX LONG_MAX
+#define KISS_FIXNUM_MIN LONG_MIN
+
 _Static_assert (sizeof(kiss_ptr_int) == sizeof(void*), "We need an int with the same width as void*");
+
+
 
 #define kiss_int(x)        (((kiss_ptr_int)x)>>2)
 #define kiss_wchar(x)      kiss_int(x)
