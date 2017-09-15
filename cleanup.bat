@@ -1,1 +1,1 @@
-rm *.c~ *.lisp~ *.txt~
+rm *.c~ *.lisp~ *.txt~ newfile example.dat
