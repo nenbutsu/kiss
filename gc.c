@@ -269,6 +269,11 @@ void kiss_gc_free_bignum(kiss_bignum_t* obj) {
      free(obj);
 }
 
+void kiss_gc_free_float(kiss_float_t* obj) {
+     mpf_clear(obj->mpf);
+     free(obj);
+}
+
 void kiss_gc_free_string(kiss_string_t* obj) {
      free(obj->str);
      free(obj);
@@ -292,6 +297,9 @@ void kiss_gc_free_obj(kiss_gc_obj* obj) {
           case KISS_BIGNUM:
                kiss_gc_free_bignum((kiss_bignum_t*)obj);
                break;
+	  case KISS_FLOAT:
+               kiss_gc_free_float((kiss_float_t*)obj);
+               break;
 	  case KISS_SYMBOL:
 	       kiss_gc_free_symbol((kiss_symbol_t*)obj);
 	       break;
@@ -302,7 +310,6 @@ void kiss_gc_free_obj(kiss_gc_obj* obj) {
 	       kiss_gc_free_stream((kiss_stream_t*)obj);
 	       break;
 	  case KISS_CONS:
-	  case KISS_FLOAT:
 	  case KISS_GENERAL_VECTOR:
 	  case KISS_GENERAL_ARRAY:
 	  case KISS_FUNCTION:

@@ -142,7 +142,7 @@ kiss_obj* kiss_plus2_fixnum2 (kiss_obj* a, kiss_obj* b) {
      } else if (i1 > 0 && i2 > 0) {
           kiss_ptr_int n = KISS_PTR_INT_MAX - i2;
           if (i1 <= n) {
-               fprintf(stderr, "i1 = %ld\ni2 = %ld\n", i1, i2);
+               //fprintf(stderr, "i1 = %ld\ni2 = %ld\n", i1, i2);
                return (kiss_obj*)kiss_make_fixnum(i1 + i2);
           } else {
                kiss_bignum_t* p = kiss_make_bignum(i1);
@@ -155,7 +155,8 @@ kiss_obj* kiss_plus2_fixnum2 (kiss_obj* a, kiss_obj* b) {
                return (kiss_obj*)kiss_make_fixnum(i1 + i2);
           } else {
                kiss_bignum_t* p = kiss_make_bignum(i1);
-               mpz_sub_ui(p->mpz, p->mpz, -i2);
+               kiss_bignum_t* q = kiss_make_bignum(i2);
+               mpz_add(p->mpz, p->mpz, q->mpz);
                return (kiss_obj*)p;
           }
      } else {
@@ -175,14 +176,10 @@ kiss_obj* kiss_plus2_fixnum_bignum (kiss_obj* a, kiss_obj* b) {
 kiss_obj* kiss_plus2_fixnum_float(kiss_obj* a, kiss_obj* b) {
      kiss_ptr_int i1 = kiss_ptr_int(a);
      kiss_float_t* f2 = (kiss_float_t*)b;
-     kiss_float_t* p = kiss_make_float();
-     mpf_set(p->mpf, f2->mpf);
-     if (i1 >= 0) {
-          mpf_add_ui(p->mpf, p->mpf, i1);
-     } else {
-          mpf_sub_ui(p->mpf, p->mpf, -i1);
-     }
-     return (kiss_obj*)p;
+     kiss_float_t* f1 = kiss_make_float();
+     mpf_set_si(f1->mpf, i1);
+     mpf_add(f1->mpf, f1->mpf, f2->mpf);
+     return (kiss_obj*)f1;
 }
 
 kiss_obj* kiss_plus2_bignum2(kiss_obj* a, kiss_obj* b) {
@@ -325,15 +322,142 @@ kiss_obj* kiss_minus(kiss_obj* number, kiss_obj* rest) {
      return number;     
 }
 
+kiss_obj* kiss_multiply2_fixnum_bignum(kiss_obj* a, kiss_obj* b) {
+     kiss_bignum_t* z = kiss_make_bignum(kiss_ptr_int(a));
+     mpz_mul(z->mpz, z->mpz, ((kiss_bignum_t*)b)->mpz);
+     return (kiss_obj*)z;
+}
+
+kiss_obj* kiss_multiply2_fixnum2 (kiss_obj* a, kiss_obj* b) {
+     kiss_ptr_int i1 = kiss_ptr_int(a);
+     kiss_ptr_int i2 = kiss_ptr_int(b);
+
+     if (i1 == 0 || i2 == 0) {
+          return (kiss_obj*)kiss_make_fixnum(0);
+     }
+     
+     int minus = 1;
+     if ((i1 < 0 && i2 < 0) || (i1 > 0 && i2 > 0)) {
+          minus = 0;
+     }
+
+     if (i1 < 0) {
+          if (i1 < -KISS_PTR_INT_MAX) {
+               return kiss_multiply2_fixnum_bignum(b, (kiss_obj*)kiss_make_bignum(i1));
+          }
+          i1 = -i1;
+     }
+     if (i2 < 0) {
+          if (i2 < -KISS_PTR_INT_MAX) {
+               return kiss_multiply2_fixnum_bignum(a, (kiss_obj*)kiss_make_bignum(i2));
+          }
+          i2 = -i2;
+     }
+
+     kiss_ptr_int q = KISS_PTR_INT_MAX / i1;
+     if (i2 <= q) {
+          return (kiss_obj*)kiss_make_fixnum(i1 * i2 * (minus ? -1 : 1));
+     } else {
+          kiss_bignum_t* z = kiss_make_bignum(i1);
+          mpz_mul_si(z->mpz, z->mpz, i2);
+          if (minus) {
+               mpz_neg(z->mpz, z->mpz);
+          }
+          return (kiss_obj*)z;
+     }
+}
+
+kiss_obj* kiss_multiply2_fixnum_float(kiss_obj* a, kiss_obj* b) {
+     kiss_float_t* f = kiss_make_float();
+     mpf_set_si(f->mpf, kiss_ptr_int(a));
+     mpf_mul(f->mpf, f->mpf, ((kiss_float_t*)b)->mpf);
+     return (kiss_obj*)f;
+}
+
+kiss_obj* kiss_multiply2_bignum2(kiss_obj* a, kiss_obj* b) {
+     kiss_bignum_t* z = kiss_make_bignum(0);
+     mpz_set(z->mpz, ((kiss_bignum_t*)a)->mpz);
+     mpz_mul(z->mpz, z->mpz, ((kiss_bignum_t*)b)->mpz);
+     return (kiss_obj*)z;
+}
+
+kiss_obj* kiss_multiply2_bignum_float(kiss_obj* a, kiss_obj* b) {
+     kiss_float_t* f = kiss_make_float();
+     mpf_set_z(f->mpf, ((kiss_bignum_t*)a)->mpz);
+     mpf_mul(f->mpf, f->mpf, ((kiss_float_t*)b)->mpf);
+     return (kiss_obj*)f;
+}
+
+kiss_obj* kiss_multiply2_float2(kiss_obj* a, kiss_obj* b) {
+     kiss_float_t* f = kiss_make_float();
+     mpf_set(f->mpf, ((kiss_float_t*)a)->mpf);
+     mpf_mul(f->mpf, f->mpf, ((kiss_float_t*)b)->mpf);
+     return (kiss_obj*)f;
+}
+
+kiss_obj* kiss_multiply2(kiss_obj* a, kiss_obj* b) {
+     Kiss_Number(a);
+     Kiss_Number(b);
+     switch (KISS_OBJ_TYPE(a)) {
+     case KISS_FIXNUM:
+          switch (KISS_OBJ_TYPE(b)) {
+          case KISS_FIXNUM:
+               return kiss_multiply2_fixnum2(a, b);
+          case KISS_BIGNUM:
+               return kiss_multiply2_fixnum_bignum(a, b);
+          case KISS_FLOAT:
+               return kiss_multiply2_fixnum_float(a, b);
+          default:
+               fprintf(stderr, "kiss_multiply2: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
+               exit(EXIT_FAILURE);
+          }
+          break;
+     case KISS_BIGNUM:
+          switch (KISS_OBJ_TYPE(b)) {
+          case KISS_FIXNUM:
+               return kiss_multiply2_fixnum_bignum(b, a);
+          case KISS_BIGNUM:
+               return kiss_multiply2_bignum2(a, b);
+          case KISS_FLOAT:
+               return kiss_multiply2_bignum_float(a, b);
+          default:
+               fprintf(stderr, "kiss_plus2: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
+               exit(EXIT_FAILURE);
+          }
+          break;
+     case KISS_FLOAT:
+          switch (KISS_OBJ_TYPE(b)) {
+          case KISS_FIXNUM:
+               return kiss_multiply2_fixnum_float(b, a);
+          case KISS_BIGNUM:
+               return kiss_multiply2_bignum_float(b, a);
+          case KISS_FLOAT:
+               return kiss_multiply2_float2(a, b);
+          default:
+               fprintf(stderr, "kiss_plus2: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
+               exit(EXIT_FAILURE);
+          }
+          break;
+     default:
+          fprintf(stderr, "kiss_plus2: unexpected primitive type = %ld", KISS_OBJ_TYPE(a));
+          exit(EXIT_FAILURE);
+     }
+}
 /* function: (* x*) -> <number> 
    The function * returns the product of its arguments. 
    If all arguments are integers, the result is an integer.
    If any argument is a float, the result is a float.
    When given no arguments, * returns 1. 
    An error shall be signaled if any x is not a number (error-id. domain-error). */
-kiss_obj* kiss_multiply(kiss_obj* p) {
-     fprintf(stderr, "kiss_multiply: not implemented");
-     exit(EXIT_FAILURE);
+kiss_obj* kiss_multiply(kiss_obj* list) {
+     if (list == KISS_NIL) { return kiss_make_fixnum(1); }
+     kiss_obj* p = KISS_CAR(list);
+     list = KISS_CDR(list);
+     while (list != KISS_NIL) {
+          p = kiss_multiply2(p, KISS_CAR(list));
+          list = KISS_CDR(list);
+     }
+     return p;
 }
 
 
@@ -495,11 +619,38 @@ kiss_obj* kiss_lcm(kiss_obj* z1, kiss_obj* z2) {
 
 /* function: (abs x) -> <number>
    The function abs returns the absolute value of its argument.
-   An error shall be signaled if x is not a number (error-id. domain-error)
-*/
+   An error shall be signaled if x is not a number (error-id. domain-error) */
 kiss_obj* kiss_abs(kiss_obj* x) {
-     fprintf(stderr, "kiss_abs: not implemented");
-     exit(EXIT_FAILURE);
+     Kiss_Number(x);
+     switch (KISS_OBJ_TYPE(x)) {
+     case KISS_FIXNUM: {
+          kiss_ptr_int i = kiss_ptr_int(x);
+          if (i < 0) {
+               if (i == KISS_PTR_INT_MIN) {
+                    kiss_bignum_t* z = kiss_make_bignum(i);
+                    mpz_neg(z->mpz, z->mpz);
+                    return (kiss_obj*)z;
+               } else {
+                    return (kiss_obj*)kiss_make_fixnum(-i);
+               }
+          } else {
+               return x;
+          }
+     }
+     case KISS_BIGNUM: {
+          kiss_bignum_t* z = kiss_make_bignum(0);
+          mpz_abs(z->mpz, ((kiss_bignum_t*)x)->mpz);
+          return (kiss_obj*)z;
+     }
+     case KISS_FLOAT: {
+          kiss_float_t* f = kiss_make_float();
+          mpf_abs(f->mpf, ((kiss_float_t*)x)->mpf);
+          return x;
+     }
+     default:
+          fprintf(stderr, "kiss_abs: unknown primitive number type = %ld", KISS_OBJ_TYPE(x));
+          exit(EXIT_FAILURE);
+     }
 }
 
 /* function: (exp x) -> <number>
