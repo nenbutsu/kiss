@@ -234,7 +234,7 @@ static kiss_obj* kiss_ga_dimensions(const kiss_general_array_t* const array) {
      kiss_obj* dimensions = KISS_NIL;
      kiss_general_vector_t* p = (kiss_general_vector_t*)array->vector;
      for (size_t rank = array->rank; rank > 0; rank--) {
-	  kiss_push((kiss_obj*)kiss_make_integer(p->n), &dimensions);
+	  kiss_push((kiss_obj*)kiss_make_fixnum(p->n), &dimensions);
 	  p = (kiss_general_vector_t*)(p->v[0]);
      }
      return kiss_nreverse(dimensions);
@@ -248,9 +248,9 @@ kiss_obj* kiss_array_dimensions(const kiss_obj* const array) {
      Kiss_Basic_Array(array);
      switch (KISS_OBJ_TYPE(array)) {
      case KISS_STRING:
-	  return kiss_cons((kiss_obj*)kiss_make_integer(Kiss_String(array)->n), KISS_NIL);
+	  return kiss_cons((kiss_obj*)kiss_make_fixnum(Kiss_String(array)->n), KISS_NIL);
      case KISS_GENERAL_VECTOR:
-	  return kiss_cons((kiss_obj*)kiss_make_integer(Kiss_General_Vector(array)->n), KISS_NIL);
+	  return kiss_cons((kiss_obj*)kiss_make_fixnum(Kiss_General_Vector(array)->n), KISS_NIL);
      case KISS_GENERAL_ARRAY:
 	  return kiss_ga_dimensions((kiss_general_array_t*)array);
      default:

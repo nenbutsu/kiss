@@ -49,7 +49,7 @@ size_t kiss_c_length(const kiss_obj* const p) {
    An error shall be signaled if SEQUENCE is not a basic-vector or a list
    (error-id. domain-error ). */
 kiss_obj* kiss_length(const kiss_obj* const sequence) {
-    return (kiss_obj*)kiss_make_integer(kiss_c_length(sequence));
+    return (kiss_obj*)kiss_make_fixnum(kiss_c_length(sequence));
 }
 
 /* function: (elt sequence z) -> <object>
@@ -62,7 +62,7 @@ kiss_obj* kiss_length(const kiss_obj* const sequence) {
    if Z is not an integer (error-id. domain-error). */
 kiss_obj* kiss_elt(const kiss_obj* const sequence, const kiss_obj* const z) {
      Kiss_Valid_Sequence_Index(sequence, z);
-     size_t i = kiss_int(z);
+     size_t i = kiss_ptr_int(z);
      switch (KISS_OBJ_TYPE(sequence)) {
      case KISS_SYMBOL: {
 	  assert(sequence == KISS_NIL);
@@ -101,7 +101,7 @@ kiss_obj* kiss_elt(const kiss_obj* const sequence, const kiss_obj* const z) {
 */
 kiss_obj* kiss_set_elt(const kiss_obj* const obj, kiss_obj* const sequence, const kiss_obj* const z) {
      Kiss_Valid_Sequence_Index(sequence, z);
-     size_t i = kiss_int(z);
+     size_t i = kiss_ptr_int(z);
      switch (KISS_OBJ_TYPE(sequence)) {
      case KISS_SYMBOL: {
 	  assert(sequence == KISS_NIL);
@@ -177,7 +177,7 @@ kiss_obj* kiss_subseq(const kiss_obj* const sequence, const kiss_obj* const z1, 
      }
      case KISS_STRING: {
 	  kiss_string_t* string = (kiss_string_t*)sequence;
-	  kiss_obj* n = (kiss_obj*)kiss_make_integer(i2 - i1);
+	  kiss_obj* n = (kiss_obj*)kiss_make_fixnum(i2 - i1);
 	  kiss_string_t* p = (kiss_string_t*)kiss_create_string(n, KISS_NIL);
 	  for (kiss_ptr_int i = i1; i < i2; i++) {
 	       p->str[i - i1] = string->str[i];
@@ -222,11 +222,11 @@ kiss_obj* kiss_map_into(kiss_obj* const destination, const kiss_obj* const funct
      for (size_t i = 0; i < n; i++) {
 	  kiss_obj* args = KISS_NIL;
 	  for (const kiss_obj* p = rest; p != KISS_NIL; p = kiss_cdr(p)) {
-	       kiss_push(kiss_elt(kiss_car(p), kiss_make_integer(i)), &args);
+	       kiss_push(kiss_elt(kiss_car(p), kiss_make_fixnum(i)), &args);
 	  }
 	  args = kiss_nreverse(args);
 	  kiss_obj* result = kiss_funcall(function, args);
-	  kiss_set_elt(result, destination, kiss_make_integer(i));
+	  kiss_set_elt(result, destination, kiss_make_fixnum(i));
      }
      return destination;
 }

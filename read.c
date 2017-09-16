@@ -158,7 +158,7 @@ static kiss_obj* kiss_read_lexeme_chars(const kiss_obj* const in) {
     wchar_t* tail = NULL;
     long int i = wcstol(str->str, &tail, 10);
     if (tail == str->str + str->n) {
-      return (kiss_obj*)kiss_make_integer(i);
+      return (kiss_obj*)kiss_make_fixnum(i);
     }
     tail = NULL;
     float f = wcstof(str->str, &tail);

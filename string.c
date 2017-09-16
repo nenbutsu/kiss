@@ -93,7 +93,7 @@ kiss_obj* kiss_string_append(const kiss_obj* const rest) {
      for (const kiss_obj* args = rest; KISS_IS_CONS(args); args = KISS_CDR(args)) {
 	  n += kiss_c_length(KISS_CAR(args));
      }
-     kiss_string_t* str = (kiss_string_t*)kiss_create_string((kiss_obj*)kiss_make_integer(n), KISS_NIL);
+     kiss_string_t* str = (kiss_string_t*)kiss_create_string((kiss_obj*)kiss_make_fixnum(n), KISS_NIL);
 
      wchar_t* p = str->str;
      for (const kiss_obj* args = rest; KISS_IS_CONS(args); args = KISS_CDR(args)) {

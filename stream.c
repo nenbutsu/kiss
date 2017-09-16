@@ -541,7 +541,7 @@ kiss_obj* kiss_c_read_byte(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val)
 	       goto eos;
 	  } else {
 	       ((kiss_file_stream_t*)in)->pos++;
-	       return (kiss_obj*)kiss_make_integer(c);
+	       return (kiss_obj*)kiss_make_fixnum(c);
 	  }
      } else {
 	  fprintf(stderr, "kiss_c_read_byte: unknown input stream type = %ld", KISS_OBJ_TYPE(in));

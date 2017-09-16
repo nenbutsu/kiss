@@ -78,7 +78,7 @@ static kiss_obj* kiss_format_general_vector(kiss_obj* out, kiss_obj* obj, kiss_o
 static kiss_obj* kiss_format_general_array(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
      kiss_general_array_t* array = Kiss_General_Array_S(obj);
      kiss_format_char(out, kiss_make_character(L'#'));
-     kiss_format_integer(out, (kiss_obj*)kiss_make_integer(array->rank), (kiss_obj*)kiss_make_integer(10));
+     kiss_format_integer(out, (kiss_obj*)kiss_make_fixnum(array->rank), (kiss_obj*)kiss_make_fixnum(10));
      kiss_format_char(out, kiss_make_character(L'a'));
      if (array->rank == 0) {
 	  kiss_format_object(out, array->vector, escapep);
@@ -231,8 +231,8 @@ static kiss_obj* kiss_format_macro(kiss_obj* out, kiss_obj* obj) {
 
 kiss_obj* kiss_format_pointer(kiss_obj* out, kiss_obj* obj) {
      kiss_format_string(out, (kiss_obj*)kiss_make_string(L"#x"), KISS_NIL);
-     kiss_format_integer(out, (kiss_obj*)kiss_make_integer((long int)obj),
-			 (kiss_obj*)kiss_make_integer(16));
+     kiss_format_integer(out, (kiss_obj*)kiss_make_fixnum((long int)obj),
+			 (kiss_obj*)kiss_make_fixnum(16));
      return KISS_NIL;
 }
 
@@ -288,7 +288,7 @@ kiss_obj* kiss_format_object(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
 	  else                     { kiss_format_escaped_char(out, obj); }
 	  break;
      }
-     case KISS_INTEGER: kiss_format_integer(out, obj, (kiss_obj*)kiss_make_integer(10));
+     case KISS_INTEGER: kiss_format_integer(out, obj, (kiss_obj*)kiss_make_fixnum(10));
 	  break;
      case KISS_FLOAT: kiss_format_float(out, obj); break;
      case KISS_FUNCTION: kiss_format_function(out, obj); break;
@@ -329,7 +329,7 @@ kiss_obj* kiss_format(kiss_obj* out, kiss_obj* format, kiss_obj* args) {
 		    break;
 	       case L'B':
 		    /* This effect is implemented by (format-integer output-stream obj 2) */
-		    kiss_format_integer(out, kiss_car(args), (kiss_obj*)kiss_make_integer(2));
+		    kiss_format_integer(out, kiss_car(args), (kiss_obj*)kiss_make_fixnum(2));
 		    args = KISS_CDR(args);
 		    break;
 	       case L'C':
@@ -339,7 +339,7 @@ kiss_obj* kiss_format(kiss_obj* out, kiss_obj* format, kiss_obj* args) {
 		    break;
 	       case L'D':
 		    /* This effect is implemented by (format-integer output-stream obj 10) */
-		    kiss_format_integer(out, kiss_car(args), (kiss_obj*)kiss_make_integer(10));
+		    kiss_format_integer(out, kiss_car(args), (kiss_obj*)kiss_make_fixnum(10));
 		    args = KISS_CDR(args);
 		    break;
 	       case L'G':
@@ -349,7 +349,7 @@ kiss_obj* kiss_format(kiss_obj* out, kiss_obj* format, kiss_obj* args) {
 		    break;
 	       case L'O':
 		    /* This effect is implemented by (format-integer output-stream obj 8) */
-		    kiss_format_integer(out, kiss_car(args), (kiss_obj*)kiss_make_integer(8));
+		    kiss_format_integer(out, kiss_car(args), (kiss_obj*)kiss_make_fixnum(8));
 		    args = KISS_CDR(args);
 		    break;
 	       case L'S':
@@ -363,7 +363,7 @@ kiss_obj* kiss_format(kiss_obj* out, kiss_obj* format, kiss_obj* args) {
 		    break;
 	       case L'X':
 		    /* This effect is implemented by (format-integer output-stream obj 16)*/
-		    kiss_format_integer(out, kiss_car(args), (kiss_obj*)kiss_make_integer(16));
+		    kiss_format_integer(out, kiss_car(args), (kiss_obj*)kiss_make_fixnum(16));
 		    args = KISS_CDR(args);
 		    break;
 	       case L'%':
@@ -398,7 +398,7 @@ kiss_obj* kiss_format(kiss_obj* out, kiss_obj* format, kiss_obj* args) {
 			 i = tailptr - str->str + 1;
 			 break;
 		    } else if (*tailptr == L'R') {
-			 kiss_format_integer(out, kiss_car(args), (kiss_obj*)kiss_make_integer(m));
+			 kiss_format_integer(out, kiss_car(args), (kiss_obj*)kiss_make_fixnum(m));
 			 args = KISS_CDR(args);
 			 break;
 		    } else {

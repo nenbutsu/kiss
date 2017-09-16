@@ -1515,7 +1515,7 @@ kiss_symbol_t KISS_Splus;
 kiss_cfunction_t KISS_CFplus = {
     KISS_CFUNCTION, /* type */
     &KISS_Splus,    /* name */
-    (kiss_cf_t*)kiss_Lplus,     /* C function name */
+    (kiss_cf_t*)kiss_plus,     /* C function name */
     0,         /* minimum argument number */
     -1,        /* maximum argument number */
 };
@@ -1533,7 +1533,7 @@ kiss_symbol_t KISS_Smultiply;
 kiss_cfunction_t KISS_CFmultiply = {
     KISS_CFUNCTION,  /* type */
     &KISS_Smultiply, /* name */
-    (kiss_cf_t*)kiss_Lmultiply,  /* C function name */
+    (kiss_cf_t*)kiss_multiply,  /* C function name */
     0,               /* minimum argument number */
     -1,              /* maximum argument number */
 };
@@ -1552,7 +1552,7 @@ kiss_symbol_t KISS_Sminus;
 kiss_cfunction_t KISS_CFminus = {
     KISS_CFUNCTION, /* type */
     &KISS_Sminus,   /* name */
-    (kiss_cf_t*)kiss_Lminus,    /* C function name */
+    (kiss_cf_t*)kiss_minus,    /* C function name */
     1,              /* minimum argument number */
     -1,             /* maximum argument number */
 };
@@ -1571,7 +1571,7 @@ kiss_symbol_t KISS_Snum_eq;
 kiss_cfunction_t KISS_CFnum_eq = {
     KISS_CFUNCTION, /* type */
     &KISS_Snum_eq,  /* name */
-    (kiss_cf_t*)kiss_Lnum_eq,   /* C function name */
+    (kiss_cf_t*)kiss_num_eq,   /* C function name */
     2,         /* minimum argument number */
     2,         /* maximum argument number */
 };

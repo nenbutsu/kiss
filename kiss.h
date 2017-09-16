@@ -37,29 +37,29 @@
 extern size_t Kiss_Heap_Top;
 
 typedef long int kiss_ptr_int;
-#define KISS_FIXNUM_MAX LONG_MAX
-#define KISS_FIXNUM_MIN LONG_MIN
-
+#define KISS_PTR_INT_MAX (LONG_MAX & ~0<<2)
+#define KISS_PTR_INT_MIN (LONG_MIN & ~0<<2)
 _Static_assert (sizeof(kiss_ptr_int) == sizeof(void*), "We need an int with the same width as void*");
 
 
 
-#define kiss_int(x)        (((kiss_ptr_int)x)>>2)
-#define kiss_wchar(x)      kiss_int(x)
+#define kiss_ptr_int(x)    (((kiss_ptr_int)x)>>2)
+#define kiss_wchar(x)      kiss_ptr_int(x)
 #define kiss_fixnum(x)     (kiss_obj*)((((kiss_ptr_int)x)<<2) | 1)
 #define kiss_fixchar(x)    (kiss_obj*)((((kiss_ptr_int)x)<<2) | 2)
-#define kiss_is_fixnum(x)  ((kiss_ptr_int)x & 1)
-#define kiss_is_char(x)    ((kiss_ptr_int)x & 2)
+#define KISS_IS_FIXNUM(x)  ((kiss_ptr_int)x & 1)
+#define KISS_IS_FIXCHAR(x) ((kiss_ptr_int)x & 2)
 
 #define kiss_make_character(x)  kiss_fixchar(x)
-#define kiss_make_integer(x)    kiss_fixnum(x)
+#define kiss_make_fixnum(x)    kiss_fixnum(x)
 
 
 typedef enum {
-     KISS_INTEGER = 1,
+     KISS_FIXNUM = 1,
      KISS_CHARACTER = 2,
      KISS_CONS,
      KISS_SYMBOL,
+     KISS_BIGNUM,
      KISS_FLOAT,
      KISS_STRING,
      KISS_GENERAL_VECTOR,
@@ -115,7 +115,13 @@ typedef struct {
 typedef struct {
      kiss_type type;
      void* gc_ptr;
-     float f;
+     mpz_t mpz;
+} kiss_bignum_t;
+
+typedef struct {
+     kiss_type type;
+     void* gc_ptr;
+     mpf_t mpf;
 } kiss_float_t;
 
 typedef struct {
@@ -305,8 +311,9 @@ kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda, KISS_Skw_rest, KISS
 
 #define KISS_OBJ_TYPE(x) (((kiss_ptr_int)x & 3) ? ((kiss_ptr_int)x & 3) : (((kiss_obj*)x)->type))
 
-#define KISS_IS_INTEGER(x)           (kiss_is_fixnum(x))
-#define KISS_IS_CHARACTER(x)         (kiss_is_char(x))
+#define KISS_IS_BIGNUM(x)            (KISS_OBJ_TYPE(x) == KISS_BIGNUM)
+#define KISS_IS_INTEGER(x)           (KISS_IS_FIXNUM(x) || KISS_IS_BIGNUM(x))
+#define KISS_IS_CHARACTER(x)         (KISS_IS_FIXCHAR(x))
 #define KISS_IS_CONS(x)              (KISS_OBJ_TYPE(x) == KISS_CONS)
 #define KISS_IS_LIST(x)              (KISS_IS_CONS(x) || (((void*)x) == KISS_NIL))
 #define KISS_IS_SYMBOL(x)            (KISS_OBJ_TYPE(x) == KISS_SYMBOL)
@@ -332,7 +339,7 @@ kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda, KISS_Skw_rest, KISS
 #define KISS_IS_FILE_STREAM(x)      (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_FILE_STREAM))
 #define KISS_IS_STRING_STREAM(x)    (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_STRING_STREAM))
 
-#define KISS_IS_GC_OBJ(x)           !(kiss_is_fixnum(x) || kiss_is_char(x) || KISS_IS_CFUNCTION(x) || KISS_IS_CMACRO(x))
+#define KISS_IS_GC_OBJ(x)           !(KISS_IS_FIXNUM(x) || KISS_IS_FIXCHAR(x) || KISS_IS_CFUNCTION(x) || KISS_IS_CMACRO(x))
 
 
 /* character.c */
@@ -495,11 +502,11 @@ void kiss_initialize(void);
 
 /* number.c */
 kiss_obj* kiss_integerp(kiss_obj* obj);
-kiss_obj* kiss_Lplus(kiss_obj* p);
-kiss_obj* kiss_Lmultiply(kiss_obj* p);
-kiss_obj* kiss_Lminus(kiss_obj* number, kiss_obj* rest);
-kiss_obj* kiss_Lnum_eq(const kiss_obj* const x, const kiss_obj* const y);
-kiss_obj* kiss_Lnum_lessthan(kiss_obj* x, kiss_obj* y);
+kiss_obj* kiss_plus(kiss_obj* p);
+kiss_obj* kiss_multiply(kiss_obj* p);
+kiss_obj* kiss_minus(kiss_obj* number, kiss_obj* rest);
+kiss_obj* kiss_num_eq(const kiss_obj* const x, const kiss_obj* const y);
+kiss_obj* kiss_num_lessthan(kiss_obj* x, kiss_obj* y);
 
 kiss_float_t* kiss_make_float(float f);
 kiss_obj* kiss_floatp(kiss_obj* obj);

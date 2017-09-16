@@ -18,25 +18,30 @@
 */
 #include "kiss.h"
 
-kiss_float_t* kiss_make_float(float f) {
+kiss_bignum_t* kiss_make_bignum(kiss_ptr_int i) {
+    kiss_bignum_t* p = Kiss_GC_Malloc(sizeof(kiss_bignum_t));
+    p->type = KISS_BIGNUM;
+    mpz_init_set_si (p->mpz, i);
+    return p;
+}
+
+kiss_float_t* kiss_make_float(void) {
     kiss_float_t* p = Kiss_GC_Malloc(sizeof(kiss_float_t));
     p->type = KISS_FLOAT;
-    p->f = f;
+    mpf_init_set_si(p->mpf, 0);
     return p;
 }
 
 /* function: (integeerp obj) -> boolean
    Returns t if obj is an integer otherwise, returns nil.*/
 kiss_obj* kiss_integerp(kiss_obj* obj) {
-    if (KISS_IS_INTEGER(obj)) { return KISS_T; }
-    else                      { return KISS_NIL; }
+     return KISS_IS_INTEGER(obj) ? KISS_T : KISS_NIL;
 }
 
 /* function: (floatp obj) -> boolean
    Returns t if obj is an float otherwise, returns nil.*/
 kiss_obj* kiss_floatp(kiss_obj* obj) {
-    if (KISS_IS_FLOAT(obj)) { return KISS_T; }
-    else                    { return KISS_NIL; }
+     return KISS_IS_FLOAT(obj) KISS_T : KISS_NIL;
 }
 
 /* function: (float x) -> <float>
@@ -45,23 +50,9 @@ kiss_obj* kiss_floatp(kiss_obj* obj) {
    x is not a number (error-id. domain-error).
  */
 kiss_obj* kiss_float(kiss_obj* x) {
-     Kiss_Number(x);
-     if (KISS_IS_INTEGER(x)) {
-	  return (kiss_obj*)kiss_make_float(Kiss_Integer(x));
-     } else {
-	  return x;
-     }
+     fprintf(stderr, "kiss_float: not implemented");
+     exit(EXIT_FAILURE);
 }
-
-static int kiss_all_int(kiss_obj* p) {
-     while (KISS_IS_CONS(p)) {
-	  if (!KISS_IS_INTEGER(KISS_CAR(p))) { return 0; }
-	  p = KISS_CDR(p);
-     }
-     return 1;
-}
-
-
 
 /* function: (parse-number string) -> <number>
    The characters belonging to string are scanned (as if by read) and if the resulting
@@ -71,48 +62,151 @@ static int kiss_all_int(kiss_obj* p) {
    (error-id. cannot-parse-number)
 */
 kiss_obj* kiss_parse_number(kiss_obj* p) {
-     kiss_string_t* str = Kiss_String(p);
-     wchar_t* tailptr;
-     long int i = wcstol(str->str, &tailptr, 10);
-     if (tailptr == str->str + str->n) { return (kiss_obj*)kiss_make_integer(i); }
-     else {
-	  float f = wcstof(str->str, &tailptr);
-	  if (tailptr == str->str + str->n) { return (kiss_obj*)kiss_make_float(f); }
-	  else { Kiss_Cannot_Parse_Number_Error(p); }
-     }
-     exit(EXIT_FAILURE); // not reach here
+     fprintf(stderr, "kiss_parse_number: not implemented");
+     exit(EXIT_FAILURE);
 }
 
+inline kiss_obj* kiss_plus2_fixnum2 (kiss_obj* a, kiss_obj* b) {
+     kiss_ptr_int i1 = kiss_ptr_int(a);
+     kiss_ptr_int i2 = kiss_ptr_int(a);
+     if ((i1 >= 0 && i2 <=0) || (i1 <= 0 && i2 >=0)) {
+          return (kiss_obj*)kiss_make_fixnum(i1 + i2);
+     } else if (i1 > 0 && i2 > 0) {
+          kiss_ptr_int n = KISS_PTR_INT_MAX - i2;
+          if (i1 <= n) {
+               return (kiss_obj*)kiss_make_fixnum(i1 + i2);
+          } else {
+               kiss_bignum_t* p = kiss_make_bignum(i1);
+               mpz_add_ui(p->mpz, p->mpz, i2);
+               return (kiss_obj*)p;
+          }
+     } else if (i1 < 0 && i2 < 0) {
+          kiss_ptr_int n = KISS_PTR_INT_MIN - i2;
+          if (i1 >= n) {
+               return (kiss_obj*)kiss_make_fixnum(i1 + i2);
+          } else {
+               kiss_bignum_t* p = kiss_make_bignum(i1);
+               mpz_sub_ui(p->mpz, p->mpz, -i2);
+               return (kiss_obj*)p;
+          }
+     } else {
+          fprintf(stderr, "kiss_plus2_fixnum2: internal error");
+          exit(EXIT_FAILURE);
+     }
+}
+
+inline kiss_obj* kiss_plus2_fixnum_bignum (kiss_obj* a, kiss_obj* b) {
+     kiss_ptr_int i1 = kiss_ptr_int(a);
+     kiss_bignum_t* z2 = (kiss_bignum_t*)b;
+     kiss_bignum_t* p = kiss_make_bignum(i1);
+     mpz_add_ui(p->mpz, p->mpz, z2->mpz);
+     return (kiss_obj*)p;
+}
+
+inline kiss_obj* kiss_plus2_fixnum_float(kiss_obj* a, kiss_obj* b) {
+     kiss_ptr_int i1 = kiss_ptr_int(a);
+     kiss_float_t* f2 = (kiss_float_t*)b;
+     kiss_float_t* p = kiss_make_float();
+     mpf_set(p->mpf, f2);
+     if (i1 >= 0) {
+          mpf_add_ui(p->mpf, p->mpf, i1);
+     } else {
+          mpf_sub_ui(p->mpf, p->mpf, -i1);
+     }
+     return (kiss_obj*)p;
+}
+
+inline kiss_obj* kiss_plus2_bignum2(kiss_obj* a, kiss_obj* b) {
+     kiss_bignum_t* z1 = (kiss_bignum_t*)a;
+     kiss_bignum_t* z2 = (kiss_bignum_t*)b;
+     kiss_bignum_t* p = kiss_make_bignum(0);
+     mpz_set(p->mpz, z1);
+     mpz_add(p->mpz, p->mpz, z2->mpz);
+     return (kiss_obj*)p;
+}
+
+inline kiss_obj* kiss_plus2_bignum_float(kiss_obj* a, kiss_obj* b) {
+     kiss_bignum_t* z1 = (kiss_bignum_t*)a;
+     kiss_float_t* f2 = (kiss_float_t*)b;
+     kiss_float_t* p = kiss_make_float();
+     mpf_set_z (p->mpf, z1->mpz);
+     mpf_add(p->mpf, f2->mpf)
+     return (kiss_obj*)p;
+}
+
+inline kiss_obj* kiss_plus2_float2(kiss_obj* a, kiss_obj* b) {
+     kiss_float_t* f1 = (kiss_float_t*)a;
+     kiss_float_t* f2 = (kiss_float_t*)b;
+     kiss_float_t* p = kiss_make_float(0);
+     mpf_set(p->mpf, 11);
+     mpf_add(p->mpf, p->mpf, f2->mpf);
+     return (kiss_obj*)p;
+}
+
+inline kiss_obj* kiss_plus2(kiss_obj* a, kiss_obj* b) {
+     Kiss_Number(a);
+     Kiss_Number(b);
+     switch (KISS_OBJ_TYPE(a)) {
+     case KISS_FIXNUM:
+          switch (KISS_OBJ_TYPE(b)) {
+          case KISS_FIXNUM:
+               return kiss_plus2_fixnum2(a, b);
+          case KISS_BIGNUM:
+               return kiss_plus2_fixnum_bignum(a, b);
+          case KISS_IS_FLOAT:
+               return kiss_plus2_fixnum_float(a, b);
+          default:
+               fprintf(stderr, "kiss_plus2: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
+               exit(EXIT_FAILURE);
+          }
+          break;
+     case KISS_BIGNUM:
+          switch (KISS_OBJ_TYPE(b)) {
+          case KISS_FIXNUM:
+               return kiss_plus2_fixnum_bignum(b, a);
+          case KISS_BIGNUM:
+               return kiss_plus2_bignum2(a, b);
+          case KISS_IS_FLOAT:
+               return kiss_plus2_bignum_float(a, b);
+          default:
+               fprintf(stderr, "kiss_plus2: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
+               exit(EXIT_FAILURE);
+          }
+          break;
+     case KISS_FLOAT:
+          switch (KISS_OBJ_TYPE(b)) {
+          case KISS_FIXNUM:
+               return kiss_plus2_fixnum_float(b, a);
+          case KISS_BIGNUM:
+               return kiss_plus2_bignum_float(b, a);
+          case KISS_IS_FLOAT:
+               return kiss_plus2_float2(a, b);
+          default:
+               fprintf(stderr, "kiss_plus2: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
+               exit(EXIT_FAILURE);
+          }
+          break;
+     default:
+          fprintf(stderr, "kiss_plus2: unexpected primitive type = %ld", KISS_OBJ_TYPE(a));
+          exit(EXIT_FAILURE);
+     }
+}
 
 /* function: (+ x*) -> <number> 
    The function + returns the sum of its arguments. 
    If all arguments are integers, the result is an integer.
    If any argument is a float, the result is a float.
    When given no arguments, + returns 0. 
-   An error shall be signaled if any x is not a number (error-id. domain-error).
-*/
-kiss_obj* kiss_Lplus(kiss_obj* p) {
-     if (kiss_all_int(p)) {
-	  long int sum = 0;
-	  while (KISS_IS_CONS(p)) {
-	       long int x = Kiss_Integer(KISS_CAR(p));
-	       sum += x;
-	       p = KISS_CDR(p);
-	  }
-	  return (kiss_obj*)kiss_make_integer(sum);
-     } else {
-	  float sum = 0.0;
-	  while (KISS_IS_CONS(p)) {
-	       kiss_obj* obj = Kiss_Number(KISS_CAR(p));
-	       if (KISS_IS_INTEGER(obj)) {
-		    sum += kiss_int(obj);
-	       } else {
-		    sum += ((kiss_float_t*)obj)->f;
-	       }
-	       p = KISS_CDR(p);
-	  }
-	  return (kiss_obj*)kiss_make_float(sum);
+   An error shall be signaled if any X is not a number (error-id. domain-error). */
+kiss_obj* kiss_plus(kiss_obj* list) {
+     if (list == KISS_NIL) { return kiss_make_fixnum(0); }
+     kiss_obj* p = KISS_CAR(list);
+     list = KISS_CDR(list);
+     while (list != KISS_NIL) {
+          p = kiss_plus2(p, KISS_CAR(list));
+          list = KISS_CDR(list);
      }
+     return p;
 }
 
 /* function: (* x*) -> <number> 
@@ -122,27 +216,9 @@ kiss_obj* kiss_Lplus(kiss_obj* p) {
    When given no arguments, * returns 1. 
    An error shall be signaled if any x is not a number (error-id. domain-error).
 */
-kiss_obj* kiss_Lmultiply(kiss_obj* p) {
-     if (kiss_all_int(p)) {
-	  long int product = 1;
-	  while (KISS_IS_CONS(p)) {
-	       product *= Kiss_Integer(KISS_CAR(p));
-	       p = KISS_CDR(p);
-	  }
-	  return (kiss_obj*)kiss_make_integer(product);
-     } else {
-	  float product = 1.0;
-	  while (KISS_IS_CONS(p)) {
-	       kiss_obj* obj = Kiss_Number(KISS_CAR(p));
-	       if (KISS_IS_INTEGER(obj)) {
-		    product *= kiss_int(obj);
-	       } else {
-		    product *= ((kiss_float_t*)obj)->f;
-	       }
-	       p = KISS_CDR(p);
-	  }
-	  return (kiss_obj*)kiss_make_float(product);
-     }
+kiss_obj* kiss_multiply(kiss_obj* p) {
+     fprintf(stderr, "kiss_multiply: not implemented");
+     exit(EXIT_FAILURE);
 }
 
 /* function: (- x+) -> <number> 
@@ -152,55 +228,63 @@ kiss_obj* kiss_Lmultiply(kiss_obj* p) {
    returns -0.0 ;in implementations where -0.0 and 0.0 are not distinct, (- 0.0)
    returns 0.0.
 */
-kiss_obj* kiss_Lminus(kiss_obj* number, kiss_obj* rest) {
-     if (kiss_all_int(kiss_cons(number, rest))) {
-	  if (rest == KISS_NIL) {
-	       /* (- 10) => -10 */
-	       return (kiss_obj*)kiss_make_integer(- Kiss_Integer(number));
-	  } else {
-	       /* (- 10 1 1) => 8 */
-	       long int remainder = Kiss_Integer(number);
-	       while (KISS_IS_CONS(rest)) {
-		    long int i = Kiss_Integer(KISS_CAR(rest));
-		    remainder -= i;
-		    rest = KISS_CDR(rest);
-	       }
-	       return (kiss_obj*)kiss_make_integer(remainder);
-	  }
-     } else {
-	  if (rest == KISS_NIL) {
-	       return (kiss_obj*)kiss_make_float( - Kiss_Float(number)->f);
-	  } else {
-	       float remainder = Kiss_Float(number)->f;
-	       while (KISS_IS_CONS(rest)) {
-		    float f = Kiss_Float(KISS_CAR(rest))->f;
-		    remainder -= f;
-		    rest = KISS_CDR(rest);
-	       }
-	       return (kiss_obj*)kiss_make_float(remainder);
-	  }
-     }
+kiss_obj* kiss_minus(kiss_obj* number, kiss_obj* rest) {
+     fprintf(stderr, "kiss_minus: not implemented");
+     exit(EXIT_FAILURE);
 }
 
 /* function: (= x y) -> boolean 
-   Returns t if x1 has the same mathematical value as x2 ;otherwise,returns nil.
-   An error shall be signaled if either x1 or x2 is not a number (error-id. domain-error).
+   Returns t if X has the same mathematical value as Y ;otherwise,returns nil.
+   An error shall be signaled if either X or Y is not a number (error-id. domain-error).
    Note: = differs from eql because = compares only the mathematical values of its arguments,
-   whereas eql also compares the representations. 
-*/
-kiss_obj* kiss_Lnum_eq(const kiss_obj* const x, const kiss_obj* const y) {
-     Kiss_Number(x);
-     Kiss_Number(y);
-     if (KISS_IS_INTEGER(x)) {
-	  if (KISS_IS_INTEGER(y)) {
-	       return Kiss_Integer(x) == Kiss_Integer(y) ? KISS_T : KISS_NIL;
-	  } else {
-	       return Kiss_Integer(x) == Kiss_Float(y)->f ? KISS_T : KISS_NIL;
-	  }
-     } else if (KISS_IS_INTEGER(y)) {
-	  return Kiss_Float(x)->f == Kiss_Integer(y) ? KISS_T : KISS_NIL;
-     } else {
-	  return Kiss_Float(x)->f == Kiss_Float(y)->f ? KISS_T : KISS_NIL;
+   whereas eql also compares the representations. */
+kiss_obj* kiss_num_eq(const kiss_obj* const a, const kiss_obj* const b) {
+     Kiss_Number(a);
+     Kiss_Number(b);
+     switch (KISS_OBJ_TYPE(a)) {
+     case KISS_FIXNUM:
+          switch (KISS_OBJ_TYPE(b)) {
+          case KISS_FIXNUM:
+               return (kiss_ptr_int)a == (kiss_ptr_int)b ? KISS_T : KISS_NIL;
+          case KISS_BIGNUM:
+               return mpz_cmp_si(((kiss_bignum_t*)b)->mpz, kiss_ptr_int(a)) == 0 ? KISS_T : KISS_NIL;
+          case KISS_IS_FLOAT:
+               return mpf_cmp_si(((kiss_float_t*)b)->mpf, kiss_ptr_int(a)) == 0 ? KISS_T : KISS_NIL;
+          default:
+               fprintf(stderr, "kiss_num_eq: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
+               exit(EXIT_FAILURE);
+          }
+          break;
+     case KISS_BIGNUM:
+          switch (KISS_OBJ_TYPE(b)) {
+          case KISS_FIXNUM:
+               return mpz_cmp_si(((kiss_bignum_t*)a)->mpz, kiss_ptr_int(b)) == 0 ? KISS_T : KISS_NIL;
+          case KISS_BIGNUM:
+               return mpz_cmp(((kiss_bignum_t*)a)->mpz, ((kiss_bignum_t*)b)->mpz) == 0 ? KISS_T : KISS_NIL;
+          case KISS_IS_FLOAT:
+               return mpf_cmp_z(((kiss_float_t*)b)->mpf, ((kiss_bignum_t*)a)->mpz) == 0 ? KISS_T : KISS_NIL;
+          default:
+               fprintf(stderr, "kiss_plus2: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
+               exit(EXIT_FAILURE);
+          }
+          break;
+     case KISS_FLOAT:
+          switch (KISS_OBJ_TYPE(b)) {
+          case KISS_FIXNUM:
+               return mpf_cmp_si(((kiss_float_t*)a)->mpf, kiss_ptr_int(b)) == 0 ? KISS_T : KISS_NIL;
+          case KISS_BIGNUM:
+               return mpf_cmp_z(((kiss_float_t*)a)->mpf, ((kiss_bignum_t*)b)->mpz) == 0 ? KISS_T : KISS_NIL;
+          case KISS_IS_FLOAT:
+               return mpf_cmp(((kiss_float_t*)a)->mpf, ((kiss_float_t*)b)->mpf) == 0 ? KISS_T : KISS_NIL;
+               break;
+          default:
+               fprintf(stderr, "kiss_plus2: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
+               exit(EXIT_FAILURE);
+          }
+          break;
+     default:
+          fprintf(stderr, "kiss_plus2: unexpected primitive type = %ld", KISS_OBJ_TYPE(a));
+          exit(EXIT_FAILURE);
      }
 }
 
@@ -209,20 +293,9 @@ kiss_obj* kiss_Lnum_eq(const kiss_obj* const x, const kiss_obj* const y) {
    The mathematical values of the arguments are compared. 
    An error shall be signaled if either x1 or x2 is not a number (error-id. domain-error).
 */
-kiss_obj* kiss_Lnum_lessthan(kiss_obj* x, kiss_obj* y) {
-     Kiss_Number(x);
-     Kiss_Number(y);
-     if (KISS_IS_INTEGER(x)) {
-	  if (KISS_IS_INTEGER(y)) {
-	       return Kiss_Integer(x) < Kiss_Integer(y) ? KISS_T : KISS_NIL;
-	  } else {
-	       return Kiss_Integer(x) < Kiss_Float(y)->f ? KISS_T : KISS_NIL;
-	  }
-     } else if (KISS_IS_INTEGER(y)) {
-	  return Kiss_Float(x)->f < Kiss_Integer(y) ? KISS_T : KISS_NIL;
-     } else {
-	  return Kiss_Float(x)->f < Kiss_Float(y)->f ? KISS_T : KISS_NIL;
-     }
+kiss_obj* kiss_num_lessthan(kiss_obj* x, kiss_obj* y) {
+     fprintf(stderr, "kiss_num_lessthan: not implemented");
+     exit(EXIT_FAILURE);
 }
 
 /* function: (div z1 z2) -> <integer>
@@ -231,10 +304,8 @@ kiss_obj* kiss_Lnum_lessthan(kiss_obj* x, kiss_obj* y) {
    An error shall be signaled if z2 is zero (error-id. division-by-zero).
 */
 kiss_obj* kiss_div(kiss_obj* z1, kiss_obj* z2) {
-     float f1 = Kiss_Integer(z1);
-     float f2 = Kiss_Non_Zero_Integer(z2);
-     
-     return (kiss_obj*)kiss_make_integer(floorf(f1 / f2));
+     fprintf(stderr, "kiss_div: not implemented");
+     exit(EXIT_FAILURE);
 }
 
 /* function: (mod z1 z2) -> <integer>
@@ -244,10 +315,8 @@ kiss_obj* kiss_div(kiss_obj* z1, kiss_obj* z2) {
    and the difference of z1 and this result is divisible by z2 without remainder.
 */
 kiss_obj* kiss_mod(kiss_obj* z1, kiss_obj* z2) {
-     long int i1 = Kiss_Integer(z1);
-     long int i2 = Kiss_Non_Zero_Integer(z2);
-     
-     return (kiss_obj*)kiss_make_integer(i1 - (kiss_int(kiss_div(z1, z2)) * i2));
+     fprintf(stderr, "kiss_mod: not implemented");
+     exit(EXIT_FAILURE);
 }
 
 /* function: (gcd z1 z2) -> <integer>
@@ -259,29 +328,8 @@ kiss_obj* kiss_mod(kiss_obj* z1, kiss_obj* z2) {
    (error-id. domain-error).
 */
 kiss_obj* kiss_gcd(kiss_obj* z1, kiss_obj* z2) {
-     long int i1 = Kiss_Integer(z1);
-     long int i2 = Kiss_Integer(z2);
-     long remainder;
-     long tmp;
-
-     if (i1 < 0) { i1 = -i1; }
-     if (i2 < 0) { i2 = -i2; }
-
-     if (i1 < i2) {
-	  tmp = i1;
-	  i1 = i2;
-	  i2 = tmp;
-     }
-
-     assert(i1 >= i2);
-     /* Euclidean Algorithm */
-     remainder = i2;
-     while (remainder) {
-	  remainder = i1 % i2;
-	  i1 = i2;
-	  i2 = remainder;
-     }
-     return (kiss_obj*)kiss_make_integer(i1);
+     fprintf(stderr, "kiss_gcd: not implemented");
+     exit(EXIT_FAILURE);
 }
 
 /* function: (lcm z1 z2) -> <integer>
@@ -292,16 +340,8 @@ kiss_obj* kiss_gcd(kiss_obj* z1, kiss_obj* z2) {
    (error-id. domain-error).
 */
 kiss_obj* kiss_lcm(kiss_obj* z1, kiss_obj* z2) {
-     long int gcd = kiss_int(kiss_gcd(z1, z2));
-     long int i1 = Kiss_Integer(z1);
-     long int i2 = Kiss_Integer(z2);
-     if (i1 < 0) { i1 = -i1; }
-     if (i2 < 0) { i2 = -i2; }
-     if (gcd == 0) {
-	  return (kiss_obj*)kiss_make_integer(0);
-     } else {
-	  return (kiss_obj*)kiss_make_integer(gcd * (i1 / gcd) * (i2 / gcd));
-     }
+     fprintf(stderr, "kiss_lcm: not implemented");
+     exit(EXIT_FAILURE);
 }
 
 
@@ -310,12 +350,8 @@ kiss_obj* kiss_lcm(kiss_obj* z1, kiss_obj* z2) {
    An error shall be signaled if x is not a number (error-id. domain-error)
 */
 kiss_obj* kiss_abs(kiss_obj* x) {
-     Kiss_Number(x);
-     if (KISS_IS_INTEGER(x)) {
-	  return (kiss_obj*)kiss_make_integer(abs(Kiss_Integer(x)));
-     } else {
-	  return (kiss_obj*)kiss_make_float(fabs(Kiss_Float(x)->f));
-     }
+     fprintf(stderr, "kiss_abs: not implemented");
+     exit(EXIT_FAILURE);
 }
 
 /* function: (exp x) -> <number>
@@ -323,12 +359,8 @@ kiss_obj* kiss_abs(kiss_obj* x) {
    An error shall be signaled if x is not a number (error-id. domain-error).
 */
 kiss_obj* kiss_exp(kiss_obj* x) {
-     Kiss_Number(x);
-     if (KISS_IS_INTEGER(x)) {
-	  return (kiss_obj*)kiss_make_float(expf(Kiss_Integer(x)));
-     } else {
-	  return (kiss_obj*)kiss_make_float(expf(Kiss_Float(x)->f));
-     }
+     fprintf(stderr, "kiss_exp: not implemented");
+     exit(EXIT_FAILURE);
 }
 
 /* function: (floor x) -> <integer> 
@@ -337,12 +369,8 @@ kiss_obj* kiss_exp(kiss_obj* x) {
    An error shall be signaled if x is not a number (error-id. domain-error).
 */
 kiss_obj* kiss_floor(kiss_obj* x) {
-     Kiss_Number(x);
-     if (KISS_IS_INTEGER(x)) {
-	  return (kiss_obj*)kiss_make_integer(floorf(Kiss_Integer(x)));
-     } else {
-	  return (kiss_obj*)kiss_make_integer(floorf(Kiss_Float(x)->f));
-     }
+     fprintf(stderr, "kiss_exp: not implemented");
+     exit(EXIT_FAILURE);
 }
 
 /* function: (ceiling x) -> <integer> 
@@ -351,12 +379,8 @@ kiss_obj* kiss_floor(kiss_obj* x) {
    An error shall be signaled if x is not a number (error-id. domain-error).   
 */
 kiss_obj* kiss_ceiling(kiss_obj* x) {
-     Kiss_Number(x);
-     if (KISS_IS_INTEGER(x)) {
-	  return (kiss_obj*)kiss_make_integer(ceilf(Kiss_Integer(x)));
-     } else {
-	  return (kiss_obj*)kiss_make_integer(ceilf(Kiss_Float(x)->f));
-     }
+     fprintf(stderr, "kiss_ceiling: not implemented");
+     exit(EXIT_FAILURE);
 }
 
 /* function: (truncate x) -> <integer> 
@@ -365,12 +389,8 @@ kiss_obj* kiss_ceiling(kiss_obj* x) {
    An error shall be signaled if x is not a number (error-id. domain-error).
 */
 kiss_obj* kiss_truncate(kiss_obj* x) {
-     Kiss_Number(x);
-     if (KISS_IS_INTEGER(x)) {
-	  return (kiss_obj*)kiss_make_integer(truncf(Kiss_Integer(x)));
-     } else {
-	  return (kiss_obj*)kiss_make_integer(truncf(Kiss_Float(x)->f));
-     }
+     fprintf(stderr, "kiss_truncate: not implemented");
+     exit(EXIT_FAILURE);
 }
 
 /* function: (round x) -> <integer> 
@@ -397,12 +417,8 @@ kiss_obj* kiss_round(kiss_obj* x) {
    An error shall be signaled if x is not a positive number (error-id. domain-error).
 */
 kiss_obj* kiss_log(kiss_obj* x) {
-     Kiss_Number(x);
-     if (KISS_IS_INTEGER(x)) {
-	  return (kiss_obj*)kiss_make_float(logf(Kiss_Integer(x)));
-     } else {
-	  return (kiss_obj*)kiss_make_float(logf(Kiss_Float(x)->f));
-     }
+     fprintf(stderr, "kiss_log: not implemented");
+     exit(EXIT_FAILURE);
 }
 
 /* function: (sin x) -> <number>
@@ -410,12 +426,8 @@ kiss_obj* kiss_log(kiss_obj* x) {
    x must be given in radians.
 */
 kiss_obj* kiss_sin(kiss_obj* x) {
-     Kiss_Number(x);
-     if (KISS_IS_INTEGER(x)) {
-	  return (kiss_obj*)kiss_make_float(sinf(Kiss_Integer(x)));
-     } else {
-	  return (kiss_obj*)kiss_make_float(sinf(Kiss_Float(x)->f));
-     }
+     fprintf(stderr, "kiss_sin: not implemented");
+     exit(EXIT_FAILURE);
 }
 
 /* function: (cos x) -> <number>
@@ -423,12 +435,8 @@ kiss_obj* kiss_sin(kiss_obj* x) {
    x must be given in radians.
 */
 kiss_obj* kiss_cos(kiss_obj* x) {
-     Kiss_Number(x);
-     if (KISS_IS_INTEGER(x)) {
-	  return (kiss_obj*)kiss_make_float(cosf(Kiss_Integer(x)));
-     } else {
-	  return (kiss_obj*)kiss_make_float(cosf(Kiss_Float(x)->f));
-     }
+     fprintf(stderr, "kiss_cos: not implemented");
+     exit(EXIT_FAILURE);
 }
 
 /* function: (tan x) -> <number>
@@ -436,10 +444,6 @@ kiss_obj* kiss_cos(kiss_obj* x) {
    x must be given in radians.
 */
 kiss_obj* kiss_tan(kiss_obj* x) {
-     Kiss_Number(x);
-     if (KISS_IS_INTEGER(x)) {
-	  return (kiss_obj*)kiss_make_float(tanf(Kiss_Integer(x)));
-     } else {
-	  return (kiss_obj*)kiss_make_float(tanf(Kiss_Float(x)->f));
-     }
+     fprintf(stderr, "kiss_tan: not implemented");
+     exit(EXIT_FAILURE);
 }

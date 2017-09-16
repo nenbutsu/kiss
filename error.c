@@ -86,9 +86,9 @@ inline kiss_cons_t* Kiss_Cons(const kiss_obj* const obj) {
      return (kiss_cons_t*)obj;
 }
 
-inline long int Kiss_Integer(const kiss_obj* const obj) {
+inline kiss_ptr_int Kiss_Integer(const kiss_obj* const obj) {
      kiss_primitive_assure(KISS_INTEGER, obj);
-     return kiss_int(obj);
+     return kiss_ptr_int(obj);
 }
 
 inline kiss_float_t* Kiss_Float(const kiss_obj* const obj) {
