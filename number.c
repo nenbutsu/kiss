@@ -18,14 +18,14 @@
 */
 #include "kiss.h"
 
-kiss_bignum_t* kiss_make_bignum(kiss_ptr_int i) {
+inline kiss_bignum_t* kiss_make_bignum(kiss_ptr_int i) {
     kiss_bignum_t* p = Kiss_GC_Malloc(sizeof(kiss_bignum_t));
     p->type = KISS_BIGNUM;
-    mpz_init_set_si (p->mpz, i);
+    mpz_init_set_si(p->mpz, i);
     return p;
 }
 
-kiss_float_t* kiss_make_float(void) {
+inline kiss_float_t* kiss_make_float(void) {
     kiss_float_t* p = Kiss_GC_Malloc(sizeof(kiss_float_t));
     p->type = KISS_FLOAT;
     mpf_init_set_si(p->mpf, 0);
@@ -34,36 +34,103 @@ kiss_float_t* kiss_make_float(void) {
 
 /* function: (integeerp obj) -> boolean
    Returns t if obj is an integer otherwise, returns nil.*/
-kiss_obj* kiss_integerp(kiss_obj* obj) {
+inline kiss_obj* kiss_integerp(kiss_obj* obj) {
      return KISS_IS_INTEGER(obj) ? KISS_T : KISS_NIL;
 }
 
 /* function: (floatp obj) -> boolean
    Returns t if obj is an float otherwise, returns nil.*/
-kiss_obj* kiss_floatp(kiss_obj* obj) {
-     return KISS_IS_FLOAT(obj) KISS_T : KISS_NIL;
+inline kiss_obj* kiss_floatp(kiss_obj* obj) {
+     return KISS_IS_FLOAT(obj) ? KISS_T : KISS_NIL;
 }
 
 /* function: (float x) -> <float>
-   Returns x itself if it is an instance of the class <float> and returns 
-   a floating-point approximation of x otherwise. An error shall be signaled if
-   x is not a number (error-id. domain-error).
- */
+   Returns X itself if it is an instance of the class <float> and returns 
+   a floating-point approximation of X otherwise. An error shall be signaled if
+   X is not a number (error-id. domain-error). */
 kiss_obj* kiss_float(kiss_obj* x) {
-     fprintf(stderr, "kiss_float: not implemented");
-     exit(EXIT_FAILURE);
+     Kiss_Number(x);
+     switch (KISS_OBJ_TYPE(x)) {
+     case KISS_FIXNUM: {
+          kiss_float_t* f = kiss_make_float();
+          mpf_set_si(f->mpf, kiss_ptr_int(x));
+          return (kiss_obj*)f;
+     }
+     case KISS_BIGNUM: {
+          kiss_float_t* f = kiss_make_float();
+          mpf_set_z(f->mpf, ((kiss_bignum_t*)x)->mpz);
+          return (kiss_obj*)f;
+     }
+     case KISS_FLOAT:
+          return x;
+     default:
+          fprintf(stderr, "kiss_float: unknown primitive number type = %ld", KISS_OBJ_TYPE(x));
+          exit(EXIT_FAILURE);
+     }
+}
+
+kiss_obj* kiss_c_parse_number(kiss_obj* obj) {
+     kiss_string_t* str = Kiss_String(obj);
+     wchar_t* p = str->str;
+     if (*p == L'+') { p++; }
+     int base = 10;
+
+     if (*p == L'#') {
+          p++;
+          switch (*p) {
+          case L'b': case L'B':
+               base = 2;
+               break;
+          case L'x': case L'X':
+               base = 16;
+               break;
+          case L'o': case L'O':
+               base = 8;
+               break;
+          default:
+               return NULL;
+          }
+          p++;
+     }
+     
+     wchar_t* tail = NULL;
+     long int i = wcstol(p, &tail, base);
+     if (tail == p + wcslen(p) && i <= KISS_PTR_INT_MAX) {
+          return (kiss_obj*)kiss_make_fixnum(i);
+     }
+     
+     char* s = kiss_wcstombs(p);
+     kiss_bignum_t* z = kiss_make_bignum(0);
+     int result = mpz_set_str (z->mpz, s, base);
+     free(s);
+     if (result == 0) {
+          return (kiss_obj*)z;
+     }
+     if (base != 10) { return NULL; }
+
+     double d = wcstod(p, &tail);
+     if (tail == p + wcslen(p)) {
+          kiss_float_t* f = kiss_make_float();
+          mpf_set_d (f->mpf, d);
+          return (kiss_obj*)f;
+     }
+     return NULL;
 }
 
 /* function: (parse-number string) -> <number>
-   The characters belonging to string are scanned (as if by read) and if the resulting
+   The characters belonging to STRING are scanned (as if by read) and if the resulting
    lexeme is the textual representation of a number, the number it represents is returned.
-   An error shall be signaled if string is not a string (error-id. domain-error).
-   An error shall be signaled if string is not the textual representation of a number
-   (error-id. cannot-parse-number)
-*/
-kiss_obj* kiss_parse_number(kiss_obj* p) {
-     fprintf(stderr, "kiss_parse_number: not implemented");
-     exit(EXIT_FAILURE);
+   An error shall be signaled if STRING is not a string (error-id. domain-error).
+   An error shall be signaled if STRING is not the textual representation of a number
+   (error-id. cannot-parse-number) */
+kiss_obj* kiss_parse_number(kiss_obj* obj) {
+     kiss_obj* p = kiss_c_parse_number(obj);
+     if (p == NULL) {
+          Kiss_Cannot_Parse_Number_Error(obj);
+     } else {
+          return p;
+     }
+     exit(EXIT_FAILURE); // not reach here
 }
 
 inline kiss_obj* kiss_plus2_fixnum2 (kiss_obj* a, kiss_obj* b) {
@@ -99,7 +166,7 @@ inline kiss_obj* kiss_plus2_fixnum_bignum (kiss_obj* a, kiss_obj* b) {
      kiss_ptr_int i1 = kiss_ptr_int(a);
      kiss_bignum_t* z2 = (kiss_bignum_t*)b;
      kiss_bignum_t* p = kiss_make_bignum(i1);
-     mpz_add_ui(p->mpz, p->mpz, z2->mpz);
+     mpz_add(p->mpz, p->mpz, z2->mpz);
      return (kiss_obj*)p;
 }
 
@@ -107,7 +174,7 @@ inline kiss_obj* kiss_plus2_fixnum_float(kiss_obj* a, kiss_obj* b) {
      kiss_ptr_int i1 = kiss_ptr_int(a);
      kiss_float_t* f2 = (kiss_float_t*)b;
      kiss_float_t* p = kiss_make_float();
-     mpf_set(p->mpf, f2);
+     mpf_set(p->mpf, f2->mpf);
      if (i1 >= 0) {
           mpf_add_ui(p->mpf, p->mpf, i1);
      } else {
@@ -120,7 +187,7 @@ inline kiss_obj* kiss_plus2_bignum2(kiss_obj* a, kiss_obj* b) {
      kiss_bignum_t* z1 = (kiss_bignum_t*)a;
      kiss_bignum_t* z2 = (kiss_bignum_t*)b;
      kiss_bignum_t* p = kiss_make_bignum(0);
-     mpz_set(p->mpz, z1);
+     mpz_set(p->mpz, z1->mpz);
      mpz_add(p->mpz, p->mpz, z2->mpz);
      return (kiss_obj*)p;
 }
@@ -130,15 +197,15 @@ inline kiss_obj* kiss_plus2_bignum_float(kiss_obj* a, kiss_obj* b) {
      kiss_float_t* f2 = (kiss_float_t*)b;
      kiss_float_t* p = kiss_make_float();
      mpf_set_z (p->mpf, z1->mpz);
-     mpf_add(p->mpf, f2->mpf)
+     mpf_add(p->mpf, p->mpf, f2->mpf);
      return (kiss_obj*)p;
 }
 
 inline kiss_obj* kiss_plus2_float2(kiss_obj* a, kiss_obj* b) {
      kiss_float_t* f1 = (kiss_float_t*)a;
      kiss_float_t* f2 = (kiss_float_t*)b;
-     kiss_float_t* p = kiss_make_float(0);
-     mpf_set(p->mpf, 11);
+     kiss_float_t* p = kiss_make_float();
+     mpf_set(p->mpf, f1->mpf);
      mpf_add(p->mpf, p->mpf, f2->mpf);
      return (kiss_obj*)p;
 }
@@ -153,7 +220,7 @@ inline kiss_obj* kiss_plus2(kiss_obj* a, kiss_obj* b) {
                return kiss_plus2_fixnum2(a, b);
           case KISS_BIGNUM:
                return kiss_plus2_fixnum_bignum(a, b);
-          case KISS_IS_FLOAT:
+          case KISS_FLOAT:
                return kiss_plus2_fixnum_float(a, b);
           default:
                fprintf(stderr, "kiss_plus2: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
@@ -166,7 +233,7 @@ inline kiss_obj* kiss_plus2(kiss_obj* a, kiss_obj* b) {
                return kiss_plus2_fixnum_bignum(b, a);
           case KISS_BIGNUM:
                return kiss_plus2_bignum2(a, b);
-          case KISS_IS_FLOAT:
+          case KISS_FLOAT:
                return kiss_plus2_bignum_float(a, b);
           default:
                fprintf(stderr, "kiss_plus2: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
@@ -179,7 +246,7 @@ inline kiss_obj* kiss_plus2(kiss_obj* a, kiss_obj* b) {
                return kiss_plus2_fixnum_float(b, a);
           case KISS_BIGNUM:
                return kiss_plus2_bignum_float(b, a);
-          case KISS_IS_FLOAT:
+          case KISS_FLOAT:
                return kiss_plus2_float2(a, b);
           default:
                fprintf(stderr, "kiss_plus2: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
@@ -248,7 +315,7 @@ kiss_obj* kiss_num_eq(const kiss_obj* const a, const kiss_obj* const b) {
                return (kiss_ptr_int)a == (kiss_ptr_int)b ? KISS_T : KISS_NIL;
           case KISS_BIGNUM:
                return mpz_cmp_si(((kiss_bignum_t*)b)->mpz, kiss_ptr_int(a)) == 0 ? KISS_T : KISS_NIL;
-          case KISS_IS_FLOAT:
+          case KISS_FLOAT:
                return mpf_cmp_si(((kiss_float_t*)b)->mpf, kiss_ptr_int(a)) == 0 ? KISS_T : KISS_NIL;
           default:
                fprintf(stderr, "kiss_num_eq: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
@@ -261,7 +328,7 @@ kiss_obj* kiss_num_eq(const kiss_obj* const a, const kiss_obj* const b) {
                return mpz_cmp_si(((kiss_bignum_t*)a)->mpz, kiss_ptr_int(b)) == 0 ? KISS_T : KISS_NIL;
           case KISS_BIGNUM:
                return mpz_cmp(((kiss_bignum_t*)a)->mpz, ((kiss_bignum_t*)b)->mpz) == 0 ? KISS_T : KISS_NIL;
-          case KISS_IS_FLOAT:
+          case KISS_FLOAT:
                return mpf_cmp_z(((kiss_float_t*)b)->mpf, ((kiss_bignum_t*)a)->mpz) == 0 ? KISS_T : KISS_NIL;
           default:
                fprintf(stderr, "kiss_plus2: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
@@ -274,7 +341,7 @@ kiss_obj* kiss_num_eq(const kiss_obj* const a, const kiss_obj* const b) {
                return mpf_cmp_si(((kiss_float_t*)a)->mpf, kiss_ptr_int(b)) == 0 ? KISS_T : KISS_NIL;
           case KISS_BIGNUM:
                return mpf_cmp_z(((kiss_float_t*)a)->mpf, ((kiss_bignum_t*)b)->mpz) == 0 ? KISS_T : KISS_NIL;
-          case KISS_IS_FLOAT:
+          case KISS_FLOAT:
                return mpf_cmp(((kiss_float_t*)a)->mpf, ((kiss_float_t*)b)->mpf) == 0 ? KISS_T : KISS_NIL;
                break;
           default:

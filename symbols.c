@@ -1590,7 +1590,7 @@ kiss_symbol_t KISS_Snum_lessthan;
 kiss_cfunction_t KISS_CFnum_lessthan = {
     KISS_CFUNCTION,       /* type */
     &KISS_Snum_lessthan,  /* name */
-    (kiss_cf_t*)kiss_Lnum_lessthan,   /* C function name */
+    (kiss_cf_t*)kiss_num_lessthan,   /* C function name */
     2,               /* minimum argument number */
     2,               /* maximum argument number */
 };

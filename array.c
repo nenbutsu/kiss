@@ -269,7 +269,8 @@ kiss_obj* kiss_basic_array_p (const kiss_obj* const obj) {
      case KISS_CONS:
      case KISS_SYMBOL:
      case KISS_CHARACTER:
-     case KISS_INTEGER:
+     case KISS_FIXNUM:
+     case KISS_BIGNUM:
      case KISS_FLOAT:
      case KISS_STREAM:
      case KISS_FUNCTION:
@@ -300,7 +301,8 @@ kiss_obj* kiss_basic_array_s_p (const kiss_obj* const obj) {
      case KISS_CONS:
      case KISS_SYMBOL:
      case KISS_CHARACTER:
-     case KISS_INTEGER:
+     case KISS_FIXNUM:
+     case KISS_BIGNUM:
      case KISS_FLOAT:
      case KISS_STREAM:
      case KISS_FUNCTION:
@@ -331,7 +333,8 @@ kiss_obj* kiss_general_array_s_p (const kiss_obj* const obj) {
      case KISS_CONS:
      case KISS_SYMBOL:
      case KISS_CHARACTER:
-     case KISS_INTEGER:
+     case KISS_FIXNUM:
+     case KISS_BIGNUM:
      case KISS_FLOAT:
      case KISS_STREAM:
      case KISS_FUNCTION:

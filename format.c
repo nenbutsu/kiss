@@ -159,9 +159,9 @@ static kiss_obj* kiss_format_escaped_char(kiss_obj* out, kiss_obj* obj) {
 }
 
 /* function: (format-integer output-stream integer radix) -> <null> */
-kiss_obj* kiss_format_integer(kiss_obj* out, kiss_obj* obj, kiss_obj* radix) {
-     long int i = Kiss_Integer(obj);
-     long int r = Kiss_Integer(radix);
+kiss_obj* kiss_format_fixnum(kiss_obj* out, kiss_obj* obj, kiss_obj* radix) {
+     long int i = Kiss_Fixnum(obj);
+     long int r = Kiss_Fixnum(radix);
      int is_minus = i < 0 ? 1 : 0;
      wchar_t* digits = L"0123456789ABCDEFGHIJKLMNOPQRSTUV";
      kiss_obj* stack = KISS_NIL;
@@ -187,18 +187,42 @@ kiss_obj* kiss_format_integer(kiss_obj* out, kiss_obj* obj, kiss_obj* radix) {
      return KISS_NIL;
 }
 
+kiss_obj* kiss_format_bignum(kiss_obj* out, kiss_obj* obj, kiss_obj* radix) {
+     char* str = mpz_get_str(NULL, Kiss_Fixnum(radix), Kiss_Bignum(obj)->mpz);
+     wchar_t* wcs = kiss_mbstowcs(str);
+     free(str);
+     kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs), KISS_NIL);
+     free(wcs);
+     return KISS_NIL;
+}
+
+kiss_obj* kiss_format_integer(kiss_obj* out, kiss_obj* obj, kiss_obj* radix) {
+     Kiss_Integer(obj);
+     if (KISS_IS_FIXNUM(obj)) {
+          return kiss_format_fixnum(out, obj, radix);
+     } else {
+          return kiss_format_bignum(out, obj, radix);
+     }
+     return KISS_NIL;
+}
+
 /* function: (format-float output-stream float) -> <null> */
 kiss_obj* kiss_format_float(kiss_obj* out, kiss_obj* obj) {
      kiss_float_t* f = Kiss_Float(obj);
-     wchar_t buff[1024];
-     wchar_t* p;
-     swprintf(buff, 1024, L"%g", f->f);
-     if (!wcschr(buff, L'.') && !wcschr(buff, L'e')) {
-	  wcscpy(buff + wcslen(buff), L".0");
+     mp_exp_t exp = 0;
+     char* str = mpf_get_str (NULL, &exp, 10, 0, f->mpf);
+     wchar_t* wcs = kiss_mbstowcs(str);
+     free(str);
+     kiss_obj* str_out = kiss_create_string_output_stream();
+     kiss_format_string(str_out, (kiss_obj*)kiss_make_string(L"0."), KISS_NIL);
+     kiss_format_string(str_out, (kiss_obj*)kiss_make_string(wcs), KISS_NIL);
+     free(wcs);
+     if (exp != 0) {
+          kiss_format_string(str_out, (kiss_obj*)kiss_make_string(L"e"), KISS_NIL);
+          kiss_format_integer(str_out, (kiss_obj*)kiss_make_fixnum(exp), KISS_NIL);
      }
-     for (p = buff; *p != L'\0'; p++) {
-	  kiss_format_char(out, kiss_make_character(*p));
-     }
+
+     kiss_format_string(out, kiss_get_output_stream_string(str_out), KISS_NIL);
      return KISS_NIL;
 }
 
@@ -288,7 +312,8 @@ kiss_obj* kiss_format_object(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
 	  else                     { kiss_format_escaped_char(out, obj); }
 	  break;
      }
-     case KISS_INTEGER: kiss_format_integer(out, obj, (kiss_obj*)kiss_make_fixnum(10));
+     case KISS_FIXNUM: case KISS_BIGNUM:
+          kiss_format_integer(out, obj, (kiss_obj*)kiss_make_fixnum(10));
 	  break;
      case KISS_FLOAT: kiss_format_float(out, obj); break;
      case KISS_FUNCTION: kiss_format_function(out, obj); break;

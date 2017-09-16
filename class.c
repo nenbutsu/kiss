@@ -24,7 +24,8 @@ wchar_t* kiss_type_to_class_name_str(kiss_type t) {
      case KISS_CONS:      class_name_str = L"<cons>";      break;
      case KISS_SYMBOL:    class_name_str = L"<symbol>";    break;
      case KISS_CHARACTER: class_name_str = L"<character>"; break;
-     case KISS_INTEGER:   class_name_str = L"<integer>";   break;
+     case KISS_FIXNUM:    class_name_str = L"<integer>";   break;
+     case KISS_BIGNUM:    class_name_str = L"<integer>";   break;
      case KISS_FLOAT:     class_name_str = L"<float>";     break;
      case KISS_STRING:    class_name_str = L"<string>";    break;
      case KISS_GENERAL_VECTOR:

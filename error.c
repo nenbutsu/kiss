@@ -71,7 +71,7 @@ void Kiss_Err(const wchar_t* const str, ...) {
 
 
 /* assure primitive type */
-void kiss_primitive_assure(const kiss_type t, const kiss_obj* const obj) {
+static inline void kiss_primitive_assure(const kiss_type t, const kiss_obj* const obj) {
      if (t != KISS_OBJ_TYPE(obj)) {
 	  if (is_condition_working()) {
 	       kiss_c_funcall(L"kiss::assure", kiss_c_list(2, kiss_type_to_class_name(t), obj));
@@ -86,9 +86,29 @@ inline kiss_cons_t* Kiss_Cons(const kiss_obj* const obj) {
      return (kiss_cons_t*)obj;
 }
 
-inline kiss_ptr_int Kiss_Integer(const kiss_obj* const obj) {
-     kiss_primitive_assure(KISS_INTEGER, obj);
-     return kiss_ptr_int(obj);
+inline kiss_ptr_int Kiss_Fixnum(const kiss_obj* const obj) {
+     if (KISS_IS_FIXNUM(obj)) {
+          return kiss_ptr_int(obj);
+     } else if (KISS_IS_BIGNUM(obj)) {
+          kiss_bignum_t* z = (kiss_bignum_t*)obj;
+          if (mpz_cmp_si(z->mpz, KISS_PTR_INT_MAX) <= 0 &&
+              mpz_cmp_si(z->mpz, KISS_PTR_INT_MIN) >= 0)
+          {
+               return mpz_get_si(z->mpz);
+          }
+     }
+     const kiss_type t = KISS_FIXNUM;
+     if (is_condition_working()) {
+          kiss_c_funcall(L"kiss::assure", kiss_c_list(2, kiss_type_to_class_name(t), obj));
+     } else {
+          Kiss_Err(L"~S expected ~S", kiss_type_to_class_name(t), obj);
+     }
+     exit(EXIT_FAILURE); // not reach here
+}
+
+inline kiss_bignum_t* Kiss_Bignum(const kiss_obj* const obj) {
+     kiss_primitive_assure(KISS_BIGNUM, obj);
+     return (kiss_bignum_t*)obj;
 }
 
 inline kiss_float_t* Kiss_Float(const kiss_obj* const obj) {
@@ -150,6 +170,18 @@ kiss_cfunction_t* Kiss_CMacro(const kiss_obj* const obj) {
 
 /* assure non-primitive type */
 
+inline kiss_obj* Kiss_Integer(const kiss_obj* const obj) {
+     if (!KISS_IS_FIXNUM(obj) && !KISS_IS_BIGNUM(obj)) {
+	  if (is_condition_working()) {
+	       kiss_c_funcall(L"kiss::assure", kiss_c_list(2, kiss_symbol(L"<integer>"), obj));
+	  } else {
+	       Kiss_Err(L"Integer expected ~S", obj);
+	  }
+     }
+     return (kiss_obj*)obj;
+}
+
+
 inline kiss_obj* Kiss_Number(const kiss_obj* const obj) {
      if (!KISS_IS_INTEGER(obj) && !KISS_IS_FLOAT(obj)) {
 	  if (is_condition_working()) {
@@ -173,7 +205,7 @@ inline kiss_obj* Kiss_List(const kiss_obj* const obj) {
 }
 
 inline long int Kiss_Non_Negative_Integer(const kiss_obj* const obj) {
-    const long int i = Kiss_Integer(obj);
+    const kiss_ptr_int i = Kiss_Fixnum(obj);
     if (i < 0) {
 	 Kiss_Err(L"Non negative integer expected ~S", obj);
     }
@@ -181,7 +213,7 @@ inline long int Kiss_Non_Negative_Integer(const kiss_obj* const obj) {
 }
 
 inline long int Kiss_Non_Zero_Integer(const kiss_obj* const obj) {
-    const long int i = Kiss_Integer(obj);
+    const kiss_ptr_int i = Kiss_Fixnum(obj);
     if (i == 0) {
 	 Kiss_Err(L"Non zero integer expected ~S", obj);
     }
@@ -209,7 +241,7 @@ inline kiss_obj* Kiss_Basic_Array(const kiss_obj* const obj) {
 inline kiss_obj* Kiss_Valid_Sequence_Index(const kiss_obj* const sequence, const kiss_obj* const index)
 {
      const size_t n = kiss_c_length(sequence);
-     const long int i = Kiss_Integer(index);
+     const kiss_ptr_int i = Kiss_Fixnum(index);
      if (i < 0 || i >= n) {
           Kiss_Err(L"Invalid sequence index ~S ~S", sequence, index);
      }

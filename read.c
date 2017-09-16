@@ -154,17 +154,6 @@ static kiss_obj* kiss_read_lexeme_chars(const kiss_obj* const in) {
     kiss_collect_lexeme_chars(in, &escaped);
     kiss_string_t* const str = kiss_chars_to_str(kiss_reverse(env->lexeme_chars));
     if (escaped) { return kiss_intern((kiss_obj*)str); }
-    errno = 0;
-    wchar_t* tail = NULL;
-    long int i = wcstol(str->str, &tail, 10);
-    if (tail == str->str + str->n) {
-      return (kiss_obj*)kiss_make_fixnum(i);
-    }
-    tail = NULL;
-    float f = wcstof(str->str, &tail);
-    if (tail == str->str + str->n) {
-      return (kiss_obj*)kiss_make_float(f);
-    }
     if (wcscmp(str->str, L".") == 0) {
          return KISS_DOT;
     }
@@ -279,11 +268,19 @@ static kiss_obj* kiss_read_sharp_reader_macro(const kiss_obj* const in) {
 	  return kiss_vector(kiss_read_list(in));
      }
      case L'1': case L'2': case L'3': case L'4': 
-     case L'5': case L'6': case L'7': case L'8': case L'9': {
+     case L'5': case L'6': case L'7': case L'8': case L'9':
 	  return kiss_read_array(in);
+     case L'b': case L'B': case L'o': case L'O': case L'x': case L'X': {
+          int escaped;
+          kiss_c_read_char(in, KISS_NIL, KISS_EOS);
+          kiss_collect_lexeme_chars(in, &escaped);
+          kiss_environment_t* env = Kiss_Get_Environment();
+          kiss_string_t* const str = kiss_chars_to_str(kiss_reverse(env->lexeme_chars));
+          if (escaped) { Kiss_Cannot_Parse_Number_Error((kiss_obj*)str); }
+          return kiss_parse_number((kiss_obj*) str);
      }
      default:
-	  Kiss_Err(L"Illegal # macro reader character ~S", c);
+	  Kiss_Err(L"Illegal # macro reader character ~S", p);
      }
 }
 
