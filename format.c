@@ -215,7 +215,7 @@ kiss_obj* kiss_format_float(kiss_obj* out, kiss_obj* obj) {
      snprintf(s, 100, "%g", d);
      wchar_t* wcs = kiss_mbstowcs(s);
      kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs), KISS_NIL);
-     if (!wcschr(wcs, L'.')) {
+     if (!wcschr(wcs, L'.') && !wcschr(wcs, L'e')) {
           kiss_format_string(out, (kiss_obj*)kiss_make_string(L".0"), KISS_NIL);
      }
      free(wcs);

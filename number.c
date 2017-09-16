@@ -101,7 +101,7 @@ kiss_obj* kiss_c_parse_number(kiss_obj* obj) {
      
      char* s = kiss_wcstombs(p);
      kiss_bignum_t* z = kiss_make_bignum(0);
-     int result = mpz_set_str (z->mpz, s, base);
+     int result = mpz_set_str(z->mpz, s, base);
      free(s);
      if (result == 0) {
           return (kiss_obj*)z;
@@ -142,22 +142,21 @@ kiss_obj* kiss_plus2_fixnum2 (kiss_obj* a, kiss_obj* b) {
      } else if (i1 > 0 && i2 > 0) {
           kiss_ptr_int n = KISS_PTR_INT_MAX - i2;
           if (i1 <= n) {
-               //fprintf(stderr, "i1 = %ld\ni2 = %ld\n", i1, i2);
                return (kiss_obj*)kiss_make_fixnum(i1 + i2);
           } else {
-               kiss_bignum_t* p = kiss_make_bignum(i1);
-               mpz_add_ui(p->mpz, p->mpz, i2);
-               return (kiss_obj*)p;
+               kiss_bignum_t* z = kiss_make_bignum(i1);
+               mpz_add_ui(z->mpz, z->mpz, i2);
+               return (kiss_obj*)z;
           }
      } else if (i1 < 0 && i2 < 0) {
           kiss_ptr_int n = KISS_PTR_INT_MIN - i2;
           if (i1 >= n) {
                return (kiss_obj*)kiss_make_fixnum(i1 + i2);
           } else {
-               kiss_bignum_t* p = kiss_make_bignum(i1);
-               kiss_bignum_t* q = kiss_make_bignum(i2);
-               mpz_add(p->mpz, p->mpz, q->mpz);
-               return (kiss_obj*)p;
+               kiss_bignum_t* z1 = kiss_make_bignum(i1);
+               kiss_bignum_t* z2 = kiss_make_bignum(i2);
+               mpz_add(z1->mpz, z1->mpz, z2->mpz);
+               return (kiss_obj*)z1;
           }
      } else {
           fprintf(stderr, "kiss_plus2_fixnum2: internal error");
@@ -166,18 +165,16 @@ kiss_obj* kiss_plus2_fixnum2 (kiss_obj* a, kiss_obj* b) {
 }
 
 kiss_obj* kiss_plus2_fixnum_bignum (kiss_obj* a, kiss_obj* b) {
-     kiss_ptr_int i1 = kiss_ptr_int(a);
+     kiss_bignum_t* z1 = kiss_make_bignum(kiss_ptr_int(a));
      kiss_bignum_t* z2 = (kiss_bignum_t*)b;
-     kiss_bignum_t* p = kiss_make_bignum(i1);
-     mpz_add(p->mpz, p->mpz, z2->mpz);
-     return (kiss_obj*)p;
+     mpz_add(z1->mpz, z1->mpz, z2->mpz);
+     return (kiss_obj*)z1;
 }
 
 kiss_obj* kiss_plus2_fixnum_float(kiss_obj* a, kiss_obj* b) {
-     kiss_ptr_int i1 = kiss_ptr_int(a);
-     kiss_float_t* f2 = (kiss_float_t*)b;
      kiss_float_t* f1 = kiss_make_float();
-     mpf_set_si(f1->mpf, i1);
+     mpf_set_si(f1->mpf, kiss_ptr_int(a));
+     kiss_float_t* f2 = (kiss_float_t*)b;
      mpf_add(f1->mpf, f1->mpf, f2->mpf);
      return (kiss_obj*)f1;
 }
@@ -307,8 +304,8 @@ kiss_obj* kiss_flip_sign(kiss_obj* obj) {
 
 
 /* function: (- x+) -> <number> 
-   Given one argument, x, this function returns its additive inverse.
-   An error shall be signaled if x is not a number (error-id. domain-error).
+   Given one argument, X, this function returns its additive inverse.
+   An error shall be signaled if X is not a number (error-id. domain-error).
    If an implementation supports a -0.0 that is distinct from 0.0 ,then (- 0.0)
    returns -0.0 ;in implementations where -0.0 and 0.0 are not distinct, (- 0.0)
    returns 0.0. */
@@ -421,7 +418,7 @@ kiss_obj* kiss_multiply2(kiss_obj* a, kiss_obj* b) {
           case KISS_FLOAT:
                return kiss_multiply2_bignum_float(a, b);
           default:
-               fprintf(stderr, "kiss_plus2: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
+               fprintf(stderr, "kiss_multiply2: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
@@ -434,12 +431,12 @@ kiss_obj* kiss_multiply2(kiss_obj* a, kiss_obj* b) {
           case KISS_FLOAT:
                return kiss_multiply2_float2(a, b);
           default:
-               fprintf(stderr, "kiss_plus2: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
+               fprintf(stderr, "kiss_multiply2: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
      default:
-          fprintf(stderr, "kiss_plus2: unexpected primitive type = %ld", KISS_OBJ_TYPE(a));
+          fprintf(stderr, "kiss_multiply2: unexpected primitive type = %ld", KISS_OBJ_TYPE(a));
           exit(EXIT_FAILURE);
      }
 }
@@ -462,7 +459,7 @@ kiss_obj* kiss_multiply(kiss_obj* list) {
 
 
 /* function: (= x y) -> boolean 
-   Returns t if X has the same mathematical value as Y ;otherwise,returns nil.
+   Returns t if X has the same mathematical value as Y ;otherwise, returns nil.
    An error shall be signaled if either X or Y is not a number (error-id. domain-error).
    Note: = differs from eql because = compares only the mathematical values of its arguments,
    whereas eql also compares the representations. */
@@ -517,9 +514,9 @@ kiss_obj* kiss_num_eq(const kiss_obj* const a, const kiss_obj* const b) {
 }
 
 /* function: (< x1 x2) -> boolean 
-   < returns t if x1 is less than x2.
+   < returns t if X1 is less than X2.
    The mathematical values of the arguments are compared. 
-   An error shall be signaled if either x1 or x2 is not a number (error-id. domain-error). */
+   An error shall be signaled if either X1 or X2 is not a number (error-id. domain-error). */
 kiss_obj* kiss_num_lessthan(kiss_obj* a, kiss_obj* b) {
      Kiss_Number(a);
      Kiss_Number(b);
@@ -645,7 +642,7 @@ kiss_obj* kiss_abs(kiss_obj* x) {
      case KISS_FLOAT: {
           kiss_float_t* f = kiss_make_float();
           mpf_abs(f->mpf, ((kiss_float_t*)x)->mpf);
-          return x;
+          return (kiss_obj*)f;
      }
      default:
           fprintf(stderr, "kiss_abs: unknown primitive number type = %ld", KISS_OBJ_TYPE(x));
