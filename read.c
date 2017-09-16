@@ -154,6 +154,13 @@ static kiss_obj* kiss_read_lexeme_chars(const kiss_obj* const in) {
     kiss_collect_lexeme_chars(in, &escaped);
     kiss_string_t* const str = kiss_chars_to_str(kiss_reverse(env->lexeme_chars));
     if (escaped) { return kiss_intern((kiss_obj*)str); }
+
+    kiss_obj* p = kiss_c_parse_number((kiss_obj*)str);
+
+    if (p != NULL) {
+         return p;
+    }
+
     if (wcscmp(str->str, L".") == 0) {
          return KISS_DOT;
     }

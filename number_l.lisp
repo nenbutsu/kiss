@@ -22,7 +22,6 @@
 ;; The obj may be any ISLISP object.
 
 (defconstant *pi* 3.141592653589793)
-  
 
 (defun numberp (obj) (or (integerp obj) (floatp obj)))
 

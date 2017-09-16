@@ -189,8 +189,9 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
 	       kiss_gc_mark_symbol((kiss_symbol_t*)obj);
 	       break;
 	  case KISS_CHARACTER:
-	  case KISS_INTEGER:
+	  case KISS_FIXNUM:
                break;
+          case KISS_BIGNUM:
 	  case KISS_FLOAT:
 	  case KISS_STRING:
 	       if (is_marked((kiss_gc_obj*)obj)) { return; }
@@ -263,6 +264,11 @@ void kiss_gc_free_symbol(kiss_symbol_t* obj) {
      free(obj);
 }
 
+void kiss_gc_free_bignum(kiss_bignum_t* obj) {
+     mpz_clear(obj->mpz);
+     free(obj);
+}
+
 void kiss_gc_free_string(kiss_string_t* obj) {
      free(obj->str);
      free(obj);
@@ -281,7 +287,10 @@ void kiss_gc_free_obj(kiss_gc_obj* obj) {
      } else {
 	  switch (KISS_OBJ_TYPE(obj)) {
 	  case KISS_CHARACTER:
-	  case KISS_INTEGER:
+	  case KISS_FIXNUM:
+               break;
+          case KISS_BIGNUM:
+               kiss_gc_free_bignum((kiss_bignum_t*)obj);
                break;
 	  case KISS_SYMBOL:
 	       kiss_gc_free_symbol((kiss_symbol_t*)obj);
