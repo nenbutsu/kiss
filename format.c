@@ -209,20 +209,16 @@ kiss_obj* kiss_format_integer(kiss_obj* out, kiss_obj* obj, kiss_obj* radix) {
 /* function: (format-float output-stream float) -> <null> */
 kiss_obj* kiss_format_float(kiss_obj* out, kiss_obj* obj) {
      kiss_float_t* f = Kiss_Float(obj);
-     mp_exp_t exp = 0;
-     char* str = mpf_get_str (NULL, &exp, 10, 0, f->mpf);
-     wchar_t* wcs = kiss_mbstowcs(str);
-     free(str);
-     kiss_obj* str_out = kiss_create_string_output_stream();
-     kiss_format_string(str_out, (kiss_obj*)kiss_make_string(L"0."), KISS_NIL);
-     kiss_format_string(str_out, (kiss_obj*)kiss_make_string(wcs), KISS_NIL);
-     free(wcs);
-     if (exp != 0) {
-          kiss_format_string(str_out, (kiss_obj*)kiss_make_string(L"e"), KISS_NIL);
-          kiss_format_integer(str_out, (kiss_obj*)kiss_make_fixnum(exp), KISS_NIL);
-     }
 
-     kiss_format_string(out, kiss_get_output_stream_string(str_out), KISS_NIL);
+     double d = mpf_get_d(f->mpf);
+     char s[100];
+     snprintf(s, 100, "%g", d);
+     wchar_t* wcs = kiss_mbstowcs(s);
+     kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs), KISS_NIL);
+     if (!wcschr(wcs, L'.')) {
+          kiss_format_string(out, (kiss_obj*)kiss_make_string(L".0"), KISS_NIL);
+     }
+     free(wcs);
      return KISS_NIL;
 }
 

@@ -136,12 +136,13 @@ kiss_obj* kiss_parse_number(kiss_obj* obj) {
 
 kiss_obj* kiss_plus2_fixnum2 (kiss_obj* a, kiss_obj* b) {
      kiss_ptr_int i1 = kiss_ptr_int(a);
-     kiss_ptr_int i2 = kiss_ptr_int(a);
+     kiss_ptr_int i2 = kiss_ptr_int(b);
      if ((i1 >= 0 && i2 <=0) || (i1 <= 0 && i2 >=0)) {
           return (kiss_obj*)kiss_make_fixnum(i1 + i2);
      } else if (i1 > 0 && i2 > 0) {
           kiss_ptr_int n = KISS_PTR_INT_MAX - i2;
           if (i1 <= n) {
+               fprintf(stderr, "i1 = %ld\ni2 = %ld\n", i1, i2);
                return (kiss_obj*)kiss_make_fixnum(i1 + i2);
           } else {
                kiss_bignum_t* p = kiss_make_bignum(i1);
@@ -277,29 +278,64 @@ kiss_obj* kiss_plus(kiss_obj* list) {
      return p;
 }
 
-/* function: (* x*) -> <number> 
-   The function * returns the product of its arguments. 
-   If all arguments are integers, the result is an integer.
-   If any argument is a float, the result is a float.
-   When given no arguments, * returns 1. 
-   An error shall be signaled if any x is not a number (error-id. domain-error).
-*/
-kiss_obj* kiss_multiply(kiss_obj* p) {
-     fprintf(stderr, "kiss_multiply: not implemented");
-     exit(EXIT_FAILURE);
+kiss_obj* kiss_flip_sign(kiss_obj* obj) {
+     Kiss_Number(obj);
+     switch (KISS_OBJ_TYPE(obj)) {
+     case KISS_FIXNUM: {
+          kiss_ptr_int i = - kiss_ptr_int(obj);
+          if (i <= KISS_PTR_INT_MAX && i >= KISS_PTR_INT_MIN) {
+               return kiss_make_fixnum(i);
+          } else {
+               kiss_bignum_t* z = kiss_make_bignum(i);
+               return (kiss_obj*)z;
+          }
+     }
+     case KISS_BIGNUM: {
+          kiss_bignum_t* z = kiss_make_bignum(0);
+          mpz_set(z->mpz, ((kiss_bignum_t*)obj)->mpz);
+          mpz_neg(z->mpz, z->mpz);
+          return (kiss_obj*)z;
+     }
+     case KISS_FLOAT: {
+          kiss_float_t* f = kiss_make_float();
+          mpf_set(f->mpf, ((kiss_float_t*)obj)->mpf);
+          mpf_neg (f->mpf, f->mpf);
+          return (kiss_obj*)f;
+     }
+     default:
+          fprintf(stderr, "kiss_flisp_sign: unexpected primitive type = %ld", KISS_OBJ_TYPE(obj));
+          exit(EXIT_FAILURE);
+     }
 }
+
 
 /* function: (- x+) -> <number> 
    Given one argument, x, this function returns its additive inverse.
    An error shall be signaled if x is not a number (error-id. domain-error).
    If an implementation supports a -0.0 that is distinct from 0.0 ,then (- 0.0)
    returns -0.0 ;in implementations where -0.0 and 0.0 are not distinct, (- 0.0)
-   returns 0.0.
-*/
+   returns 0.0. */
 kiss_obj* kiss_minus(kiss_obj* number, kiss_obj* rest) {
-     fprintf(stderr, "kiss_minus: not implemented");
+     if (rest == KISS_NIL) {
+          return kiss_flip_sign(number);
+     }
+     for (kiss_obj* p = rest; p != KISS_NIL; p = KISS_CDR(p)) {
+          number = kiss_plus2(number, kiss_flip_sign(KISS_CAR(p)));
+     }
+     return number;     
+}
+
+/* function: (* x*) -> <number> 
+   The function * returns the product of its arguments. 
+   If all arguments are integers, the result is an integer.
+   If any argument is a float, the result is a float.
+   When given no arguments, * returns 1. 
+   An error shall be signaled if any x is not a number (error-id. domain-error). */
+kiss_obj* kiss_multiply(kiss_obj* p) {
+     fprintf(stderr, "kiss_multiply: not implemented");
      exit(EXIT_FAILURE);
 }
+
 
 /* function: (= x y) -> boolean 
    Returns t if X has the same mathematical value as Y ;otherwise,returns nil.
