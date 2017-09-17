@@ -18,24 +18,6 @@
 */
 #include "kiss.h"
 
-size_t kiss_c_length(const kiss_obj* const p) {
-     Kiss_Sequence(p);
-     switch (KISS_OBJ_TYPE(p)) {
-     case KISS_SYMBOL:
-	  assert(p == KISS_NIL);
-	  return 0;
-     case KISS_CONS: {
-	  size_t n = 0;
-	  for (const kiss_obj* q = p; KISS_IS_CONS(q); q = KISS_CDR(q)) { n++; }
-	  return n;
-     }
-     case KISS_STRING: return ((kiss_string_t*)p)->n;
-     case KISS_GENERAL_VECTOR: return ((kiss_general_vector_t*)p)->n;
-     default:
-	  fprintf(stderr, "kiss_c_length: unknown primitive type %d", KISS_OBJ_TYPE(p));
-	  exit(EXIT_FAILURE);
-     }
-}
 
 /* function: (length sequence) -> <integer> 
    Returns the length of SEQUENCE as an integer greater than or equal to 0.

@@ -96,16 +96,6 @@ kiss_obj* Kiss_Valid_Sequence_Index(const kiss_obj* const sequence, const kiss_o
      return (kiss_obj*)index;
 }
 
-/* Proper list is a list terminated by the empty list. (The empty list is a proper list.) */
-kiss_obj* Kiss_Proper_List(const kiss_obj* const obj) {
-     const kiss_obj* p = obj;
-     while (KISS_IS_CONS(p)) { p = KISS_CDR(p); }
-     if (p != KISS_NIL) {
-          Kiss_Err(L"Proper list expected ~S", obj);
-     }
-     return (kiss_obj*)obj;
-}
-
 kiss_cons_t* Kiss_Proper_List_2(const kiss_obj* const obj) {
     Kiss_Proper_List(obj);
     if (kiss_c_length(obj) != 2) {

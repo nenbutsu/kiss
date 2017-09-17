@@ -21,41 +21,15 @@
 size_t Kiss_Heap_Top = 0;
 kiss_ptr_int Kiss_GC_Flag = 0;
 
-static int GCing = 0;
-static size_t GC_Amount = 0;
-#define HEAP_STACK_SIZE (1024 * 1024 * 2)
-kiss_gc_obj* Kiss_Heap_Stack[HEAP_STACK_SIZE];
-static void* GC_Objects = NULL;
+static int Kiss_GCing = 0;
+size_t Kiss_GC_Amount = 0;
+kiss_gc_obj* Kiss_Heap_Stack[KISS_HEAP_STACK_SIZE];
+void* Kiss_GC_Objects = NULL;
 
 #define gc_flag(x)  ((kiss_ptr_int)((kiss_ptr_int)x & 1))
-#define gc_ptr(x)   ((void*)((kiss_ptr_int)x & (~0<<1)))
 
 kiss_obj* kiss_gc(void);
 
-/* An error shall be signaled if the requested memory cannot be allocated
-   (error-id. <storage-exhausted>). */
-void* Kiss_Malloc(size_t size) {
-    void* p = malloc(size);
-    if (p == NULL) { Kiss_System_Error(); }
-    return p;
-}
-
-void* Kiss_GC_Malloc(size_t size) {
-    void* p = Kiss_Malloc(size);
-
-    GC_Amount += size;
-    if (GC_Amount > 1024 * 1024) {
-         //fprintf(stderr, "\ngc...\n");
-	 kiss_gc();
-	 GC_Amount = 0;
-    }
-
-    Kiss_Heap_Stack[Kiss_Heap_Top++] = p;
-    assert(Kiss_Heap_Top < HEAP_STACK_SIZE);
-    ((kiss_gc_obj*)p)->gc_ptr = (void*)((kiss_ptr_int)gc_ptr(GC_Objects) | Kiss_GC_Flag);
-    GC_Objects = p;
-    return p;
-}
 
 static inline int is_marked(kiss_gc_obj* const restrict obj) {
      return gc_flag(obj->gc_ptr) != Kiss_GC_Flag;
@@ -345,15 +319,15 @@ void kiss_gc_free_obj(kiss_gc_obj* obj) {
 }
 
 void kiss_gc_sweep(void) {
-     void** prev = &GC_Objects;
-     kiss_gc_obj* obj = gc_ptr(GC_Objects);
+     void** prev = &Kiss_GC_Objects;
+     kiss_gc_obj* obj = kiss_gc_ptr(Kiss_GC_Objects);
      while (obj != NULL) {
 	  if (is_marked(obj)) {
                prev = &(obj->gc_ptr);
-	       obj = gc_ptr(obj->gc_ptr);
+	       obj = kiss_gc_ptr(obj->gc_ptr);
           } else {
                kiss_gc_obj* tmp = obj;
-	       obj = gc_ptr(obj->gc_ptr);
+	       obj = kiss_gc_ptr(obj->gc_ptr);
 	       *prev = (void*)((kiss_ptr_int)obj | (Kiss_GC_Flag ? 0 : 1));
 	       kiss_gc_free_obj(tmp);
 	  }
@@ -367,8 +341,8 @@ kiss_obj* kiss_gc_info(void) {
 }
 
 kiss_obj* kiss_gc(void) {
-     assert(!GCing);
-     GCing = 1;
+     assert(!Kiss_GCing);
+     Kiss_GCing = 1;
      //fprintf(stderr, "GC entered\n");
      //fprintf(stderr, "gc_mark\n");
      kiss_gc_mark();
@@ -376,6 +350,6 @@ kiss_obj* kiss_gc(void) {
      kiss_gc_sweep();
      Kiss_GC_Flag = Kiss_GC_Flag ? 0 : 1;
      //fprintf(stderr, "GC leaving\n\n");
-     GCing = 0;
+     Kiss_GCing = 0;
      return KISS_NIL;
 }

@@ -302,29 +302,6 @@ inline kiss_obj* kiss_eq(const kiss_obj* const obj1, const kiss_obj* const obj2)
      return obj1 == obj2 ? KISS_T : KISS_NIL;
 }
 
-/* function: (eql obj1 obj2) -> boolean
-   the meaning for numbers and characters is defined as follows:
-   • If obj1 and obj2 are numbers, eql tests whether they are direct
-   instances of the same class and have the same value.  If an
-   implementation supports positive and negative zeros as distinct
-   values, then (eql 0.0 -0.0) returns nil. When the syntax -0.0 is read
-   and it is interpreted as the value 0.0 then (eql 0.0 -0.0) returns t.
-   • If obj1 and obj2 are characters, eql tests whether they are the same
-   character (see char=).
- */
-kiss_obj* kiss_eql(const kiss_obj* const obj1, const kiss_obj* const obj2) {
-     if (KISS_IS_INTEGER(obj1) && KISS_IS_INTEGER(obj2)) {
-	  return kiss_num_eq(obj1, obj2);
-     }
-     if (KISS_IS_FLOAT(obj1) && KISS_IS_FLOAT(obj2)) {
-	  return kiss_num_eq(obj1, obj2);
-     }
-     if (KISS_IS_CHARACTER(obj1) && KISS_IS_CHARACTER(obj2)) {
-	  return obj1 == obj2 ? KISS_T : KISS_NIL;
-     }
-     return kiss_eq(obj1, obj2);
-}
-
 /* special operator: (progn form*) -> <object> */
 kiss_obj* kiss_progn(kiss_obj* body) { return kiss_eval_body(body); }
 
