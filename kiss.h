@@ -309,7 +309,7 @@ kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda, KISS_Skw_rest, KISS
 #define KISS_CADR(x)   KISS_CAR(KISS_CDR(x))
 #define KISS_CADDR(x)  KISS_CAR(KISS_CDR(KISS_CDR(x)))
 
-#define KISS_OBJ_TYPE(x) (((kiss_ptr_int)x & 3) ? ((kiss_ptr_int)x & 3) : (((kiss_obj*)x)->type))
+#define KISS_OBJ_TYPE(x) (int)(((kiss_ptr_int)x & 3) ? ((kiss_ptr_int)x & 3) : (((kiss_obj*)x)->type))
 
 #define KISS_IS_BIGNUM(x)            (KISS_OBJ_TYPE(x) == KISS_BIGNUM)
 #define KISS_IS_INTEGER(x)           (KISS_IS_FIXNUM(x) || KISS_IS_BIGNUM(x))
@@ -402,18 +402,9 @@ _Noreturn void Kiss_System_Error (void);
 _Noreturn void Kiss_Err(const wchar_t* const str, ...);
 _Noreturn void Kiss_Domain_Error(const kiss_obj* const obj, const wchar_t* const domain);
 
-kiss_obj* Kiss_Integer(const kiss_obj* const obj);
-kiss_obj* Kiss_Number(const kiss_obj* const obj);
-kiss_obj* Kiss_List(const kiss_obj* const obj);
-kiss_ptr_int Kiss_Non_Negative_Fixnum(const kiss_obj* const obj);
-kiss_ptr_int Kiss_Non_Zero_Fixnum(const kiss_obj* const obj);
-kiss_obj* Kiss_General_Array(const kiss_obj* const obj);
-kiss_obj* Kiss_Basic_Array(const kiss_obj* const obj);
 kiss_obj* Kiss_Valid_Sequence_Index(const kiss_obj* const sequence, const kiss_obj* const index);
-kiss_obj* Kiss_Sequence(const kiss_obj* const obj);
 kiss_obj* Kiss_Proper_List(const kiss_obj* const obj);
 kiss_cons_t* Kiss_Proper_List_2(const kiss_obj* const obj);
-kiss_oo_obj_t* Kiss_Object(const kiss_obj* const obj);
 kiss_stream_t* Kiss_Input_Char_Stream(const kiss_obj* const obj);
 kiss_stream_t* Kiss_Output_Char_Stream(const kiss_obj* const obj);
 kiss_stream_t* Kiss_Input_Byte_Stream(const kiss_obj* const obj);
@@ -551,16 +542,10 @@ char* kiss_wcstombs(const wchar_t* const src);
 
 /* stream.c */
 void kiss_init_streams(void);
-kiss_obj* kiss_streamp(kiss_obj* obj);
 kiss_obj* kiss_open_stream_p(kiss_obj* obj);
 kiss_obj* kiss_create_string_input_stream(kiss_obj* string);
 kiss_obj* kiss_create_string_output_stream(void);
 kiss_obj* kiss_get_output_stream_string(kiss_obj* stream);
-kiss_obj* kiss_standard_input(void);
-kiss_obj* kiss_standard_output(void);
-kiss_obj* kiss_error_output(void);
-kiss_obj* kiss_input_stream_p(kiss_obj* p);
-kiss_obj* kiss_output_stream_p(kiss_obj* p);
 kiss_obj* kiss_char_stream_p(kiss_obj* p);
 kiss_obj* kiss_input_char_stream_p(kiss_obj* p);
 kiss_obj* kiss_output_char_stream_p(kiss_obj* p);
@@ -669,6 +654,58 @@ static inline kiss_bignum_t* Kiss_Bignum(const kiss_obj* const obj) {
      Kiss_Domain_Error(obj, L"{bignum}");
 }
 
+static inline kiss_obj* Kiss_Integer(const kiss_obj* const obj) {
+     if (KISS_IS_FIXNUM(obj) || KISS_IS_BIGNUM(obj)) { return (kiss_obj*)obj; }
+     Kiss_Domain_Error(obj, L"<integer>");
+}
+
+static inline kiss_obj* Kiss_Number(const kiss_obj* const obj) {
+     if (KISS_IS_INTEGER(obj) || KISS_IS_FLOAT(obj)) { return (kiss_obj*)obj; }
+     Kiss_Domain_Error(obj, L"<number>");
+}
+
+static inline kiss_ptr_int Kiss_Non_Negative_Fixnum(const kiss_obj* const obj) {
+     const kiss_ptr_int i = Kiss_Fixnum(obj);
+     if (i >= 0) { return i; }
+     Kiss_Domain_Error(obj, L"{non negative fixnum}");
+}
+
+static inline kiss_ptr_int Kiss_Non_Zero_Fixnum(const kiss_obj* const obj) {
+     const kiss_ptr_int i = Kiss_Fixnum(obj);
+     if (i != 0) { return i; }
+     Kiss_Domain_Error(obj, L"{non zero fixnum}");
+}
+
+static inline kiss_obj* Kiss_General_Array(const kiss_obj* const obj) {
+     if (KISS_IS_GENERAL_VECTOR(obj) || KISS_IS_GENERAL_ARRAY(obj)) {
+          return (kiss_obj*)obj;
+     }
+     Kiss_Domain_Error(obj, L"{general array (<general-vector> or <general-array*>)}");
+}
+
+static inline kiss_obj* Kiss_Sequence(const kiss_obj* const obj) {
+     if (KISS_IS_SEQUENCE(obj)) { return (kiss_obj*)obj; }
+     Kiss_Domain_Error(obj, L"<sequence>");
+}
+
+static inline kiss_oo_obj_t* Kiss_Object(const kiss_obj* const obj) {
+     if (KISS_IS_OBJECT(obj)) { return (kiss_oo_obj_t*)obj; }
+     Kiss_Domain_Error(obj, L"{ILOS object}");
+}
+
+static inline kiss_obj* Kiss_Basic_Array(const kiss_obj* const obj) {
+     if (KISS_IS_GENERAL_VECTOR(obj) || KISS_IS_GENERAL_ARRAY(obj) || KISS_IS_STRING(obj)) {
+          return (kiss_obj*)obj;
+     }
+     Kiss_Domain_Error(obj, L"<basic array>");
+}
+
+
+static inline kiss_obj* Kiss_List(const kiss_obj* const obj) {
+     if (obj == KISS_NIL || KISS_IS_CONS(obj)) { return (kiss_obj*)obj; }
+     Kiss_Domain_Error(obj, L"<list>");
+}
+
 static inline kiss_float_t* Kiss_Float(const kiss_obj* const obj) {
      if (KISS_IS_FLOAT(obj)) { return (kiss_float_t*)obj; }
      Kiss_Domain_Error(obj, L"<float>");
@@ -722,4 +759,44 @@ static inline kiss_cfunction_t* Kiss_CFunction(const kiss_obj* const obj) {
 static inline kiss_cfunction_t* Kiss_CMacro(const kiss_obj* const obj) {
      if (KISS_IS_CFUNCTION(obj)) { return (kiss_cfunction_t*)obj; }
      Kiss_Domain_Error(obj, L"{c macro}");
+}
+
+/* function: (streamp obj ) -> boolean
+   Returns t if OBJ is a stream (instance of class <stream>); otherwise,
+   returns nil. OBJ may be any ISLISP object. streamp is unaffected by
+   whether its argument, if an instance of the class <stream>, is open or
+   closed.
+   Example: (streamp (standard-input)) => t
+            (streamp '()) => nil */
+static inline kiss_obj* kiss_streamp(kiss_obj* obj) {
+     return KISS_IS_STREAM(obj) ? KISS_T : KISS_NIL;
+}
+
+/* function: (input-stream-p obj) -> boolean
+   Returns t if OBJ is a stream that can handle input operations;
+   otherwise, returns nil. */
+static inline kiss_obj* kiss_input_stream_p(kiss_obj* p) {
+     return KISS_IS_INPUT_STREAM(p) ? KISS_T : KISS_NIL;
+}
+
+/* function: (output-stream-p obj) -> boolean
+   Returns t if OBJ is a stream that can handle output operations;
+   otherwise, returns nil. */
+static inline kiss_obj* kiss_output_stream_p(kiss_obj* p) {
+     return KISS_IS_OUTPUT_STREAM(p) ? KISS_T : KISS_NIL;
+}
+
+/* function: (standard-input) -> <stream> */
+static inline kiss_obj* kiss_standard_input(void)  {
+     return kiss_dynamic(kiss_symbol(L"*kiss::standard-input*"));
+}
+
+/* function: (standard-output) -> <stream> */
+static inline kiss_obj* kiss_standard_output(void) {
+     return kiss_dynamic(kiss_symbol(L"*kiss::standard-output*"));
+}
+
+/* function: (error-output) -> <stream> */
+static inline kiss_obj* kiss_error_output(void)    {
+     return kiss_dynamic(kiss_symbol(L"*kiss::error-output*"));
 }

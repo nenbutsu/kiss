@@ -66,55 +66,13 @@ static kiss_string_stream_t* kiss_make_string_stream(kiss_string_t* str) {
      return p;
 }
 
-/* function: (streamp obj ) -> boolean
-   Returns t if obj is a stream (instance of class <stream>); otherwise,
-   returns nil. obj may be any ISLISP object. streamp is unaffected by
-   whether its argument, if an instance of the class <stream>, is open or
-   closed.
-   Example: (streamp (standard-input)) => t
-            (streamp '()) => nil */
-kiss_obj* kiss_streamp(kiss_obj* obj) {
-     return KISS_IS_STREAM(obj) ? KISS_T : KISS_NIL;
-}
-
 /* function: (open-stream-p obj) -> boolean
    Returns t if obj is an open stream; otherwise, returns nil. */
 kiss_obj* kiss_open_stream_p(kiss_obj* obj) {
      if (!KISS_IS_STREAM(obj)) { return KISS_NIL; }
      if (KISS_IS_STRING_STREAM(obj)) { return KISS_T; }
      assert(KISS_IS_FILE_STREAM(obj));
-
      return ((kiss_file_stream_t*)obj)->file_ptr ? KISS_T : KISS_NIL;
-}
-
-/* function: (input-stream-p obj) -> boolean
-   Returns t if obj is a stream that can handle input operations;
-   otherwise, returns nil. */
-inline kiss_obj* kiss_input_stream_p(kiss_obj* p) {
-     return KISS_IS_INPUT_STREAM(p) ? KISS_T : KISS_NIL;
-}
-
-/* function: (output-stream-p obj ) -> boolean
-   Returns t if obj is a stream that can handle output operations;
-   otherwise, returns nil. */
-inline kiss_obj* kiss_output_stream_p(kiss_obj* p) {
-     return KISS_IS_OUTPUT_STREAM(p) ? KISS_T : KISS_NIL;
-}
-
-
-/* function: (standard-input) -> <stream> */
-kiss_obj* kiss_standard_input(void)  {
-     return kiss_dynamic(kiss_symbol(L"*kiss::standard-input*"));
-}
-
-/* function: (standard-output) -> <stream> */
-kiss_obj* kiss_standard_output(void) {
-     return kiss_dynamic(kiss_symbol(L"*kiss::standard-output*"));
-}
-
-/* function: (error-output) -> <stream> */
-kiss_obj* kiss_error_output(void)    {
-     return kiss_dynamic(kiss_symbol(L"*kiss::error-output*"));
 }
 
 /*function: (close stream) -> implementation defined
@@ -148,6 +106,9 @@ static FILE * kiss_fopen(const kiss_obj* const filename, const char* const opent
 }
 
 static int kiss_is_character_class(kiss_obj* obj) {
+     if (KISS_IS_SYMBOL(obj) && wcscmp(((kiss_symbol_t*)obj)->name, L"<character>") == 0) {
+          return 1;
+     }
      if (!KISS_IS_OBJECT(obj)) { return 0; }
      kiss_obj* class = kiss_c_funcall(L"kiss::class", kiss_c_list(1, kiss_symbol(L"<character>")));
      return obj == class ? 1 : 0;
@@ -246,8 +207,7 @@ kiss_obj* kiss_open_io_file(kiss_obj* filename, kiss_obj* rest) {
    For instance, pending output might be stored in a buffer; in this case
    finish-output forces the buffer to be written to the STREAM's destination.
    An error shall be signaled if STREAM is not a stream that can handle output operations
-   (error-id. domain-error).
-*/
+   (error-id. domain-error). */
 kiss_obj* kiss_finish_output (kiss_obj* obj) {
      if (!KISS_IS_OUTPUT_STREAM(Kiss_Stream(obj))) {
 	  Kiss_Err(L"output stream expected ~S", obj);
@@ -335,7 +295,7 @@ kiss_obj* kiss_c_read_char(const kiss_obj* const in, const kiss_obj* const eos_e
 	       return c;
 	  }
      } else {
-	  fprintf(stderr, "kiss_c_read_char: unknown input stream type = %ld", KISS_OBJ_TYPE(in));
+	  fprintf(stderr, "kiss_c_read_char: unknown input stream type = %d", KISS_OBJ_TYPE(in));
 	  exit(EXIT_FAILURE);
      }
 eos:
@@ -427,7 +387,7 @@ kiss_obj* kiss_c_preview_char(const kiss_obj* const in, const kiss_obj* const eo
 	       return c;
 	  }
      } else {
-	  fprintf(stderr, "kiss_c_preview_char: unknown input stream type = %ld", KISS_OBJ_TYPE(in));
+	  fprintf(stderr, "kiss_c_preview_char: unknown input stream type = %d", KISS_OBJ_TYPE(in));
 	  exit(EXIT_FAILURE);
 
      }
@@ -500,7 +460,7 @@ kiss_obj* kiss_format_char(kiss_obj* output, kiss_obj* character) {
 	  }
 	  kiss_push(character, &(out->list));
      } else {
-	  fprintf(stderr, "kiss_format_char: unknown stream type = %ld", KISS_OBJ_TYPE(output));
+	  fprintf(stderr, "kiss_format_char: unknown stream type = %d", KISS_OBJ_TYPE(output));
 	  exit(EXIT_FAILURE);
      }
      return KISS_NIL;
@@ -544,7 +504,7 @@ kiss_obj* kiss_c_read_byte(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val)
 	       return (kiss_obj*)kiss_make_fixnum(c);
 	  }
      } else {
-	  fprintf(stderr, "kiss_c_read_byte: unknown input stream type = %ld", KISS_OBJ_TYPE(in));
+	  fprintf(stderr, "kiss_c_read_byte: unknown input stream type = %d", KISS_OBJ_TYPE(in));
 	  exit(EXIT_FAILURE);
      }
 eos:
@@ -590,7 +550,7 @@ kiss_obj* kiss_write_byte(kiss_obj* z, kiss_obj* output) {
 	  }
 	  return z;
      } else {
-	  fprintf(stderr, "kiss_write_byte: unknown output stream type = %ld", KISS_OBJ_TYPE(output));
+	  fprintf(stderr, "kiss_write_byte: unknown output stream type = %d", KISS_OBJ_TYPE(output));
 	  exit(EXIT_FAILURE);
      }
 }

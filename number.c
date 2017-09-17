@@ -64,7 +64,7 @@ kiss_obj* kiss_float(kiss_obj* x) {
      case KISS_FLOAT:
           return x;
      default:
-          fprintf(stderr, "kiss_float: unknown primitive number type = %ld", KISS_OBJ_TYPE(x));
+          fprintf(stderr, "kiss_float: unknown primitive number type = %d", KISS_OBJ_TYPE(x));
           exit(EXIT_FAILURE);
      }
 }
@@ -219,7 +219,7 @@ kiss_obj* kiss_plus2_float2(kiss_obj* a, kiss_obj* b) {
           case KISS_FLOAT:
                return kiss_plus2_fixnum_float(a, b);
           default:
-               fprintf(stderr, "kiss_plus2: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
+               fprintf(stderr, "kiss_plus2: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
@@ -232,7 +232,7 @@ kiss_obj* kiss_plus2_float2(kiss_obj* a, kiss_obj* b) {
           case KISS_FLOAT:
                return kiss_plus2_bignum_float(a, b);
           default:
-               fprintf(stderr, "kiss_plus2: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
+               fprintf(stderr, "kiss_plus2: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
@@ -245,12 +245,12 @@ kiss_obj* kiss_plus2_float2(kiss_obj* a, kiss_obj* b) {
           case KISS_FLOAT:
                return kiss_plus2_float2(a, b);
           default:
-               fprintf(stderr, "kiss_plus2: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
+               fprintf(stderr, "kiss_plus2: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
      default:
-          fprintf(stderr, "kiss_plus2: unexpected primitive type = %ld", KISS_OBJ_TYPE(a));
+          fprintf(stderr, "kiss_plus2: unexpected primitive type = %d", KISS_OBJ_TYPE(a));
           exit(EXIT_FAILURE);
      }
 }
@@ -297,7 +297,7 @@ kiss_obj* kiss_flip_sign(kiss_obj* obj) {
           return (kiss_obj*)f;
      }
      default:
-          fprintf(stderr, "kiss_flisp_sign: unexpected primitive type = %ld", KISS_OBJ_TYPE(obj));
+          fprintf(stderr, "kiss_flisp_sign: unexpected primitive type = %d", KISS_OBJ_TYPE(obj));
           exit(EXIT_FAILURE);
      }
 }
@@ -405,7 +405,7 @@ kiss_obj* kiss_multiply2(kiss_obj* a, kiss_obj* b) {
           case KISS_FLOAT:
                return kiss_multiply2_fixnum_float(a, b);
           default:
-               fprintf(stderr, "kiss_multiply2: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
+               fprintf(stderr, "kiss_multiply2: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
@@ -418,7 +418,7 @@ kiss_obj* kiss_multiply2(kiss_obj* a, kiss_obj* b) {
           case KISS_FLOAT:
                return kiss_multiply2_bignum_float(a, b);
           default:
-               fprintf(stderr, "kiss_multiply2: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
+               fprintf(stderr, "kiss_multiply2: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
@@ -431,12 +431,12 @@ kiss_obj* kiss_multiply2(kiss_obj* a, kiss_obj* b) {
           case KISS_FLOAT:
                return kiss_multiply2_float2(a, b);
           default:
-               fprintf(stderr, "kiss_multiply2: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
+               fprintf(stderr, "kiss_multiply2: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
      default:
-          fprintf(stderr, "kiss_multiply2: unexpected primitive type = %ld", KISS_OBJ_TYPE(a));
+          fprintf(stderr, "kiss_multiply2: unexpected primitive type = %d", KISS_OBJ_TYPE(a));
           exit(EXIT_FAILURE);
      }
 }
@@ -476,7 +476,7 @@ kiss_obj* kiss_num_eq(const kiss_obj* const a, const kiss_obj* const b) {
           case KISS_FLOAT:
                return mpf_cmp_si(((kiss_float_t*)b)->mpf, kiss_ptr_int(a)) == 0 ? KISS_T : KISS_NIL;
           default:
-               fprintf(stderr, "kiss_num_eq: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
+               fprintf(stderr, "kiss_num_eq: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
@@ -489,7 +489,7 @@ kiss_obj* kiss_num_eq(const kiss_obj* const a, const kiss_obj* const b) {
           case KISS_FLOAT:
                return mpf_cmp_z(((kiss_float_t*)b)->mpf, ((kiss_bignum_t*)a)->mpz) == 0 ? KISS_T : KISS_NIL;
           default:
-               fprintf(stderr, "kiss_num_eq: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
+               fprintf(stderr, "kiss_num_eq: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
@@ -503,12 +503,12 @@ kiss_obj* kiss_num_eq(const kiss_obj* const a, const kiss_obj* const b) {
                return mpf_cmp(((kiss_float_t*)a)->mpf, ((kiss_float_t*)b)->mpf) == 0 ? KISS_T : KISS_NIL;
                break;
           default:
-               fprintf(stderr, "kiss_num_eq: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
+               fprintf(stderr, "kiss_num_eq: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
      default:
-          fprintf(stderr, "kiss_num_eq: unexpected primitive type = %ld", KISS_OBJ_TYPE(a));
+          fprintf(stderr, "kiss_num_eq: unexpected primitive type = %d", KISS_OBJ_TYPE(a));
           exit(EXIT_FAILURE);
      }
 }
@@ -530,7 +530,7 @@ kiss_obj* kiss_num_lessthan(kiss_obj* a, kiss_obj* b) {
           case KISS_FLOAT:
                return mpf_cmp_si(((kiss_float_t*)b)->mpf, kiss_ptr_int(a)) >= 0 ? KISS_NIL : KISS_T;
           default:
-               fprintf(stderr, "kiss_num_lessthan: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
+               fprintf(stderr, "kiss_num_lessthan: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
@@ -543,7 +543,7 @@ kiss_obj* kiss_num_lessthan(kiss_obj* a, kiss_obj* b) {
           case KISS_FLOAT:
                return mpf_cmp_z(((kiss_float_t*)b)->mpf, ((kiss_bignum_t*)a)->mpz) >= 0 ? KISS_NIL : KISS_T;
           default:
-               fprintf(stderr, "kiss_plus2: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
+               fprintf(stderr, "kiss_plus2: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
@@ -557,12 +557,12 @@ kiss_obj* kiss_num_lessthan(kiss_obj* a, kiss_obj* b) {
                return mpf_cmp(((kiss_float_t*)a)->mpf, ((kiss_float_t*)b)->mpf) < 0 ? KISS_T : KISS_NIL;
                break;
           default:
-               fprintf(stderr, "kiss_num_lessthan: unexpected primitive type = %ld", KISS_OBJ_TYPE(b));
+               fprintf(stderr, "kiss_num_lessthan: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
      default:
-          fprintf(stderr, "kiss_num_lessthan: unexpected primitive type = %ld", KISS_OBJ_TYPE(a));
+          fprintf(stderr, "kiss_num_lessthan: unexpected primitive type = %d", KISS_OBJ_TYPE(a));
           exit(EXIT_FAILURE);
      }
 }
@@ -594,7 +594,7 @@ kiss_obj* kiss_div(kiss_obj* a, kiss_obj* b) {
                return (kiss_obj*)z1;
           }
           default:
-               fprintf(stderr, "kiss_div: unexpected integer type = %ld", KISS_OBJ_TYPE(b));
+               fprintf(stderr, "kiss_div: unexpected integer type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
@@ -613,12 +613,12 @@ kiss_obj* kiss_div(kiss_obj* a, kiss_obj* b) {
                return (kiss_obj*)z1;
           }
           default:
-               fprintf(stderr, "kiss_div: unexpected integer type = %ld", KISS_OBJ_TYPE(b));
+               fprintf(stderr, "kiss_div: unexpected integer type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
      default:
-          fprintf(stderr, "kiss_div: unexpected integer type = %ld", KISS_OBJ_TYPE(a));
+          fprintf(stderr, "kiss_div: unexpected integer type = %d", KISS_OBJ_TYPE(a));
           exit(EXIT_FAILURE);
      }
 }
@@ -692,7 +692,7 @@ kiss_obj* kiss_abs(kiss_obj* x) {
           return (kiss_obj*)f;
      }
      default:
-          fprintf(stderr, "kiss_abs: unknown primitive number type = %ld", KISS_OBJ_TYPE(x));
+          fprintf(stderr, "kiss_abs: unknown primitive number type = %d", KISS_OBJ_TYPE(x));
           exit(EXIT_FAILURE);
      }
 }

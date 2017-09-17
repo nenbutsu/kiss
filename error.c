@@ -86,74 +86,6 @@ void Kiss_Domain_Error(const kiss_obj* const obj, const wchar_t* const domain) {
 }
 
 
-kiss_obj* Kiss_Integer(const kiss_obj* const obj) {
-     if (!KISS_IS_FIXNUM(obj) && !KISS_IS_BIGNUM(obj)) {
-	  if (is_condition_working()) {
-	       kiss_c_funcall(L"kiss::assure", kiss_c_list(2, kiss_symbol(L"<integer>"), obj));
-	  } else {
-	       Kiss_Err(L"Integer expected ~S", obj);
-	  }
-     }
-     return (kiss_obj*)obj;
-}
-
-
-kiss_obj* Kiss_Number(const kiss_obj* const obj) {
-     if (!KISS_IS_INTEGER(obj) && !KISS_IS_FLOAT(obj)) {
-	  if (is_condition_working()) {
-	       kiss_c_funcall(L"kiss::assure", kiss_c_list(2, kiss_symbol(L"<number>"), obj));
-	  } else {
-	       Kiss_Err(L"Number expected ~S", obj);
-	  }
-     }
-     return (kiss_obj*)obj;
-}
-
-kiss_obj* Kiss_List(const kiss_obj* const obj) {
-     if (obj != KISS_NIL && !KISS_IS_CONS(obj)) {
-	  if (is_condition_working()) {
-	       kiss_c_funcall(L"kiss::assure", kiss_c_list(2, kiss_symbol(L"<list>"), obj));
-	  } else {
-	       Kiss_Err(L"List expected ~S", obj);
-	  }
-     }
-     return (kiss_obj*)obj;
-}
-
-kiss_ptr_int Kiss_Non_Negative_Fixnum(const kiss_obj* const obj) {
-    const kiss_ptr_int i = Kiss_Fixnum(obj);
-    if (i < 0) {
-	 Kiss_Err(L"Non negative integer expected ~S", obj);
-    }
-    return i;
-}
-
-kiss_ptr_int Kiss_Non_Zero_Fixnum(const kiss_obj* const obj) {
-    const kiss_ptr_int i = Kiss_Fixnum(obj);
-    if (i == 0) {
-	 Kiss_Err(L"Non zero integer expected ~S", obj);
-    }
-    return i;
-}
-
-kiss_obj* Kiss_General_Array(const kiss_obj* const obj) {
-     if (!KISS_IS_GENERAL_VECTOR(obj) && !KISS_IS_GENERAL_ARRAY(obj)) {
-          Kiss_Err(L"general array(<general-vector> or <general-array*>) expected ~S", obj);
-     }
-     return (kiss_obj*)obj;
-}
-
-kiss_obj* Kiss_Basic_Array(const kiss_obj* const obj) {
-     if (!KISS_IS_GENERAL_VECTOR(obj) && !KISS_IS_GENERAL_ARRAY(obj) && !KISS_IS_STRING(obj)) {
-          if (is_condition_working()) {
-               kiss_c_funcall(L"kiss::assure", kiss_c_list(2, kiss_symbol(L"<basic-array>"), obj));
-          } else {
-	       Kiss_Err(L"<basic-array> expected ~S", obj);
-          }
-     }
-     return (kiss_obj*)obj;
-}
-
 kiss_obj* Kiss_Valid_Sequence_Index(const kiss_obj* const sequence, const kiss_obj* const index)
 {
      const size_t n = kiss_c_length(sequence);
@@ -162,13 +94,6 @@ kiss_obj* Kiss_Valid_Sequence_Index(const kiss_obj* const sequence, const kiss_o
           Kiss_Err(L"Invalid sequence index ~S ~S", sequence, index);
      }
      return (kiss_obj*)index;
-}
-
-kiss_obj* Kiss_Sequence(const kiss_obj* const obj) {
-     if (!KISS_IS_SEQUENCE(obj)) {
-          Kiss_Err(L"Sequence expected ~S", obj);
-     }
-     return (kiss_obj*)obj;
 }
 
 /* Proper list is a list terminated by the empty list. (The empty list is a proper list.) */
@@ -187,11 +112,6 @@ kiss_cons_t* Kiss_Proper_List_2(const kiss_obj* const obj) {
 	Kiss_Err(L"Proper list of length 2 expected ~S", obj);
     }
     return (kiss_cons_t*)obj;
-}
-
-kiss_oo_obj_t* Kiss_Object(const kiss_obj* const obj) {
-    if (!KISS_IS_OBJECT(obj)) { Kiss_Err(L"ILOS object expected ~S", obj); }
-    return (kiss_oo_obj_t*)obj;
 }
 
 kiss_stream_t* Kiss_Input_Char_Stream(const kiss_obj* const obj) {

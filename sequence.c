@@ -32,7 +32,7 @@ size_t kiss_c_length(const kiss_obj* const p) {
      case KISS_STRING: return ((kiss_string_t*)p)->n;
      case KISS_GENERAL_VECTOR: return ((kiss_general_vector_t*)p)->n;
      default:
-	  fprintf(stderr, "kiss_c_length: unknown primitive type %ld", KISS_OBJ_TYPE(p));
+	  fprintf(stderr, "kiss_c_length: unknown primitive type %d", KISS_OBJ_TYPE(p));
 	  exit(EXIT_FAILURE);
      }
 }
@@ -84,7 +84,7 @@ kiss_obj* kiss_elt(const kiss_obj* const sequence, const kiss_obj* const z) {
 	  return vector->v[i];
      }
      default:
-	  fprintf(stderr, "elt: unknown primitive type = %ld", KISS_OBJ_TYPE(sequence));
+	  fprintf(stderr, "elt: unknown primitive type = %d", KISS_OBJ_TYPE(sequence));
 	  exit(EXIT_FAILURE);
      }
     
@@ -127,7 +127,7 @@ kiss_obj* kiss_set_elt(const kiss_obj* const obj, kiss_obj* const sequence, cons
 	  break;
      }
      default:
-	  fprintf(stderr, "set-elt:unknown sequence type = %ld", KISS_OBJ_TYPE(sequence));
+	  fprintf(stderr, "set-elt:unknown sequence type = %d", KISS_OBJ_TYPE(sequence));
 	  exit(EXIT_FAILURE);
      }
      return (kiss_obj*)obj;
@@ -194,7 +194,7 @@ kiss_obj* kiss_subseq(const kiss_obj* const sequence, const kiss_obj* const z1, 
 	  return (kiss_obj*)p;
      }
      default:
-	  fprintf(stderr, "subseq: unknown sequence = %ld", KISS_OBJ_TYPE(sequence));
+	  fprintf(stderr, "subseq: unknown sequence = %d", KISS_OBJ_TYPE(sequence));
 	  exit(EXIT_FAILURE);
      }
 }

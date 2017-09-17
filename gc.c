@@ -230,7 +230,7 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
 	       kiss_gc_mark_oo_obj((kiss_oo_obj_t*)obj);
 	       break;
 	  default:
-	       fprintf(stderr, "gc_mark: unknown primitive object type = %ld\n", KISS_OBJ_TYPE(obj));
+	       fprintf(stderr, "gc_mark: unknown primitive object type = %d\n", KISS_OBJ_TYPE(obj));
 	       exit(EXIT_FAILURE);
 	  }
      }
@@ -324,7 +324,7 @@ void kiss_gc_free_obj(kiss_gc_obj* obj) {
 	       free(obj);
 	       break;
 	  default:
-	       fprintf(stderr, "gc_free: unknown object type = %ld\n", KISS_OBJ_TYPE(obj));
+	       fprintf(stderr, "gc_free: unknown object type = %d\n", KISS_OBJ_TYPE(obj));
 	       exit(EXIT_FAILURE);
 	  }
      }

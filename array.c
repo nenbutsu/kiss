@@ -122,7 +122,7 @@ kiss_obj* kiss_garef(const kiss_obj* const array, const kiss_obj* const rest) {
 	  return kiss_ga_s_ref(((kiss_general_array_t*)array)->vector, rest);
      }
      default:
-	  fprintf(stderr, "garef: unexpeced primitive obj type %ld", KISS_OBJ_TYPE(array));
+	  fprintf(stderr, "garef: unexpeced primitive obj type %d", KISS_OBJ_TYPE(array));
 	  exit(EXIT_FAILURE);
      }
 }
@@ -149,7 +149,7 @@ kiss_obj* kiss_aref(const kiss_obj* const array, const kiss_obj* const rest) {
      case KISS_GENERAL_ARRAY:
 	  return kiss_garef(array, rest);
      default:
-	  fprintf(stderr, "aref: unexpected primitive obj type %ld", KISS_OBJ_TYPE(array));
+	  fprintf(stderr, "aref: unexpected primitive obj type %d", KISS_OBJ_TYPE(array));
 	  exit(EXIT_FAILURE);
      }
 }
@@ -172,7 +172,7 @@ kiss_obj* kiss_set_aref(const kiss_obj* const obj, kiss_obj* const array, const 
      case KISS_GENERAL_ARRAY:
 	  return kiss_set_garef(obj, array, rest);
      default:
-	  fprintf(stderr, "aref: unexpected primitive obj type %ld", KISS_OBJ_TYPE(array));
+	  fprintf(stderr, "aref: unexpected primitive obj type %d", KISS_OBJ_TYPE(array));
 	  exit(EXIT_FAILURE);
      }
 }
@@ -199,7 +199,7 @@ kiss_obj* kiss_set_garef(const kiss_obj* const obj, kiss_obj* const array, const
 	  return kiss_set_ga_s_ref(obj, a->vector, rest);
      }
      default:
-	  fprintf(stderr, "set-garef: unexpeced primitive obj type %ld", KISS_OBJ_TYPE(array));
+	  fprintf(stderr, "set-garef: unexpeced primitive obj type %d", KISS_OBJ_TYPE(array));
 	  exit(EXIT_FAILURE);
      }
 }
@@ -254,7 +254,7 @@ kiss_obj* kiss_array_dimensions(const kiss_obj* const array) {
      case KISS_GENERAL_ARRAY:
 	  return kiss_ga_dimensions((kiss_general_array_t*)array);
      default:
-	  fprintf(stderr, "array-dimensions: unexpected primitive obj type %ld",
+	  fprintf(stderr, "array-dimensions: unexpected primitive obj type %d",
                   KISS_OBJ_TYPE(array));
 	  exit(EXIT_FAILURE);
      }
@@ -288,7 +288,7 @@ kiss_obj* kiss_basic_array_p (const kiss_obj* const obj) {
      case KISS_GENERAL_ARRAY:
 	  return KISS_T;
      default:
-	  fprintf(stderr, "basic-array-p: unknown primitive obj type %ld", KISS_OBJ_TYPE(obj));
+	  fprintf(stderr, "basic-array-p: unknown primitive obj type %d", KISS_OBJ_TYPE(obj));
 	  exit(EXIT_FAILURE);
      }
 }
@@ -320,7 +320,7 @@ kiss_obj* kiss_basic_array_s_p (const kiss_obj* const obj) {
      case KISS_GENERAL_ARRAY:
 	  return KISS_T;
      default:
-	  fprintf(stderr, "basic-array*-p: unknown primitive obj type %ld", KISS_OBJ_TYPE(obj));
+	  fprintf(stderr, "basic-array*-p: unknown primitive obj type %d", KISS_OBJ_TYPE(obj));
 	  exit(EXIT_FAILURE);
      }
 }
@@ -352,7 +352,7 @@ kiss_obj* kiss_general_array_s_p (const kiss_obj* const obj) {
      case KISS_GENERAL_ARRAY:
 	  return KISS_T;
      default:
-	  fprintf(stderr, "general-array*-p: unknown primitive obj type %ld", KISS_OBJ_TYPE(obj));
+	  fprintf(stderr, "general-array*-p: unknown primitive obj type %d", KISS_OBJ_TYPE(obj));
 	  exit(EXIT_FAILURE);
      }
 }
