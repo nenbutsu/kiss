@@ -1248,6 +1248,43 @@ kiss_symbol_t KISS_Squote = {
     KISS_NIL,                 /* plist */
 };
 
+kiss_symbol_t KISS_Snot;
+kiss_cfunction_t KISS_CFnot = {
+    KISS_CMACRO,  /* type */
+    &KISS_Snot, /* name */
+    (kiss_cf_t*)kiss_not,   /* C function name */
+    1,       /* minimum argument number */
+    1,       /* maximum argument number */
+};
+kiss_symbol_t KISS_Snot = {
+    KISS_SYMBOL,              /* type */
+    NULL,              /* gc_ptr */
+    L"not",            /* name */
+    KISS_CONSTANT_FUN,        /* info */
+    NULL,                /* var */
+    (kiss_obj*)&KISS_CFnot, /* fun */
+    KISS_NIL,                 /* plist */
+};
+
+kiss_symbol_t KISS_Sand;
+kiss_cfunction_t KISS_CFand = {
+    KISS_CMACRO,  /* type */
+    &KISS_Sand, /* name */
+    (kiss_cf_t*)kiss_and,   /* C function name */
+    0,       /* minimum argument number */
+    -1,       /* maximum argument number */
+};
+kiss_symbol_t KISS_Sand = {
+    KISS_SYMBOL,              /* type */
+    NULL,              /* gc_ptr */
+    L"and",            /* name */
+    KISS_CONSTANT_FUN,        /* info */
+    NULL,                /* var */
+    (kiss_obj*)&KISS_CFand, /* fun */
+    KISS_NIL,                 /* plist */
+};
+
+
 kiss_symbol_t KISS_Sif;
 kiss_cfunction_t KISS_CFif = {
     KISS_CMACRO, /* type */
@@ -3096,7 +3133,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sgeneral_vector_p, &KISS_Sbasic_vector_p, &KISS_Sgvref, &KISS_Sset_gvref,
 
     /* function.c */
-    &KISS_Ssimple_function_p, &KISS_Sfunction, &KISS_Squote, &KISS_Slambda,
+    &KISS_Ssimple_function_p, &KISS_Sfunction, &KISS_Slambda,
     &KISS_Sflet, &KISS_Slabels, &KISS_Sdefun, &KISS_Sdefmacro, &KISS_Sfuncall,
     &KISS_Sapply,
 
@@ -3108,7 +3145,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sunwind_protect, &KISS_Scatch, &KISS_Sthrow, &KISS_Sblock,
     &KISS_Sreturn_from, &KISS_Stagbody, &KISS_Sgo,
     &KISS_Sif, &KISS_Sprogn,
-    &KISS_Seq, &KISS_Seql,
+    &KISS_Seq, &KISS_Seql, &KISS_Squote, &KISS_Snot, &KISS_Sand,
     
     /* number.c */
     &KISS_Sintegerp, &KISS_Sfloatp, &KISS_Sminus, &KISS_Splus, &KISS_Smultiply, &KISS_Snum_eq,

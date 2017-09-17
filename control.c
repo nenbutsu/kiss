@@ -306,3 +306,22 @@ inline kiss_obj* kiss_eq(const kiss_obj* const obj1, const kiss_obj* const obj2)
 kiss_obj* kiss_progn(kiss_obj* body) { return kiss_eval_body(body); }
 
 
+/* special operator: (and form*) -> <object>
+   and is the sequential logical `and'. FORMS are evaluated
+   from left to right until either one of them evaluates to nil or else
+   none are left. If one of them evaluates to nil, then nil is returned
+   from the and; otherwise, the value of the last evaluated form is returned. */
+kiss_obj* kiss_and(kiss_obj* forms) {
+     if (forms == KISS_NIL) { return KISS_NIL; }
+     kiss_obj* obj = KISS_CAR(forms);
+     kiss_obj* result = kiss_eval(obj);
+     if (result == KISS_NIL) { return KISS_NIL; }
+
+     for (kiss_obj* p = KISS_CDR(forms); p != KISS_NIL; p = KISS_CDR(forms)) {
+          obj = KISS_CAR(p);
+          result = kiss_eval(obj);
+          if (result == KISS_NIL) { return KISS_NIL; }
+     }
+     return result;
+}
+

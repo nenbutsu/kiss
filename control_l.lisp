@@ -18,20 +18,20 @@
 ;; function: (not obj) -> boolean
 ;; This predicate is the logical `not'. It returns t
 ;; if obj is nil and nil otherwise. obj may be any ISLISP object.
-(defun not (obj) (if (eq obj nil) t nil))
+;;; (defun not (obj) (if (eq obj nil) t nil))
 
 ;; special operator: (and form*) -> <object>
 ;; and is the sequential logical `and'. forms are evaluated
 ;; from left to right until either one of them evaluates to nil or else
 ;; none are left. If one of them evaluates to nil, then nil is returned
 ;; from the and; otherwise, the value of the last evaluated form is returned.
-(defmacro and (&rest args)
-  (if (eq args nil)                     ; (and) = 't
-      'T
-    (if (eq (cdr args) nil)             ; (and form) = form
-        (car args)
-      ;; (and form1 form2 . . . formn) = (if form1 (and form2 . . . formn) 'nil)
-      `(if ,(car args) (and ,@(cdr args)) 'nil))))
+;;;(defmacro and (&rest args)
+;;;  (if (eq args nil)                     ; (and) = 't
+;;;      'T
+;;;    (if (eq (cdr args) nil)             ; (and form) = form
+;;;        (car args)
+;;;      ;; (and form1 form2 . . . formn) = (if form1 (and form2 . . . formn) 'nil)
+;;;      `(if ,(car args) (and ,@(cdr args)) 'nil))))
 
 
 ;; special operator: (or form*) -> <object>

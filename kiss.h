@@ -355,6 +355,7 @@ kiss_obj* kiss_cinvoke(const kiss_cfunction_t* const cfun, kiss_obj* args);
 
 /* control.c */
 kiss_obj* kiss_quote(kiss_obj* obj);
+kiss_obj* kiss_and(kiss_obj* forms);
 kiss_obj* kiss_if(kiss_obj* test_form, kiss_obj* then_form, kiss_obj* rest);
 kiss_obj* kiss_eq(const kiss_obj* const obj1, const kiss_obj* const obj2);
 kiss_obj* kiss_progn(kiss_obj* body);
@@ -797,6 +798,14 @@ inline
 kiss_cfunction_t* Kiss_CMacro(const kiss_obj* const obj) {
      if (KISS_IS_CMACRO(obj)) { return (kiss_cfunction_t*)obj; }
      Kiss_Domain_Error(obj, L"{c macro}");
+}
+
+/* function: (not obj) -> boolean
+   This predicate is the logical `not'. It returns t
+   if obj is nil and nil otherwise. obj may be any ISLISP object. */
+inline
+kiss_obj* kiss_not(const kiss_obj* const obj) {
+     return obj == KISS_NIL ? KISS_T : KISS_NIL;
 }
 
 /* function: (eql obj1 obj2) -> boolean
