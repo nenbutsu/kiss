@@ -69,8 +69,7 @@ kiss_obj* kiss_float(kiss_obj* x) {
      }
 }
 
-static int is_valid_float_str(wchar_t* p) {
-     //fprintf(stderr, "1: \"%s\"\nlength = %ld\n\n", kiss_wcstombs(p), wcslen(p));
+static int is_valid_float_textual_representation(wchar_t* p) {
      if (*p == L'\0') { return 0; }
      if (*p == L'-') { p++; }
      if (*p == L'\0') { return 0; }
@@ -78,12 +77,10 @@ static int is_valid_float_str(wchar_t* p) {
      while (*p != L'\0' && wcschr(L"0123456789", *p)) { p++; }
      if (*p == L'\0') { return 0; }
      if (*p == L'.') {
-          //fprintf(stderr, "2: \"%s\"\nlength = %ld\n\n", kiss_wcstombs(p), wcslen(p));
           p++;
           if (*p == L'\0') { return 0; }
           if (wcschr(L"0123456789", *p) == NULL) { return 0; }
           while (*p != L'\0' && wcschr(L"0123456789", *p)) { p++; }
-          //fprintf(stderr, "2.5: \"%s\"\nlength = %ld\n\n", kiss_wcstombs(p), wcslen(p));
           if (*p == L'\0') { return 1; } // [s]dd … d.dd … d
      }
      if (*p != L'e' && *p != L'E') { return 0; }
@@ -136,7 +133,7 @@ kiss_obj* kiss_c_parse_number(kiss_obj* obj) {
      }
      if (base != 10) { return NULL; }
 
-     if (!is_valid_float_str(p)) {
+     if (!is_valid_float_textual_representation(p)) {
           return NULL;
      }
 

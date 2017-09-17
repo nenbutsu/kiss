@@ -285,11 +285,13 @@ static kiss_obj* kiss_read_sharp_reader_macro(const kiss_obj* const in) {
      case L'5': case L'6': case L'7': case L'8': case L'9':
 	  return kiss_read_array(in);
      case L'b': case L'B': case L'o': case L'O': case L'x': case L'X': {
+          kiss_push_lexeme_char(kiss_make_character(L'#'));
+          kiss_push_lexeme_char(kiss_c_read_char(in, KISS_NIL, KISS_EOS));
           int escaped;
-          kiss_c_read_char(in, KISS_NIL, KISS_EOS);
           kiss_collect_lexeme_chars(in, &escaped);
           kiss_environment_t* env = Kiss_Get_Environment();
           kiss_string_t* const str = kiss_chars_to_str(kiss_reverse(env->lexeme_chars));
+          env->lexeme_chars = KISS_NIL;
           if (escaped) { Kiss_Cannot_Parse_Number_Error((kiss_obj*)str); }
           return kiss_parse_number((kiss_obj*) str);
      }

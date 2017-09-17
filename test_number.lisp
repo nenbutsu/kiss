@@ -24,6 +24,9 @@
 ;; parse-number
 (= (parse-number "123.34") 123.34)
 (= (parse-number "#XFACE") 64206)
+(= (parse-number "#xFACE") 64206)
+(= (parse-number "#o10") 8)
+(= (parse-number "#O10") 8)
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
