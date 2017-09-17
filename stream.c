@@ -73,7 +73,7 @@ static kiss_string_stream_t* kiss_make_string_stream(kiss_string_t* str) {
    closed.
    Example: (streamp (standard-input)) => t
             (streamp '()) => nil */
-inline kiss_obj* kiss_streamp(kiss_obj* obj) {
+kiss_obj* kiss_streamp(kiss_obj* obj) {
      return KISS_IS_STREAM(obj) ? KISS_T : KISS_NIL;
 }
 
