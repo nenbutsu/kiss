@@ -57,35 +57,33 @@ void* Kiss_GC_Malloc(size_t size) {
     return p;
 }
 
-inline static int is_marked(kiss_gc_obj* obj) {
+static inline int is_marked(kiss_gc_obj* const restrict obj) {
      return gc_flag(obj->gc_ptr) != Kiss_GC_Flag;
 }
 
 
-static void mark_flag(kiss_gc_obj* const obj) {
-     if (Kiss_GC_Flag) {
-          kiss_ptr_int p = (kiss_ptr_int)obj->gc_ptr & (~0<<1);
-	  obj->gc_ptr = (void*)p;
-     } else {
-          kiss_ptr_int p = (kiss_ptr_int)obj->gc_ptr | 1;
-	  obj->gc_ptr = (void*)p;
-     }
+static inline void mark_flag(kiss_gc_obj* const restrict obj) {
+     obj->gc_ptr = Kiss_GC_Flag ? (void*)(((kiss_ptr_int)obj->gc_ptr) & (~0<<1)) :
+                                  (void*)(((kiss_ptr_int)obj->gc_ptr) | 1);
 }
 
 void kiss_gc_mark_obj(kiss_obj* obj);
 
-void kiss_gc_mark_lexical_environment(kiss_lexical_environment_t* lexical_env) {
+static inline
+void kiss_gc_mark_lexical_environment(kiss_lexical_environment_t* const lexical_env) {
      kiss_gc_mark_obj(lexical_env->vars);
      kiss_gc_mark_obj(lexical_env->funs);
      kiss_gc_mark_obj(lexical_env->jumpers);
 }
 
-void kiss_gc_mark_dynamic_environment(kiss_dynamic_environment_t* dynamic_env) {
+static inline
+void kiss_gc_mark_dynamic_environment(kiss_dynamic_environment_t* const dynamic_env) {
      kiss_gc_mark_obj(dynamic_env->vars);
      kiss_gc_mark_obj(dynamic_env->jumpers);
 }
 
-void kiss_gc_mark_cons(kiss_cons_t* obj) {
+static inline
+void kiss_gc_mark_cons(kiss_cons_t* const obj) {
      if (is_marked((kiss_gc_obj*)obj)) { return; }
      mark_flag((kiss_gc_obj*)obj);
      
@@ -93,7 +91,8 @@ void kiss_gc_mark_cons(kiss_cons_t* obj) {
      kiss_gc_mark_obj(obj->cdr);
 }
 
-void kiss_gc_mark_general_vector(kiss_general_vector_t* obj) {
+static inline
+void kiss_gc_mark_general_vector(kiss_general_vector_t* const obj) {
      size_t i;
      if (is_marked((kiss_gc_obj*)obj)) { return; }
      mark_flag((kiss_gc_obj*)obj);
@@ -102,13 +101,15 @@ void kiss_gc_mark_general_vector(kiss_general_vector_t* obj) {
      }
 }
 
-void kiss_gc_mark_general_array(kiss_general_array_t* obj) {
+static inline
+void kiss_gc_mark_general_array(kiss_general_array_t* const obj) {
      if (is_marked((kiss_gc_obj*)obj)) { return; }
      mark_flag((kiss_gc_obj*)obj);
      kiss_gc_mark_obj(obj->vector);
 }
 
-void kiss_gc_mark_symbol(kiss_symbol_t* symbol) {
+static inline
+void kiss_gc_mark_symbol(kiss_symbol_t* const symbol) {
      if (is_marked((kiss_gc_obj*)symbol)) { return; }
      mark_flag((kiss_gc_obj*)symbol);
      
@@ -117,32 +118,37 @@ void kiss_gc_mark_symbol(kiss_symbol_t* symbol) {
      kiss_gc_mark_obj(symbol->plist);
 }
 
-void kiss_gc_mark_function(kiss_function_t* f) {
+static inline
+void kiss_gc_mark_function(kiss_function_t* const f) {
      if (is_marked((kiss_gc_obj*)f)) { return; }
      mark_flag((kiss_gc_obj*)f);
      kiss_gc_mark_obj(f->lambda);
      kiss_gc_mark_lexical_environment(&(f->lexical_env));
 }
 
-void kiss_gc_mark_cfunction(kiss_cfunction_t* f) {
+static inline
+void kiss_gc_mark_cfunction(kiss_cfunction_t* const f) {
      kiss_gc_mark_obj((kiss_obj*)(f->name));
 }
 
-void kiss_gc_mark_catcher(kiss_catcher_t* catcher) {
+static inline
+void kiss_gc_mark_catcher(kiss_catcher_t* const catcher) {
      if (is_marked((kiss_gc_obj*)catcher)) { return; }
      mark_flag((kiss_gc_obj*)catcher);
      kiss_gc_mark_obj(catcher->tag);
      kiss_gc_mark_dynamic_environment(&(catcher->dynamic_env));
 }
 
-void kiss_gc_mark_block(kiss_block_t* block) {
+static inline
+void kiss_gc_mark_block(kiss_block_t* const block) {
      if (is_marked((kiss_gc_obj*)block)) { return; }
      mark_flag((kiss_gc_obj*)block);
      kiss_gc_mark_obj((kiss_obj*)block->name);
      kiss_gc_mark_dynamic_environment(&(block->dynamic_env));
 }
 
-void kiss_gc_mark_cleanup(kiss_cleanup_t* cleanup) {
+static inline
+void kiss_gc_mark_cleanup(kiss_cleanup_t* const cleanup) {
      if (is_marked((kiss_gc_obj*)cleanup)) { return; }
      mark_flag((kiss_gc_obj*)cleanup);
      kiss_gc_mark_obj(cleanup->body);
@@ -150,7 +156,8 @@ void kiss_gc_mark_cleanup(kiss_cleanup_t* cleanup) {
      kiss_gc_mark_dynamic_environment(&(cleanup->dynamic_env));
 }
 
-void kiss_gc_mark_tagbody(kiss_tagbody_t* tagbody) {
+static inline
+void kiss_gc_mark_tagbody(kiss_tagbody_t* const tagbody) {
      if (is_marked((kiss_gc_obj*)tagbody)) { return; }
      mark_flag((kiss_gc_obj*)tagbody);
      kiss_gc_mark_obj((kiss_obj*)tagbody->tag);
@@ -158,19 +165,21 @@ void kiss_gc_mark_tagbody(kiss_tagbody_t* tagbody) {
      kiss_gc_mark_obj(tagbody->body);
 }
 
-void kiss_gc_mark_stream(kiss_stream_t* obj) {
+static inline
+void kiss_gc_mark_stream(kiss_stream_t* const obj) {
      if (is_marked((kiss_gc_obj*)obj)) { return; }
      mark_flag((kiss_gc_obj*)obj);
      if (KISS_IS_STRING_STREAM(obj)) {
-	  kiss_string_stream_t* str_stream = (kiss_string_stream_t*)obj;
+	  kiss_string_stream_t* const str_stream = (kiss_string_stream_t*)obj;
 	  kiss_gc_mark_obj(str_stream->list);
      } else if (KISS_IS_FILE_STREAM(obj)) {
-          kiss_file_stream_t* file_stream = (kiss_file_stream_t*)obj;
+          kiss_file_stream_t* const file_stream = (kiss_file_stream_t*)obj;
           kiss_gc_mark_obj((kiss_obj*)file_stream->line);
      }
 }
 
-void kiss_gc_mark_oo_obj(kiss_oo_obj_t* obj) {
+static inline
+void kiss_gc_mark_oo_obj(kiss_oo_obj_t* const obj) {
      if (is_marked((kiss_gc_obj*)obj)) { return; }
      mark_flag((kiss_gc_obj*)obj);
      kiss_gc_mark_obj(obj->plist);
@@ -259,27 +268,32 @@ void kiss_gc_mark(void) {
      }
 }
 
-void kiss_gc_free_symbol(kiss_symbol_t* obj) {
+static inline
+void kiss_gc_free_symbol(kiss_symbol_t* const obj) {
      free(obj->name);
      free(obj);
 }
 
-void kiss_gc_free_bignum(kiss_bignum_t* obj) {
+static inline
+void kiss_gc_free_bignum(kiss_bignum_t* const obj) {
      mpz_clear(obj->mpz);
      free(obj);
 }
 
-void kiss_gc_free_float(kiss_float_t* obj) {
+static inline
+void kiss_gc_free_float(kiss_float_t* const obj) {
      mpf_clear(obj->mpf);
      free(obj);
 }
 
-void kiss_gc_free_string(kiss_string_t* obj) {
+static inline
+void kiss_gc_free_string(kiss_string_t* const obj) {
      free(obj->str);
      free(obj);
 }
 
-void kiss_gc_free_stream(kiss_stream_t* obj) {
+static inline
+void kiss_gc_free_stream(kiss_stream_t* const obj) {
      if (KISS_IS_FILE_STREAM(obj) && (((kiss_file_stream_t*)obj)->file_ptr)) {
 	  fclose(((kiss_file_stream_t*)obj)->file_ptr);
      }
