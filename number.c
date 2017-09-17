@@ -567,15 +567,62 @@ kiss_obj* kiss_num_lessthan(kiss_obj* a, kiss_obj* b) {
      }
 }
 
-/* function: (div z1 z2) -> <integer>
-   div returns the greatest integer less than or equal to the quotient of z1 
-   and z2.
-   An error shall be signaled if z2 is zero (error-id. division-by-zero).
-*/
-kiss_obj* kiss_div(kiss_obj* z1, kiss_obj* z2) {
-     fprintf(stderr, "kiss_div: not implemented");
-     exit(EXIT_FAILURE);
+kiss_obj* kiss_fixnum_if_possible(const kiss_obj* const obj) {
+     if (KISS_IS_BIGNUM(obj)) {
+          kiss_bignum_t* z = (kiss_bignum_t*)obj;
+          return (kiss_obj*)((mpz_cmp_si(z->mpz, KISS_PTR_INT_MAX) <= 0 && mpz_cmp_si(z->mpz, KISS_PTR_INT_MIN) >= 0) ? kiss_fixnum(mpz_get_si(z->mpz)) : obj);
+     } else {
+          return (kiss_obj*)obj;
+     }
 }
+
+/* function: (div z1 z2) -> <integer>
+   div returns the greatest integer less than or equal to the quotient of Z1 and Z2.
+   An error shall be signaled if Z2 is zero (error-id. division-by-zero). */
+kiss_obj* kiss_div(kiss_obj* a, kiss_obj* b) {
+     kiss_ptr_int i1 = Kiss_Fixnum(a);
+     kiss_ptr_int i2 = Kiss_Non_Zero_Fixnum(b);
+     switch (KISS_OBJ_TYPE(a)) {
+     case KISS_FIXNUM:
+          switch (KISS_OBJ_TYPE(b)) {
+          case KISS_FIXNUM:
+               return(kiss_obj*)kiss_make_fixnum(floorf(((double)kiss_ptr_int(a)) / kiss_ptr_int(b)));
+          case KISS_BIGNUM: {
+               kiss_bignum_t* z1 = kiss_make_bignum(i1);
+               kiss_bignum_t* z2 = (kiss_bignum_t*)b;
+               mpz_fdiv_q(z1->mpz, z1->mpz, z2->mpz);
+               return (kiss_obj*)z1;
+          }
+          default:
+               fprintf(stderr, "kiss_div: unexpected integer type = %ld", KISS_OBJ_TYPE(b));
+               exit(EXIT_FAILURE);
+          }
+          break;
+     case KISS_BIGNUM:
+          switch (KISS_OBJ_TYPE(b)) {
+          case KISS_FIXNUM: {
+               kiss_bignum_t* z1 = (kiss_bignum_t*)a;
+               kiss_bignum_t* z2 = kiss_make_bignum(i2);
+               mpz_fdiv_q(z1->mpz, z1->mpz, z2->mpz);
+               return (kiss_obj*)z1;
+          }
+          case KISS_BIGNUM: {
+               kiss_bignum_t* z1 = (kiss_bignum_t*)a;
+               kiss_bignum_t* z2 = (kiss_bignum_t*)b;
+               mpz_fdiv_q(z1->mpz, z1->mpz, z2->mpz);
+               return (kiss_obj*)z1;
+          }
+          default:
+               fprintf(stderr, "kiss_div: unexpected integer type = %ld", KISS_OBJ_TYPE(b));
+               exit(EXIT_FAILURE);
+          }
+          break;
+     default:
+          fprintf(stderr, "kiss_div: unexpected integer type = %ld", KISS_OBJ_TYPE(a));
+          exit(EXIT_FAILURE);
+     }
+}
+
 
 /* function: (mod z1 z2) -> <integer>
    mod returns the remainder of the integer division of z1 by z2.

@@ -90,7 +90,7 @@ inline kiss_obj* kiss_set_cdr(const kiss_obj* const obj, kiss_obj* const cons) {
    An error shall be signaled if I is not a non-negative integer (error-id. domain-error).
    INITIAL-ELEMENT may be any ISLISP object. */
 kiss_obj* kiss_create_list(const kiss_obj* const i, const kiss_obj* const rest) {
-    long int n = Kiss_Non_Negative_Integer(i);
+    long int n = Kiss_Non_Negative_Fixnum(i);
     kiss_obj* init = rest == KISS_NIL ? KISS_NIL : KISS_CAR(rest);
     kiss_obj* p = KISS_NIL;
     for (; n > 0; n--) {

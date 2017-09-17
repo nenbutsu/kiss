@@ -78,7 +78,7 @@ static kiss_general_array_t* kiss_make_general_array(const kiss_obj* const dimen
    INITIAL-ELEMENT may be any ISLISP object. */
 kiss_obj* kiss_create_array(const kiss_obj* const dimensions, const kiss_obj* const rest) {
      Kiss_Proper_List(dimensions);
-     kiss_c_mapc((kiss_cf1_t)Kiss_Non_Negative_Integer, dimensions);
+     kiss_c_mapc((kiss_cf1_t)Kiss_Non_Negative_Fixnum, dimensions);
      size_t rank = kiss_c_length(dimensions);
 
      if (rank == 1) {

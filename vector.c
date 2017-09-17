@@ -51,7 +51,7 @@ kiss_general_vector_t* kiss_make_general_vector(const size_t n, const kiss_obj* 
    An error shall be signaled if I is not a non-negative integer
    (error-id. domain-error ). INITIAL-ELEMENT may be any LISP object.*/
 kiss_obj* kiss_create_general_vector(const kiss_obj* const i, const kiss_obj* const rest) {
-    kiss_ptr_int n = Kiss_Non_Negative_Integer(i);
+    kiss_ptr_int n = Kiss_Non_Negative_Fixnum(i);
     kiss_obj* obj = rest == KISS_NIL ? KISS_NIL : KISS_CAR(rest);
     return (kiss_obj*)kiss_make_general_vector(n, obj);
 }
@@ -97,7 +97,7 @@ inline kiss_obj* kiss_general_vector_p(const kiss_obj* const obj) {
  */
 kiss_obj* kiss_gvref(const kiss_obj* const general_vector, const kiss_obj* const index) {
      const kiss_general_vector_t* const gv = Kiss_General_Vector(general_vector);
-     kiss_ptr_int i = Kiss_Non_Negative_Integer(index);
+     kiss_ptr_int i = Kiss_Non_Negative_Fixnum(index);
      if (i >= gv->n) {
           Kiss_Err(L"Index is too large. ~S", index);
      }
@@ -111,7 +111,7 @@ kiss_obj* kiss_gvref(const kiss_obj* const general_vector, const kiss_obj* const
 kiss_obj* kiss_set_gvref(const kiss_obj* const obj, kiss_obj* general_vector, const kiss_obj* const index)
 {
     kiss_general_vector_t* const gv = Kiss_General_Vector(general_vector);
-    kiss_ptr_int i = Kiss_Non_Negative_Integer(index);
+    kiss_ptr_int i = Kiss_Non_Negative_Fixnum(index);
     if (i >= gv->n) {
 	Kiss_Err(L"Index is too large. ~S", index);
     }

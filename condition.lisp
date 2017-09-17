@@ -241,6 +241,12 @@
 (defun kiss::signal-tagbody-not-found (name continuable)
   (signal-condition (create (class <control-error>) 'name name 'namespace 'tagbody) continuable))
 
+(defun kiss::signal-simple-domain-error (obj domain-name continuable)
+  (signal-condition (create (class <simple-error>)
+				  'format-string "~S is not ~S"
+				  'format-arguments (list obj domain-name))
+		    continuable))
+
 
 
 (provide 'condition)

@@ -400,26 +400,13 @@ kiss_obj* kiss_go(kiss_obj* tag);
 /* error.c */
 _Noreturn void Kiss_System_Error (void);
 _Noreturn void Kiss_Err(const wchar_t* const str, ...);
-kiss_cons_t* Kiss_Cons(const kiss_obj* const obj);
-kiss_ptr_int Kiss_Fixnum(const kiss_obj* const obj);
-kiss_bignum_t* Kiss_Bignum(const kiss_obj* const obj);
-kiss_float_t* Kiss_Float(const kiss_obj* const obj);
-wchar_t Kiss_Character(const kiss_obj* const obj);
-kiss_symbol_t* Kiss_Symbol(const kiss_obj* const obj);
-kiss_string_t* Kiss_String(const kiss_obj* const obj);
-kiss_stream_t* Kiss_Stream(const kiss_obj* const obj);
-kiss_general_vector_t* Kiss_General_Vector(const kiss_obj* const obj);
-kiss_general_array_t* Kiss_General_Array_S(const kiss_obj* const obj);
-kiss_function_t* Kiss_Function(const kiss_obj* const obj);
-kiss_function_t* Kiss_Macro(const kiss_obj* const obj);
-kiss_cfunction_t* Kiss_CFunction(const kiss_obj* const obj);
-kiss_cfunction_t* Kiss_CMacro(const kiss_obj* const obj);
+_Noreturn void Kiss_Domain_Error(const kiss_obj* const obj, const wchar_t* const domain);
 
 kiss_obj* Kiss_Integer(const kiss_obj* const obj);
 kiss_obj* Kiss_Number(const kiss_obj* const obj);
 kiss_obj* Kiss_List(const kiss_obj* const obj);
-long int Kiss_Non_Negative_Integer(const kiss_obj* const obj);
-long int Kiss_Non_Zero_Integer(const kiss_obj* const obj);
+kiss_ptr_int Kiss_Non_Negative_Fixnum(const kiss_obj* const obj);
+kiss_ptr_int Kiss_Non_Zero_Fixnum(const kiss_obj* const obj);
 kiss_obj* Kiss_General_Array(const kiss_obj* const obj);
 kiss_obj* Kiss_Basic_Array(const kiss_obj* const obj);
 kiss_obj* Kiss_Valid_Sequence_Index(const kiss_obj* const sequence, const kiss_obj* const index);
@@ -505,6 +492,7 @@ kiss_environment_t* Kiss_Get_Environment(void);
 void kiss_initialize(void);
 
 /* number.c */
+kiss_obj* kiss_fixnum_if_possible(const kiss_obj* const obj);
 kiss_bignum_t* kiss_make_bignum(kiss_ptr_int i);
 kiss_obj* kiss_integerp(kiss_obj* obj);
 kiss_obj* kiss_plus(kiss_obj* p);
@@ -662,3 +650,76 @@ void* Kiss_Malloc(size_t size);
 void* Kiss_GC_Malloc(size_t size);
 kiss_obj* kiss_gc_info(void);
 kiss_obj* kiss_gc(void);
+
+// inline definitions
+static inline kiss_cons_t* Kiss_Cons(const kiss_obj* const obj) {
+     if (KISS_IS_CONS(obj)) { return (kiss_cons_t*)obj; }
+     Kiss_Domain_Error(obj, L"<cons>");
+}
+
+static inline kiss_ptr_int Kiss_Fixnum(const kiss_obj* obj) {
+     if (KISS_IS_FIXNUM(obj)) { return kiss_ptr_int(obj); }
+     obj = kiss_fixnum_if_possible(obj);
+     if (KISS_IS_FIXNUM(obj)) { return kiss_ptr_int(obj); }
+     Kiss_Domain_Error(obj, L"{fixnum}");
+}
+
+static inline kiss_bignum_t* Kiss_Bignum(const kiss_obj* const obj) {
+     if (KISS_IS_BIGNUM(obj)) { return (kiss_bignum_t*)obj; }
+     Kiss_Domain_Error(obj, L"{bignum}");
+}
+
+static inline kiss_float_t* Kiss_Float(const kiss_obj* const obj) {
+     if (KISS_IS_FLOAT(obj)) { return (kiss_float_t*)obj; }
+     Kiss_Domain_Error(obj, L"<float>");
+}
+
+static inline wchar_t Kiss_Character(const kiss_obj* const obj) {
+     if (KISS_IS_FIXCHAR(obj)) { return kiss_wchar(obj); }
+     Kiss_Domain_Error(obj, L"{fixchar}");
+}
+
+static inline kiss_symbol_t* Kiss_Symbol(const kiss_obj* const obj) {
+     if (KISS_IS_SYMBOL(obj)) { return (kiss_symbol_t*)obj; }
+     Kiss_Domain_Error(obj, L"<symbol>");
+}
+
+static inline kiss_string_t* Kiss_String(const kiss_obj* const obj) {
+     if (KISS_IS_STRING(obj)) { return (kiss_string_t*)obj; }
+     Kiss_Domain_Error(obj, L"<string>");
+}
+
+static inline kiss_stream_t* Kiss_Stream(const kiss_obj* const obj) {
+     if (KISS_IS_STREAM(obj)) { return (kiss_stream_t*)obj; }
+     Kiss_Domain_Error(obj, L"<stream>");
+}
+
+static inline kiss_general_vector_t* Kiss_General_Vector(const kiss_obj* const obj) {
+     if (KISS_IS_GENERAL_VECTOR(obj)) { return (kiss_general_vector_t*)obj; }
+     Kiss_Domain_Error(obj, L"<general-vector>");
+}
+
+static inline kiss_general_array_t* Kiss_General_Array_S(const kiss_obj* const obj) {
+     if (KISS_IS_GENERAL_ARRAY(obj)) { return (kiss_general_array_t*)obj; }
+     Kiss_Domain_Error(obj, L"<general-array*>");
+}
+
+static inline kiss_function_t* Kiss_Function(const kiss_obj* const obj) {
+     if (KISS_IS_FUNCTION(obj)) { return (kiss_function_t*)obj; }
+     Kiss_Domain_Error(obj, L"{lisp function}");
+}
+
+static inline kiss_function_t* Kiss_Macro(const kiss_obj* const obj) {
+     if (KISS_IS_MACRO(obj)) { return (kiss_function_t*)obj; }
+     Kiss_Domain_Error(obj, L"{lisp macro}");
+}
+
+static inline kiss_cfunction_t* Kiss_CFunction(const kiss_obj* const obj) {
+     if (KISS_IS_CMACRO(obj)) { return (kiss_cfunction_t*)obj; }
+     Kiss_Domain_Error(obj, L"{c function}");
+}
+
+static inline kiss_cfunction_t* Kiss_CMacro(const kiss_obj* const obj) {
+     if (KISS_IS_CFUNCTION(obj)) { return (kiss_cfunction_t*)obj; }
+     Kiss_Domain_Error(obj, L"{c macro}");
+}
