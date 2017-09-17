@@ -197,10 +197,10 @@
 
 (defmethod report-condition ((condition <domain-error>) (stream <stream>))
   (if (error-id condition)
-      (format stream "Domain error ~S is not ~S"
+      (format stream "Domain error: ~S is not ~S"
           (domain-error-object condition)
           (error-id condition))
-    (format stream "Domain error ~S is not ~S"
+    (format stream "Domain error: ~S is not ~S"
             (domain-error-object condition)
             (class-name (domain-error-expected-class condition))))
   condition)
