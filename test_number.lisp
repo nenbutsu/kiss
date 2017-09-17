@@ -15,6 +15,30 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
+;; numberp
+(eq (numberp 3) t)
+(eq (numberp -0.3) t)
+(eq (numberp '(a b c)) nil)
+(eq (numberp "17") nil)
+
+;; parse-number
+(= (parse-number "123.34") 123.34)
+(= (parse-number "#XFACE") 64206)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(parse-number "-37."))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+		(parse-number "-.5"))
+  nil)
+
 ;; div, mod
 (eql (div 12 3) 4)
 (eql (div 14 3) 4)

@@ -41,8 +41,9 @@ static kiss_obj* kiss_read_lexeme(const kiss_obj* const in);
   meaning of the ISLISP text.
 
  */
+
 static int kiss_is_delimiter(wint_t c) {
-    return iswspace(c) || wcschr(L"()`,'\"#;", c);
+     return iswspace(c) || wcschr(L"()`,'\"#;", c);
 }
 
 
@@ -381,7 +382,7 @@ static kiss_obj* kiss_read_lexeme(const kiss_obj* const in) {
           kiss_obj* p = kiss_c_preview_char(in, KISS_NIL, KISS_NIL);
           if (p == KISS_NIL) { return NULL; }
           wchar_t c = kiss_wchar(p);
-          if (iswspace(c)) {
+          if (iswspace(c) || iswcntrl(c)) {
                kiss_c_read_char(in, KISS_NIL, KISS_NIL);
                continue;
           }

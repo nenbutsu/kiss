@@ -70,9 +70,8 @@ kiss_string_t* kiss_chars_to_str(const kiss_obj* const chars) {
 }
 
 kiss_obj* kiss_str_to_chars(const kiss_string_t* const str) {
-    size_t n;
     kiss_obj* chars = KISS_NIL;
-    for (n = str->n; n > 0; n--) {
+    for (size_t n = str->n; n > 0; n--) {
 	kiss_push(kiss_make_character(str->str[n-1]), &chars);
     }
     return chars;

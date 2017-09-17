@@ -28,17 +28,23 @@ char* kiss_wctombs(const wchar_t c) {
 char* kiss_wcstombs(const wchar_t* const src) {
      size_t size = sizeof(char) * MB_LEN_MAX * wcslen(src) + 1;
      char* buf = Kiss_Malloc(size);
-     if (wcstombs(buf, src, size) == -1) {
+     size_t result = wcstombs(buf, src, size);
+     if (result == (size_t) -1) {
 	  Kiss_System_Error();
      }
+     assert (result < size);
+     buf[result] = '\0';
      return buf;
 }
 
 wchar_t* kiss_mbstowcs(const char* const src) {
      size_t size = strlen (src) + 1;
      wchar_t *buf = Kiss_Malloc (size * sizeof (wchar_t));
-     if (mbstowcs(buf, src, size) == -1) {
+     size_t result = mbstowcs(buf, src, size);
+     if (result == -1) {
 	  Kiss_System_Error();
      }
+     assert (result < size);
+     buf[result] = L'\0';
      return buf;
 }
