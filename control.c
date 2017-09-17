@@ -295,13 +295,6 @@ kiss_obj* kiss_if(kiss_obj* test_form, kiss_obj* then_form, kiss_obj* rest) {
     }
 }
 
-/* function: (eq obj1 obj2) -> boolean
-   the consequences are implementation defined if both obj1 and obj2 are
-   numbers or both are characters.*/
-inline kiss_obj* kiss_eq(const kiss_obj* const obj1, const kiss_obj* const obj2) {
-     return obj1 == obj2 ? KISS_T : KISS_NIL;
-}
-
 /* special operator: (progn form*) -> <object> */
 kiss_obj* kiss_progn(kiss_obj* body) { return kiss_eval_body(body); }
 
@@ -312,12 +305,12 @@ kiss_obj* kiss_progn(kiss_obj* body) { return kiss_eval_body(body); }
    none are left. If one of them evaluates to nil, then nil is returned
    from the and; otherwise, the value of the last evaluated form is returned. */
 kiss_obj* kiss_and(kiss_obj* forms) {
-     if (forms == KISS_NIL) { return KISS_NIL; }
+     if (forms == KISS_NIL) { return KISS_T; }
      kiss_obj* obj = KISS_CAR(forms);
      kiss_obj* result = kiss_eval(obj);
      if (result == KISS_NIL) { return KISS_NIL; }
 
-     for (kiss_obj* p = KISS_CDR(forms); p != KISS_NIL; p = KISS_CDR(forms)) {
+     for (kiss_obj* p = KISS_CDR(forms); p != KISS_NIL; p = KISS_CDR(p)) {
           obj = KISS_CAR(p);
           result = kiss_eval(obj);
           if (result == KISS_NIL) { return KISS_NIL; }

@@ -1250,7 +1250,7 @@ kiss_symbol_t KISS_Squote = {
 
 kiss_symbol_t KISS_Snot;
 kiss_cfunction_t KISS_CFnot = {
-    KISS_CMACRO,  /* type */
+    KISS_CFUNCTION,  /* type */
     &KISS_Snot, /* name */
     (kiss_cf_t*)kiss_not,   /* C function name */
     1,       /* minimum argument number */

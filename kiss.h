@@ -357,7 +357,6 @@ kiss_obj* kiss_cinvoke(const kiss_cfunction_t* const cfun, kiss_obj* args);
 kiss_obj* kiss_quote(kiss_obj* obj);
 kiss_obj* kiss_and(kiss_obj* forms);
 kiss_obj* kiss_if(kiss_obj* test_form, kiss_obj* then_form, kiss_obj* rest);
-kiss_obj* kiss_eq(const kiss_obj* const obj1, const kiss_obj* const obj2);
 kiss_obj* kiss_progn(kiss_obj* body);
 kiss_catcher_t* kiss_make_catcher(kiss_obj* tag, jmp_buf jmp);
 kiss_obj* kiss_catch(kiss_obj* tag_form, kiss_obj* body);
@@ -622,7 +621,7 @@ void* Kiss_GC_Malloc(size_t const size) {
     Kiss_GC_Amount += size;
     if (Kiss_GC_Amount > 1024 * 1024 * 4) {
          //fprintf(stderr, "\ngc...\n");
-	 kiss_gc();
+	 //kiss_gc();
 	 Kiss_GC_Amount = 0;
     }
 
@@ -807,6 +806,15 @@ inline
 kiss_obj* kiss_not(const kiss_obj* const obj) {
      return obj == KISS_NIL ? KISS_T : KISS_NIL;
 }
+
+/* function: (eq obj1 obj2) -> boolean
+   the consequences are implementation defined if both obj1 and obj2 are
+   numbers or both are characters.*/
+inline
+kiss_obj* kiss_eq(const kiss_obj* const obj1, const kiss_obj* const obj2) {
+     return obj1 == obj2 ? KISS_T : KISS_NIL;
+}
+
 
 /* function: (eql obj1 obj2) -> boolean
    the meaning for numbers and characters is defined as follows:

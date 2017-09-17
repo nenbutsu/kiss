@@ -18,7 +18,7 @@
 ;; function: (not obj) -> boolean
 ;; This predicate is the logical `not'. It returns t
 ;; if obj is nil and nil otherwise. obj may be any ISLISP object.
-;;; (defun not (obj) (if (eq obj nil) t nil))
+;;(defun not (obj) (if (eq obj nil) t nil))
 
 ;; special operator: (and form*) -> <object>
 ;; and is the sequential logical `and'. forms are evaluated

@@ -101,7 +101,10 @@ kiss_cfunction_t* Kiss_CMacro(const kiss_obj* const obj);
 
 extern inline
 kiss_obj* kiss_not(const kiss_obj* const obj);
-     
+
+extern inline
+kiss_obj* kiss_eq(const kiss_obj* const obj1, const kiss_obj* const obj2);
+
 extern inline
 kiss_obj* kiss_eql(const kiss_obj* const obj1, const kiss_obj* const obj2);
 
