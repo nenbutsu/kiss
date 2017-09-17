@@ -96,14 +96,6 @@ kiss_obj* Kiss_Valid_Sequence_Index(const kiss_obj* const sequence, const kiss_o
      return (kiss_obj*)index;
 }
 
-kiss_cons_t* Kiss_Proper_List_2(const kiss_obj* const obj) {
-    Kiss_Proper_List(obj);
-    if (kiss_c_length(obj) != 2) {
-	Kiss_Err(L"Proper list of length 2 expected ~S", obj);
-    }
-    return (kiss_cons_t*)obj;
-}
-
 kiss_stream_t* Kiss_Input_Char_Stream(const kiss_obj* const obj) {
     if (!KISS_IS_INPUT_STREAM(obj) || !KISS_IS_CHARACTER_STREAM(obj)) {
 	Kiss_Err(L"Input character stream expected ~S", obj);

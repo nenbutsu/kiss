@@ -373,7 +373,6 @@ _Noreturn void Kiss_Err(const wchar_t* const str, ...);
 _Noreturn void Kiss_Domain_Error(const kiss_obj* const obj, const wchar_t* const domain);
 
 kiss_obj* Kiss_Valid_Sequence_Index(const kiss_obj* const sequence, const kiss_obj* const index);
-kiss_cons_t* Kiss_Proper_List_2(const kiss_obj* const obj);
 kiss_stream_t* Kiss_Input_Char_Stream(const kiss_obj* const obj);
 kiss_stream_t* Kiss_Output_Char_Stream(const kiss_obj* const obj);
 kiss_stream_t* Kiss_Input_Byte_Stream(const kiss_obj* const obj);
@@ -608,19 +607,19 @@ extern void* Kiss_GC_Objects;
 extern kiss_gc_obj* Kiss_Heap_Stack[];
 /* An error shall be signaled if the requested memory cannot be allocated
    (error-id. <storage-exhausted>). */
-static inline
+inline
 void* Kiss_Malloc(size_t const size) {
     void* p = malloc(size);
     if (p == NULL) { Kiss_System_Error(); }
     return p;
 }
 
-static inline
+inline
 void* Kiss_GC_Malloc(size_t const size) {
     void* p = Kiss_Malloc(size);
 
     Kiss_GC_Amount += size;
-    if (Kiss_GC_Amount > 1024 * 1024 * 10) {
+    if (Kiss_GC_Amount > 1024 * 1024 * 4) {
          //fprintf(stderr, "\ngc...\n");
 	 kiss_gc();
 	 Kiss_GC_Amount = 0;
@@ -635,63 +634,74 @@ void* Kiss_GC_Malloc(size_t const size) {
 
 
 
-static inline kiss_cons_t* Kiss_Cons(const kiss_obj* const obj) {
+inline
+kiss_cons_t* Kiss_Cons(const kiss_obj* const obj) {
      if (KISS_IS_CONS(obj)) { return (kiss_cons_t*)obj; }
      Kiss_Domain_Error(obj, L"<cons>");
 }
 
-static inline kiss_ptr_int Kiss_Fixnum(const kiss_obj* obj) {
+inline
+kiss_ptr_int Kiss_Fixnum(const kiss_obj* obj) {
      if (KISS_IS_FIXNUM(obj)) { return kiss_ptr_int(obj); }
      obj = kiss_fixnum_if_possible(obj);
      if (KISS_IS_FIXNUM(obj)) { return kiss_ptr_int(obj); }
      Kiss_Domain_Error(obj, L"{fixnum}");
 }
 
-static inline kiss_bignum_t* Kiss_Bignum(const kiss_obj* const obj) {
+inline
+kiss_bignum_t* Kiss_Bignum(const kiss_obj* const obj) {
      if (KISS_IS_BIGNUM(obj)) { return (kiss_bignum_t*)obj; }
      Kiss_Domain_Error(obj, L"{bignum}");
 }
 
-static inline kiss_obj* Kiss_Integer(const kiss_obj* const obj) {
+inline
+kiss_obj* Kiss_Integer(const kiss_obj* const obj) {
      if (KISS_IS_FIXNUM(obj) || KISS_IS_BIGNUM(obj)) { return (kiss_obj*)obj; }
      Kiss_Domain_Error(obj, L"<integer>");
 }
 
-static inline kiss_obj* Kiss_Number(const kiss_obj* const obj) {
+inline
+kiss_obj* Kiss_Number(const kiss_obj* const obj) {
      if (KISS_IS_INTEGER(obj) || KISS_IS_FLOAT(obj)) { return (kiss_obj*)obj; }
      Kiss_Domain_Error(obj, L"<number>");
 }
 
-static inline kiss_ptr_int Kiss_Non_Negative_Fixnum(const kiss_obj* const obj) {
+inline
+kiss_ptr_int Kiss_Non_Negative_Fixnum(const kiss_obj* const obj) {
      const kiss_ptr_int i = Kiss_Fixnum(obj);
      if (i >= 0) { return i; }
      Kiss_Domain_Error(obj, L"{non negative fixnum}");
 }
 
-static inline kiss_ptr_int Kiss_Non_Zero_Fixnum(const kiss_obj* const obj) {
+inline
+kiss_ptr_int Kiss_Non_Zero_Fixnum(const kiss_obj* const obj) {
      const kiss_ptr_int i = Kiss_Fixnum(obj);
      if (i != 0) { return i; }
      Kiss_Domain_Error(obj, L"{non zero fixnum}");
 }
 
-static inline kiss_obj* Kiss_General_Array(const kiss_obj* const obj) {
+inline
+kiss_obj* Kiss_General_Array(const kiss_obj* const obj) {
      if (KISS_IS_GENERAL_VECTOR(obj) || KISS_IS_GENERAL_ARRAY(obj)) {
           return (kiss_obj*)obj;
      }
      Kiss_Domain_Error(obj, L"{general array (<general-vector> or <general-array*>)}");
 }
 
-static inline kiss_obj* Kiss_Sequence(const kiss_obj* const obj) {
+inline
+kiss_obj* Kiss_Sequence(const kiss_obj* const obj) {
      if (KISS_IS_SEQUENCE(obj)) { return (kiss_obj*)obj; }
      Kiss_Domain_Error(obj, L"<sequence>");
 }
 
-static inline kiss_oo_obj_t* Kiss_Object(const kiss_obj* const obj) {
+inline
+kiss_oo_obj_t* Kiss_Object(const kiss_obj* const obj) {
      if (KISS_IS_OBJECT(obj)) { return (kiss_oo_obj_t*)obj; }
      Kiss_Domain_Error(obj, L"{ILOS object}");
 }
 
-static inline kiss_obj* Kiss_Basic_Array(const kiss_obj* const obj) {
+inline
+kiss_obj* Kiss_Basic_Array(const kiss_obj* const obj) {
      if (KISS_IS_GENERAL_VECTOR(obj) || KISS_IS_GENERAL_ARRAY(obj) || KISS_IS_STRING(obj)) {
           return (kiss_obj*)obj;
      }
@@ -699,13 +709,14 @@ static inline kiss_obj* Kiss_Basic_Array(const kiss_obj* const obj) {
 }
 
 
-static inline kiss_obj* Kiss_List(const kiss_obj* const obj) {
+inline
+kiss_obj* Kiss_List(const kiss_obj* const obj) {
      if (obj == KISS_NIL || KISS_IS_CONS(obj)) { return (kiss_obj*)obj; }
      Kiss_Domain_Error(obj, L"<list>");
 }
 
 /* Proper list is a list terminated by the empty list. (The empty list is a proper list.) */
-static inline
+inline
 kiss_obj* Kiss_Proper_List(const kiss_obj* const obj) {
      const kiss_obj* p = obj;
      while (KISS_IS_CONS(p)) { p = KISS_CDR(p); }
@@ -713,59 +724,78 @@ kiss_obj* Kiss_Proper_List(const kiss_obj* const obj) {
      Kiss_Domain_Error(obj, L"{proper list}");
 }
 
+inline
+kiss_cons_t* Kiss_Proper_List_2(const kiss_obj* const obj) {
+     const kiss_obj* p = obj;
+     size_t i = 0;
+     while (KISS_IS_CONS(p) && i < 4) { i++; p = KISS_CDR(p); }
+     if (p == KISS_NIL && i == 2) { return (kiss_cons_t*)obj; }
+     Kiss_Domain_Error(obj, L"{proper list of length two}");
+}
 
-static inline kiss_float_t* Kiss_Float(const kiss_obj* const obj) {
+inline
+kiss_float_t* Kiss_Float(const kiss_obj* const obj) {
      if (KISS_IS_FLOAT(obj)) { return (kiss_float_t*)obj; }
      Kiss_Domain_Error(obj, L"<float>");
 }
 
-static inline wchar_t Kiss_Character(const kiss_obj* const obj) {
+inline
+wchar_t Kiss_Character(const kiss_obj* const obj) {
      if (KISS_IS_FIXCHAR(obj)) { return kiss_wchar(obj); }
      Kiss_Domain_Error(obj, L"{fixchar}");
 }
 
-static inline kiss_symbol_t* Kiss_Symbol(const kiss_obj* const obj) {
+inline
+kiss_symbol_t* Kiss_Symbol(const kiss_obj* const obj) {
      if (KISS_IS_SYMBOL(obj)) { return (kiss_symbol_t*)obj; }
      Kiss_Domain_Error(obj, L"<symbol>");
 }
 
-static inline kiss_string_t* Kiss_String(const kiss_obj* const obj) {
+inline
+kiss_string_t* Kiss_String(const kiss_obj* const obj) {
      if (KISS_IS_STRING(obj)) { return (kiss_string_t*)obj; }
      Kiss_Domain_Error(obj, L"<string>");
 }
 
-static inline kiss_stream_t* Kiss_Stream(const kiss_obj* const obj) {
+static inline
+kiss_stream_t* Kiss_Stream(const kiss_obj* const obj) {
      if (KISS_IS_STREAM(obj)) { return (kiss_stream_t*)obj; }
      Kiss_Domain_Error(obj, L"<stream>");
 }
 
-static inline kiss_general_vector_t* Kiss_General_Vector(const kiss_obj* const obj) {
+inline
+kiss_general_vector_t* Kiss_General_Vector(const kiss_obj* const obj) {
      if (KISS_IS_GENERAL_VECTOR(obj)) { return (kiss_general_vector_t*)obj; }
      Kiss_Domain_Error(obj, L"<general-vector>");
 }
 
-static inline kiss_general_array_t* Kiss_General_Array_S(const kiss_obj* const obj) {
+inline
+kiss_general_array_t* Kiss_General_Array_S(const kiss_obj* const obj) {
      if (KISS_IS_GENERAL_ARRAY(obj)) { return (kiss_general_array_t*)obj; }
      Kiss_Domain_Error(obj, L"<general-array*>");
 }
 
-static inline kiss_function_t* Kiss_Function(const kiss_obj* const obj) {
+inline
+kiss_function_t* Kiss_Function(const kiss_obj* const obj) {
      if (KISS_IS_FUNCTION(obj)) { return (kiss_function_t*)obj; }
      Kiss_Domain_Error(obj, L"{lisp function}");
 }
 
-static inline kiss_function_t* Kiss_Macro(const kiss_obj* const obj) {
+inline
+kiss_function_t* Kiss_Macro(const kiss_obj* const obj) {
      if (KISS_IS_MACRO(obj)) { return (kiss_function_t*)obj; }
      Kiss_Domain_Error(obj, L"{lisp macro}");
 }
 
-static inline kiss_cfunction_t* Kiss_CFunction(const kiss_obj* const obj) {
-     if (KISS_IS_CMACRO(obj)) { return (kiss_cfunction_t*)obj; }
+inline
+kiss_cfunction_t* Kiss_CFunction(const kiss_obj* const obj) {
+     if (KISS_IS_CFUNCTION(obj)) { return (kiss_cfunction_t*)obj; }
      Kiss_Domain_Error(obj, L"{c function}");
 }
 
-static inline kiss_cfunction_t* Kiss_CMacro(const kiss_obj* const obj) {
-     if (KISS_IS_CFUNCTION(obj)) { return (kiss_cfunction_t*)obj; }
+inline
+kiss_cfunction_t* Kiss_CMacro(const kiss_obj* const obj) {
+     if (KISS_IS_CMACRO(obj)) { return (kiss_cfunction_t*)obj; }
      Kiss_Domain_Error(obj, L"{c macro}");
 }
 
@@ -778,7 +808,7 @@ static inline kiss_cfunction_t* Kiss_CMacro(const kiss_obj* const obj) {
    and it is interpreted as the value 0.0 then (eql 0.0 -0.0) returns t.
    • If obj1 and obj2 are characters, eql tests whether they are the same
    character (see char=). */
-static inline
+inline
 kiss_obj* kiss_eql(const kiss_obj* const obj1, const kiss_obj* const obj2) {
      if (KISS_IS_INTEGER(obj1) && KISS_IS_INTEGER(obj2)) {
 	  return kiss_num_eq(obj1, obj2);
@@ -799,62 +829,68 @@ kiss_obj* kiss_eql(const kiss_obj* const obj1, const kiss_obj* const obj2) {
    closed.
    Example: (streamp (standard-input)) => t
             (streamp '()) => nil */
-static inline kiss_obj* kiss_streamp(kiss_obj* obj) {
+inline
+kiss_obj* kiss_streamp(kiss_obj* obj) {
      return KISS_IS_STREAM(obj) ? KISS_T : KISS_NIL;
 }
 
 /* function: (input-stream-p obj) -> boolean
    Returns t if OBJ is a stream that can handle input operations;
    otherwise, returns nil. */
-static inline kiss_obj* kiss_input_stream_p(kiss_obj* p) {
+inline
+kiss_obj* kiss_input_stream_p(kiss_obj* p) {
      return KISS_IS_INPUT_STREAM(p) ? KISS_T : KISS_NIL;
 }
 
 /* function: (output-stream-p obj) -> boolean
    Returns t if OBJ is a stream that can handle output operations;
    otherwise, returns nil. */
-static inline kiss_obj* kiss_output_stream_p(kiss_obj* p) {
+inline
+kiss_obj* kiss_output_stream_p(kiss_obj* p) {
      return KISS_IS_OUTPUT_STREAM(p) ? KISS_T : KISS_NIL;
 }
 
 /* function: (standard-input) -> <stream> */
-static inline kiss_obj* kiss_standard_input(void)  {
+inline
+kiss_obj* kiss_standard_input(void)  {
      return kiss_dynamic(kiss_symbol(L"*kiss::standard-input*"));
 }
 
 /* function: (standard-output) -> <stream> */
-static inline kiss_obj* kiss_standard_output(void) {
+inline
+kiss_obj* kiss_standard_output(void) {
      return kiss_dynamic(kiss_symbol(L"*kiss::standard-output*"));
 }
 
 /* function: (error-output) -> <stream> */
-static inline kiss_obj* kiss_error_output(void)    {
+inline
+kiss_obj* kiss_error_output(void)    {
      return kiss_dynamic(kiss_symbol(L"*kiss::error-output*"));
 }
 
 /* function: (consp obj) -> boolean
    Returns t if OBJ is a cons (instance of class <cons>); otherwise, returns nil.
    OBJ may be any ISLISP object. */
-static inline
+inline
 kiss_obj* kiss_consp(const kiss_obj* const obj) { return KISS_IS_CONS(obj) ? KISS_T : KISS_NIL; }
 
 /* function: (car cons) -> <object>
    Returns the left component of the CONS.
    An error shall be signaled if CONS is not a cons (error-id. domain-error). */
-static inline
+inline
 kiss_obj* kiss_car(const kiss_obj* const p) { return KISS_CAR(Kiss_Cons(p)); }
 
 /* function: (cdr cons) -> <object>
    Returns the right component of the CONS.
    An error shall be signaled if CONS is not a cons (error-id. domain-error). */
-static inline
+inline
 kiss_obj* kiss_cdr(const kiss_obj* const p) { return KISS_CDR(Kiss_Cons(p)); }
 
-static inline
+inline
 kiss_obj* kiss_cadr(const kiss_obj* const p)  { return kiss_car(kiss_cdr(p)); }
-static inline
+inline
 kiss_obj* kiss_cddr(const kiss_obj* const p)  { return kiss_cdr(kiss_cdr(p)); }
-static inline
+inline
 kiss_obj* kiss_caddr(const kiss_obj* const p) { return kiss_car(kiss_cddr(p)); }
 
 
@@ -865,7 +901,7 @@ kiss_obj* kiss_caddr(const kiss_obj* const p) { return kiss_car(kiss_cddr(p)); }
    the conses which make up the top level of the given list are permitted,
    but not required, to be side-effected in order to produce this new list.
    nreverse should never be called on a literal object. */
-static inline
+inline
 kiss_obj* kiss_nreverse(kiss_obj* p) {
      p = Kiss_List(p);
      if (p == KISS_NIL) {
@@ -906,7 +942,7 @@ kiss_obj* kiss_nreverse(kiss_obj* p) {
 
    Example:
    (assoc 'a '((a . 1) (b . 2))) => (a . 1) */
-static inline
+inline
 kiss_obj* kiss_assoc(const kiss_obj* const obj, kiss_obj* const alist) {
     for (const kiss_obj* p = Kiss_List(alist); KISS_IS_CONS(p); p = KISS_CDR(p)) {
         kiss_cons_t* x = Kiss_Cons(KISS_CAR(p));
@@ -915,7 +951,7 @@ kiss_obj* kiss_assoc(const kiss_obj* const obj, kiss_obj* const alist) {
     return KISS_NIL;
 }
 
-static inline
+inline
 kiss_cons_t* kiss_init_cons(kiss_cons_t* const p, const kiss_obj* const left, const kiss_obj* const right)
 {
     p->type = KISS_CONS;
@@ -930,17 +966,17 @@ kiss_cons_t* kiss_init_cons(kiss_cons_t* const p, const kiss_obj* const left, co
    An error shall be signaled if the requested cons cannot be allocated 
    (error-id. cannot-create-cons). 
    Both OBJ1 and OBJ2 may be any ISLISP object. */
-static inline
+inline
 kiss_obj* kiss_cons(const kiss_obj* const car, const kiss_obj* const cdr) {
      return (kiss_obj*)kiss_init_cons(Kiss_GC_Malloc(sizeof(kiss_cons_t)), car, cdr);
 }
 
-static inline
+inline
 void kiss_push(const kiss_obj* const elm, kiss_obj** const list) {
     *list = kiss_cons(elm, *list);
 }
 
-static inline
+inline
 size_t kiss_c_length(const kiss_obj* const p) {
      Kiss_Sequence(p);
      switch (KISS_OBJ_TYPE(p)) {
@@ -965,7 +1001,7 @@ size_t kiss_c_length(const kiss_obj* const p) {
    The returned value is OBJ.
    An error shall be signaled if CONS is not a cons (error-id. domain-error).
    OBJ may be any ISLISP object */
-static inline
+inline
 kiss_obj* kiss_set_car(const kiss_obj* const obj, kiss_obj* const cons) {
     kiss_cons_t* const p = Kiss_Cons(cons);
     p->car = (kiss_obj*)obj;
@@ -976,7 +1012,7 @@ kiss_obj* kiss_set_car(const kiss_obj* const obj, kiss_obj* const cons) {
    Updates the right component of CONS with OBJ. The returned value is OBJ.
    An error shall be signaled if CONS is not a cons (error-id. domain-error).
    OBJ may be any ISLISP object. */
-static inline
+inline
 kiss_obj* kiss_set_cdr(const kiss_obj* const obj, kiss_obj* const cons) {
     kiss_cons_t* const p = Kiss_Cons(cons);
     p->cdr = (kiss_obj*)obj;
@@ -991,7 +1027,7 @@ kiss_obj* kiss_set_cdr(const kiss_obj* const obj, kiss_obj* const cons) {
    (error-id. cannot-create-list).
    An error shall be signaled if I is not a non-negative integer (error-id. domain-error).
    INITIAL-ELEMENT may be any ISLISP object. */
-static inline
+inline
 kiss_obj* kiss_create_list(const kiss_obj* const i, const kiss_obj* const rest) {
     long int n = Kiss_Non_Negative_Fixnum(i);
     kiss_obj* init = rest == KISS_NIL ? KISS_NIL : KISS_CAR(rest);
@@ -1008,7 +1044,7 @@ kiss_obj* kiss_create_list(const kiss_obj* const i, const kiss_obj* const rest) 
    also be a dotted list. Only the list structure of LIST is copied;
    the elements of the resulting list are the same as the corresponding
    elements of the given LIST. */
-static inline
+inline
 kiss_obj* kiss_copy_list(const kiss_obj* p) {
      kiss_cons_t head;
      kiss_init_cons(&head, KISS_NIL, KISS_NIL);
@@ -1027,10 +1063,10 @@ kiss_obj* kiss_copy_list(const kiss_obj* p) {
    elements are the arguments in the same order as in the list-form.
    An error shall be signaled if the requested list cannot be allocated
    (error-id. cannot-create-list). Each OBJ may be any ISLisp object. */
-static inline
+inline
 kiss_obj* kiss_list(kiss_obj* const p) { return kiss_copy_list(p); }
 
-static inline
+inline
 kiss_obj* kiss_c_list(int nargs, ...) {
      kiss_cons_t head;
      kiss_init_cons(&head, KISS_NIL, KISS_NIL);
@@ -1047,7 +1083,7 @@ kiss_obj* kiss_c_list(int nargs, ...) {
 }
 
 /* kiss_c_mapcar(function, list) -> new_list */
-static inline
+inline
 kiss_obj* kiss_c_mapcar(const kiss_cf1_t f, const kiss_obj* list) {
      kiss_cons_t head;
      kiss_init_cons(&head, KISS_NIL, KISS_NIL);
@@ -1061,7 +1097,7 @@ kiss_obj* kiss_c_mapcar(const kiss_cf1_t f, const kiss_obj* list) {
 }
 
 /* kiss_c_mapc(function, list) -> list */
-static inline
+inline
 kiss_obj* kiss_c_mapc(const kiss_cf1_t f, const kiss_obj* const list) {
     for (kiss_obj* p = Kiss_List(list); KISS_IS_CONS(p); p = KISS_CDR(p)) {
         f(KISS_CAR(p));
@@ -1071,7 +1107,7 @@ kiss_obj* kiss_c_mapc(const kiss_cf1_t f, const kiss_obj* const list) {
 
 /* kiss function: (append* [list* last]) -> <list>
    LAST doesn't have to be a list. This behaviour is the same as the Common Lisp's append */
-static inline
+inline
 kiss_obj* kiss_append_s(kiss_obj* p) {
      if (p == KISS_NIL) { return KISS_NIL; } /* (append*) -> nil       */
      else if (!KISS_IS_CONS(KISS_CDR(p))) {  /* (append* last) -> last */
@@ -1104,13 +1140,13 @@ kiss_obj* kiss_append_s(kiss_obj* p) {
    It is implementation defined whether and when the result shares structure with its
    LIST arguments.
    An error shall be signaled if the list cannot be allocated (error-id. cannot-create-list). */
-static inline
+inline
 kiss_obj* kiss_append(kiss_obj* const p) {
      kiss_c_mapc((kiss_cf1_t)Kiss_List, p);
      return kiss_append_s(p);
 }
 
-static inline
+inline
 kiss_obj* kiss_c_append(int nargs, ...) {
     va_list args;
     kiss_obj* stack = KISS_NIL;
@@ -1125,7 +1161,7 @@ kiss_obj* kiss_c_append(int nargs, ...) {
    order. An error shall be signaled if LIST is not a list (error-id. domain-error).
    no side-effect to the given LIST occurs. The resulting list is permitted
    but not required to share structure with the input LIST.*/
-static inline
+inline
 kiss_obj* kiss_reverse(kiss_obj* p) {
     kiss_obj* stack = KISS_NIL;
     for (p = Kiss_List(p); KISS_IS_CONS(p); p = KISS_CDR(p)) {
@@ -1142,7 +1178,7 @@ kiss_obj* kiss_reverse(kiss_obj* p) {
    An error shall be signaled if LIST is not a list (error-id. domain-error ).
 
    Example: (member 'c '(a b c d e f)) => (c d e f) */
-static inline
+inline
 kiss_obj* kiss_member(kiss_obj* const obj, kiss_obj* const list) {
      for (const kiss_obj* p = Kiss_List(list); KISS_IS_CONS(p); p = KISS_CDR(p)) {
           if (kiss_eql(KISS_CAR(p), obj) == KISS_T) { return (kiss_obj*)p; }
@@ -1157,7 +1193,7 @@ kiss_obj* kiss_member(kiss_obj* const obj, kiss_obj* const list) {
    An error shall be signaled if LIST is not a list (error-id. domain-error ).
 
    Example: (member-using #'eq 'c '(a b c d e f)) => (c d e f) */
-static inline
+inline
 kiss_obj* kiss_member_using(const kiss_obj* const predicate, kiss_obj* const obj, kiss_obj* const list)
 {
      for (const kiss_obj* p = Kiss_List(list); KISS_IS_CONS(p); p = KISS_CDR(p)) {
@@ -1172,7 +1208,7 @@ kiss_obj* kiss_member_using(const kiss_obj* const predicate, kiss_obj* const obj
    Unlike `plist-get', this allows you to distinguish between a
    missing property and a property with the value `nil'.  The value
    is actually the tail of PLIST whose `car' is PROPERTY. */
-static inline
+inline
 kiss_obj* kiss_plist_member (kiss_obj* plist, const kiss_obj* const property) {
      for (plist = Kiss_List(plist); KISS_IS_CONS(plist); plist = KISS_CDR(plist)) {
           if (KISS_CAR(plist) == property) {
@@ -1184,7 +1220,7 @@ kiss_obj* kiss_plist_member (kiss_obj* plist, const kiss_obj* const property) {
      return KISS_NIL;
 }
 
-static inline
+inline
 kiss_obj* kiss_plist_remove(kiss_obj* plist, const kiss_obj* const property) {
      kiss_obj* prev = KISS_NIL;
      kiss_obj* p = Kiss_List(plist);
@@ -1216,7 +1252,7 @@ kiss_obj* kiss_plist_remove(kiss_obj* plist, const kiss_obj* const property) {
    (plist-get '(foo 4 bad) 'foo) => 4
    (plist-get '(foo 4 bad) 'bad) => nil
    (plist-get '(foo 4 bad) 'bar) => nil */
-static inline
+inline
 kiss_obj* kiss_plist_get (kiss_obj* plist, const kiss_obj* const property) {
     kiss_obj* here = kiss_plist_member(plist, property);
     if (here == KISS_NIL) {
@@ -1243,7 +1279,7 @@ kiss_obj* kiss_plist_get (kiss_obj* plist, const kiss_obj* const property) {
      (setq my-plist (plist-put my-plist 'foo 69)) => (bar t foo 69)
      (setq my-plist (plist-put my-plist 'quux '(a))) => (bar t foo 69 quux (a))
  */
-static inline
+inline
 kiss_obj* kiss_plist_put(kiss_obj* plist, const kiss_obj* const property, const kiss_obj* const value)
 {
     kiss_obj* here = kiss_plist_member(plist, property);
