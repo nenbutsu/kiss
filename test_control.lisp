@@ -164,6 +164,15 @@
 	    (setq x 5)
 	    (+ x 1))
 	  6))
+
+(eq (let ((out (create-string-output-stream)))
+      (and (eq (progn
+                 (format out "4 plus 1 equals ")
+                 (format out "~D" (+ 4 1)))
+               nil)
+           (string= (get-output-stream-string out) "4 plus 1 equals 5")))
+    t)
+
 ;;; while
 (equal (let ((x '())
 	     (i 5))
