@@ -21,7 +21,21 @@
 (= 145932 '145932)
 (string= "abc" '"abc")
 (equal #(a b c) '#(a b c))
+(char= #\space '#\space)
+(char= #\newline '#\newline)
+(= 0.12 '0.12)
+(= 5.0 '5.0)
+(= 123.0e10 '123.0E10)
 
+;;; quote
+(eq (quote a) 'a)
+(equal (quote #(a b c)) '#(a b c))
+(equal (quote (+ 1 2)) '(+ 1 2))
+(eq '() nil)
+(equal ''a '(quote a))
+(equal '(car l) (quote (car l)))
+(equal '(quote a) (quote (quote a)))
+(eq (car ''a) 'quote)
 
 ;;; defglobal
 (and (eq (defglobal x 0) 'x)
@@ -34,8 +48,32 @@
      (eql (let ((x 1)) (setq x 2) x) 2)
      (eql (+ x 1) 5))
 
+;;; setq
+(eq (defglobal x 2) 'x)
+(= (+ x 1) 3)
+(= (setq x 4) 4)
+(= (+ x 1) 5)
+(= (let ((x 1))
+     (setq x 2)
+     x)
+   2)
+(= (+ x 1) 5)
 
-;;; let let*
+;;; let 
+(= (let ((x 2) (y 3)) (* x y)) 6)
+
+(= (let ((x 2) (y 3))
+     (let ((x 7)
+           (z (+ x y)))
+       (* z x)))
+   35)
+
+(equal (let ((x 1) (y 2))
+         (let ((x y) (y x))
+           (list x y)))
+       '(2 1))
+
+;;; let*
 (eql (let ((x 2)
 	   (y 3))
        (let* ((x 7)
@@ -51,14 +89,15 @@
        '(2 2))
 
 ;;; dynamic-let
-(and (eq (defun foo (x)
-	   (dynamic-let ((y x))
-			(bar 1)))
-	 'foo)
-     (eq (defun bar (x)
-	   (+ x (dynamic y)))
-	 'bar)
-     (eql (foo 2) 3))
+(eq (defun foo (x)
+      (dynamic-let ((y x))
+                   (bar 1)))
+    'foo)
+(eq (defun bar (x)
+      (+ x (dynamic y)))
+    'bar)
+(eql (foo 2) 3)
+
 
 ;;; if
 (eq (if (> 3 2) 'yes 'no) 'yes)
