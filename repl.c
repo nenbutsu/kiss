@@ -39,11 +39,12 @@ static char* libraries[] = {
 };
 
 void kiss_load_library(char* name) {
+     size_t saved_heap_top = Kiss_Heap_Top;
      kiss_environment_t* env = Kiss_Get_Environment();
      if (setjmp(env->top_level) == 0) {
 	  fprintf(stderr, "loading %s ... ", name); fflush(stderr);
           wchar_t* buf = kiss_mbstowcs(name);
-	  kiss_load((kiss_obj*)kiss_make_string(buf));
+	  kiss_load((kiss_obj*)kiss_make_string(buf)); // emits garbage
           free(buf);
 	  fprintf(stderr, "done \n");
 	  fflush(stderr);
@@ -64,6 +65,7 @@ void kiss_load_library(char* name) {
 	  }
 	  exit(EXIT_FAILURE);
      }
+     Kiss_Heap_Top = saved_heap_top;
 }
 
 int kiss_read_eval_print_loop(void) {
@@ -77,12 +79,12 @@ int kiss_read_eval_print_loop(void) {
 	  kiss_load_library(libraries[i]);
      }
 
-
      while (1) {
 	  saved_dynamic_env = env->dynamic_env;
 	  saved_lexical_env = env->lexical_env;
 	  saved_heap_top = Kiss_Heap_Top;
 	  if (setjmp(env->top_level) == 0) {
+               //fprintf(stderr, "Kiss_Heap_Top = %ld\n", Kiss_Heap_Top);
 	       fflush(stdout);
                
                fprintf(stdout, "\nKISS>"); fflush(stdout);
