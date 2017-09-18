@@ -246,7 +246,7 @@ static kiss_obj* kiss_read_array(const kiss_obj* const in) {
      }
      wcs[i] = L'\0';
 
-     if (c != L'a') {
+     if (c != L'a' && c !=L'A') {
 	  Kiss_Err(L"Invalid array designator");
      }
      c = Kiss_Character(kiss_c_read_char(in, KISS_NIL, KISS_EOS));

@@ -1,1 +1,1 @@
-gcc *.c -o kiss -L/usr/lib/ -lm -lgmp -O3
+gcc -O3 -o kiss *.c -L/usr/lib/ -lm -lgmp 

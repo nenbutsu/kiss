@@ -15,6 +15,14 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
+;;; constants
+(equal #2A((a b c) (d e f)) '#2A((a b c) (d e f)))
+(eql #\a '#\a)
+(= 145932 '145932)
+(string= "abc" '"abc")
+(equal #(a b c) '#(a b c))
+
+
 ;;; defglobal
 (and (eq (defglobal x 0) 'x)
      (eql (let ((x 1)) x) 1)

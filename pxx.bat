@@ -1,2 +1,1 @@
-gcc *.c -Wall -o kiss -L/usr/lib/ -lm -lgmp -pg -O3
-
+gcc -Wall -pg -O3 *.c -o kiss -L/usr/lib/ -lm -lgmp
