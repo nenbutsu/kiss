@@ -1101,21 +1101,20 @@ kiss_obj* kiss_c_list(int nargs, ...) {
 
 /* kiss_c_mapcar(function, list) -> new_list */
 inline
-kiss_obj* kiss_c_mapcar(const kiss_cf1_t f, const kiss_obj* list) {
-     kiss_cons_t head;
-     kiss_init_cons(&head, KISS_NIL, KISS_NIL);
-     kiss_obj* const result = (kiss_obj*)&head;
-     kiss_obj* here = result;
-     for (list = Kiss_List(list); KISS_IS_CONS(list); list = KISS_CDR(list)) {
-          kiss_set_cdr(kiss_cons(f(KISS_CAR(list)), KISS_NIL), here);
-          here= KISS_CDR(here);
+kiss_obj* kiss_c_mapcar1(const kiss_cf1_t f, const kiss_obj* const list) {
+     kiss_cons_t result;
+     kiss_init_cons(&result, KISS_NIL, KISS_NIL);
+     kiss_obj* p = (kiss_obj*)&result;
+     for (kiss_obj* q = Kiss_List(list); KISS_IS_CONS(q); q = KISS_CDR(q)) {
+          kiss_set_cdr(kiss_cons(f(KISS_CAR(q)), KISS_NIL), p);
+          p = KISS_CDR(p);
      }
-     return KISS_CDR(result);
+     return KISS_CDR(&result);
 }
 
 /* kiss_c_mapc(function, list) -> list */
 inline
-kiss_obj* kiss_c_mapc(const kiss_cf1_t f, const kiss_obj* const list) {
+kiss_obj* kiss_c_mapc1(const kiss_cf1_t f, const kiss_obj* const list) {
     for (kiss_obj* p = Kiss_List(list); KISS_IS_CONS(p); p = KISS_CDR(p)) {
         f(KISS_CAR(p));
     }
@@ -1159,7 +1158,7 @@ kiss_obj* kiss_append_s(kiss_obj* p) {
    An error shall be signaled if the list cannot be allocated (error-id. cannot-create-list). */
 inline
 kiss_obj* kiss_append(kiss_obj* const p) {
-     kiss_c_mapc((kiss_cf1_t)Kiss_List, p);
+     kiss_c_mapc1((kiss_cf1_t)Kiss_List, p);
      return kiss_append_s(p);
 }
 
@@ -1306,4 +1305,40 @@ kiss_obj* kiss_plist_put(kiss_obj* plist, const kiss_obj* const property, const 
         kiss_set_car(value, kiss_cdr(here));
         return plist;
     }
+}
+
+/*  function: (mapcar function list+) -> <list>
+    Operates on successive elements of the LISTS. FUNCTION is applied to
+    the first element of each LIST, then to the second element of each LIST,
+    and so on. The iteration terminates when the shortest LIST runs out,
+    and excess elements in other LISTS are ignored.
+    The value returned by mapcar is a list of the results of successive calls
+    to function. */
+inline
+kiss_obj* kiss_mapcar(const kiss_obj* const function, const kiss_obj* const list1, const kiss_obj* const rest)
+{
+     kiss_cons_t head;
+     kiss_init_cons(&head, list1, kiss_copy_list(rest));
+     kiss_c_mapc1((kiss_cf1_t)Kiss_List, (kiss_obj*)&head);
+     kiss_cons_t result;
+     kiss_init_cons(&result, KISS_NIL, KISS_NIL);
+     kiss_obj* p = (kiss_obj*)&result;
+     if (kiss_member(KISS_NIL, (kiss_obj*)&head) != KISS_NIL) { return KISS_NIL; }
+     while(1) {
+          kiss_set_cdr(kiss_cons(kiss_funcall(function,
+                                              kiss_c_mapcar1((kiss_cf1_t)kiss_car,
+                                                             (kiss_obj*)&head)),
+                                 KISS_NIL),
+                       p);
+          p = KISS_CDR(p);
+          for (kiss_obj* q = (kiss_obj*)&head; KISS_IS_CONS(q); q = KISS_CDR(q)) {
+               kiss_obj* obj = KISS_CDR(KISS_CAR(q));
+               if (!KISS_IS_CONS(obj)) {
+                    goto end;
+               }
+               kiss_set_car(obj, q);
+          }
+     }
+end:
+     return KISS_CDR((kiss_obj*)&result);
 }

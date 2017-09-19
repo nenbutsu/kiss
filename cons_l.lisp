@@ -87,14 +87,14 @@
 ;; and excess elements in other lists are ignored.
 ;; The value returned by mapcar is a list of the results of successive calls
 ;; to function.
-(defun mapcar (function list1 &rest rest)
-  (let ((lists `(,list1 ,@rest))
-        (result nil))
-    (kiss::mapcar1 #'kiss::assure-list lists)
-    (while (not (member nil lists))
-      (setq result `(,(apply function (kiss::mapcar1 #'car lists)) ,@result))
-      (setq lists (kiss::mapcar1 #'cdr lists)))
-    (nreverse result)))
+;;;(defun mapcar (function list1 &rest rest)
+;;;  (let ((lists `(,list1 ,@rest))
+;;;        (result nil))
+;;;    (kiss::mapcar1 #'kiss::assure-list lists)
+;;;    (while (not (member nil lists))
+;;;      (setq result `(,(apply function (kiss::mapcar1 #'car lists)) ,@result))
+;;;      (setq lists (kiss::mapcar1 #'cdr lists)))
+;;;    (nreverse result)))
 
 ;; function: (mapc function list+) -> <list>
 ;; mapc is like mapcar except that the results of applying function are not accumulated;
