@@ -1,1 +1,2 @@
-rlwrap.exe kiss -b '(){}[].,#@;|`' 
+#/bin/sh
+rlwrap ./kiss -b '(){}[].,#@;|`' 
