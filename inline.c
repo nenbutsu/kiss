@@ -181,10 +181,13 @@ extern inline
 kiss_obj* kiss_c_list(int nargs, ...);
 
 extern inline
-kiss_obj* kiss_c_mapcar(const kiss_cf1_t f, const kiss_obj* list);
+kiss_obj* kiss_c_mapcar1(const kiss_cf1_t f, const kiss_obj* list);
 
 extern inline
-kiss_obj* kiss_c_mapc(const kiss_cf1_t f, const kiss_obj* const list);
+kiss_obj* kiss_c_mapc1(const kiss_cf1_t f, const kiss_obj* const list);
+
+extern inline
+kiss_obj* kiss_mapcar(const kiss_obj* const function, const kiss_obj* const list1, const kiss_obj* const rest);
 
 extern inline
 kiss_obj* kiss_append_s(kiss_obj* p);
