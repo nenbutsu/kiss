@@ -25,18 +25,18 @@ void kiss_init_error_catcher(void) {
     kiss_catcher_t* c = kiss_make_catcher(tag, env->top_level);
     env->dynamic_env.jumpers = kiss_cons((kiss_obj*)c, env->dynamic_env.jumpers);
     Kiss_Heap_Top = saved_heap_top;
-    //fprintf(stderr, "Kiss_Heap_Top = %ld\n", Kiss_Heap_Top);
+    //fwprintf(stderr, L"Kiss_Heap_Top = %ld\n", Kiss_Heap_Top);
 }
 
 void kiss_initialize(void) {
 
      assert(sizeof(long int) == sizeof(kiss_gc_obj*));
      
-     fwide(stdin,  -1); // narrow oriented
-     fwide(stdout, -1);
-     fwide(stderr, -1);
+     fwide(stdin,  1); // wide oriented
+     fwide(stdout, 1); // wide oriented
+     fwide(stderr, 1); // narrow oriented
      setlocale (LC_ALL, "");
-     fprintf(stderr, "LOCALE = %s\n", setlocale(LC_ALL, NULL));
+     fwprintf(stderr, L"LOCALE = %s\n", setlocale(LC_ALL, NULL));
      kiss_init_environment();
      kiss_init_symbols();
      kiss_init_streams();

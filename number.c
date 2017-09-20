@@ -64,7 +64,7 @@ kiss_obj* kiss_float(kiss_obj* x) {
      case KISS_FLOAT:
           return x;
      default:
-          fprintf(stderr, "kiss_float: unknown primitive number type = %d", KISS_OBJ_TYPE(x));
+          fwprintf(stderr, L"kiss_float: unknown primitive number type = %d", KISS_OBJ_TYPE(x));
           exit(EXIT_FAILURE);
      }
 }
@@ -137,7 +137,7 @@ kiss_obj* kiss_c_parse_number(kiss_obj* obj) {
           return NULL;
      }
 
-     //fprintf(stderr, "%s\n", kiss_wcstombs(p));
+     //fwprintf(stderr, L"%S\n", p);
      
      tail= NULL;
      double d = wcstod(p, &tail);
@@ -189,7 +189,7 @@ kiss_obj* kiss_plus2_fixnum2 (kiss_obj* a, kiss_obj* b) {
                return (kiss_obj*)z1;
           }
      } else {
-          fprintf(stderr, "kiss_plus2_fixnum2: internal error");
+          fwprintf(stderr, L"kiss_plus2_fixnum2: internal error");
           exit(EXIT_FAILURE);
      }
 }
@@ -249,7 +249,7 @@ kiss_obj* kiss_plus2_float2(kiss_obj* a, kiss_obj* b) {
           case KISS_FLOAT:
                return kiss_plus2_fixnum_float(a, b);
           default:
-               fprintf(stderr, "kiss_plus2: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
+               fwprintf(stderr, L"kiss_plus2: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
@@ -262,7 +262,7 @@ kiss_obj* kiss_plus2_float2(kiss_obj* a, kiss_obj* b) {
           case KISS_FLOAT:
                return kiss_plus2_bignum_float(a, b);
           default:
-               fprintf(stderr, "kiss_plus2: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
+               fwprintf(stderr, L"kiss_plus2: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
@@ -275,12 +275,12 @@ kiss_obj* kiss_plus2_float2(kiss_obj* a, kiss_obj* b) {
           case KISS_FLOAT:
                return kiss_plus2_float2(a, b);
           default:
-               fprintf(stderr, "kiss_plus2: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
+               fwprintf(stderr, L"kiss_plus2: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
      default:
-          fprintf(stderr, "kiss_plus2: unexpected primitive type = %d", KISS_OBJ_TYPE(a));
+          fwprintf(stderr, L"kiss_plus2: unexpected primitive type = %d", KISS_OBJ_TYPE(a));
           exit(EXIT_FAILURE);
      }
 }
@@ -327,7 +327,7 @@ kiss_obj* kiss_flip_sign(kiss_obj* obj) {
           return (kiss_obj*)f;
      }
      default:
-          fprintf(stderr, "kiss_flisp_sign: unexpected primitive type = %d", KISS_OBJ_TYPE(obj));
+          fwprintf(stderr, L"kiss_flisp_sign: unexpected primitive type = %d", KISS_OBJ_TYPE(obj));
           exit(EXIT_FAILURE);
      }
 }
@@ -435,7 +435,7 @@ kiss_obj* kiss_multiply2(kiss_obj* a, kiss_obj* b) {
           case KISS_FLOAT:
                return kiss_multiply2_fixnum_float(a, b);
           default:
-               fprintf(stderr, "kiss_multiply2: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
+               fwprintf(stderr, L"kiss_multiply2: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
@@ -448,7 +448,7 @@ kiss_obj* kiss_multiply2(kiss_obj* a, kiss_obj* b) {
           case KISS_FLOAT:
                return kiss_multiply2_bignum_float(a, b);
           default:
-               fprintf(stderr, "kiss_multiply2: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
+               fwprintf(stderr, L"kiss_multiply2: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
@@ -461,12 +461,12 @@ kiss_obj* kiss_multiply2(kiss_obj* a, kiss_obj* b) {
           case KISS_FLOAT:
                return kiss_multiply2_float2(a, b);
           default:
-               fprintf(stderr, "kiss_multiply2: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
+               fwprintf(stderr, L"kiss_multiply2: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
      default:
-          fprintf(stderr, "kiss_multiply2: unexpected primitive type = %d", KISS_OBJ_TYPE(a));
+          fwprintf(stderr, L"kiss_multiply2: unexpected primitive type = %d", KISS_OBJ_TYPE(a));
           exit(EXIT_FAILURE);
      }
 }
@@ -506,7 +506,7 @@ kiss_obj* kiss_num_eq(const kiss_obj* const a, const kiss_obj* const b) {
           case KISS_FLOAT:
                return mpf_cmp_si(((kiss_float_t*)b)->mpf, kiss_ptr_int(a)) == 0 ? KISS_T : KISS_NIL;
           default:
-               fprintf(stderr, "kiss_num_eq: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
+               fwprintf(stderr, L"kiss_num_eq: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
@@ -519,7 +519,7 @@ kiss_obj* kiss_num_eq(const kiss_obj* const a, const kiss_obj* const b) {
           case KISS_FLOAT:
                return mpf_cmp_z(((kiss_float_t*)b)->mpf, ((kiss_bignum_t*)a)->mpz) == 0 ? KISS_T : KISS_NIL;
           default:
-               fprintf(stderr, "kiss_num_eq: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
+               fwprintf(stderr, L"kiss_num_eq: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
@@ -533,12 +533,12 @@ kiss_obj* kiss_num_eq(const kiss_obj* const a, const kiss_obj* const b) {
                return mpf_cmp(((kiss_float_t*)a)->mpf, ((kiss_float_t*)b)->mpf) == 0 ? KISS_T : KISS_NIL;
                break;
           default:
-               fprintf(stderr, "kiss_num_eq: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
+               fwprintf(stderr, L"kiss_num_eq: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
      default:
-          fprintf(stderr, "kiss_num_eq: unexpected primitive type = %d", KISS_OBJ_TYPE(a));
+          fwprintf(stderr, L"kiss_num_eq: unexpected primitive type = %d", KISS_OBJ_TYPE(a));
           exit(EXIT_FAILURE);
      }
 }
@@ -560,7 +560,7 @@ kiss_obj* kiss_num_lessthan(kiss_obj* a, kiss_obj* b) {
           case KISS_FLOAT:
                return mpf_cmp_si(((kiss_float_t*)b)->mpf, kiss_ptr_int(a)) >= 0 ? KISS_NIL : KISS_T;
           default:
-               fprintf(stderr, "kiss_num_lessthan: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
+               fwprintf(stderr, L"kiss_num_lessthan: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
@@ -573,7 +573,7 @@ kiss_obj* kiss_num_lessthan(kiss_obj* a, kiss_obj* b) {
           case KISS_FLOAT:
                return mpf_cmp_z(((kiss_float_t*)b)->mpf, ((kiss_bignum_t*)a)->mpz) >= 0 ? KISS_NIL : KISS_T;
           default:
-               fprintf(stderr, "kiss_plus2: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
+               fwprintf(stderr, L"kiss_plus2: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
@@ -587,12 +587,12 @@ kiss_obj* kiss_num_lessthan(kiss_obj* a, kiss_obj* b) {
                return mpf_cmp(((kiss_float_t*)a)->mpf, ((kiss_float_t*)b)->mpf) < 0 ? KISS_T : KISS_NIL;
                break;
           default:
-               fprintf(stderr, "kiss_num_lessthan: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
+               fwprintf(stderr, L"kiss_num_lessthan: unexpected primitive type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
      default:
-          fprintf(stderr, "kiss_num_lessthan: unexpected primitive type = %d", KISS_OBJ_TYPE(a));
+          fwprintf(stderr, L"kiss_num_lessthan: unexpected primitive type = %d", KISS_OBJ_TYPE(a));
           exit(EXIT_FAILURE);
      }
 }
@@ -624,7 +624,7 @@ kiss_obj* kiss_div(kiss_obj* a, kiss_obj* b) {
                return (kiss_obj*)z1;
           }
           default:
-               fprintf(stderr, "kiss_div: unexpected integer type = %d", KISS_OBJ_TYPE(b));
+               fwprintf(stderr, L"kiss_div: unexpected integer type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
@@ -643,12 +643,12 @@ kiss_obj* kiss_div(kiss_obj* a, kiss_obj* b) {
                return (kiss_obj*)z1;
           }
           default:
-               fprintf(stderr, "kiss_div: unexpected integer type = %d", KISS_OBJ_TYPE(b));
+               fwprintf(stderr, L"kiss_div: unexpected integer type = %d", KISS_OBJ_TYPE(b));
                exit(EXIT_FAILURE);
           }
           break;
      default:
-          fprintf(stderr, "kiss_div: unexpected integer type = %d", KISS_OBJ_TYPE(a));
+          fwprintf(stderr, L"kiss_div: unexpected integer type = %d", KISS_OBJ_TYPE(a));
           exit(EXIT_FAILURE);
      }
 }
@@ -661,7 +661,7 @@ kiss_obj* kiss_div(kiss_obj* a, kiss_obj* b) {
    and the difference of z1 and this result is divisible by z2 without remainder.
 */
 kiss_obj* kiss_mod(kiss_obj* z1, kiss_obj* z2) {
-     fprintf(stderr, "kiss_mod: not implemented");
+     fwprintf(stderr, L"kiss_mod: not implemented");
      exit(EXIT_FAILURE);
 }
 
@@ -674,7 +674,7 @@ kiss_obj* kiss_mod(kiss_obj* z1, kiss_obj* z2) {
    (error-id. domain-error).
 */
 kiss_obj* kiss_gcd(kiss_obj* z1, kiss_obj* z2) {
-     fprintf(stderr, "kiss_gcd: not implemented");
+     fwprintf(stderr, L"kiss_gcd: not implemented");
      exit(EXIT_FAILURE);
 }
 
@@ -686,7 +686,7 @@ kiss_obj* kiss_gcd(kiss_obj* z1, kiss_obj* z2) {
    (error-id. domain-error).
 */
 kiss_obj* kiss_lcm(kiss_obj* z1, kiss_obj* z2) {
-     fprintf(stderr, "kiss_lcm: not implemented");
+     fwprintf(stderr, L"kiss_lcm: not implemented");
      exit(EXIT_FAILURE);
 }
 
@@ -722,7 +722,7 @@ kiss_obj* kiss_abs(kiss_obj* x) {
           return (kiss_obj*)f;
      }
      default:
-          fprintf(stderr, "kiss_abs: unknown primitive number type = %d", KISS_OBJ_TYPE(x));
+          fwprintf(stderr, L"kiss_abs: unknown primitive number type = %d", KISS_OBJ_TYPE(x));
           exit(EXIT_FAILURE);
      }
 }
@@ -732,7 +732,7 @@ kiss_obj* kiss_abs(kiss_obj* x) {
    An error shall be signaled if x is not a number (error-id. domain-error).
 */
 kiss_obj* kiss_exp(kiss_obj* x) {
-     fprintf(stderr, "kiss_exp: not implemented");
+     fwprintf(stderr, L"kiss_exp: not implemented");
      exit(EXIT_FAILURE);
 }
 
@@ -742,7 +742,7 @@ kiss_obj* kiss_exp(kiss_obj* x) {
    An error shall be signaled if x is not a number (error-id. domain-error).
 */
 kiss_obj* kiss_floor(kiss_obj* x) {
-     fprintf(stderr, "kiss_exp: not implemented");
+     fwprintf(stderr, L"kiss_exp: not implemented");
      exit(EXIT_FAILURE);
 }
 
@@ -752,7 +752,7 @@ kiss_obj* kiss_floor(kiss_obj* x) {
    An error shall be signaled if x is not a number (error-id. domain-error).   
 */
 kiss_obj* kiss_ceiling(kiss_obj* x) {
-     fprintf(stderr, "kiss_ceiling: not implemented");
+     fwprintf(stderr, L"kiss_ceiling: not implemented");
      exit(EXIT_FAILURE);
 }
 
@@ -762,7 +762,7 @@ kiss_obj* kiss_ceiling(kiss_obj* x) {
    An error shall be signaled if x is not a number (error-id. domain-error).
 */
 kiss_obj* kiss_truncate(kiss_obj* x) {
-     fprintf(stderr, "kiss_truncate: not implemented");
+     fwprintf(stderr, L"kiss_truncate: not implemented");
      exit(EXIT_FAILURE);
 }
 
@@ -790,7 +790,7 @@ kiss_obj* kiss_round(kiss_obj* x) {
    An error shall be signaled if x is not a positive number (error-id. domain-error).
 */
 kiss_obj* kiss_log(kiss_obj* x) {
-     fprintf(stderr, "kiss_log: not implemented");
+     fwprintf(stderr, L"kiss_log: not implemented");
      exit(EXIT_FAILURE);
 }
 
@@ -799,7 +799,7 @@ kiss_obj* kiss_log(kiss_obj* x) {
    x must be given in radians.
 */
 kiss_obj* kiss_sin(kiss_obj* x) {
-     fprintf(stderr, "kiss_sin: not implemented");
+     fwprintf(stderr, L"kiss_sin: not implemented");
      exit(EXIT_FAILURE);
 }
 
@@ -808,7 +808,7 @@ kiss_obj* kiss_sin(kiss_obj* x) {
    x must be given in radians.
 */
 kiss_obj* kiss_cos(kiss_obj* x) {
-     fprintf(stderr, "kiss_cos: not implemented");
+     fwprintf(stderr, L"kiss_cos: not implemented");
      exit(EXIT_FAILURE);
 }
 
@@ -817,6 +817,6 @@ kiss_obj* kiss_cos(kiss_obj* x) {
    x must be given in radians.
 */
 kiss_obj* kiss_tan(kiss_obj* x) {
-     fprintf(stderr, "kiss_tan: not implemented");
+     fwprintf(stderr, L"kiss_tan: not implemented");
      exit(EXIT_FAILURE);
 }

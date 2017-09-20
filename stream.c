@@ -28,14 +28,12 @@ void kiss_init_streams(void) {
      Kiss_Standard_Input.flags     = KISS_INPUT_STREAM | KISS_CHARACTER_STREAM | KISS_FILE_STREAM;
      Kiss_Standard_Input.file_ptr  = stdin;
      Kiss_Standard_Input.column    = 0;
-     Kiss_Standard_Input.line      = NULL;
 
      Kiss_Standard_Output.type     = KISS_STREAM;
      Kiss_Standard_Output.gc_ptr   = NULL;
      Kiss_Standard_Output.flags    = KISS_OUTPUT_STREAM | KISS_CHARACTER_STREAM | KISS_FILE_STREAM;
      Kiss_Standard_Output.file_ptr = stdout;
      Kiss_Standard_Output.column   = 0;
-     Kiss_Standard_Output.line     = NULL;
     
     
      Kiss_Error_Output.type        = KISS_STREAM;
@@ -43,7 +41,6 @@ void kiss_init_streams(void) {
      Kiss_Error_Output.flags       = KISS_OUTPUT_STREAM | KISS_CHARACTER_STREAM | KISS_FILE_STREAM;
      Kiss_Error_Output.file_ptr    = stderr;
      Kiss_Error_Output.column      = 0;
-     Kiss_Error_Output.line        = NULL;
 }
 
 static kiss_file_stream_t* kiss_make_file_stream(FILE* fp) {
@@ -53,7 +50,6 @@ static kiss_file_stream_t* kiss_make_file_stream(FILE* fp) {
      p->file_ptr = fp;
      p->column = 0;
      p->pos =0;
-     p->line = NULL;
      return p;
 }
 
@@ -93,7 +89,6 @@ kiss_obj* kiss_close(kiss_obj* obj) {
 	       Kiss_System_Error();
 	  }
 	  fs->file_ptr = NULL;
-          fs->line = NULL;
      }
      return KISS_T;
 }
@@ -255,36 +250,13 @@ kiss_obj* kiss_get_output_stream_string(kiss_obj* stream) {
      return (kiss_obj*)string;
 }
 
-static void kiss_buffer_input_file_stream(kiss_file_stream_t* in) {
-     FILE* fp = in->file_ptr;
-     wchar_t* wbuff = NULL;
-     char buff[1000];
-     if (fgets(buff, 1000, fp) == NULL) {
-          if (ferror(fp)) {
-               Kiss_System_Error();
-          }
-          buff[0] = '\0';
-     }
-     wbuff = kiss_mbstowcs(buff);
-     kiss_string_t* str = kiss_make_string(wbuff);
-     free(wbuff);
-     in->line = (kiss_string_stream_t*)kiss_create_string_input_stream((kiss_obj*)str);
-}
-
-
 kiss_obj* kiss_c_read_char(const kiss_obj* const in, const kiss_obj* const eos_err_p, const kiss_obj* const eos_val) {
      if (KISS_IS_FILE_STREAM(Kiss_Input_Char_Stream(in))) {
           kiss_file_stream_t* file_stream = (kiss_file_stream_t*)in;
-          if (file_stream->line == NULL) {
-               kiss_buffer_input_file_stream(file_stream);
-          }
-          kiss_obj* c = kiss_c_read_char((kiss_obj*)file_stream->line, KISS_NIL, KISS_NIL);
-          if (c == KISS_NIL) {
-               kiss_buffer_input_file_stream(file_stream);
-               return kiss_c_read_char((kiss_obj*)file_stream->line, eos_err_p, eos_val);
-          } else {
-               return c;
-          }
+          FILE* fp = file_stream->file_ptr;
+          wint_t c = getwc(fp);
+          if (c == WEOF) goto eos;
+          return kiss_make_character(c);
      } else if (KISS_IS_STRING_STREAM(in)) {
 	  kiss_string_stream_t* string_stream = (kiss_string_stream_t*)in;
 	  if (string_stream->list == KISS_NIL) {
@@ -368,16 +340,11 @@ kiss_obj* kiss_read_line(kiss_obj* args) {
 kiss_obj* kiss_c_preview_char(const kiss_obj* const in, const kiss_obj* const eos_err_p, const kiss_obj* const eos_val) {
      if (KISS_IS_FILE_STREAM(Kiss_Input_Char_Stream(in))) {
           kiss_file_stream_t* file_stream = Kiss_Open_File_Stream(in);
-          if (file_stream->line == NULL) {
-               kiss_buffer_input_file_stream(file_stream);
-          }
-          kiss_obj* c = kiss_c_preview_char((kiss_obj*)file_stream->line, KISS_NIL, KISS_NIL);
-          if (c == KISS_NIL) {
-               kiss_buffer_input_file_stream(file_stream);
-               return kiss_c_preview_char((kiss_obj*)file_stream->line, eos_err_p, eos_val);
-          } else {
-               return c;
-          }
+          FILE* fp = file_stream->file_ptr;
+          wint_t c = getwc(fp);
+          if (c == WEOF) goto eos;
+          ungetwc(c, fp);
+          return kiss_make_character(c);
      } else if (KISS_IS_STRING_STREAM(in)) {
 	  kiss_string_stream_t* string_stream = (kiss_string_stream_t*)in;
 	  if (string_stream->list == KISS_NIL) {
@@ -438,12 +405,9 @@ kiss_obj* kiss_format_char(kiss_obj* output, kiss_obj* character) {
 	       size_t width = Kiss_Fixnum(kiss_dynamic(kiss_symbol(L"*tab-width*")));
 	       out->column = kiss_next_column(column, width);
 	  }
-          char* buff = kiss_wctombs(c);
-	  if (fputs(buff, fp) == EOF) {
-               free(buff);
+	  if (putwc(c, fp) == WEOF) {
 	       Kiss_System_Error();
 	  } else {
-               free(buff);
 	       out->column++;
 	       out->pos++;
 	  }

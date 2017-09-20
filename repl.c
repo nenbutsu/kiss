@@ -18,49 +18,45 @@
 */
 #include "kiss.h"
 
-static char* libraries[] = {
-     "cons_l.lisp",
-     "character_l.lisp",
-     "stream_l.lisp",
-     "sequence_l.lisp",
-     "control_l.lisp",
-     "number_l.lisp",
-     "string_l.lisp",
-     "oo_obj_l.lisp",
-     "class_l.lisp",
-     "built_in_classes.lisp",
-     "generic_function.lisp",
-     "gf_invoke_l.lisp",
-     "built_in_conditions.lisp",
-     "condition.lisp",
-     "format_oo_object.lisp",
-     "init.lisp",
+static wchar_t* libraries[] = {
+     L"cons_l.lisp",
+     L"character_l.lisp",
+     L"stream_l.lisp",
+     L"sequence_l.lisp",
+     L"control_l.lisp",
+     L"number_l.lisp",
+     L"string_l.lisp",
+     L"oo_obj_l.lisp",
+     L"class_l.lisp",
+     L"built_in_classes.lisp",
+     L"generic_function.lisp",
+     L"gf_invoke_l.lisp",
+     L"built_in_conditions.lisp",
+     L"condition.lisp",
+     L"format_oo_object.lisp",
+     L"init.lisp",
      NULL,
 };
 
-void kiss_load_library(char* name) {
+void kiss_load_library(wchar_t* name) {
      size_t saved_heap_top = Kiss_Heap_Top;
      kiss_environment_t* env = Kiss_Get_Environment();
      if (setjmp(env->top_level) == 0) {
-	  fprintf(stderr, "loading %s ... ", name); fflush(stderr);
-          wchar_t* buf = kiss_mbstowcs(name);
-	  kiss_load((kiss_obj*)kiss_make_string(buf)); // emits garbage
-          free(buf);
-	  fprintf(stderr, "done \n");
+	  fwprintf(stderr, L"loading %S ... ", name); fflush(stderr);
+	  kiss_load((kiss_obj*)kiss_make_string(name)); // emits garbage
+	  fwprintf(stderr, L"done \n");
 	  fflush(stderr);
      } else {
 	  kiss_obj* result = env->throw_result;
 	  if (!KISS_IS_STRING(result)) {
-	       fprintf(stderr, "\nKISS| Internal error. Kiss_Err threw non-string object.\n");
-	       fprintf(stderr, "\n");
+	       fwprintf(stderr, L"\nKISS| Internal error. Kiss_Err threw non-string object.\n");
+	       fwprintf(stderr, L"\n");
                fflush(stderr);
 	  } else {
-	       fprintf(stderr, "initialization failed\n");
+	       fwprintf(stderr, L"initialization failed\n");
 	       kiss_string_t* msg = (kiss_string_t*)result;
-	       fprintf(stderr, "\nKISS| ");
-               char* buf = kiss_wcstombs(msg->str);
-	       fprintf(stderr, "%s\n", buf);
-               free(buf);
+	       fwprintf(stderr, L"\nKISS| ");
+	       fwprintf(stderr, L"%S\n", msg->str);
                fflush(stderr);
 	  }
 	  exit(EXIT_FAILURE);
@@ -84,10 +80,10 @@ int kiss_read_eval_print_loop(void) {
 	  saved_lexical_env = env->lexical_env;
 	  saved_heap_top = Kiss_Heap_Top;
 	  if (setjmp(env->top_level) == 0) {
-               //fprintf(stderr, "Kiss_Heap_Top = %ld\n", Kiss_Heap_Top);
+               //fwprintf(stderr, L"Kiss_Heap_Top = %ld\n", Kiss_Heap_Top);
 	       fflush(stdout);
                
-               fprintf(stdout, "\nKISS>"); fflush(stdout);
+               fwprintf(stdout, L"\nKISS>"); fflush(stdout);
                form = kiss_c_read(kiss_standard_input(), KISS_NIL, KISS_EOS);
                if (form == KISS_EOS) {
                     break;
@@ -100,15 +96,13 @@ int kiss_read_eval_print_loop(void) {
 	  } else {
 	       kiss_obj* result = env->throw_result;
 	       if (!KISS_IS_STRING(result)) {
-		    fprintf(stderr, "\nKISS| Internal error. Kiss_Err threw non-string obj.\n");
-		    fprintf(stderr, "\n");
+		    fwprintf(stderr, L"\nKISS| Internal error. Kiss_Err threw non-string obj.\n");
+		    fwprintf(stderr, L"\n");
 		    exit(1);
 	       } else {
 		    kiss_string_t* msg = (kiss_string_t*)result;
 		    fprintf(stderr, "\nKISS| ");
-                    char* s = kiss_wcstombs(msg->str);
-		    fprintf(stderr, "%s\n", s);
-                    free(s);
+		    fprintf(stderr, "%S\n", msg->str);
 		    fflush(stderr);
 		    fflush(stdout);
                     kiss_obj* c;

@@ -423,7 +423,7 @@ kiss_obj* kiss_format(kiss_obj* out, kiss_obj* format, kiss_obj* args) {
 			 args = KISS_CDR(args);
 			 break;
 		    } else {
-			 fprintf(stderr, "format: internal error unsupported format\n");
+			 fwprintf(stderr, L"format: internal error unsupported format\n");
 			 exit(EXIT_FAILURE);
 		    }
 	       }

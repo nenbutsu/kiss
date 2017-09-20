@@ -328,7 +328,6 @@ typedef struct {
      size_t column;
      FILE* file_ptr;
      size_t pos;
-     kiss_string_stream_t* line;
 } kiss_file_stream_t;
 
 typedef struct {

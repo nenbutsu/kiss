@@ -156,9 +156,6 @@ void kiss_gc_mark_stream(kiss_stream_t* const obj) {
      if (KISS_IS_STRING_STREAM(obj)) {
 	  kiss_string_stream_t* const str_stream = (kiss_string_stream_t*)obj;
 	  kiss_gc_mark_obj(str_stream->list);
-     } else if (KISS_IS_FILE_STREAM(obj)) {
-          kiss_file_stream_t* const file_stream = (kiss_file_stream_t*)obj;
-          kiss_gc_mark_obj((kiss_obj*)file_stream->line);
      }
 }
 
@@ -173,7 +170,7 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
      if (obj == NULL) {
 	  return;
      } else {
-	  /* fprintf(stderr, "type = %d\n", KISS_OBJ_TYPE(obj)); */
+	  /* fwprintf(stderr, L"type = %d\n", KISS_OBJ_TYPE(obj)); */
 	  switch (KISS_OBJ_TYPE(obj)) {
 	  case KISS_CONS:
 	       kiss_gc_mark_cons((kiss_cons_t*)obj);
@@ -226,7 +223,7 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
 	       kiss_gc_mark_oo_obj((kiss_oo_obj_t*)obj);
 	       break;
 	  default:
-	       fprintf(stderr, "gc_mark: unknown primitive object type = %d\n", KISS_OBJ_TYPE(obj));
+	       fwprintf(stderr, L"gc_mark: unknown primitive object type = %d\n", KISS_OBJ_TYPE(obj));
 	       exit(EXIT_FAILURE);
 	  }
      }
@@ -325,7 +322,7 @@ void kiss_gc_free_obj(kiss_gc_obj* obj) {
 	       free(obj);
 	       break;
 	  default:
-	       fprintf(stderr, "gc_free: unknown object type = %d\n", KISS_OBJ_TYPE(obj));
+	       fwprintf(stderr, L"gc_free: unknown object type = %d\n", KISS_OBJ_TYPE(obj));
 	       exit(EXIT_FAILURE);
 	  }
      }
@@ -348,21 +345,21 @@ void kiss_gc_sweep(void) {
 }
 
 kiss_obj* kiss_gc_info(void) {
-     fprintf(stderr, "Kiss_Heap_Top = %ld\n", Kiss_Heap_Top);
-     fprintf(stderr, "Kiss_GC_Flag = %ld\n", Kiss_GC_Flag);
+     fwprintf(stderr, L"Kiss_Heap_Top = %ld\n", Kiss_Heap_Top);
+     fwprintf(stderr, L"Kiss_GC_Flag = %ld\n", Kiss_GC_Flag);
      return KISS_NIL;
 }
 
 kiss_obj* kiss_gc(void) {
      assert(!Kiss_GCing);
      Kiss_GCing = 1;
-     //fprintf(stderr, "GC entered\n");
-     //fprintf(stderr, "gc_mark\n");
+     //fwprintf(stderr, L"GC entered\n");
+     //fwprintf(stderr, L"gc_mark\n");
      kiss_gc_mark();
-     //fprintf(stderr, "gc_sweep\n");
+     //fwprintf(stderr, L"gc_sweep\n");
      kiss_gc_sweep();
      Kiss_GC_Flag = Kiss_GC_Flag ? 0 : 1;
-     //fprintf(stderr, "GC leaving\n\n");
+     //fwprintf(stderr, L"GC leaving\n\n");
      Kiss_GCing = 0;
      return KISS_NIL;
 }

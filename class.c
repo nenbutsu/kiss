@@ -38,7 +38,7 @@
 //     case KISS_MACRO:     class_name_str = L"<macro>";     break;
 //     case KISS_CMACRO:    class_name_str = L"<macro>";     break;
 //     default:
-//	  fprintf(stderr, "kiss_type_to_class_name_str: unexped kiss_type %d\n", t);
+//	  fwprintf(stderr, L"kiss_type_to_class_name_str: unexped kiss_type %d\n", t);
 //	  exit(EXIT_FAILURE);
 //     }
 //     return class_name_str;
