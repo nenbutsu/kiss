@@ -633,20 +633,6 @@ void* Kiss_GC_Malloc(size_t const size) {
 }
 
 inline
-void kiss_copy_list_to_ptr(const kiss_obj* const list, kiss_cons_t* const pointer) {
-     kiss_cons_t* p = pointer;
-     for(const kiss_obj* q = list; KISS_IS_CONS(q); q = KISS_CDR(q)) {
-          p->car = KISS_CAR(q);
-          p->cdr = (kiss_obj*)p + 1;
-          p++;
-     }
-     if (p != pointer) {
-          p--;
-          p->cdr = KISS_NIL;
-     }
-}
-
-inline
 kiss_cons_t* Kiss_Cons(const kiss_obj* const obj) {
      if (KISS_IS_CONS(obj)) { return (kiss_cons_t*)obj; }
      Kiss_Domain_Error(obj, L"<cons>");
@@ -989,6 +975,19 @@ kiss_cons_t* kiss_init_cons(kiss_cons_t* const p, const kiss_obj* const left, co
     return p;
 }
 
+inline
+void kiss_copy_list_to_cons_array(const kiss_obj* const list, kiss_cons_t* const pointer) {
+     kiss_cons_t* p = pointer;
+     for(const kiss_obj* q = list; KISS_IS_CONS(q); q = KISS_CDR(q)) {
+          kiss_init_cons(p, KISS_CAR(q), (kiss_obj*)((kiss_cons_t*)p + 1));
+          p++;
+     }
+     if (p != pointer) {
+          p--;
+          p->cdr = KISS_NIL;
+     }
+}
+
 /* function: (cons obj1 obj2) -> <cons>
    Builds a cons from two objects, with OBJ1 as its car (or `left') part and
    with OBJ2 as its cdr (or `right') part.
@@ -1123,6 +1122,22 @@ kiss_obj* kiss_c_mapcar1(const kiss_cf1_t f, const kiss_obj* const list) {
      }
      return KISS_CDR(&result);
 }
+
+inline
+kiss_obj* kiss_mapcar1(const kiss_obj* const f, const kiss_obj* const list) {
+     kiss_cons_t result;
+     kiss_init_cons(&result, KISS_NIL, KISS_NIL);
+     kiss_obj* p = (kiss_obj*)&result;
+     kiss_cons_t args;
+     kiss_init_cons(&args, KISS_NIL, KISS_NIL);
+     for (const kiss_obj* q = Kiss_List(list); KISS_IS_CONS(q); q = KISS_CDR(q)) {
+          kiss_set_car(KISS_CAR(q), (kiss_obj*)&args);
+          kiss_set_cdr(kiss_cons(kiss_funcall(f, (kiss_obj*)&args), KISS_NIL), p);
+          p = KISS_CDR(p);
+     }
+     return KISS_CDR(&result);
+}
+
 
 /* kiss_c_mapc(function, list) -> list */
 inline
@@ -1319,18 +1334,6 @@ kiss_obj* kiss_plist_put(kiss_obj* plist, const kiss_obj* const property, const 
     }
 }
 
-inline
-kiss_obj* kiss_mapcar1(const kiss_obj* const f, const kiss_obj* const list) {
-     kiss_cons_t result;
-     kiss_init_cons(&result, KISS_NIL, KISS_NIL);
-     kiss_obj* p = (kiss_obj*)&result;
-     for(const kiss_obj* q = list; KISS_IS_CONS(q); q = KISS_CDR(q)) {
-          kiss_set_cdr(kiss_cons(kiss_funcall(f, KISS_CAR(q)), KISS_NIL), p);
-          p = KISS_CDR(p);
-     }
-     return KISS_CDR((kiss_obj*)&result);
-}
-
 /*  function: (mapcar function list+) -> <list>
     Operates on successive elements of the LISTS. FUNCTION is applied to
     the first element of each LIST, then to the second element of each LIST,
@@ -1344,7 +1347,7 @@ kiss_obj* kiss_mapcar(const kiss_obj* const function, const kiss_obj* const list
      size_t n = kiss_c_length(rest);
      if (n == 0) { return kiss_mapcar1(function, list1); }
      kiss_cons_t stack_rest[n];
-     kiss_copy_list_to_ptr(rest, stack_rest);
+     kiss_copy_list_to_cons_array(rest, stack_rest);
      kiss_cons_t head;
      kiss_init_cons(&head, list1, (kiss_obj*)stack_rest);
      for (kiss_obj* x = (kiss_obj*)&head; KISS_IS_CONS(x); x = KISS_CDR(x))

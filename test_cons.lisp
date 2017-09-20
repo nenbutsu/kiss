@@ -227,6 +227,7 @@
 (equal (mapcar #'abs '(3 -4 2 -5 -6)) '(3 4 2 5 6))
 (equal (mapcar #'cons '(a b c) '(1 2 3)) '((a . 1)(b . 2)(c . 3)))
 (eq (mapcar (lambda (x y) (cons x y)) '() '(a b c)) nil)
+(equal (mapcar #'cons '(a b c) '(1 2)) '((a . 1) (b . 2)))
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
