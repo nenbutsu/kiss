@@ -632,7 +632,19 @@ void* Kiss_GC_Malloc(size_t const size) {
     return p;
 }
 
-
+inline
+void kiss_copy_list_to_ptr(const kiss_obj* const list, kiss_cons_t* const pointer) {
+     kiss_cons_t* p = pointer;
+     for(const kiss_obj* q = list; KISS_IS_CONS(q); q = KISS_CDR(q)) {
+          p->car = KISS_CAR(q);
+          p->cdr = (kiss_obj*)p + 1;
+          p++;
+     }
+     if (p != pointer) {
+          p--;
+          p->cdr = KISS_NIL;
+     }
+}
 
 inline
 kiss_cons_t* Kiss_Cons(const kiss_obj* const obj) {
@@ -1307,6 +1319,18 @@ kiss_obj* kiss_plist_put(kiss_obj* plist, const kiss_obj* const property, const 
     }
 }
 
+inline
+kiss_obj* kiss_mapcar1(const kiss_obj* const f, const kiss_obj* const list) {
+     kiss_cons_t result;
+     kiss_init_cons(&result, KISS_NIL, KISS_NIL);
+     kiss_obj* p = (kiss_obj*)&result;
+     for(const kiss_obj* q = list; KISS_IS_CONS(q); q = KISS_CDR(q)) {
+          kiss_set_cdr(kiss_cons(kiss_funcall(f, KISS_CAR(q)), KISS_NIL), p);
+          p = KISS_CDR(p);
+     }
+     return KISS_CDR((kiss_obj*)&result);
+}
+
 /*  function: (mapcar function list+) -> <list>
     Operates on successive elements of the LISTS. FUNCTION is applied to
     the first element of each LIST, then to the second element of each LIST,
@@ -1317,9 +1341,14 @@ kiss_obj* kiss_plist_put(kiss_obj* plist, const kiss_obj* const property, const 
 inline
 kiss_obj* kiss_mapcar(const kiss_obj* const function, const kiss_obj* const list1, const kiss_obj* const rest)
 {
+     size_t n = kiss_c_length(rest);
+     if (n == 0) { return kiss_mapcar1(function, list1); }
+     kiss_cons_t stack_rest[n];
+     kiss_copy_list_to_ptr(rest, stack_rest);
      kiss_cons_t head;
-     kiss_init_cons(&head, list1, kiss_copy_list(rest));
-     kiss_c_mapc1((kiss_cf1_t)Kiss_List, (kiss_obj*)&head);
+     kiss_init_cons(&head, list1, (kiss_obj*)stack_rest);
+     for (kiss_obj* x = (kiss_obj*)&head; KISS_IS_CONS(x); x = KISS_CDR(x))
+          Kiss_List(KISS_CAR(x));
      kiss_cons_t result;
      kiss_init_cons(&result, KISS_NIL, KISS_NIL);
      kiss_obj* p = (kiss_obj*)&result;

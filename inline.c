@@ -181,10 +181,17 @@ extern inline
 kiss_obj* kiss_c_list(int nargs, ...);
 
 extern inline
+void kiss_copy_list_to_ptr(const kiss_obj* const list, kiss_cons_t* const pointer);
+
+
+extern inline
 kiss_obj* kiss_c_mapcar1(const kiss_cf1_t f, const kiss_obj* list);
 
 extern inline
 kiss_obj* kiss_c_mapc1(const kiss_cf1_t f, const kiss_obj* const list);
+
+extern inline
+kiss_obj* kiss_mapcar1(const kiss_obj* const f, const kiss_obj* const list);
 
 extern inline
 kiss_obj* kiss_mapcar(const kiss_obj* const function, const kiss_obj* const list1, const kiss_obj* const rest);
