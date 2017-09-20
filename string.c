@@ -20,13 +20,18 @@
 
 
 kiss_string_t* kiss_make_string(const wchar_t* const s) {
-    kiss_string_t* const p = Kiss_GC_Malloc(sizeof(kiss_string_t));
-    p->type = KISS_STRING;
-    p->str = wcscpy(Kiss_Malloc(sizeof(wchar_t) * (wcslen(s) + 1)), s);
-    p->n = wcslen(s);
-    return p;
+     kiss_string_t* const p = Kiss_GC_Malloc(sizeof(kiss_string_t));
+     p->type = KISS_STRING;
+     p->str = wcscpy(Kiss_Malloc(sizeof(wchar_t) * (wcslen(s) + 1)), s);
+     p->n = wcslen(s);
+     return p;
 }
 
+void kiss_init_string(kiss_string_t* str, wchar_t* name) {
+     str->type = KISS_STRING;
+     str->str = name;
+     str->n = wcslen(name);
+}
 
 /* function: (create-string i [initial-character]) -> <string>
    Returns a string of length I. If INITIAL-CHARACTER is given, then the characters of
@@ -57,6 +62,32 @@ inline kiss_obj* kiss_stringp(const kiss_obj* const obj) {
      return KISS_IS_STRING(obj) ? KISS_T : KISS_NIL;
 }
 
+
+/* function: (string= string1 string2) -> quasi-boolean
+   Tests whether STRING1 is the same string as STRING2.
+   Two strings are string= if they are of the same length l, and if for every i,
+   where 0 <= i < l, (char= (elt string1 i ) (elt string2 i)) holds.
+   if the test is satisfied, an implementation-defined non-nil value is returned; otherwise,
+   nil is returned. */
+kiss_obj* kiss_string_eq(const kiss_obj* const str1, const kiss_obj* const str2) {
+     kiss_string_t* s1 = Kiss_String(str1);
+     kiss_string_t* s2 = Kiss_String(str2);
+     if (s1->n != s2->n)
+          return KISS_NIL;
+
+     size_t i = 0;
+     size_t n = s1->n;
+     while (i < n && s1->str[i] == s2->str[i]) { i++; }
+     return  (i == n ? KISS_T : KISS_NIL);
+}
+
+/* function: (string/= string1 string2) -> quasi-boolean
+   Two strings are string/= if and only if they are not string=.
+   if the test is satisfied, an implementation-defined non-nil value is returned; otherwise,
+   nil is returned. */
+kiss_obj* kiss_string_neq(const kiss_obj* const str1, const kiss_obj* const str2) {
+     return (kiss_string_eq(str1, str2) == KISS_NIL ? KISS_T : KISS_NIL);
+}
 
 kiss_string_t* kiss_chars_to_str(const kiss_obj* const chars) {
      kiss_string_t* str = (kiss_string_t*)kiss_create_string(kiss_length(chars), KISS_NIL);

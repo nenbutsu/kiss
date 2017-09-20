@@ -26,14 +26,20 @@ kiss_hash_table_t* Kiss_Symbol_Hash_Table = NULL;
 
 size_t Kiss_Gensym_Count = 0;
 
+kiss_symbol_t KISS_Sstring_eq;
+
 void kiss_init_symbols(void) {
     size_t i;
     for (i = 0; i < KISS_SYMBOL_MAX; i++) { if (Kiss_Symbols[i] == NULL) break; }
     assert(i < KISS_SYMBOL_MAX);
     Kiss_Symbol_Number = i;
 
-    //kiss_obj* args = kiss_c_list(2);
-    //Kiss_Symbol_Hash_Table = (Kiss_hash_table_t*)kiss_create_hash_table();
+    Kiss_Symbol_Hash_Table = (kiss_hash_table_t*)
+         kiss_make_hash_table(kiss_make_fixnum(2347),
+                              kiss_function((kiss_obj*)&KISS_Sstring_eq),
+                              KISS_NIL,
+                              (kiss_obj*)kiss_make_float(1.5),
+                              (kiss_obj*)kiss_make_float(0.8));
 }
 
 static kiss_symbol_t* kiss_make_symbol(const wchar_t* const name) {
@@ -90,15 +96,26 @@ kiss_obj* kiss_set_symbol_function (const kiss_obj* const definition, kiss_obj* 
 }
 
 int kiss_is_interned(const kiss_symbol_t* const p) {
-    size_t i;
-    for (i = 0; i < Kiss_Symbol_Number; i++) {
-	if (p == Kiss_Symbols[i]) return 1;
+     kiss_obj* q = kiss_c_gethash((kiss_obj*)kiss_make_string(p->name),
+                                  Kiss_Symbol_Hash_Table,
+                                  KISS_DUMMY);
+    if (q != KISS_DUMMY)
+         return 1;
+    else {
+         for (size_t i = 0; i < Kiss_Symbol_Number; i++) {
+              if (p == Kiss_Symbols[i]) return 1;
+         }
+         return 0;
     }
-    return 0;
 }
 
 kiss_obj* kiss_intern(const kiss_obj* const name) {
     kiss_string_t* str = Kiss_String(name);
+    kiss_obj* q = kiss_c_gethash(name, Kiss_Symbol_Hash_Table, KISS_DUMMY);
+
+    if (q != KISS_DUMMY) {
+         return q;
+    }
     size_t i;
     kiss_symbol_t* p;
     for (i = 0; i < Kiss_Symbol_Number; i++) {
@@ -106,10 +123,12 @@ kiss_obj* kiss_intern(const kiss_obj* const name) {
 	    return (kiss_obj*)Kiss_Symbols[i];
 	}
     }
-    assert(Kiss_Symbol_Number < KISS_SYMBOL_MAX);
     p = kiss_make_symbol(str->str);
-    Kiss_Symbols[Kiss_Symbol_Number] = p;
-    ++Kiss_Symbol_Number;
+    kiss_puthash(name, (kiss_obj*)p, (kiss_obj*)Kiss_Symbol_Hash_Table);
+    //assert(Kiss_Symbol_Number < KISS_SYMBOL_MAX);
+    //p = kiss_make_symbol(str->str);
+    //Kiss_Symbols[Kiss_Symbol_Number] = p;
+    //++Kiss_Symbol_Number;
     return (kiss_obj*)p;
 }
 
@@ -189,6 +208,62 @@ kiss_symbol_t KISS_Samp_rest = {
     NULL,                 /* fun */
     KISS_NIL,                  /* plist */
 };
+
+kiss_symbol_t KISS_Skw_size;
+kiss_symbol_t KISS_Skw_size = {
+    KISS_SYMBOL,               /* type */
+    NULL,              /* gc_ptr */
+    L":size",             /* name */
+    0,                    /* flags */
+    (kiss_obj*)&KISS_Skw_size, /* var */
+    NULL,                 /* fun */
+    KISS_NIL,                  /* plist */
+};
+
+kiss_symbol_t KISS_Skw_test;
+kiss_symbol_t KISS_Skw_test = {
+    KISS_SYMBOL,               /* type */
+    NULL,              /* gc_ptr */
+    L":test",             /* name */
+    0,                    /* flags */
+    (kiss_obj*)&KISS_Skw_test, /* var */
+    NULL,                 /* fun */
+    KISS_NIL,                  /* plist */
+};
+
+kiss_symbol_t KISS_Skw_weakness;
+kiss_symbol_t KISS_Skw_weakness = {
+    KISS_SYMBOL,               /* type */
+    NULL,              /* gc_ptr */
+    L":weakness",             /* name */
+    0,                    /* flags */
+    (kiss_obj*)&KISS_Skw_weakness, /* var */
+    NULL,                 /* fun */
+    KISS_NIL,                  /* plist */
+};
+
+kiss_symbol_t KISS_Skw_rehash_size;
+kiss_symbol_t KISS_Skw_rehash_size = {
+    KISS_SYMBOL,               /* type */
+    NULL,              /* gc_ptr */
+    L":rehash-size",             /* name */
+    0,                    /* flags */
+    (kiss_obj*)&KISS_Skw_rehash_size, /* var */
+    NULL,                 /* fun */
+    KISS_NIL,                  /* plist */
+};
+
+kiss_symbol_t KISS_Skw_rehash_threshold;
+kiss_symbol_t KISS_Skw_rehash_threshold = {
+    KISS_SYMBOL,               /* type */
+    NULL,              /* gc_ptr */
+    L":rehash-threshold",             /* name */
+    0,                    /* flags */
+    (kiss_obj*)&KISS_Skw_rehash_threshold, /* var */
+    NULL,                 /* fun */
+    KISS_NIL,                  /* plist */
+};
+
 
 /*** cons.c ***/
 kiss_symbol_t KISS_Scons;
@@ -2324,6 +2399,43 @@ kiss_symbol_t KISS_Screate_string = {
     KISS_NIL,                         /* plist */
 };
 
+kiss_symbol_t KISS_Sstring_eq;
+kiss_cfunction_t KISS_CFstring_eq = {
+    KISS_CFUNCTION,       /* type */
+    &KISS_Sstring_eq, /* name */
+    (kiss_cf_t*)kiss_string_eq,   /* C function name */
+    2,                    /* minimum argument number */
+    2,                    /* maximum argument number */
+};
+kiss_symbol_t KISS_Sstring_eq = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"string=",
+    KISS_CONSTANT_FUN,
+    NULL,                             /* var */
+    (kiss_obj*)&KISS_CFstring_eq, /* fun */
+    KISS_NIL,                         /* plist */
+};
+
+kiss_symbol_t KISS_Sstring_neq;
+kiss_cfunction_t KISS_CFstring_neq = {
+    KISS_CFUNCTION,       /* type */
+    &KISS_Sstring_neq, /* name */
+    (kiss_cf_t*)kiss_string_neq,   /* C function name */
+    2,                    /* minimum argument number */
+    2,                    /* maximum argument number */
+};
+kiss_symbol_t KISS_Sstring_neq = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"string/=",
+    KISS_CONSTANT_FUN,
+    NULL,                             /* var */
+    (kiss_obj*)&KISS_CFstring_neq, /* fun */
+    KISS_NIL,                         /* plist */
+};
+
+
 kiss_symbol_t KISS_Sstring_append;
 kiss_cfunction_t KISS_CFstring_append = {
     KISS_CFUNCTION,       /* type */
@@ -3208,7 +3320,8 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Snil, &KISS_St,
 
     &KISS_Skw_rest, &KISS_Samp_rest,
-
+    &KISS_Skw_size, &KISS_Skw_test, &KISS_Skw_weakness,
+    &KISS_Skw_rehash_size, &KISS_Skw_rehash_threshold,
 
     /* cons.c */
     &KISS_Scar, &KISS_Scdr, &KISS_Scons, &KISS_Scadr, &KISS_Scddr,
@@ -3264,7 +3377,8 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sremove_property,
 
     /* string.c */
-    &KISS_Sstringp, &KISS_Screate_string, &KISS_Sstring_append, 
+    &KISS_Sstringp, &KISS_Screate_string, &KISS_Sstring_eq, &KISS_Sstring_neq,
+    &KISS_Sstring_append, 
 
     /* sequence.c */
     &KISS_Slength, &KISS_Selt, &KISS_Sset_elt, &KISS_Ssubseq, &KISS_Smap_into,
@@ -3369,3 +3483,13 @@ kiss_symbol_t KISS_Ueos = {
     KISS_NIL,    /* plist */
 };
 
+/* Uninterned symbols used in Kiss_Symbol_Hash_Table */
+kiss_symbol_t KISS_Udummy = {
+    KISS_SYMBOL, /* type */
+    NULL,              /* gc_ptr */
+    L"dummy", /* name */
+    0,      /* flags */
+    NULL,   /* fun */
+    NULL,   /* var */
+    KISS_NIL,    /* plist */
+};

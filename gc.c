@@ -254,6 +254,7 @@ void kiss_gc_mark(void) {
 	  obj = (kiss_obj*)Kiss_Symbols[i];
 	  kiss_gc_mark_obj(obj);
      }
+     kiss_gc_mark_hash_table(Kiss_Symbol_Hash_Table);
 }
 
 static inline

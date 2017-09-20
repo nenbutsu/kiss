@@ -21,24 +21,24 @@
 ;; where 0 <= i < l, (char= (elt string1 i ) (elt string2 i)) holds.
 ;; if the test is satisfied, an implementation-defined non-nil value is returned; otherwise,
 ;; nil is returned.
-(defun string= (string1 string2)
-  (if (/= (length string1) (length string2))
-      nil
-    (let ((i 0)
-	  (n (length string1)))
-      (while (and (< i n) (char= (elt string1 i) (elt string2 i)))
-	(setq i (+ i 1)))
-      (if (= i n)
-	  t
-	nil))))
+;;;(defun string= (string1 string2)
+;;;  (if (/= (length string1) (length string2))
+;;;      nil
+;;;    (let ((i 0)
+;;;	  (n (length string1)))
+;;;      (while (and (< i n) (char= (elt string1 i) (elt string2 i)))
+;;;	(setq i (+ i 1)))
+;;;      (if (= i n)
+;;;	  t
+;;;	nil))))
 
 
 ;; function: (string/= string1 string2) -> quasi-boolean
 ;; Two strings are string/= if and only if they are not string=.
 ;; if the test is satisfied, an implementation-defined non-nil value is returned; otherwise,
 ;; nil is returned.
-(defun string/= (string1 string2)
-  (not (string= string1 string2)))
+;;;(defun string/= (string1 string2)
+;;;  (not (string= string1 string2)))
 
 ;; function: (string< string1 string2) -> quasi-boolean
 ;; Two strings STRING1 and STRING2 are in order (string<) if in the first position in which

@@ -157,6 +157,9 @@ typedef struct {
      kiss_obj* rehash_threshold;
 } kiss_hash_table_t;
 
+extern kiss_hash_table_t* Kiss_Symbol_Hash_Table;
+
+
 
 typedef kiss_obj* (*kiss_cf0_t)(void);
 typedef kiss_obj* (*kiss_cf1_t)(kiss_obj*);
@@ -307,7 +310,7 @@ typedef struct {
      kiss_obj* features;
 } kiss_environment_t;
 
-kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda, KISS_Skw_rest, KISS_Samp_rest, KISS_Ueos;
+kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda, KISS_Skw_rest, KISS_Samp_rest, KISS_Ueos, KISS_Skw_size, KISS_Skw_test, KISS_Skw_weakness, KISS_Skw_rehash_size, KISS_Skw_rehash_threshold;
 #define KISS_T        ((kiss_obj*)(&KISS_St))
 #define KISS_NIL      ((kiss_obj*)(&KISS_Snil))
 #define KISS_QUOTE    ((kiss_obj*)(&KISS_Squote))
@@ -315,6 +318,14 @@ kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda, KISS_Skw_rest, KISS
 #define KISS_AMP_REST ((kiss_obj*)(&KISS_Samp_rest))
 #define KISS_KW_REST  ((kiss_obj*)(&KISS_Skw_rest))
 #define KISS_EOS      ((kiss_obj*)(&KISS_Ueos))
+#define KISS_KW_SIZE  ((kiss_obj*)(&KISS_Skw_size))
+#define KISS_KW_TEST  ((kiss_obj*)(&KISS_Skw_test))
+#define KISS_KW_WEAKNESS  ((kiss_obj*)(&KISS_Skw_weakness))
+#define KISS_KW_REHASH_SIZE  ((kiss_obj*)(&KISS_Skw_rehash_size))
+#define KISS_KW_REHASH_THRESHOLD  ((kiss_obj*)(&KISS_Skw_rehash_threshold))
+
+kiss_symbol_t KISS_Udummy;
+#define KISS_DUMMY      ((kiss_obj*)(&KISS_Udummy))
 
 #define KISS_CAR(x) ((void*)(((kiss_cons_t*)x)->car))
 #define KISS_CDR(x) ((void*)(((kiss_cons_t*)x)->cdr))
@@ -459,9 +470,11 @@ kiss_obj* kiss_basic_array_s_p (const kiss_obj* const obj);
 kiss_obj* kiss_general_array_s_p (const kiss_obj* const obj);
 
 /* hash_table.c */
+kiss_obj* kiss_make_hash_table(kiss_obj* size, kiss_obj* test, kiss_obj* weakness, kiss_obj* rehash_size, kiss_obj* rehash_threshold);
 kiss_obj* kiss_create_hash_table(kiss_obj* args);
-kiss_obj* kiss_gethash(kiss_obj* key, kiss_obj* table, kiss_obj* rest);
-kiss_obj* kiss_puthash(kiss_obj* key, kiss_obj* value, kiss_obj* table);
+kiss_obj* kiss_c_gethash(const kiss_obj* const key, const kiss_hash_table_t* const hash_table, const kiss_obj* const default_value);
+kiss_obj* kiss_gethash(const kiss_obj* const key, const kiss_obj* const table, const kiss_obj* const rest);
+kiss_obj* kiss_puthash(const kiss_obj* const key, const kiss_obj* const value, kiss_obj* const table);
 
 /* environment.c */
 kiss_environment_t* Kiss_Get_Environment(void);
@@ -550,8 +563,11 @@ kiss_obj* kiss_stream_ready_p(kiss_obj* obj);
 
 /* string.c */
 kiss_string_t* kiss_make_string(const wchar_t* const s);
+void kiss_init_string(kiss_string_t* str, wchar_t* name);
 kiss_obj* kiss_create_string(const kiss_obj* const i, const kiss_obj* const rest);
 kiss_obj* kiss_stringp(const kiss_obj* const obj);
+kiss_obj* kiss_string_eq(const kiss_obj* const str1, const kiss_obj* const str2);
+kiss_obj* kiss_string_neq(const kiss_obj* const str1, const kiss_obj* const str2);
 kiss_string_t* kiss_chars_to_str(const kiss_obj* const chars);
 kiss_obj* kiss_str_to_chars(const kiss_string_t* const str);
 kiss_obj* kiss_string_append(const kiss_obj* const rest);
