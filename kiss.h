@@ -65,6 +65,7 @@ typedef enum {
      KISS_GENERAL_VECTOR,
      KISS_GENERAL_ARRAY,
      KISS_STREAM,
+     KISS_HASH_TABLE,
 
      KISS_FUNCTION,
      KISS_MACRO,
@@ -144,6 +145,18 @@ typedef struct {
      kiss_obj* vector;
      size_t rank;
 } kiss_general_array_t;
+
+typedef struct {
+     kiss_type type;
+     void* gc_ptr;
+     size_t n;
+     kiss_general_vector_t* vector;
+     kiss_obj* test;
+     kiss_obj* weakness;
+     kiss_obj* rehash_size;
+     kiss_obj* rehash_threshold;
+} kiss_hash_table_t;
+
 
 typedef kiss_obj* (*kiss_cf0_t)(void);
 typedef kiss_obj* (*kiss_cf1_t)(kiss_obj*);
@@ -321,6 +334,7 @@ kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda, KISS_Skw_rest, KISS
 #define KISS_IS_STRING(x)            (KISS_OBJ_TYPE(x) == KISS_STRING)
 #define KISS_IS_GENERAL_VECTOR(x)    (KISS_OBJ_TYPE(x) == KISS_GENERAL_VECTOR)
 #define KISS_IS_GENERAL_ARRAY(x)     (KISS_OBJ_TYPE(x) == KISS_GENERAL_ARRAY)
+#define KISS_IS_TASH_TABLE(x)        (KISS_OBJ_TYPE(x) == KISS_HASH_TABLE)
 #define KISS_IS_SEQUENCE(x)          (KISS_IS_LIST(x) || KISS_IS_STRING(x) || KISS_IS_GENERAL_VECTOR(x))
 #define KISS_IS_FUNCTION(x)          (KISS_OBJ_TYPE(x) == KISS_FUNCTION)
 #define KISS_IS_MACRO(x)             (KISS_OBJ_TYPE(x) == KISS_MACRO)
@@ -443,6 +457,11 @@ kiss_obj* kiss_array_dimensions(const kiss_obj* const array);
 kiss_obj* kiss_basic_array_p (const kiss_obj* const obj);
 kiss_obj* kiss_basic_array_s_p (const kiss_obj* const obj);
 kiss_obj* kiss_general_array_s_p (const kiss_obj* const obj);
+
+/* hash_table.c */
+kiss_obj* kiss_create_hash_table(kiss_obj* args);
+kiss_obj* kiss_gethash(kiss_obj* key, kiss_obj* table, kiss_obj* rest);
+kiss_obj* kiss_puthash(kiss_obj* key, kiss_obj* value, kiss_obj* table);
 
 /* environment.c */
 kiss_environment_t* Kiss_Get_Environment(void);
@@ -636,6 +655,12 @@ inline
 kiss_cons_t* Kiss_Cons(const kiss_obj* const obj) {
      if (KISS_IS_CONS(obj)) { return (kiss_cons_t*)obj; }
      Kiss_Domain_Error(obj, L"<cons>");
+}
+
+inline
+kiss_hash_table_t* Kiss_Hash_Table(const kiss_obj* const obj) {
+     if (KISS_IS_TASH_TABLE(obj)) { return (kiss_hash_table_t*)obj; }
+     Kiss_Domain_Error(obj, L"{bignum}");
 }
 
 inline
@@ -1334,6 +1359,15 @@ kiss_obj* kiss_plist_put(kiss_obj* plist, const kiss_obj* const property, const 
     }
 }
 
+inline
+kiss_obj* kiss_assoc_using(const kiss_obj* test, const kiss_obj* const obj, kiss_obj* const alist) {
+    for (const kiss_obj* p = Kiss_List(alist); KISS_IS_CONS(p); p = KISS_CDR(p)) {
+        kiss_cons_t* x = Kiss_Cons(KISS_CAR(p));
+        if (kiss_funcall(test, kiss_c_list(2, obj, x->car)) != KISS_NIL) { return (kiss_obj*)x; }
+    }
+    return KISS_NIL;
+}
+
 /*  function: (mapcar function list+) -> <list>
     Operates on successive elements of the LISTS. FUNCTION is applied to
     the first element of each LIST, then to the second element of each LIST,
@@ -1374,3 +1408,4 @@ kiss_obj* kiss_mapcar(const kiss_obj* const function, const kiss_obj* const list
 end:
      return KISS_CDR((kiss_obj*)&result);
 }
+

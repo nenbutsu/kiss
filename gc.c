@@ -83,6 +83,17 @@ void kiss_gc_mark_general_array(kiss_general_array_t* const obj) {
 }
 
 static inline
+void kiss_gc_mark_hash_table(kiss_hash_table_t* const obj) {
+     if (is_marked((kiss_gc_obj*)obj)) { return; }
+     mark_flag((kiss_gc_obj*)obj);
+     kiss_gc_mark_general_vector(obj->vector);
+     kiss_gc_mark_obj(obj->test);
+     kiss_gc_mark_obj(obj->weakness);
+     kiss_gc_mark_obj(obj->rehash_size);
+     kiss_gc_mark_obj(obj->rehash_threshold);
+}
+
+static inline
 void kiss_gc_mark_symbol(kiss_symbol_t* const symbol) {
      if (is_marked((kiss_gc_obj*)symbol)) { return; }
      mark_flag((kiss_gc_obj*)symbol);
@@ -185,6 +196,9 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
                break;
 	  case KISS_GENERAL_ARRAY:
 	       kiss_gc_mark_general_array((kiss_general_array_t*)obj);
+               break;
+	  case KISS_HASH_TABLE:
+	       kiss_gc_mark_hash_table((kiss_hash_table_t*)obj);
                break;
 	  case KISS_STREAM:
 	       kiss_gc_mark_stream((kiss_stream_t*)obj);
@@ -300,6 +314,7 @@ void kiss_gc_free_obj(kiss_gc_obj* obj) {
 	  case KISS_CONS:
 	  case KISS_GENERAL_VECTOR:
 	  case KISS_GENERAL_ARRAY:
+          case KISS_HASH_TABLE:
 	  case KISS_FUNCTION:
 	  case KISS_MACRO:
 	  case KISS_CFUNCTION:

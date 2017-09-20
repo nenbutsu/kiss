@@ -540,6 +540,24 @@ kiss_symbol_t KISS_Sassoc = {
     KISS_NIL,                 /* plist */
 };
 
+kiss_symbol_t KISS_Sassoc_using;
+kiss_cfunction_t KISS_CFassoc_using = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Sassoc_using,   /* name */
+    (kiss_cf_t*)kiss_assoc_using,     /* C function name */
+    3,         /* minimum argument number */
+    3,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Sassoc_using = {
+    KISS_SYMBOL,              /* type */
+    NULL,              /* gc_ptr */
+    L"assoc-using",            /* name */
+    KISS_CONSTANT_FUN,        /* flags */
+    NULL,                /* var */
+    (kiss_obj*)&KISS_CFassoc_using, /* fun */
+    KISS_NIL,                 /* plist */
+};
+
 
 kiss_symbol_t KISS_Scopy_list;
 kiss_cfunction_t KISS_CFcopy_list = {
@@ -905,6 +923,61 @@ kiss_symbol_t KISS_Sset_gvref = {
     KISS_CONSTANT_FUN,            /* flags */
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFset_gvref, /* fun */
+    KISS_NIL,                     /* plist */
+};
+
+/*** hash_table.c ***/
+kiss_symbol_t KISS_Screate_hash_table;
+kiss_cfunction_t KISS_CFcreate_hash_table = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Screate_hash_table,   /* name */
+    (kiss_cf_t*)kiss_create_hash_table,     /* C function name */
+    0,         /* minimum argument number */
+    -1,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Screate_hash_table = {
+    KISS_SYMBOL,                  /* type */
+    NULL,              /* gc_ptr */
+    L"create-hash-table",            /* name */
+    KISS_CONSTANT_FUN,            /* flags */
+    NULL,                    /* var */
+    (kiss_obj*)&KISS_CFcreate_hash_table, /* fun */
+    KISS_NIL,                     /* plist */
+};
+
+kiss_symbol_t KISS_Sgethash;
+kiss_cfunction_t KISS_CFgethash = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Sgethash,   /* name */
+    (kiss_cf_t*)kiss_gethash,     /* C function name */
+    2,         /* minimum argument number */
+    3,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Sgethash = {
+    KISS_SYMBOL,                  /* type */
+    NULL,              /* gc_ptr */
+    L"gethash",            /* name */
+    KISS_CONSTANT_FUN,            /* flags */
+    NULL,                    /* var */
+    (kiss_obj*)&KISS_CFgethash, /* fun */
+    KISS_NIL,                     /* plist */
+};
+
+kiss_symbol_t KISS_Sputhash;
+kiss_cfunction_t KISS_CFputhash = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Sputhash,   /* name */
+    (kiss_cf_t*)kiss_puthash,     /* C function name */
+    3,         /* minimum argument number */
+    3,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Sputhash = {
+    KISS_SYMBOL,                  /* type */
+    NULL,              /* gc_ptr */
+    L"puthash",            /* name */
+    KISS_CONSTANT_FUN,            /* flags */
+    NULL,                    /* var */
+    (kiss_obj*)&KISS_CFputhash, /* fun */
     KISS_NIL,                     /* plist */
 };
 
@@ -3140,7 +3213,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sreverse, &KISS_Snreverse,
     &KISS_Smember, &KISS_Smember_using,
     &KISS_Smapcar,
-    &KISS_Sassoc, &KISS_Scopy_list,
+    &KISS_Sassoc, &KISS_Sassoc_using, &KISS_Scopy_list,
     &KISS_Splist_member, &KISS_Splist_put, &KISS_Splist_get, 
 
     /* array.c */
@@ -3152,6 +3225,9 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Screate_general_vector, &KISS_Svector,
     &KISS_Sgeneral_vector_p, &KISS_Sbasic_vector_p, &KISS_Sgvref, &KISS_Sset_gvref,
 
+    /* hash_table */
+    &KISS_Screate_hash_table, &KISS_Sgethash, &KISS_Sputhash,
+    
     /* function.c */
     &KISS_Ssimple_function_p, &KISS_Sfunction, &KISS_Slambda,
     &KISS_Sflet, &KISS_Slabels, &KISS_Sdefun, &KISS_Sdefmacro, &KISS_Sfuncall,

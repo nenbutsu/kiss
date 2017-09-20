@@ -49,6 +49,9 @@ extern inline
 kiss_obj* Kiss_General_Array(const kiss_obj* const obj);
 
 extern inline
+kiss_hash_table_t* Kiss_Hash_Table(const kiss_obj* const obj);
+     
+extern inline
 kiss_obj* Kiss_Sequence(const kiss_obj* const obj);
 
 extern inline
@@ -149,6 +152,9 @@ kiss_obj* kiss_nreverse(kiss_obj* p);
 
 extern inline
 kiss_obj* kiss_assoc(const kiss_obj* const obj, kiss_obj* const alist);
+
+extern inline
+kiss_obj* kiss_assoc_using(const kiss_obj* test, const kiss_obj* const obj, kiss_obj* const alist);
 
 extern inline
 kiss_cons_t* kiss_init_cons(kiss_cons_t* const p, const kiss_obj* const left, const kiss_obj* const right);
