@@ -25,10 +25,10 @@ kiss_bignum_t* kiss_make_bignum(kiss_ptr_int i) {
     return p;
 }
 
-kiss_float_t* kiss_make_float(void) {
+kiss_float_t* kiss_make_float(double d) {
     kiss_float_t* p = Kiss_GC_Malloc(sizeof(kiss_float_t));
     p->type = KISS_FLOAT;
-    mpf_init_set_si(p->mpf, 0);
+    mpf_init_set_d(p->mpf, d);
     return p;
 }
 
@@ -52,12 +52,12 @@ kiss_obj* kiss_float(kiss_obj* x) {
      Kiss_Number(x);
      switch (KISS_OBJ_TYPE(x)) {
      case KISS_FIXNUM: {
-          kiss_float_t* f = kiss_make_float();
+          kiss_float_t* f = kiss_make_float(0.0);
           mpf_set_si(f->mpf, kiss_ptr_int(x));
           return (kiss_obj*)f;
      }
      case KISS_BIGNUM: {
-          kiss_float_t* f = kiss_make_float();
+          kiss_float_t* f = kiss_make_float(0.0);
           mpf_set_z(f->mpf, ((kiss_bignum_t*)x)->mpz);
           return (kiss_obj*)f;
      }
@@ -142,8 +142,7 @@ kiss_obj* kiss_c_parse_number(kiss_obj* obj) {
      tail= NULL;
      double d = wcstod(p, &tail);
      if (tail == p + wcslen(p)) {
-          kiss_float_t* f = kiss_make_float();
-          mpf_set_d (f->mpf, d);
+          kiss_float_t* f = kiss_make_float(d);
           return (kiss_obj*)f;
      }
      return NULL;
@@ -203,7 +202,7 @@ kiss_obj* kiss_plus2_fixnum_bignum (kiss_obj* a, kiss_obj* b) {
 }
 
 kiss_obj* kiss_plus2_fixnum_float(kiss_obj* a, kiss_obj* b) {
-     kiss_float_t* f1 = kiss_make_float();
+     kiss_float_t* f1 = kiss_make_float(0.0);
      mpf_set_si(f1->mpf, kiss_ptr_int(a));
      kiss_float_t* f2 = (kiss_float_t*)b;
      mpf_add(f1->mpf, f1->mpf, f2->mpf);
@@ -222,7 +221,7 @@ kiss_obj* kiss_plus2_bignum2(kiss_obj* a, kiss_obj* b) {
 kiss_obj* kiss_plus2_bignum_float(kiss_obj* a, kiss_obj* b) {
      kiss_bignum_t* z1 = (kiss_bignum_t*)a;
      kiss_float_t* f2 = (kiss_float_t*)b;
-     kiss_float_t* p = kiss_make_float();
+     kiss_float_t* p = kiss_make_float(0.0);
      mpf_set_z (p->mpf, z1->mpz);
      mpf_add(p->mpf, p->mpf, f2->mpf);
      return (kiss_obj*)p;
@@ -231,7 +230,7 @@ kiss_obj* kiss_plus2_bignum_float(kiss_obj* a, kiss_obj* b) {
 kiss_obj* kiss_plus2_float2(kiss_obj* a, kiss_obj* b) {
      kiss_float_t* f1 = (kiss_float_t*)a;
      kiss_float_t* f2 = (kiss_float_t*)b;
-     kiss_float_t* p = kiss_make_float();
+     kiss_float_t* p = kiss_make_float(0.0);
      mpf_set(p->mpf, f1->mpf);
      mpf_add(p->mpf, p->mpf, f2->mpf);
      return (kiss_obj*)p;
@@ -322,7 +321,7 @@ kiss_obj* kiss_flip_sign(kiss_obj* obj) {
           return (kiss_obj*)z;
      }
      case KISS_FLOAT: {
-          kiss_float_t* f = kiss_make_float();
+          kiss_float_t* f = kiss_make_float(0.0);
           mpf_set(f->mpf, ((kiss_float_t*)obj)->mpf);
           mpf_neg (f->mpf, f->mpf);
           return (kiss_obj*)f;
@@ -396,7 +395,7 @@ kiss_obj* kiss_multiply2_fixnum2 (kiss_obj* a, kiss_obj* b) {
 }
 
 kiss_obj* kiss_multiply2_fixnum_float(kiss_obj* a, kiss_obj* b) {
-     kiss_float_t* f = kiss_make_float();
+     kiss_float_t* f = kiss_make_float(0.0);
      mpf_set_si(f->mpf, kiss_ptr_int(a));
      mpf_mul(f->mpf, f->mpf, ((kiss_float_t*)b)->mpf);
      return (kiss_obj*)f;
@@ -410,14 +409,14 @@ kiss_obj* kiss_multiply2_bignum2(kiss_obj* a, kiss_obj* b) {
 }
 
 kiss_obj* kiss_multiply2_bignum_float(kiss_obj* a, kiss_obj* b) {
-     kiss_float_t* f = kiss_make_float();
+     kiss_float_t* f = kiss_make_float(0.0);
      mpf_set_z(f->mpf, ((kiss_bignum_t*)a)->mpz);
      mpf_mul(f->mpf, f->mpf, ((kiss_float_t*)b)->mpf);
      return (kiss_obj*)f;
 }
 
 kiss_obj* kiss_multiply2_float2(kiss_obj* a, kiss_obj* b) {
-     kiss_float_t* f = kiss_make_float();
+     kiss_float_t* f = kiss_make_float(0.0);
      mpf_set(f->mpf, ((kiss_float_t*)a)->mpf);
      mpf_mul(f->mpf, f->mpf, ((kiss_float_t*)b)->mpf);
      return (kiss_obj*)f;
@@ -718,7 +717,7 @@ kiss_obj* kiss_abs(kiss_obj* x) {
           return (kiss_obj*)z;
      }
      case KISS_FLOAT: {
-          kiss_float_t* f = kiss_make_float();
+          kiss_float_t* f = kiss_make_float(0.0);
           mpf_abs(f->mpf, ((kiss_float_t*)x)->mpf);
           return (kiss_obj*)f;
      }

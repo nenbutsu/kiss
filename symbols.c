@@ -18,9 +18,11 @@
 */
 #include "kiss.h"
 
-#define KISS_SYMBOL_MAX 4096
+#define KISS_SYMBOL_MAX 1024
 size_t Kiss_Symbol_Number = 0;
 kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX];
+
+kiss_hash_table_t* Kiss_Symbol_Hash_Table = NULL;
 
 size_t Kiss_Gensym_Count = 0;
 
@@ -29,6 +31,9 @@ void kiss_init_symbols(void) {
     for (i = 0; i < KISS_SYMBOL_MAX; i++) { if (Kiss_Symbols[i] == NULL) break; }
     assert(i < KISS_SYMBOL_MAX);
     Kiss_Symbol_Number = i;
+
+    //kiss_obj* args = kiss_c_list(2);
+    //Kiss_Symbol_Hash_Table = (Kiss_hash_table_t*)kiss_create_hash_table();
 }
 
 static kiss_symbol_t* kiss_make_symbol(const wchar_t* const name) {
@@ -3309,6 +3314,8 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
 
     /* gc.c */
     &KISS_Sgc, &KISS_Sgc_info,
+
+    NULL,
 };
 
 /* Uninterned symbols used in lisp reader */

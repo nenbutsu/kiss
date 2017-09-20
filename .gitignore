@@ -5,4 +5,5 @@ example.dat
 newfile
 test.c
 gmon.out
-
+*.gcda
+*.gcno

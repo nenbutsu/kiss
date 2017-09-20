@@ -40,16 +40,14 @@ kiss_obj* kiss_create_hash_table(kiss_obj* args) {
      
      kiss_obj* rehash_size = kiss_plist_get(args, kiss_symbol(L":rehash_size"));
      if (rehash_size == KISS_NIL) {
-          kiss_float_t* f = kiss_make_float();
-          mpf_set_d(f->mpf, 1.5);
+          kiss_float_t* f = kiss_make_float(1.5);
           rehash_size = (kiss_obj*)f;
      }
      p->rehash_size = rehash_size;
 
      kiss_obj* rehash_threshold = kiss_plist_get(args, kiss_symbol(L":rehash_size"));
      if (rehash_threshold == KISS_NIL) {
-          kiss_float_t* f = kiss_make_float();
-          mpf_set_d(f->mpf, 0.8);
+          kiss_float_t* f = kiss_make_float(0.8);
           rehash_threshold = (kiss_obj*)f;
      }
      p->rehash_threshold = rehash_threshold;

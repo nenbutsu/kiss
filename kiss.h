@@ -480,7 +480,7 @@ kiss_obj* kiss_minus(kiss_obj* number, kiss_obj* rest);
 kiss_obj* kiss_num_eq(const kiss_obj* const x, const kiss_obj* const y);
 kiss_obj* kiss_num_lessthan(kiss_obj* x, kiss_obj* y);
 
-kiss_float_t* kiss_make_float(void);
+kiss_float_t* kiss_make_float(double d);
 kiss_obj* kiss_floatp(kiss_obj* obj);
 kiss_obj* kiss_c_parse_number(kiss_obj* obj);
 kiss_obj* kiss_parse_number(kiss_obj* str);
