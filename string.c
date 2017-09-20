@@ -18,20 +18,12 @@
 */
 #include "kiss.h"
 
+extern inline
+void kiss_init_string(kiss_string_t* str, wchar_t* name, size_t n);
 
-kiss_string_t* kiss_make_string(const wchar_t* const s) {
-     kiss_string_t* const p = Kiss_GC_Malloc(sizeof(kiss_string_t));
-     p->type = KISS_STRING;
-     p->str = wcscpy(Kiss_Malloc(sizeof(wchar_t) * (wcslen(s) + 1)), s);
-     p->n = wcslen(s);
-     return p;
-}
+extern inline
+kiss_string_t* kiss_make_string(const wchar_t* const s);
 
-void kiss_init_string(kiss_string_t* str, wchar_t* name) {
-     str->type = KISS_STRING;
-     str->str = name;
-     str->n = wcslen(name);
-}
 
 /* function: (create-string i [initial-character]) -> <string>
    Returns a string of length I. If INITIAL-CHARACTER is given, then the characters of

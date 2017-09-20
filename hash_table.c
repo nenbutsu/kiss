@@ -110,9 +110,10 @@ kiss_obj* kiss_puthash(const kiss_obj* const key, const kiss_obj* const value, k
      kiss_ptr_int k = kiss_hash(key, hash_table);
      kiss_obj* alist = hash_table->vector->v[k];
      kiss_obj* p = kiss_assoc_using(hash_table->test, key, alist);
-     if (p == KISS_NIL)
+     if (p == KISS_NIL) {
           hash_table->vector->v[k] = kiss_cons(kiss_cons(key, value), alist);
-     else
+          hash_table->n++;
+     } else
           kiss_set_cdr(value, p);
      return KISS_NIL;
 }

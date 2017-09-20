@@ -53,6 +53,9 @@ static kiss_symbol_t* kiss_make_symbol(const wchar_t* const name) {
     return p;
 }
 
+extern inline
+kiss_obj* kiss_symbol(const wchar_t* const name);
+
 /* function: (symbolp obj) -> boolean 
    Returns t if obj is a symbol; otherwise, returns nil. The obj may
    be any LISP object */
@@ -132,6 +135,8 @@ kiss_obj* kiss_intern(const kiss_obj* const name) {
     return (kiss_obj*)p;
 }
 
+
+
 // function: (property symbol property-name [obj]) -> <object>
 kiss_obj* kiss_property(const kiss_obj* const symbol, const kiss_obj* const property, const kiss_obj* const rest)
 {
@@ -160,10 +165,6 @@ kiss_obj* kiss_remove_property(kiss_obj* const symbol, const kiss_obj* const pro
      return (kiss_obj*)obj;
 }
 
-
-kiss_obj* kiss_symbol(const wchar_t* const name) {
-    return kiss_intern((kiss_obj*)kiss_make_string(name));
-}
 
 /************************** Symbol definitions *******************************/
 

@@ -67,10 +67,9 @@ void kiss_gc_mark_cons(kiss_cons_t* const obj) {
 
 static inline
 void kiss_gc_mark_general_vector(kiss_general_vector_t* const obj) {
-     size_t i;
      if (is_marked((kiss_gc_obj*)obj)) { return; }
      mark_flag((kiss_gc_obj*)obj);
-     for (i = 0; i < obj->n; i++) {
+     for (size_t i = 0; i < obj->n; i++) {
 	  kiss_gc_mark_obj(obj->v[i]);
      }
 }
@@ -235,8 +234,6 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
 
 void kiss_gc_mark(void) {
      kiss_environment_t* env = Kiss_Get_Environment();
-     size_t i;
-     kiss_obj* obj;
 
      kiss_gc_mark_lexical_environment(&(env->lexical_env));
      kiss_gc_mark_dynamic_environment(&(env->dynamic_env));
@@ -245,13 +242,13 @@ void kiss_gc_mark(void) {
      kiss_gc_mark_obj((kiss_obj*)(env->block_result));
      kiss_gc_mark_obj((kiss_obj*)(env->current_tagbody));
      kiss_gc_mark_obj((kiss_obj*)(env->global_dynamic_vars));
-     kiss_gc_mark_obj((kiss_obj*)(env->features));
-     for (i = 0; i < Kiss_Heap_Top; i++) {
-	  obj = (kiss_obj*)Kiss_Heap_Stack[i];
+     kiss_gc_mark_obj((kiss_obj*)(Kiss_Features));
+     for (size_t i = 0; i < Kiss_Heap_Top; i++) {
+	  kiss_obj* obj = (kiss_obj*)Kiss_Heap_Stack[i];
 	  kiss_gc_mark_obj(obj);
      }
-     for (i = 0; i < Kiss_Symbol_Number; i++) {
-	  obj = (kiss_obj*)Kiss_Symbols[i];
+     for (size_t i = 0; i < Kiss_Symbol_Number; i++) {
+	  kiss_obj* obj = (kiss_obj*)Kiss_Symbols[i];
 	  kiss_gc_mark_obj(obj);
      }
      kiss_gc_mark_hash_table(Kiss_Symbol_Hash_Table);

@@ -41,19 +41,6 @@ typedef long int kiss_ptr_int;
 #define KISS_PTR_INT_MIN (LONG_MIN>>2)
 _Static_assert (sizeof(kiss_ptr_int) == sizeof(void*), "We need an int with the same width as void*");
 
-
-
-#define kiss_ptr_int(x)    (((kiss_ptr_int)x)>>2)
-#define kiss_wchar(x)      kiss_ptr_int(x)
-#define kiss_fixnum(x)     (kiss_obj*)((((kiss_ptr_int)x)<<2) | 1)
-#define kiss_fixchar(x)    (kiss_obj*)((((kiss_ptr_int)x)<<2) | 2)
-#define KISS_IS_FIXNUM(x)  ((kiss_ptr_int)x & 1)
-#define KISS_IS_FIXCHAR(x) ((kiss_ptr_int)x & 2)
-
-#define kiss_make_character(x)  kiss_fixchar(x)
-#define kiss_make_fixnum(x)    kiss_fixnum(x)
-
-
 typedef enum {
      KISS_FIXNUM = 1,
      KISS_CHARACTER = 2,
@@ -80,6 +67,16 @@ typedef enum {
      KISS_OO_OBJ,
 } kiss_type;
 
+#define kiss_ptr_int(x)    (((kiss_ptr_int)x)>>2)
+#define kiss_wchar(x)      kiss_ptr_int(x)
+#define kiss_fixnum(x)     (kiss_obj*)((((kiss_ptr_int)x)<<2) | 1)
+#define kiss_fixchar(x)    (kiss_obj*)((((kiss_ptr_int)x)<<2) | 2)
+#define KISS_IS_FIXNUM(x)  ((kiss_ptr_int)x & 1)
+#define KISS_IS_FIXCHAR(x) ((kiss_ptr_int)x & 2)
+
+#define kiss_make_character(x)  kiss_fixchar(x)
+#define kiss_make_fixnum(x)    kiss_fixnum(x)
+
 typedef struct {
      kiss_type type;
      void* pointer[];
@@ -90,6 +87,49 @@ struct kiss_gc_obj {
      void* gc_ptr;
 };
 typedef struct kiss_gc_obj kiss_gc_obj;
+
+extern size_t Kiss_Heap_Top;
+extern kiss_ptr_int Kiss_GC_Flag;
+extern size_t Kiss_GC_Amount;
+extern void* Kiss_GC_Objects;
+extern kiss_gc_obj* Kiss_Heap_Stack[];
+
+_Noreturn void Kiss_System_Error (void);
+
+/* gc.c */
+kiss_obj* kiss_gc_info(void);
+kiss_obj* kiss_gc(void);
+
+
+// inline definitions
+#define KISS_HEAP_STACK_SIZE (1024 * 1024 * 2)
+#define kiss_gc_ptr(x)   ((void*)((kiss_ptr_int)x & (~0<<1)))
+/* An error shall be signaled if the requested memory cannot be allocated
+   (error-id. <storage-exhausted>). */
+inline
+void* Kiss_Malloc(size_t const size) {
+    void* p = malloc(size);
+    if (p == NULL) { Kiss_System_Error(); }
+    return p;
+}
+
+inline
+void* Kiss_GC_Malloc(size_t const size) {
+    void* p = Kiss_Malloc(size);
+
+    Kiss_GC_Amount += size;
+    if (Kiss_GC_Amount > 1024 * 1024 * 4) {
+         //fprintf(stderr, "\ngc...\n");
+	 kiss_gc();
+	 Kiss_GC_Amount = 0;
+    }
+
+    Kiss_Heap_Stack[Kiss_Heap_Top++] = p;
+    assert(Kiss_Heap_Top < KISS_HEAP_STACK_SIZE);
+    ((kiss_gc_obj*)p)->gc_ptr = (void*)((kiss_ptr_int)kiss_gc_ptr(Kiss_GC_Objects) | Kiss_GC_Flag);
+    Kiss_GC_Objects = p;
+    return p;
+}
 
 typedef struct {
      kiss_type type;
@@ -307,8 +347,9 @@ typedef struct {
      kiss_tagbody_t* current_tagbody;
      void* top_level;
      kiss_obj* global_dynamic_vars;
-     kiss_obj* features;
 } kiss_environment_t;
+
+extern kiss_obj* Kiss_Features;
 
 kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda, KISS_Skw_rest, KISS_Samp_rest, KISS_Ueos, KISS_Skw_size, KISS_Skw_test, KISS_Skw_weakness, KISS_Skw_rehash_size, KISS_Skw_rehash_threshold;
 #define KISS_T        ((kiss_obj*)(&KISS_St))
@@ -393,7 +434,6 @@ kiss_obj* kiss_tagbody(kiss_obj* args);
 kiss_obj* kiss_go(kiss_obj* tag);
 
 /* error.c */
-_Noreturn void Kiss_System_Error (void);
 _Noreturn void Kiss_Err(const wchar_t* const str, ...);
 _Noreturn void Kiss_Domain_Error(const kiss_obj* const obj, const wchar_t* const domain);
 
@@ -562,8 +602,6 @@ kiss_obj* kiss_finish_output (kiss_obj* obj);
 kiss_obj* kiss_stream_ready_p(kiss_obj* obj);
 
 /* string.c */
-kiss_string_t* kiss_make_string(const wchar_t* const s);
-void kiss_init_string(kiss_string_t* str, wchar_t* name);
 kiss_obj* kiss_create_string(const kiss_obj* const i, const kiss_obj* const rest);
 kiss_obj* kiss_stringp(const kiss_obj* const obj);
 kiss_obj* kiss_string_eq(const kiss_obj* const str1, const kiss_obj* const str2);
@@ -583,14 +621,34 @@ kiss_obj* kiss_set_symbol_function (const kiss_obj* const definition, kiss_obj* 
 kiss_obj* kiss_fboundp (const kiss_obj* const obj);
 kiss_obj* kiss_fmakunbound (kiss_obj* const obj);
 int kiss_is_interned(const kiss_symbol_t* const p);
-kiss_obj* kiss_symbol(const wchar_t* const name);
 kiss_obj* kiss_intern(const kiss_obj* const name);
 kiss_obj* kiss_property(const kiss_obj* const symbol, const kiss_obj* const property, const kiss_obj* const rest);
 kiss_obj* kiss_set_property(const kiss_obj* const obj, kiss_obj* const symbol, const kiss_obj* const property);
 kiss_obj* kiss_remove_property(kiss_obj* const symbol, const kiss_obj* const property);
+inline
+void kiss_init_string(kiss_string_t* str, wchar_t* name, size_t n) {
+     str->type = KISS_STRING;
+     str->str = name;
+     str->n = n;
+}
+inline
+kiss_string_t* kiss_make_string(const wchar_t* const s) {
+     kiss_string_t* const p = Kiss_GC_Malloc(sizeof(kiss_string_t));
+     p->type = KISS_STRING;
+     p->str = NULL;
+     p->n = 0;
+     size_t n = wcslen(s) ;
+     wchar_t* wcs = wcscpy(Kiss_Malloc(sizeof(wchar_t) * (n + 1)), s);
+     kiss_init_string(p, wcs, n);
+     return p;
+}
+inline
+kiss_obj* kiss_symbol(const wchar_t* const name) {
+     return kiss_intern((kiss_obj*)kiss_make_string(name));
+}
+
 extern kiss_symbol_t KISS_Sblock;
 extern kiss_symbol_t KISS_Serror;
-
 /* variable.c */
 kiss_obj* kiss_var_ref(kiss_symbol_t* name);
 kiss_obj* kiss_setq(kiss_obj* name, kiss_obj* form);
@@ -628,44 +686,7 @@ void kiss_init_environment(void);
 kiss_obj* kiss_featurep(kiss_obj* feature);
 kiss_obj* kiss_provide(kiss_obj* feature);
 
-/* gc.c */
-kiss_obj* kiss_gc_info(void);
-kiss_obj* kiss_gc(void);
 
-// inline definitions
-#define KISS_HEAP_STACK_SIZE (1024 * 1024 * 2)
-#define kiss_gc_ptr(x)   ((void*)((kiss_ptr_int)x & (~0<<1)))
-extern size_t Kiss_Heap_Top;
-extern kiss_ptr_int Kiss_GC_Flag;
-extern size_t Kiss_GC_Amount;
-extern void* Kiss_GC_Objects;
-extern kiss_gc_obj* Kiss_Heap_Stack[];
-/* An error shall be signaled if the requested memory cannot be allocated
-   (error-id. <storage-exhausted>). */
-inline
-void* Kiss_Malloc(size_t const size) {
-    void* p = malloc(size);
-    if (p == NULL) { Kiss_System_Error(); }
-    return p;
-}
-
-inline
-void* Kiss_GC_Malloc(size_t const size) {
-    void* p = Kiss_Malloc(size);
-
-    Kiss_GC_Amount += size;
-    if (Kiss_GC_Amount > 1024 * 1024 * 4) {
-         //fprintf(stderr, "\ngc...\n");
-	 kiss_gc();
-	 Kiss_GC_Amount = 0;
-    }
-
-    Kiss_Heap_Stack[Kiss_Heap_Top++] = p;
-    assert(Kiss_Heap_Top < KISS_HEAP_STACK_SIZE);
-    ((kiss_gc_obj*)p)->gc_ptr = (void*)((kiss_ptr_int)kiss_gc_ptr(Kiss_GC_Objects) | Kiss_GC_Flag);
-    Kiss_GC_Objects = p;
-    return p;
-}
 
 inline
 kiss_cons_t* Kiss_Cons(const kiss_obj* const obj) {
@@ -1424,4 +1445,6 @@ kiss_obj* kiss_mapcar(const kiss_obj* const function, const kiss_obj* const list
 end:
      return KISS_CDR((kiss_obj*)&result);
 }
+
+
 
