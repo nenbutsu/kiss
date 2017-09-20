@@ -227,6 +227,10 @@
 (equal (mapcar #'abs '(3 -4 2 -5 -6)) '(3 4 2 5 6))
 (equal (mapcar #'cons '(a b c) '(1 2 3)) '((a . 1)(b . 2)(c . 3)))
 (eq (mapcar (lambda (x y) (cons x y)) '() '(a b c)) nil)
+(equal (mapcar #'list '(a b c) '(1 2 3) '(x y z)) '((a 1 x) (b 2 y) (c 3 z)))
+(equal (mapcar #'list '(a b) '(1 2 3) '(x y z)) '((a 1 x) (b 2 y)))
+(equal (mapcar #'list '(a b c) '(1) '(x y z)) '((a 1 x)))
+(equal (mapcar #'list '(a b c) '(1 2 3) '()) '())
 (equal (mapcar #'cons '(a b c) '(1 2)) '((a . 1) (b . 2)))
 (block a
   (with-handler (lambda (condition)
