@@ -976,7 +976,7 @@ kiss_cons_t* kiss_init_cons(kiss_cons_t* const p, const kiss_obj* const left, co
 }
 
 inline
-void kiss_copy_list_to_cons_array(const kiss_obj* const list, kiss_cons_t* const pointer) {
+void kiss_copy_list_to_consarray(const kiss_obj* const list, kiss_cons_t* const pointer) {
      kiss_cons_t* p = pointer;
      for(const kiss_obj* q = list; KISS_IS_CONS(q); q = KISS_CDR(q)) {
           kiss_init_cons(p, KISS_CAR(q), (kiss_obj*)((kiss_cons_t*)p + 1));
@@ -1347,7 +1347,7 @@ kiss_obj* kiss_mapcar(const kiss_obj* const function, const kiss_obj* const list
      size_t n = kiss_c_length(rest);
      if (n == 0) { return kiss_mapcar1(function, list1); }
      kiss_cons_t stack_rest[n];
-     kiss_copy_list_to_cons_array(rest, stack_rest);
+     kiss_copy_list_to_consarray(rest, stack_rest);
      kiss_cons_t head;
      kiss_init_cons(&head, list1, (kiss_obj*)stack_rest);
      for (kiss_obj* x = (kiss_obj*)&head; KISS_IS_CONS(x); x = KISS_CDR(x))

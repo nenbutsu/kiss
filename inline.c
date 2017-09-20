@@ -181,7 +181,7 @@ extern inline
 kiss_obj* kiss_c_list(int nargs, ...);
 
 extern inline
-void kiss_copy_list_to_cons_array(const kiss_obj* const list, kiss_cons_t* const pointer);
+void kiss_copy_list_to_consarray(const kiss_obj* const list, kiss_cons_t* const pointer);
 
 
 extern inline
