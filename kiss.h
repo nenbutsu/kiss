@@ -1348,22 +1348,22 @@ kiss_obj* kiss_mapcar(const kiss_obj* const function, const kiss_obj* const list
      if (n == 0) { return kiss_mapcar1(function, list1); }
      kiss_cons_t stack_rest[n];
      kiss_copy_list_to_consarray(rest, stack_rest);
-     kiss_cons_t head;
-     kiss_init_cons(&head, list1, (kiss_obj*)stack_rest);
-     for (kiss_obj* x = (kiss_obj*)&head; KISS_IS_CONS(x); x = KISS_CDR(x))
+     kiss_cons_t args;
+     kiss_init_cons(&args, list1, (kiss_obj*)stack_rest);
+     for (kiss_obj* x = (kiss_obj*)&args; KISS_IS_CONS(x); x = KISS_CDR(x))
           Kiss_List(KISS_CAR(x));
      kiss_cons_t result;
      kiss_init_cons(&result, KISS_NIL, KISS_NIL);
      kiss_obj* p = (kiss_obj*)&result;
-     if (kiss_member(KISS_NIL, (kiss_obj*)&head) != KISS_NIL) { return KISS_NIL; }
+     if (kiss_member(KISS_NIL, (kiss_obj*)&args) != KISS_NIL) { return KISS_NIL; }
      while(1) {
           kiss_set_cdr(kiss_cons(kiss_funcall(function,
                                               kiss_c_mapcar1((kiss_cf1_t)kiss_car,
-                                                             (kiss_obj*)&head)),
+                                                             (kiss_obj*)&args)),
                                  KISS_NIL),
                        p);
           p = KISS_CDR(p);
-          for (kiss_obj* q = (kiss_obj*)&head; KISS_IS_CONS(q); q = KISS_CDR(q)) {
+          for (kiss_obj* q = (kiss_obj*)&args; KISS_IS_CONS(q); q = KISS_CDR(q)) {
                kiss_obj* obj = KISS_CDR(KISS_CAR(q));
                if (!KISS_IS_CONS(obj)) {
                     goto end;
