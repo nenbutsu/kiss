@@ -119,7 +119,7 @@ void* Kiss_GC_Malloc(size_t const size) {
 
     Kiss_GC_Amount += size;
     if (Kiss_GC_Amount > 1024 * 1024 * 4) {
-         //fprintf(stderr, "\ngc...\n");
+         fwprintf(stderr, L"\ngc...\n");
 	 kiss_gc();
 	 Kiss_GC_Amount = 0;
     }
@@ -1080,7 +1080,7 @@ size_t kiss_c_length(const kiss_obj* const p) {
      case KISS_STRING: return ((kiss_string_t*)p)->n;
      case KISS_GENERAL_VECTOR: return ((kiss_general_vector_t*)p)->n;
      default:
-	  fprintf(stderr, "kiss_c_length: unknown primitive type %d", KISS_OBJ_TYPE(p));
+	  fwprintf(stderr, L"kiss_c_length: unknown primitive type %d", KISS_OBJ_TYPE(p));
 	  exit(EXIT_FAILURE);
      }
 }
