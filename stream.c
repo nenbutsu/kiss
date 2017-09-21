@@ -125,7 +125,7 @@ kiss_obj* kiss_open_input_file(const kiss_obj* const filename, const kiss_obj* c
      else {
 	  kiss_file_stream_t* stream = kiss_make_file_stream(fp);
 
-          fwide(fp, -1); // narrow oriented
+          fwide(fp, 1); // wide oriented
 	  if (rest == KISS_NIL || kiss_is_character_class(kiss_car(rest))) {
 	       stream->flags |= (KISS_INPUT_STREAM | KISS_CHARACTER_STREAM);
 	  } else if (kiss_num_eq(kiss_car(rest), kiss_fixnum(8)) == KISS_T) {
@@ -154,7 +154,7 @@ kiss_obj* kiss_open_output_file(kiss_obj* filename, kiss_obj* rest) {
      else {
 	  kiss_file_stream_t* stream = kiss_make_file_stream(fp);
 
-          fwide(fp, -1); // narrow oriented
+          fwide(fp, 1); // wide oriented
 	  if (rest == KISS_NIL || kiss_is_character_class(kiss_car(rest))) {
 	       stream->flags |= (KISS_OUTPUT_STREAM | KISS_CHARACTER_STREAM);
 	  } else if (kiss_num_eq(kiss_car(rest), kiss_fixnum(8)) == KISS_T) {
@@ -183,7 +183,7 @@ kiss_obj* kiss_open_io_file(kiss_obj* filename, kiss_obj* rest) {
      else {
 	  kiss_file_stream_t* stream = kiss_make_file_stream(fp);
 
-          fwide(fp, -1); // narrow oriented
+          fwide(fp, 1); // wide oriented
 	  if (rest == KISS_NIL || kiss_is_character_class(kiss_car(rest))) {
 	       stream->flags |= (KISS_OUTPUT_STREAM | KISS_INPUT_STREAM | KISS_CHARACTER_STREAM);
 	  } else if (kiss_num_eq(kiss_car(rest), kiss_fixnum(8)) == KISS_T) {

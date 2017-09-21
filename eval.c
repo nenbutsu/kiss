@@ -60,7 +60,7 @@ static kiss_obj* kiss_invoke(kiss_obj* f, kiss_obj* args) {
 	  }
 	  Kiss_Heap_Top = saved_heap_top;
      }
-     fwprintf(stderr, L"Kiss_Heap_Top = %lu\n", Kiss_Heap_Top);
+     //fwprintf(stderr, L"Kiss_Heap_Top = %lu\n", Kiss_Heap_Top);
      return result;
 }
 
