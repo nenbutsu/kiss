@@ -80,7 +80,7 @@ int kiss_read_eval_print_loop(void) {
 	  saved_lexical_env = env->lexical_env;
 	  saved_heap_top = Kiss_Heap_Top;
 	  if (setjmp(env->top_level) == 0) {
-               fwprintf(stderr, L"Kiss_Heap_Top = %ld\n", Kiss_Heap_Top);
+               //fwprintf(stderr, L"Kiss_Heap_Top = %ld\n", Kiss_Heap_Top);
 	       fflush(stdout);
                
                fwprintf(stdout, L"\nKISS>"); fflush(stdout);
