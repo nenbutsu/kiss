@@ -101,35 +101,10 @@ kiss_obj* kiss_gc_info(void);
 kiss_obj* kiss_gc(void);
 
 
-// inline definitions
 #define KISS_HEAP_STACK_SIZE (1024 * 1024 * 2)
 #define kiss_gc_ptr(x)   ((void*)((kiss_ptr_int)x & (~0<<1)))
-/* An error shall be signaled if the requested memory cannot be allocated
-   (error-id. <storage-exhausted>). */
-inline
-void* Kiss_Malloc(size_t const size) {
-    void* p = malloc(size);
-    if (p == NULL) { Kiss_System_Error(); }
-    return p;
-}
-
-inline
-void* Kiss_GC_Malloc(size_t const size) {
-    void* p = Kiss_Malloc(size);
-
-    Kiss_GC_Amount += size;
-    if (Kiss_GC_Amount > 1024 * 1024 * 4) {
-         fwprintf(stderr, L"\ngc...\n");
-	 kiss_gc();
-	 Kiss_GC_Amount = 0;
-    }
-
-    Kiss_Heap_Stack[Kiss_Heap_Top++] = p;
-    assert(Kiss_Heap_Top < KISS_HEAP_STACK_SIZE);
-    ((kiss_gc_obj*)p)->gc_ptr = (void*)((kiss_ptr_int)kiss_gc_ptr(Kiss_GC_Objects) | Kiss_GC_Flag);
-    Kiss_GC_Objects = p;
-    return p;
-}
+void* Kiss_GC_Malloc(size_t const size);
+void* Kiss_Malloc(size_t const size);
 
 typedef struct {
      kiss_type type;

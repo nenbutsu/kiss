@@ -18,11 +18,11 @@
  */
 #include "kiss.h"
 
-extern inline
-void* Kiss_Malloc(size_t const size);
-
-extern inline
-void* Kiss_GC_Malloc(size_t const size);
+//extern inline
+//void* Kiss_Malloc(size_t const size);
+//
+//extern inline
+//void* Kiss_GC_Malloc(size_t const size);
 
 extern inline
 kiss_cons_t* Kiss_Cons(const kiss_obj* const obj);
