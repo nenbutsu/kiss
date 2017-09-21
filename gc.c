@@ -30,30 +30,6 @@ void* Kiss_GC_Objects = NULL;
 
 kiss_obj* kiss_gc(void);
 
-/* An error shall be signaled if the requested memory cannot be allocated
-   (error-id. <storage-exhausted>). */
-void* Kiss_Malloc(size_t const size) {
-    void* p = malloc(size);
-    if (p == NULL) { Kiss_System_Error(); }
-    return p;
-}
-
-void* Kiss_GC_Malloc(size_t const size) {
-    void* p = Kiss_Malloc(size);
-
-    Kiss_GC_Amount += size;
-    if (Kiss_GC_Amount > 1024 * 1024 * 4) {
-         //fwprintf(stderr, L"\ngc...\n");
-	 kiss_gc();
-	 Kiss_GC_Amount = 0;
-    }
-
-    Kiss_Heap_Stack[Kiss_Heap_Top++] = p;
-    assert(Kiss_Heap_Top < KISS_HEAP_STACK_SIZE);
-    ((kiss_gc_obj*)p)->gc_ptr = (void*)((kiss_ptr_int)kiss_gc_ptr(Kiss_GC_Objects) | Kiss_GC_Flag);
-    Kiss_GC_Objects = p;
-    return p;
-}
 
 static inline int is_marked(kiss_gc_obj* const restrict obj) {
      return gc_flag(obj->gc_ptr) != Kiss_GC_Flag;
