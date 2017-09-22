@@ -79,12 +79,20 @@ typedef enum {
 
 typedef struct {
      kiss_type type;
-     void* pointer[];
+     void* pointer1;
+     void* pointer2;
+     void* pointer3;
+     void* pointer4;
+     void* pointer5;
 } kiss_obj;
 
 struct kiss_gc_obj {
      kiss_type type;
      void* gc_ptr;
+     void* pointer2;
+     void* pointer3;
+     void* pointer4;
+     void* pointer5;
 };
 typedef struct kiss_gc_obj kiss_gc_obj;
 
