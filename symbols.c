@@ -47,7 +47,7 @@ static kiss_symbol_t* kiss_make_symbol(const wchar_t* const name) {
     p->type  = KISS_SYMBOL;
     p->name  = wcscpy(Kiss_Malloc(sizeof(wchar_t) * (wcslen(name) + 1)), name);
     p->flags = 0;
-    p->var   = NULL;
+    p->var   = name[0] == L':' ? (kiss_obj*)p : NULL;
     p->fun   = NULL;
     p->plist = KISS_NIL;
     return p;

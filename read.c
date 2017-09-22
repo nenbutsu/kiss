@@ -170,7 +170,6 @@ static kiss_obj* kiss_read_lexeme_chars(const kiss_obj* const in) {
     if (p != NULL) {
          return p;
     }
-
     return kiss_intern((kiss_obj*)str);
 }
 

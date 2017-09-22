@@ -90,10 +90,11 @@ static kiss_obj* kiss_format_general_array(kiss_obj* out, kiss_obj* obj, kiss_ob
 
 static int kiss_is_simple_name(wchar_t* name) {
      if (wcscmp(name, L"+")  == 0 || wcscmp(name, L"-")  == 0 ||
-	 wcscmp(name, L"1+") == 0 || wcscmp(name, L"1-") == 0) {
+	 wcscmp(name, L"1+") == 0 || wcscmp(name, L"1-") == 0)
+     {
 	  return 1;
      }
-     if (!iswalpha(name[0]) && !wcschr(L"<>/*=?_!$%[]^{}~", name[0])) {
+     if (!iswalpha(name[0]) && !wcschr(L":<>/*=?_!$%[]^{}~", name[0])) {
 	  return 0;
      } else {
 	  wchar_t* p = name + 1;
