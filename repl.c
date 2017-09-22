@@ -42,7 +42,7 @@ void kiss_load_library(wchar_t* name) {
      size_t saved_heap_top = Kiss_Heap_Top;
      kiss_environment_t* env = Kiss_Get_Environment();
      if (setjmp(env->top_level) == 0) {
-	  fwprintf(stderr, L"loading %S ... ", name); fflush(stderr);
+	  fwprintf(stderr, L"loading %ls ... ", name); fflush(stderr);
 	  kiss_load((kiss_obj*)kiss_make_string(name)); // emits garbage
 	  fwprintf(stderr, L"done \n");
 	  fflush(stderr);
@@ -56,7 +56,7 @@ void kiss_load_library(wchar_t* name) {
 	       fwprintf(stderr, L"initialization failed\n");
 	       kiss_string_t* msg = (kiss_string_t*)result;
 	       fwprintf(stderr, L"\nKISS| ");
-	       fwprintf(stderr, L"%S\n", msg->str);
+	       fwprintf(stderr, L"%ls\n", msg->str);
                fflush(stderr);
 	  }
 	  exit(EXIT_FAILURE);
@@ -102,7 +102,7 @@ int kiss_read_eval_print_loop(void) {
 	       } else {
 		    kiss_string_t* msg = (kiss_string_t*)result;
 		    fprintf(stderr, "\nKISS| ");
-		    fprintf(stderr, "%S\n", msg->str);
+		    fprintf(stderr, "%ls\n", msg->str);
 		    fflush(stderr);
 		    fflush(stdout);
                     kiss_obj* c;

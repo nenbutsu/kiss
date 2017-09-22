@@ -135,17 +135,19 @@ kiss_obj* kiss_c_parse_number(kiss_obj* obj) {
 
      if (!is_valid_float_textual_representation(p)) {
           return NULL;
-     }
-
-     //fwprintf(stderr, L"%S\n", p);
-     
-     tail= NULL;
-     double d = wcstod(p, &tail);
-     if (tail == p + wcslen(p)) {
-          kiss_float_t* f = kiss_make_float(d);
+     } else {
+          //fwprintf(stderr, L"%ls\n", p);
+          s = kiss_wcstombs(p);
+          kiss_float_t* f = kiss_make_float(0.0);
+          int result = mpf_set_str(f->mpf, s, 10);
+          free(s);
+          if (result == -1) {
+               fwprintf(stderr, L"parse-string: cannot parse valid float %ls\n", p);
+               exit(EXIT_FAILURE);
+          }
           return (kiss_obj*)f;
      }
-     return NULL;
+     exit(EXIT_FAILURE);
 }
 
 /* function: (parse-number string) -> <number>

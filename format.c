@@ -209,16 +209,18 @@ kiss_obj* kiss_format_integer(kiss_obj* out, kiss_obj* obj, kiss_obj* radix) {
 /* function: (format-float output-stream float) -> <null> */
 kiss_obj* kiss_format_float(kiss_obj* out, kiss_obj* obj) {
      kiss_float_t* f = Kiss_Float(obj);
-
-     double d = mpf_get_d(f->mpf);
-     char s[100];
-     snprintf(s, 100, "%g", d);
+     mp_exp_t e;
+     char* s = mpf_get_str(NULL, &e, 10, 0, f->mpf);
      wchar_t* wcs = kiss_mbstowcs(s);
+     free(s);
+     
+     kiss_format_string(out, (kiss_obj*)kiss_make_string(L"0."), KISS_NIL);
      kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs), KISS_NIL);
-     if (!wcschr(wcs, L'.') && !wcschr(wcs, L'e')) {
-          kiss_format_string(out, (kiss_obj*)kiss_make_string(L".0"), KISS_NIL);
-     }
      free(wcs);
+     if (e != 0) {
+          kiss_format_string(out, (kiss_obj*)kiss_make_string(L"e"), KISS_NIL);
+          kiss_format_fixnum(out, kiss_fixnum(e), kiss_make_fixnum(10));
+     }
      return KISS_NIL;
 }
 
