@@ -66,7 +66,7 @@ kiss_obj* kiss_symbolp(const kiss_obj* const obj) {
 kiss_obj* kiss_gensym(void) {
      wchar_t name[30];
      if (swprintf(name, 30, L"#:%x", Kiss_Gensym_Count++) < 0) {
-	  fprintf(stderr, "kiss_gensym: swprintf error\n");
+	  fwprintf(stderr, L"kiss_gensym: swprintf error\n");
 	  exit(EXIT_FAILURE);
      }
      return (kiss_obj*)kiss_make_symbol(name);

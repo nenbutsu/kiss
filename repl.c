@@ -101,8 +101,8 @@ int kiss_read_eval_print_loop(void) {
 		    exit(1);
 	       } else {
 		    kiss_string_t* msg = (kiss_string_t*)result;
-		    fprintf(stderr, "\nKISS| ");
-		    fprintf(stderr, "%ls\n", msg->str);
+		    fwprintf(stderr, L"\nKISS| ");
+		    fwprintf(stderr, L"%ls\n", msg->str);
 		    fflush(stderr);
 		    fflush(stdout);
                     kiss_obj* c;

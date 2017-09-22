@@ -267,7 +267,7 @@ kiss_obj* kiss_c_read_char(const kiss_obj* const in, const kiss_obj* const eos_e
 	       return c;
 	  }
      } else {
-	  fprintf(stderr, "kiss_c_read_char: unknown input stream type = %d", KISS_OBJ_TYPE(in));
+	  fwprintf(stderr, L"kiss_c_read_char: unknown input stream type = %d", KISS_OBJ_TYPE(in));
 	  exit(EXIT_FAILURE);
      }
 eos:
@@ -354,7 +354,7 @@ kiss_obj* kiss_c_preview_char(const kiss_obj* const in, const kiss_obj* const eo
 	       return c;
 	  }
      } else {
-	  fprintf(stderr, "kiss_c_preview_char: unknown input stream type = %d", KISS_OBJ_TYPE(in));
+	  fwprintf(stderr, L"kiss_c_preview_char: unknown input stream type = %d", KISS_OBJ_TYPE(in));
 	  exit(EXIT_FAILURE);
 
      }
@@ -424,7 +424,7 @@ kiss_obj* kiss_format_char(kiss_obj* output, kiss_obj* character) {
 	  }
 	  kiss_push(character, &(out->list));
      } else {
-	  fprintf(stderr, "kiss_format_char: unknown stream type = %d", KISS_OBJ_TYPE(output));
+	  fwprintf(stderr, L"kiss_format_char: unknown stream type = %d", KISS_OBJ_TYPE(output));
 	  exit(EXIT_FAILURE);
      }
      return KISS_NIL;
@@ -468,7 +468,7 @@ kiss_obj* kiss_c_read_byte(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val)
 	       return (kiss_obj*)kiss_make_fixnum(c);
 	  }
      } else {
-	  fprintf(stderr, "kiss_c_read_byte: unknown input stream type = %d", KISS_OBJ_TYPE(in));
+	  fwprintf(stderr, L"kiss_c_read_byte: unknown input stream type = %d", KISS_OBJ_TYPE(in));
 	  exit(EXIT_FAILURE);
      }
 eos:
@@ -514,7 +514,7 @@ kiss_obj* kiss_write_byte(kiss_obj* z, kiss_obj* output) {
 	  }
 	  return z;
      } else {
-	  fprintf(stderr, "kiss_write_byte: unknown output stream type = %d", KISS_OBJ_TYPE(output));
+	  fwprintf(stderr, L"kiss_write_byte: unknown output stream type = %d", KISS_OBJ_TYPE(output));
 	  exit(EXIT_FAILURE);
      }
 }
