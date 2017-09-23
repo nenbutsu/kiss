@@ -160,7 +160,7 @@ void kiss_gc_mark_stream(kiss_stream_t* const obj) {
 }
 
 static inline
-void kiss_gc_mark_oo_obj(kiss_oo_obj_t* const obj) {
+void kiss_gc_mark_oo_obj(kiss_object_t* const obj) {
      if (is_marked((kiss_gc_obj*)obj)) { return; }
      mark_flag((kiss_gc_obj*)obj);
      kiss_gc_mark_obj(obj->plist);
@@ -219,8 +219,8 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
 	  case KISS_TAGBODY:
 	       kiss_gc_mark_tagbody((kiss_tagbody_t*)obj);
 	       break;
-	  case KISS_OO_OBJ:
-	       kiss_gc_mark_oo_obj((kiss_oo_obj_t*)obj);
+	  case KISS_ILOS_OBJ:
+	       kiss_gc_mark_oo_obj((kiss_object_t*)obj);
 	       break;
 	  default:
 	       fwprintf(stderr, L"gc_mark: unknown primitive object type = %d\n", KISS_OBJ_TYPE(obj));
@@ -318,7 +318,7 @@ void kiss_gc_free_obj(kiss_gc_obj* obj) {
 	  case KISS_BLOCK:
 	  case KISS_CLEANUP:
 	  case KISS_TAGBODY:
-	  case KISS_OO_OBJ:
+	  case KISS_ILOS_OBJ:
 	       free(obj);
 	       break;
 	  default:

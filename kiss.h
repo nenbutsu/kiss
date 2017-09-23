@@ -64,7 +64,8 @@ typedef enum {
      KISS_BLOCK,
      KISS_TAGBODY,
 
-     KISS_OO_OBJ,
+     KISS_ILOS_OBJ,
+     KISS_ILOS_CLASS,
 } kiss_type;
 
 #define kiss_ptr_int(x)    (((kiss_ptr_int)x)>>2)
@@ -93,6 +94,10 @@ struct kiss_gc_obj {
      void* pointer3;
      void* pointer4;
      void* pointer5;
+     void* pointer6;
+     void* pointer7;
+     void* pointer8;
+     void* pointer9;
 };
 typedef struct kiss_gc_obj kiss_gc_obj;
 
@@ -340,8 +345,22 @@ typedef struct {
 typedef struct {
      kiss_type type;
      void* gc_ptr;
-     kiss_obj* plist;
+     kiss_obj* class;
+     kiss_general_vector_t* slots;
+     kiss_obj* slot_specs;
 } kiss_oo_obj_t;
+
+typedef struct {
+     kiss_type type;
+     void* gc_ptr;
+     kiss_obj* class;
+     kiss_general_vector_t* slots;
+     kiss_obj* slot_specs;
+     kiss_obj* supers;
+     kiss_obj* cpl;
+} kiss_class_t;
+
+
 
 
 typedef struct {
@@ -402,7 +421,7 @@ kiss_symbol_t KISS_Udummy;
 #define KISS_IS_CLEANUP(x)           (KISS_OBJ_TYPE(x) == KISS_CLEANUP)
 #define KISS_IS_BLOCK(x)             (KISS_OBJ_TYPE(x) == KISS_BLOCK)
 #define KISS_IS_TAGBODY(x)           (KISS_OBJ_TYPE(x) == KISS_TAGBODY)
-#define KISS_IS_OBJECT(x)            (KISS_OBJ_TYPE(x) == KISS_OO_OBJ)
+#define KISS_IS_OBJECT(x)            (KISS_OBJ_TYPE(x) == KISS_ILOS_OBJ)
 #define KISS_IS_STREAM(x)            (KISS_OBJ_TYPE(x) == KISS_STREAM)
 #define KISS_IS_INPUT_STREAM(x)     (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_INPUT_STREAM))
 #define KISS_IS_OUTPUT_STREAM(x)    (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_OUTPUT_STREAM))

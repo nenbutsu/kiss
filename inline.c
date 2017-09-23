@@ -55,7 +55,7 @@ extern inline
 kiss_obj* Kiss_Sequence(const kiss_obj* const obj);
 
 extern inline
-kiss_oo_obj_t* Kiss_Object(const kiss_obj* const obj);
+kiss_object_t* Kiss_Object(const kiss_obj* const obj);
 
 extern inline
 kiss_obj* Kiss_Basic_Array(const kiss_obj* const obj);
