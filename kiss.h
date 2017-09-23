@@ -430,6 +430,7 @@ kiss_obj* kiss_quote(kiss_obj* obj);
 kiss_obj* kiss_and(kiss_obj* forms);
 kiss_obj* kiss_if(kiss_obj* test_form, kiss_obj* then_form, kiss_obj* rest);
 kiss_obj* kiss_progn(kiss_obj* body);
+kiss_obj* kiss_while(const kiss_obj* const test_form, const kiss_obj* const body);
 kiss_catcher_t* kiss_make_catcher(kiss_obj* tag, jmp_buf jmp);
 kiss_obj* kiss_catch(kiss_obj* tag_form, kiss_obj* body);
 kiss_obj* kiss_throw(kiss_obj* tag_form, kiss_obj* result_form);
@@ -464,8 +465,8 @@ void Kiss_Tagbody_Not_Found_Error(const kiss_obj* const name);
 kiss_obj* kiss_load(const kiss_obj* const filename);
 
 /* eval.c */
-kiss_obj* kiss_eval(kiss_obj* form);
-kiss_obj* kiss_eval_body(kiss_obj* body);
+kiss_obj* kiss_eval(const kiss_obj* const form);
+kiss_obj* kiss_eval_body(const kiss_obj* body);
 
 /* format.c */
 kiss_obj* kiss_format(kiss_obj* out, kiss_obj* format, kiss_obj* args);
@@ -666,9 +667,6 @@ kiss_obj* kiss_defdynamic(kiss_obj* name, kiss_obj* form);
 kiss_obj* kiss_dynamic(kiss_obj* name);
 kiss_obj* kiss_dynamic_let(kiss_obj* vspecs, kiss_obj* body);
 kiss_obj* kiss_set_dynamic(kiss_obj* form, kiss_obj* var);
-
-/* eval.c */
-kiss_obj* kiss_eval(kiss_obj* form);
 
 /* object.c */
 kiss_obj* kiss_object_p(kiss_obj* obj);

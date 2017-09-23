@@ -15,25 +15,6 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
-;; function: (not obj) -> boolean
-;; This predicate is the logical `not'. It returns t
-;; if obj is nil and nil otherwise. obj may be any ISLISP object.
-;;(defun not (obj) (if (eq obj nil) t nil))
-
-;; special operator: (and form*) -> <object>
-;; and is the sequential logical `and'. forms are evaluated
-;; from left to right until either one of them evaluates to nil or else
-;; none are left. If one of them evaluates to nil, then nil is returned
-;; from the and; otherwise, the value of the last evaluated form is returned.
-;;;(defmacro and (&rest args)
-;;;  (if (eq args nil)                     ; (and) = 't
-;;;      'T
-;;;    (if (eq (cdr args) nil)             ; (and form) = form
-;;;        (car args)
-;;;      ;; (and form1 form2 . . . formn) = (if form1 (and form2 . . . formn) 'nil)
-;;;      `(if ,(car args) (and ,@(cdr args)) 'nil))))
-
-
 ;; special operator: (or form*) -> <object>
 ;; or is the sequential logical `or'. forms are evaluated from
 ;; left to right until either one of them evaluates to a non-nil value or
@@ -81,24 +62,6 @@
           `(if ,test1
                (progn ,@forms1)
              (cond ,@rest)))))))
-
-;; special operator: (while test-form body-form*) -> <null>
-;; Iterates while the test-form returns a true value. Specifically:
-;;   1. test-form is evaluated, producing a value Vt.
-;;   2. If Vt is nil, then the while form immediately returns nil.
-;;   3. Otherwise, if Vt is non-nil, the forms body-form* are evaluated 
-;;      sequentially (from left to right).
-;;   4. Upon successful completion of the body-forms*, the while form begins
-;;       again with step 1.
-(defmacro while (test-form &rest body)
-  (let ((begin (gensym))
-        (end (gensym)))
-    `(tagbody
-      ,begin
-      (if (eq ,test-form nil) (go ,end))
-      ,@body
-      (go ,begin)
-      ,end)))
 
 ;; special operator: 
 ;; (for (iteration-spec*) (end-test result*) form*) -> <object> 

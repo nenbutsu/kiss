@@ -80,25 +80,18 @@ static kiss_obj* kiss_eval_compound_form(kiss_cons_t* p) {
      exit(EXIT_FAILURE); // not reach here
 }
 
-kiss_obj* kiss_eval(kiss_obj* form) {
-    kiss_obj* result;
-    switch (KISS_OBJ_TYPE(form)) {
-    case KISS_CONS: {
-	result = kiss_eval_compound_form((kiss_cons_t*)Kiss_Proper_List(form));
-	break;
-    }
-    case KISS_SYMBOL: {
-	result = kiss_var_ref((kiss_symbol_t*)form);
-	break;
-    }
-    default: /* self-evaluating object. */
-	result = form;
-	break;
-    }
-    return result;
+kiss_obj* kiss_eval(const kiss_obj* const form) {
+     switch (KISS_OBJ_TYPE(form)) {
+     case KISS_CONS:
+          return kiss_eval_compound_form((kiss_cons_t*)Kiss_Proper_List(form));
+     case KISS_SYMBOL:
+          return kiss_var_ref((kiss_symbol_t*)form);
+     default: /* self-evaluating object. */
+          return (kiss_obj*)form;
+     }
 }
 
-kiss_obj* kiss_eval_body(kiss_obj* body) {
+kiss_obj* kiss_eval_body(const kiss_obj* body) {
      kiss_obj* result = KISS_NIL;
      for (body = Kiss_Proper_List(body); KISS_IS_CONS(body); body = KISS_CDR(body)) {
 	  result = kiss_eval(KISS_CAR(body));

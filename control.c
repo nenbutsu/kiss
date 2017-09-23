@@ -318,3 +318,19 @@ kiss_obj* kiss_and(kiss_obj* forms) {
      return result;
 }
 
+/* special operator: (while test-form body-form*) -> <null>
+   Iterates while the test-form returns a true value. Specifically:
+     1. test-form is evaluated, producing a value Vt.
+     2. If Vt is nil, then the while form immediately returns nil.
+     3. Otherwise, if Vt is non-nil, the forms body-form* are evaluated 
+        sequentially (from left to right).
+     4. Upon successful completion of the body-forms*, the while form begins
+        again with step 1. */
+kiss_obj* kiss_while(const kiss_obj* const test_form, const kiss_obj* const body) {
+     kiss_obj* result = kiss_eval(test_form);
+     while (result != KISS_NIL) {
+          kiss_eval_body(body);
+          result = kiss_eval(test_form);
+     }
+     return KISS_NIL;
+}
