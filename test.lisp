@@ -15,7 +15,8 @@
 
 (defun test-file (name)
   (let* ((file (open-input-file name))
-	 (form nil))
+	 (form nil)
+         (count 0))
     (format (standard-output) "~%Testing ~S ..." name)
     (setq form (read file nil 'eof))
     (while (not (eq form 'eof))
@@ -26,8 +27,9 @@
                         (progn
                           (format (standard-output) "NIL returned. test: ~S~%" form)
                           (return-from test-file nil))))
+      (setq count (+ count 1))
       (setq form (read file nil 'eof)))
-    (format (standard-output) "OK~%"))
+    (format (standard-output) "OK (~A)~%" count))
   nil)
 
 (while test-files
