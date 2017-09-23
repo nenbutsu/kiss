@@ -197,10 +197,10 @@
 
 (defmethod report-condition ((condition <domain-error>) (stream <stream>))
   (if (error-id condition)
-      (format stream "Domain error: ~S is not ~S"
+      (format stream "Domain error: ~S is not ~A"
               (domain-error-object condition)
               (error-id condition))
-    (format stream "Domain error: ~S is not ~S"
+    (format stream "Domain error: ~S is not ~A"
             (domain-error-object condition)
             (class-name (domain-error-expected-class condition))))
   condition)
@@ -243,7 +243,7 @@
 
 (defun kiss::signal-simple-domain-error (obj domain-name continuable)
   (signal-condition (create (class <simple-error>)
-				  'format-string "~S is not ~S"
+				  'format-string "~S is not ~A"
 				  'format-arguments (list obj domain-name))
 		    continuable))
 

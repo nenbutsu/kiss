@@ -703,7 +703,7 @@ kiss_cons_t* Kiss_Cons(const kiss_obj* const obj) {
 inline
 kiss_hash_table_t* Kiss_Hash_Table(const kiss_obj* const obj) {
      if (KISS_IS_TASH_TABLE(obj)) { return (kiss_hash_table_t*)obj; }
-     Kiss_Domain_Error(obj, L"{bignum}");
+     Kiss_Domain_Error(obj, L"bignum");
 }
 
 inline
@@ -711,13 +711,13 @@ kiss_ptr_int Kiss_Fixnum(const kiss_obj* obj) {
      if (KISS_IS_FIXNUM(obj)) { return kiss_ptr_int(obj); }
      obj = kiss_fixnum_if_possible(obj);
      if (KISS_IS_FIXNUM(obj)) { return kiss_ptr_int(obj); }
-     Kiss_Domain_Error(obj, L"{fixnum}");
+     Kiss_Domain_Error(obj, L"fixnum");
 }
 
 inline
 kiss_bignum_t* Kiss_Bignum(const kiss_obj* const obj) {
      if (KISS_IS_BIGNUM(obj)) { return (kiss_bignum_t*)obj; }
-     Kiss_Domain_Error(obj, L"{bignum}");
+     Kiss_Domain_Error(obj, L"bignum");
 }
 
 inline
@@ -736,14 +736,14 @@ inline
 kiss_ptr_int Kiss_Non_Negative_Fixnum(const kiss_obj* const obj) {
      const kiss_ptr_int i = Kiss_Fixnum(obj);
      if (i >= 0) { return i; }
-     Kiss_Domain_Error(obj, L"{non negative fixnum}");
+     Kiss_Domain_Error(obj, L"non negative fixnum");
 }
 
 inline
 kiss_ptr_int Kiss_Non_Zero_Fixnum(const kiss_obj* const obj) {
      const kiss_ptr_int i = Kiss_Fixnum(obj);
      if (i != 0) { return i; }
-     Kiss_Domain_Error(obj, L"{non zero fixnum}");
+     Kiss_Domain_Error(obj, L"non zero fixnum");
 }
 
 inline
@@ -751,19 +751,19 @@ kiss_obj* Kiss_General_Array(const kiss_obj* const obj) {
      if (KISS_IS_GENERAL_VECTOR(obj) || KISS_IS_GENERAL_ARRAY(obj)) {
           return (kiss_obj*)obj;
      }
-     Kiss_Domain_Error(obj, L"{general array (<general-vector> or <general-array*>)}");
+     Kiss_Domain_Error(obj, L"general array (<general-vector> or <general-array*>)");
 }
 
 inline
 kiss_obj* Kiss_Sequence(const kiss_obj* const obj) {
      if (KISS_IS_SEQUENCE(obj)) { return (kiss_obj*)obj; }
-     Kiss_Domain_Error(obj, L"<sequence>");
+     Kiss_Domain_Error(obj, L"sequence");
 }
 
 inline
 kiss_oo_obj_t* Kiss_Object(const kiss_obj* const obj) {
      if (KISS_IS_OBJECT(obj)) { return (kiss_oo_obj_t*)obj; }
-     Kiss_Domain_Error(obj, L"{ILOS object}");
+     Kiss_Domain_Error(obj, L"ILOS object");
 }
 
 inline
@@ -787,7 +787,7 @@ kiss_obj* Kiss_Proper_List(const kiss_obj* const obj) {
      const kiss_obj* p = obj;
      while (KISS_IS_CONS(p)) { p = KISS_CDR(p); }
      if (p == KISS_NIL) { return (kiss_obj*)obj; }
-     Kiss_Domain_Error(obj, L"{proper list}");
+     Kiss_Domain_Error(obj, L"proper list");
 }
 
 inline
@@ -796,7 +796,7 @@ kiss_cons_t* Kiss_Proper_List_2(const kiss_obj* const obj) {
      size_t i = 0;
      while (KISS_IS_CONS(p) && i < 4) { i++; p = KISS_CDR(p); }
      if (p == KISS_NIL && i == 2) { return (kiss_cons_t*)obj; }
-     Kiss_Domain_Error(obj, L"{proper list of length two}");
+     Kiss_Domain_Error(obj, L"proper list of length two");
 }
 
 inline
@@ -808,7 +808,7 @@ kiss_float_t* Kiss_Float(const kiss_obj* const obj) {
 inline
 wchar_t Kiss_Character(const kiss_obj* const obj) {
      if (KISS_IS_FIXCHAR(obj)) { return kiss_wchar(obj); }
-     Kiss_Domain_Error(obj, L"{fixchar}");
+     Kiss_Domain_Error(obj, L"fixchar");
 }
 
 inline
@@ -844,25 +844,25 @@ kiss_general_array_t* Kiss_General_Array_S(const kiss_obj* const obj) {
 inline
 kiss_function_t* Kiss_Function(const kiss_obj* const obj) {
      if (KISS_IS_FUNCTION(obj)) { return (kiss_function_t*)obj; }
-     Kiss_Domain_Error(obj, L"{lisp function}");
+     Kiss_Domain_Error(obj, L"lisp function");
 }
 
 inline
 kiss_function_t* Kiss_Macro(const kiss_obj* const obj) {
      if (KISS_IS_MACRO(obj)) { return (kiss_function_t*)obj; }
-     Kiss_Domain_Error(obj, L"{lisp macro}");
+     Kiss_Domain_Error(obj, L"lisp macro");
 }
 
 inline
 kiss_cfunction_t* Kiss_CFunction(const kiss_obj* const obj) {
      if (KISS_IS_CFUNCTION(obj)) { return (kiss_cfunction_t*)obj; }
-     Kiss_Domain_Error(obj, L"{c function}");
+     Kiss_Domain_Error(obj, L"c function");
 }
 
 inline
 kiss_cfunction_t* Kiss_CMacro(const kiss_obj* const obj) {
      if (KISS_IS_CMACRO(obj)) { return (kiss_cfunction_t*)obj; }
-     Kiss_Domain_Error(obj, L"{c macro}");
+     Kiss_Domain_Error(obj, L"c macro");
 }
 
 /* function: (not obj) -> boolean
