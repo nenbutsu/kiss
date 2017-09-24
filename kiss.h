@@ -356,6 +356,7 @@ typedef struct {
      kiss_obj* class;
      kiss_general_vector_t* slots;
      kiss_obj* slot_specs;
+     kiss_obj* name;
      kiss_obj* supers;
      kiss_obj* cpl;
 } kiss_ilos_class_t;
@@ -435,7 +436,9 @@ kiss_symbol_t KISS_Sc_function;
 #define KISS_IS_CLEANUP(x)           (KISS_OBJ_TYPE(x) == KISS_CLEANUP)
 #define KISS_IS_BLOCK(x)             (KISS_OBJ_TYPE(x) == KISS_BLOCK)
 #define KISS_IS_TAGBODY(x)           (KISS_OBJ_TYPE(x) == KISS_TAGBODY)
-#define KISS_IS_OBJECT(x)            (KISS_OBJ_TYPE(x) == KISS_ILOS_OBJ)
+#define KISS_IS_ILOS_OBJ(x)          (KISS_OBJ_TYPE(x) == KISS_ILOS_OBJ)
+#define KISS_IS_ILOS_CLASS(x)        (KISS_OBJ_TYPE(x) == KISS_ILOS_CLASS)
+     
 #define KISS_IS_STREAM(x)            (KISS_OBJ_TYPE(x) == KISS_STREAM)
 #define KISS_IS_INPUT_STREAM(x)     (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_INPUT_STREAM))
 #define KISS_IS_OUTPUT_STREAM(x)    (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_OUTPUT_STREAM))
@@ -894,6 +897,18 @@ inline
 kiss_cfunction_t* Kiss_CMacro(const kiss_obj* const obj) {
      if (KISS_IS_CMACRO(obj)) { return (kiss_cfunction_t*)obj; }
      Kiss_Domain_Error(obj, L"c macro");
+}
+
+inline
+kiss_ilos_obj_t* Kiss_ILOS_Obj(const kiss_obj* const obj) {
+     if (KISS_IS_ILOS_OBJ(obj)) { return (kiss_ilos_obj_t*)obj; }
+     Kiss_Domain_Error(obj, L"ILOS obj");
+}
+
+inline
+kiss_ilos_class_t* Kiss_ILOS_Class(const kiss_obj* const obj) {
+     if (KISS_IS_ILOS_CLASS(obj)) { return (kiss_ilos_class_t*)obj; }
+     Kiss_Domain_Error(obj, L"ILOS class");
 }
 
 /* function: (not obj) -> boolean

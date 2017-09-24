@@ -40,5 +40,6 @@ void kiss_initialize(void) {
      kiss_init_environment();
      kiss_init_symbols();
      kiss_init_streams();
+     kiss_init_ilos();
      kiss_init_error_catcher();
 }

@@ -18,6 +18,12 @@
 */
 #include "kiss.h"
 
+kiss_hash_table_t* Kiss_Classes = NULL;
+
+void kiss_init_ilos(void) {
+     Kiss_Classes = (kiss_hash_table_t*)kiss_create_hash_table(KISS_NIL);
+}
+
 kiss_obj* kiss_make_object(kiss_obj* plist) {
     kiss_object_t* p = Kiss_GC_Malloc(sizeof(kiss_object_t));
     p->type = KISS_ILOS_OBJ;
@@ -25,10 +31,13 @@ kiss_obj* kiss_make_object(kiss_obj* plist) {
     return (kiss_obj*)p;
 }
 
-kiss_obj* kiss_object_p(kiss_obj* obj) {
-    if (KISS_IS_OBJECT(obj)) { return KISS_T; }
-    else                     { return KISS_NIL; }
+/* special operator: (class class-name) -> <class>
+   Returns the class object that corresponds to the class named class-name.
+   On error, signal <undefined-entity> see spec. p.119 */
+kiss_obj* kiss_class(kiss_obj* name) {
+     
 }
+
 
 
 //wchar_t* kiss_type_to_class_name_str(kiss_type t) {

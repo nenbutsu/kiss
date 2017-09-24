@@ -103,6 +103,12 @@ extern inline
 kiss_cfunction_t* Kiss_CMacro(const kiss_obj* const obj);
 
 extern inline
+kiss_ilos_obj_t* Kiss_ILOS_Obj(const kiss_obj* const obj);
+
+extern inline
+kiss_ilos_class_t* Kiss_ILOS_Class(const kiss_obj* const obj);
+     
+extern inline
 kiss_obj* kiss_not(const kiss_obj* const obj);
 
 extern inline
