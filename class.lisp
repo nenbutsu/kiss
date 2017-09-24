@@ -161,43 +161,12 @@
           slot-specs))
 
 
-;; function: (class-of obj) -> <class>
-;; Returns the class of which the  given obj is a direct instance.
-;; obj may be any ISLISP object.
-(defun class-of (obj)
-  (cond
-   ((null obj)              (class <null>))
-   ((consp obj)             (class <cons>))
-   ((symbolp obj)           (class <symbol>))
-   ((characterp obj)        (class <character>))
-   ((integerp obj)          (class <integer>))
-   ((floatp obj)            (class <float>))
-   ((stringp obj)           (class <string>))
-   ((general-vector-p obj)  (class <general-vector>))
-   ((general-array*-p obj)  (class <general-array*>))
-   ((streamp obj)           (class <stream>))
-   ((simple-function-p obj) (class <function>))
-   ((object-p obj)          (object-plist-get obj ':class))
-   (t (error "class-of: not-yet-implemented-class of ~S" obj))))
-
 (defun kiss::assure-class (class)
   (let ((metaclass (class-of class)))
     (if (or (eq (class <built-in-class>) metaclass)
             (eq (class <standard-class>) metaclass))
         class
       (error "Not a class ~S" class))))
-
-;; function: (subclassp subclass superclass) -> boolean
-;; Returns t if the class subclass is a subclass of the class superclass;
-;; otherwise, returns nil. An error shall be signaled if either subclass or
-;; superclass is not a class object (error-id. domain-error). */
-(defun subclassp (sub super)
-  (kiss::assure-class sub)
-  (kiss::assure-class super)
-  (let ((class-precedence-list (class-cpl sub)))
-    (if (member super class-precedence-list)
-        t
-      nil)))
 
 ;; function: (instancep obj class) -> boolean
 ;; Returns t if obj is an instance (directly or otherwise) of the class

@@ -717,6 +717,8 @@ void kiss_init_environment(void);
 /* ilos.c */
 kiss_obj* kiss_class(const kiss_obj* const name);
 kiss_obj* kiss_class_of(const kiss_obj* const obj);
+kiss_obj* kiss_subclassp(const kiss_obj* const subclass, const kiss_obj* const superclass);
+kiss_obj* kiss_instancep(const kiss_obj* const obj, const kiss_obj* const class);
 
 /* feature.c */
 kiss_obj* kiss_featurep(kiss_obj* feature);

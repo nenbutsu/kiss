@@ -91,7 +91,28 @@ kiss_obj* kiss_class_of(const kiss_obj* const obj) {
 	  }
 }
 
+/* function: (subclassp subclass superclass) -> boolean
+   Returns t if the class SUBCLASS is a subclass of the class SUPERCLASS;
+   otherwise, returns nil. An error shall be signaled if either SUBCLASS or
+   SUPERCLASS is not a class object (error-id. domain-error). */
+kiss_obj* kiss_subclassp(const kiss_obj* const subclass, const kiss_obj* const superclass) {
+     kiss_ilos_class_t* sub = Kiss_ILOS_Class(subclass);
+     Kiss_ILOS_Class(superclass);
+     kiss_obj* cpl = sub->cpl;
+     if (cpl == KISS_NIL) return KISS_NIL;
+     return (kiss_member(subclass, KISS_CDR(cpl)) == KISS_NIL ? KISS_NIL : KISS_T);
+}
 
+/* function: (instancep obj class) -> boolean
+   Returns t if OBJ is an instance (directly or otherwise) of the class
+   CLASS; otherwise, returns nil OBJ may be any ISLISP object. An error
+   shall be signaled if class is not a class object (error-id. domain-error ). */
+kiss_obj* kiss_instancep(const kiss_obj* const obj, const kiss_obj* const class) {
+     Kiss_ILOS_Class(class);
+     kiss_obj* c = kiss_class_of(obj);
+     if (c == class) return KISS_T;
+     return (kiss_member(c, ((kiss_ilos_class_t*)c)->cpl) == KISS_NIL ? KISS_NIL : KISS_T);
+}
 
 //wchar_t* kiss_type_to_class_name_str(kiss_type t) {
 //     wchar_t* class_name_str = NULL;

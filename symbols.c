@@ -3296,6 +3296,42 @@ kiss_symbol_t KISS_Sclass_of = {
     KISS_NIL,                 /* plist */
 };
 
+kiss_symbol_t KISS_Ssubclassp;
+kiss_cfunction_t KISS_CFsubclassp = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Ssubclassp,   /* name */
+    (kiss_cf_t*)kiss_subclassp,    /* C function name */
+    2,         /* minimum argument number */
+    2,        /* maximum argument number */
+};
+kiss_symbol_t KISS_Ssubclassp = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"subclassp",
+    KISS_CONSTANT_FUN,
+    NULL,                /* var */
+    (kiss_obj*)&KISS_CFsubclassp, /* fun */
+    KISS_NIL,                 /* plist */
+};
+
+kiss_symbol_t KISS_Sinstancep;
+kiss_cfunction_t KISS_CFinstancep = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Sinstancep,   /* name */
+    (kiss_cf_t*)kiss_instancep,    /* C function name */
+    2,         /* minimum argument number */
+    2,        /* maximum argument number */
+};
+kiss_symbol_t KISS_Sinstancep = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"instancep",
+    KISS_CONSTANT_FUN,
+    NULL,                /* var */
+    (kiss_obj*)&KISS_CFinstancep, /* fun */
+    KISS_NIL,                 /* plist */
+};
+
 /**** -------------- Predifined class names --------------------- ****/
 kiss_symbol_t KISS_Sc_null = {
     KISS_SYMBOL,
@@ -3520,7 +3556,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sgc, &KISS_Sgc_info,
 
     /* ilos.c */
-    &KISS_Sclass, &KISS_Sclass_of,
+    &KISS_Sclass, &KISS_Sclass_of, &KISS_Ssubclassp, &KISS_Sinstancep,
 
     /* predefined class names */
     &KISS_Sc_null, &KISS_Sc_cons, &KISS_Sc_symbol, &KISS_Sc_character,
