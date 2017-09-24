@@ -348,7 +348,7 @@ typedef struct {
      kiss_obj* class;
      kiss_general_vector_t* slots;
      kiss_obj* slot_specs;
-} kiss_oo_obj_t;
+} kiss_ilos_obj_t;
 
 typedef struct {
      kiss_type type;
@@ -358,7 +358,7 @@ typedef struct {
      kiss_obj* slot_specs;
      kiss_obj* supers;
      kiss_obj* cpl;
-} kiss_class_t;
+} kiss_ilos_class_t;
 
 
 
@@ -392,6 +392,20 @@ kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda, KISS_Skw_rest, KISS
 
 kiss_symbol_t KISS_Udummy;
 #define KISS_DUMMY      ((kiss_obj*)(&KISS_Udummy))
+
+// predefined class names
+kiss_symbol_t KISS_Sc_null;
+kiss_symbol_t KISS_Sc_cons;
+kiss_symbol_t KISS_Sc_symbol;
+kiss_symbol_t KISS_Sc_character;
+kiss_symbol_t KISS_Sc_integer;
+kiss_symbol_t KISS_Sc_float;
+kiss_symbol_t KISS_Sc_string;
+kiss_symbol_t KISS_Sc_general_vector;
+kiss_symbol_t KISS_Sc_general_array_s;
+kiss_symbol_t KISS_Sc_stream;
+kiss_symbol_t KISS_Sc_function;
+
 
 #define KISS_CAR(x) ((void*)(((kiss_cons_t*)x)->car))
 #define KISS_CDR(x) ((void*)(((kiss_cons_t*)x)->cdr))
@@ -778,8 +792,8 @@ kiss_obj* Kiss_Sequence(const kiss_obj* const obj) {
 }
 
 inline
-kiss_oo_obj_t* Kiss_Object(const kiss_obj* const obj) {
-     if (KISS_IS_OBJECT(obj)) { return (kiss_oo_obj_t*)obj; }
+kiss_ilos_obj_t* Kiss_Object(const kiss_obj* const obj) {
+     if (KISS_IS_OBJECT(obj)) { return (kiss_ilos_obj_t*)obj; }
      Kiss_Domain_Error(obj, L"ILOS object");
 }
 

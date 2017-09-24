@@ -3333,6 +3333,108 @@ kiss_symbol_t KISS_Sgc_info = {
     KISS_NIL,                 /* plist */
 };
 
+/**** -------------- Predifined class names --------------------- ****/
+kiss_symbol_t KISS_Sc_null = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<null>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_cons = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<cons>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_symbol = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<symbol>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_character = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<character>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_integer = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<integer>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_float = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<float>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_string = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<string>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_general_vector = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<general-vector>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_general_array_s = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<general-array*>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_stream = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<stream>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_function = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<function>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+
+
 
 /**** symbol table ****/
 kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
@@ -3448,8 +3550,16 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     /* gc.c */
     &KISS_Sgc, &KISS_Sgc_info,
 
+    /* predefined class names */
+    &KISS_Sc_null, &KISS_Sc_cons, &KISS_Sc_symbol, &KISS_Sc_character,
+    &KISS_Sc_integer, &KISS_Sc_float, &KISS_Sc_string, &KISS_Sc_general_vector,
+    &KISS_Sc_general_array_s, &KISS_Sc_stream, &KISS_Sc_function,
+    
+
     NULL,
 };
+
+
 
 /* Uninterned symbols used in lisp reader */
 kiss_symbol_t KISS_Udot = {
