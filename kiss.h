@@ -721,6 +721,7 @@ kiss_obj* kiss_class(const kiss_obj* const name);
 kiss_obj* kiss_class_of(const kiss_obj* const obj);
 kiss_obj* kiss_subclassp(const kiss_obj* const subclass, const kiss_obj* const superclass);
 kiss_obj* kiss_instancep(const kiss_obj* const obj, const kiss_obj* const class);
+kiss_obj* kiss_assure(const kiss_obj* const class_name, const kiss_obj* const form);
 
 /* feature.c */
 kiss_obj* kiss_featurep(kiss_obj* feature);

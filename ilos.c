@@ -120,7 +120,7 @@ kiss_obj* kiss_instancep(const kiss_obj* const obj, const kiss_obj* const class)
    by CLASS-NAME (which must be the name of an existing class).
    In an assure special form, an error shall be signaled if the value of form is not
    of the class or a subclass of the class designated by class-name (error-id. domain-error). */
-kiss_obj* kiss_assure(kiss_obj* class_name, kiss_obj* form) {
+kiss_obj* kiss_assure(const kiss_obj* const class_name, const kiss_obj* const form) {
      kiss_obj* result = kiss_eval(form);
      kiss_ilos_class_t* class = (kiss_ilos_class_t*)kiss_class(class_name);
      if (kiss_instancep(result, (kiss_obj*)class) != KISS_NIL) {
