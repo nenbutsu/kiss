@@ -304,7 +304,7 @@ kiss_obj* kiss_format_object(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
 	  break;
      case KISS_GENERAL_VECTOR: kiss_format_general_vector(out, obj, escapep);
 	  break;
-     case KISS_GENERAL_ARRAY: kiss_format_general_array(out, obj, escapep);
+     case KISS_GENERAL_ARRAY_S: kiss_format_general_array(out, obj, escapep);
 	  break;
      case KISS_CHARACTER: {
 	  if (escapep == KISS_NIL) { kiss_format_char(out, obj); }

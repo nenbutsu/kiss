@@ -32,10 +32,63 @@ kiss_obj* kiss_make_object(kiss_obj* plist) {
 }
 
 /* special operator: (class class-name) -> <class>
-   Returns the class object that corresponds to the class named class-name.
+   Returns the class object that corresponds to the class named CLASS-NAME.
    On error, signal <undefined-entity> see spec. p.119 */
-kiss_obj* kiss_class(kiss_obj* name) {
-     
+kiss_obj* kiss_class(const kiss_obj* const name) {
+     kiss_obj* class = kiss_c_gethash((kiss_obj*)Kiss_Symbol(name), Kiss_Classes, KISS_NIL);
+     if (class != KISS_NIL) {
+          return class;
+     } else {
+          kiss_c_funcall(L"kiss::signal-undefined-entity-error", kiss_c_list(4, name, (kiss_obj*)&KISS_Sclass, KISS_NIL));
+          fwprintf(stderr, L"class: internal error. shouldn't reach here\n");
+          exit(EXIT_FAILURE);
+     }
+}
+
+/* function: (class-of obj) -> <class>
+   Returns the class of which the  given obj is a direct instance.
+   obj may be any ISLISP object. */
+kiss_obj* kiss_class_of(const kiss_obj* const obj) {
+	  switch (KISS_OBJ_TYPE(obj)) {
+	  case KISS_CONS:
+	       return kiss_class((kiss_obj*)KISS_Sc_cons);
+	  case KISS_SYMBOL:
+               return kiss_class((kiss_obj*)(obj == KISS_NIL ? KISS_Sc_null : KISS_Sc_symbol));
+	  case KISS_CHARACTER:
+               return kiss_class((kiss_obj*)KISS_Sc_character);
+	  case KISS_FIXNUM:
+          case KISS_BIGNUM:
+	       return kiss_class((kiss_obj*)KISS_Sc_integer);
+	  case KISS_FLOAT:
+	       return kiss_class((kiss_obj*)KISS_Sc_float);
+	  case KISS_STRING:
+	       return kiss_class((kiss_obj*)KISS_Sc_string);
+	  case KISS_GENERAL_VECTOR:
+	       return kiss_class((kiss_obj*)KISS_Sc_general_vector);
+	  case KISS_GENERAL_ARRAY_S:
+               return kiss_class((kiss_obj*)KISS_Sc_general_array_s);
+	  case KISS_HASH_TABLE:
+               return kiss_class((kiss_obj*)KISS_Sc_hash_table);
+	  case KISS_STREAM:
+               return kiss_class((kiss_obj*)KISS_Sc_stream);
+	  case KISS_FUNCTION:
+	  case KISS_MACRO:
+	  case KISS_CFUNCTION:
+	  case KISS_CMACRO:
+               return kiss_class((kiss_obj*)KISS_Sc_function);
+	  case KISS_ILOS_OBJ:
+	  case KISS_ILOS_CLASS:
+               return ((kiss_ilos_obj_t*)obj)->class;
+	  case KISS_CATCHER:
+	  case KISS_BLOCK:
+	  case KISS_CLEANUP:
+	  case KISS_TAGBODY:
+	       fwprintf(stderr, L"class-of: unexpected internal built-in primitive type = %d\n", KISS_OBJ_TYPE(obj));
+	       exit(EXIT_FAILURE);
+	  default:
+	       fwprintf(stderr, L"class-of: unknown primitive object type = %d\n", KISS_OBJ_TYPE(obj));
+	       exit(EXIT_FAILURE);
+	  }
 }
 
 
@@ -52,7 +105,7 @@ kiss_obj* kiss_class(kiss_obj* name) {
 //     case KISS_STRING:    class_name_str = L"<string>";    break;
 //     case KISS_GENERAL_VECTOR:
 //	  class_name_str = L"<general-vector>"; break;
-//     case KISS_GENERAL_ARRAY:
+//     case KISS_GENERAL_ARRAY_S:
 //	  class_name_str = L"<general-array*>"; break;
 //     case KISS_STREAM:    class_name_str = L"<stream>";    break;
 //     case KISS_FUNCTION:  class_name_str = L"<function>";  break;

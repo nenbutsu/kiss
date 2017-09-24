@@ -15,29 +15,6 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
-;; kiss::classes = ((name-symbol1 . class-object1) ...) ;; that is, an alist.
-(defglobal kiss::classes
-  `((<built-in-class> . ,(kiss::make-object 'nil))))
-
-;; special operator: (class class-name) -> <class>
-;; Returns the class object that corresponds to the class named class-name.
-;; On error, signal <undefined-entity> see spec. p.119
-(defmacro class (class-name)
-  `(kiss::class ',class-name))
-(defun kiss::class (class-name)
-  (let ((binding (assoc class-name kiss::classes)))
-    (if binding
-        (cdr binding)
-      (error "Undefined class ~S" class-name))))
-
-(defun class-supers (c)
-  (kiss::assure-class c)
-  (object-plist-get c ':direct-super-classes))
-
-(defun class-cpl (c)
-  (kiss::assure-class c)
-  (object-plist-get c ':class-precedence-list))
-
 ;; spec. p. 51
 ;; Let C1, . . . , Cn be the direct superclasses of C in the order defined in
 ;; the defclass defining form for C. Let P1, . . ., Pn be the class precedence
@@ -54,10 +31,6 @@
                   '()
                 (list (car l))))
             cpl)))
-
-(defun class-name (class)
-  (kiss::assure-class class)
-  (object-plist-get class ':name))
 
 (defun kiss::intern-class (name)
   (let ((binding (assoc name kiss::classes)))

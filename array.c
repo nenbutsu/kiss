@@ -52,7 +52,7 @@ static kiss_general_vector_t* kiss_make_ga(const kiss_obj* const dimensions, kis
 static kiss_general_array_t* kiss_make_general_array(const kiss_obj* const dimensions, const kiss_obj* const obj)
 {
     kiss_general_array_t* array = Kiss_GC_Malloc(sizeof(kiss_general_array_t));
-    array->type = KISS_GENERAL_ARRAY;
+    array->type = KISS_GENERAL_ARRAY_S;
     array->rank = kiss_c_length(dimensions);
     if (array->rank == 0) {
 	 array->vector = (kiss_obj*)obj;
@@ -118,7 +118,7 @@ kiss_obj* kiss_garef(const kiss_obj* const array, const kiss_obj* const rest) {
 	       Kiss_Err(L"Invalid vector index dimension ~S", kiss_length(rest));
 	  }
 	  return kiss_gvref(array, kiss_car(rest));
-     case KISS_GENERAL_ARRAY: {
+     case KISS_GENERAL_ARRAY_S: {
 	  return kiss_ga_s_ref(((kiss_general_array_t*)array)->vector, rest);
      }
      default:
@@ -146,7 +146,7 @@ kiss_obj* kiss_aref(const kiss_obj* const array, const kiss_obj* const rest) {
 	  return kiss_elt(array, kiss_car(rest));
      }
      case KISS_GENERAL_VECTOR:
-     case KISS_GENERAL_ARRAY:
+     case KISS_GENERAL_ARRAY_S:
 	  return kiss_garef(array, rest);
      default:
 	  fwprintf(stderr, L"aref: unexpected primitive obj type %d", KISS_OBJ_TYPE(array));
@@ -169,7 +169,7 @@ kiss_obj* kiss_set_aref(const kiss_obj* const obj, kiss_obj* const array, const 
 	  return kiss_set_elt(obj, array, kiss_car(rest));
      }
      case KISS_GENERAL_VECTOR:
-     case KISS_GENERAL_ARRAY:
+     case KISS_GENERAL_ARRAY_S:
 	  return kiss_set_garef(obj, array, rest);
      default:
 	  fwprintf(stderr, L"aref: unexpected primitive obj type %d", KISS_OBJ_TYPE(array));
@@ -190,7 +190,7 @@ kiss_obj* kiss_set_garef(const kiss_obj* const obj, kiss_obj* const array, const
 	       Kiss_Err(L"Invalid vector dimension ~S", kiss_length(rest));
 	  }
 	  return kiss_set_gvref(obj, array, kiss_car(rest));
-     case KISS_GENERAL_ARRAY: {
+     case KISS_GENERAL_ARRAY_S: {
 	  kiss_general_array_t* a = (kiss_general_array_t*)array;
 	  if (a->rank == 0) {
 	       a->vector = (kiss_obj*)obj;
@@ -251,7 +251,7 @@ kiss_obj* kiss_array_dimensions(const kiss_obj* const array) {
 	  return kiss_cons((kiss_obj*)kiss_make_fixnum(Kiss_String(array)->n), KISS_NIL);
      case KISS_GENERAL_VECTOR:
 	  return kiss_cons((kiss_obj*)kiss_make_fixnum(Kiss_General_Vector(array)->n), KISS_NIL);
-     case KISS_GENERAL_ARRAY:
+     case KISS_GENERAL_ARRAY_S:
 	  return kiss_ga_dimensions((kiss_general_array_t*)array);
      default:
 	  fwprintf(stderr, L"array-dimensions: unexpected primitive obj type %d",
@@ -286,7 +286,7 @@ kiss_obj* kiss_basic_array_p (const kiss_obj* const obj) {
 	  return KISS_NIL;
      case KISS_STRING:
      case KISS_GENERAL_VECTOR:
-     case KISS_GENERAL_ARRAY:
+     case KISS_GENERAL_ARRAY_S:
 	  return KISS_T;
      default:
 	  fwprintf(stderr, L"basic-array-p: unknown primitive obj type %d", KISS_OBJ_TYPE(obj));
@@ -319,7 +319,7 @@ kiss_obj* kiss_basic_array_s_p (const kiss_obj* const obj) {
      case KISS_STRING:
      case KISS_GENERAL_VECTOR:
 	  return KISS_NIL;
-     case KISS_GENERAL_ARRAY:
+     case KISS_GENERAL_ARRAY_S:
 	  return KISS_T;
      default:
 	  fwprintf(stderr, L"basic-array*-p: unknown primitive obj type %d", KISS_OBJ_TYPE(obj));
@@ -352,7 +352,7 @@ kiss_obj* kiss_general_array_s_p (const kiss_obj* const obj) {
      case KISS_STRING:
      case KISS_GENERAL_VECTOR:
 	  return KISS_NIL;
-     case KISS_GENERAL_ARRAY:
+     case KISS_GENERAL_ARRAY_S:
 	  return KISS_T;
      default:
 	  fwprintf(stderr, L"general-array*-p: unknown primitive obj type %d", KISS_OBJ_TYPE(obj));

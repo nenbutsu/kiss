@@ -247,6 +247,13 @@
 				  'format-arguments (list obj domain-name))
 		    continuable))
 
+(defun kiss::signal-undefined-entity-error (obj name namespace continuable)
+  (signal-condition (create (class <undefined-entity>)
+				  'name name
+				  'namespace namespace)
+		    continuable))
+
+
 
 
 (provide 'condition)
