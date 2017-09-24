@@ -32,15 +32,6 @@
                 (list (car l))))
             cpl)))
 
-(defun kiss::intern-class (name)
-  (let ((binding (assoc name kiss::classes)))
-    (cond
-     ((consp binding)
-      (cdr binding))
-     (t (let ((class (kiss::make-object nil)))
-          (setq kiss::classes `(,(cons name class) ,@kiss::classes))
-          class)))))
-
 (defun kiss::make-class (name supers metaclass)
   (if (and (not (eq metaclass (class <built-in-class>)))
            (null supers))
@@ -167,18 +158,6 @@
             (eq (class <standard-class>) metaclass))
         class
       (error "Not a class ~S" class))))
-
-;; function: (instancep obj class) -> boolean
-;; Returns t if obj is an instance (directly or otherwise) of the class
-;; class; otherwise, returns nil obj may be any ISLISP object. An error
-;; shall be signaled if class is not a class object
-;; (error-id. domain-error ). */
-(defun instancep (obj class)
-  (kiss::assure-class class)
-  (let ((c (class-of obj)))
-    (if (or (eq c class) (subclassp c class))
-        t
-      nil)))
 
 
 (provide 'class)

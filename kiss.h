@@ -478,8 +478,10 @@ kiss_obj* kiss_tagbody(kiss_obj* args);
 kiss_obj* kiss_go(kiss_obj* tag);
 
 /* error.c */
-_Noreturn void Kiss_Err(const wchar_t* const str, ...);
-_Noreturn void Kiss_Domain_Error(const kiss_obj* const obj, const wchar_t* const domain);
+_Noreturn
+void Kiss_Err(const wchar_t* const str, ...);
+_Noreturn
+void Kiss_Domain_Error(const kiss_obj* const obj, const wchar_t* const domain);
 
 kiss_obj* Kiss_Valid_Sequence_Index(const kiss_obj* const sequence, const kiss_obj* const index);
 kiss_stream_t* Kiss_Input_Char_Stream(const kiss_obj* const obj);

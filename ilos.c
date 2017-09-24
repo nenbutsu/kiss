@@ -114,33 +114,17 @@ kiss_obj* kiss_instancep(const kiss_obj* const obj, const kiss_obj* const class)
      return (kiss_member(c, ((kiss_ilos_class_t*)c)->cpl) == KISS_NIL ? KISS_NIL : KISS_T);
 }
 
-//wchar_t* kiss_type_to_class_name_str(kiss_type t) {
-//     wchar_t* class_name_str = NULL;
-//     switch (t) {
-//     case KISS_CONS:      class_name_str = L"<cons>";      break;
-//     case KISS_SYMBOL:    class_name_str = L"<symbol>";    break;
-//     case KISS_CHARACTER: class_name_str = L"<character>"; break;
-//     case KISS_FIXNUM:    class_name_str = L"<integer>";   break;
-//     case KISS_BIGNUM:    class_name_str = L"<integer>";   break;
-//     case KISS_FLOAT:     class_name_str = L"<float>";     break;
-//     case KISS_STRING:    class_name_str = L"<string>";    break;
-//     case KISS_GENERAL_VECTOR:
-//	  class_name_str = L"<general-vector>"; break;
-//     case KISS_GENERAL_ARRAY_S:
-//	  class_name_str = L"<general-array*>"; break;
-//     case KISS_STREAM:    class_name_str = L"<stream>";    break;
-//     case KISS_FUNCTION:  class_name_str = L"<function>";  break;
-//     case KISS_CFUNCTION: class_name_str = L"<function>";  break;
-//     case KISS_MACRO:     class_name_str = L"<macro>";     break;
-//     case KISS_CMACRO:    class_name_str = L"<macro>";     break;
-//     default:
-//	  fwprintf(stderr, L"kiss_type_to_class_name_str: unexped kiss_type %d\n", t);
-//	  exit(EXIT_FAILURE);
-//     }
-//     return class_name_str;
-//}
-//
-//kiss_obj* kiss_type_to_class_name(kiss_type t) {
-//     wchar_t* class_name = kiss_type_to_class_name_str(t);
-//     return kiss_symbol(class_name);
-//}
+/* special operator: (assure class-name form) → object
+   Evaluates FORM. If FORM returns, the returned value is returned by the assure form.
+   In addition, this form specify that the value of form is of the class specified
+   by CLASS-NAME (which must be the name of an existing class).
+   In an assure special form, an error shall be signaled if the value of form is not
+   of the class or a subclass of the class designated by class-name (error-id. domain-error). */
+kiss_obj* kiss_assure(kiss_obj* class_name, kiss_obj* form) {
+     kiss_obj* result = kiss_eval(form);
+     kiss_ilos_class_t* class = (kiss_ilos_class_t*)kiss_class(class_name);
+     if (kiss_instancep(result, (kiss_obj*)class) != KISS_NIL) {
+          return result;
+     }
+     Kiss_Domain_Error(result, Kiss_String(class->name)->str);
+}
