@@ -19,9 +19,33 @@
 #include "kiss.h"
 
 kiss_hash_table_t* Kiss_Classes = NULL;
+kiss_ilos_class_t* Kiss_Built_In_Class = NULL;
+kiss_ilos_class_t* Kiss_Standard_Class = NULL;
+
 
 void kiss_init_ilos(void) {
      Kiss_Classes = (kiss_hash_table_t*)kiss_create_hash_table(KISS_NIL);
+
+     kiss_puthash((kiss_obj*)&KISS_Sc_object, (kiss_obj*)kiss_make_ilos_class(KISS_Sc_object), (kiss_obj*)Kiss_Classes);
+
+     Kiss_Built_In_Class = kiss_make_ilos_class(KISS_Sc_built_in_class);
+     kiss_puthash((kiss_obj*)&KISS_Sc_built_in_class, (kiss_obj*)Kiss_Built_In_Class, (kiss_obj*)Kiss_Classes);
+
+     Kiss_Standard_Class = kiss_make_ilos_class(KISS_Sc_standard_class);
+     kiss_puthash((kiss_obj*)&KISS_Sc_standard_class, (kiss_obj*)Kiss_Standard_Class, (kiss_obj*)Kiss_Classes);
+     
+}
+
+kiss_ilos_class_t* kiss_make_ilos_class(kiss_symbol_t* class_name) {
+     kiss_ilos_class_t* p = Kiss_GC_Malloc(sizeof(kiss_ilos_class_t));
+     p->type = KISS_ILOS_CLASS;
+     p->class = NULL;
+     p->slots = NULL;
+     p->slot_specs = NULL;
+     p->name = class_name;
+     p->supers = NULL;
+     p->cpl = NULL;
+     return p;
 }
 
 kiss_obj* kiss_make_object(kiss_obj* plist) {
@@ -127,4 +151,56 @@ kiss_obj* kiss_assure(const kiss_obj* const class_name, const kiss_obj* const fo
           return result;
      }
      Kiss_Domain_Error(result, Kiss_String(class->name)->str);
+}
+
+/* spec. p. 51
+   Let C1, . . . , Cn be the direct superclasses of C in the order defined in
+   the defclass defining form for C. Let P1, . . ., Pn be the class precedence
+   lists for C1, . . . , Cn, respectively. Define P . Q on class precedence
+   lists P and Q to be the two lists appended. Then the class precedence
+   list for C is C . P1 . . . . Pn with duplicate classes removed by
+   repeated application of the following rule: If a class appears twice in
+   the resulting class precedence list, the leftmost occurrence is removed. */
+static kiss_obj* compute_cpl(kiss_obj* class, kiss_obj* supers) {
+     kiss_obj* cpl = KISS_NIL;
+     for (kiss_obj* p = supers; KISS_IS_CONS(p); p = KISS_CDR(p)) {
+          kiss_push(((kiss_ilos_class_t*)KISS_CAR(p))->cpl, &cpl);
+     }
+     cpl = kiss_nreverse(cpl);
+     cpl = kiss_cons(class, kiss_append(cpl));
+     kiss_obj* result = KISS_NIL;
+     for (kiss_obj* p = cpl; KISS_IS_CONS(p); p = KISS_CDR(p)) {
+          if (kiss_member(KISS_CAR(p), KISS_CDR(p)) == KISS_NIL) {
+               kiss_push(KISS_CAR(p), &result);
+          }
+     }
+     return kiss_nreverse(result);
+}
+
+/* defining operator: (defclass class-name (sc-name*) (slot-spec*) class-opt*) -> <symbol>
+      class-name ::= identifier
+      sc-name ::= identifier
+      slot-spec ::= slot-name | (slot-name slot-opt *)
+      slot-name ::= identifier
+      slot-opt ::= :reader reader-function-name |
+                   :writer writer-function-name |
+                   :accessor reader-function-name |
+                   :boundp boundp-function-name |
+                   :initform form |
+                   :initarg initarg-name
+      initarg-name ::= identifier
+      reader-function-name ::= identifier
+      writer-function-name ::= identifier
+      boundp-function-name ::= identifier
+      class-opt ::= (:metaclass class-name) | (:abstractp abstract-flag)
+      abstractp ::= t | nil */
+kiss_obj* kiss_defclass(kiss_obj* class_name, kiss_obj* sc_names, kiss_obj* slot_specs, kiss_obj* class_options)
+{
+     kiss_ilos_class_t* class = kiss_c_gethash((kiss_obj*)Kiss_Symbol(name), Kiss_Classes, KISS_NIL);
+     if (class == KISS_NIL) {
+          class= kiss_make_ilos_class((kiss_symbol_t*)class_name);
+     }
+     class->supers = kiss_c_mapc1((kiss_cf1_t)kiss_class, Kiss_Proper_List(sc_names));
+     class->cpl = compute_cpl(class, class->supers);
+     
 }

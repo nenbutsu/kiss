@@ -15,23 +15,6 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
-;; spec. p. 51
-;; Let C1, . . . , Cn be the direct superclasses of C in the order defined in
-;; the defclass defining form for C. Let P1, . . ., Pn be the class precedence
-;; lists for C1, . . . , Cn, respectively. Define P . Q on class precedence
-;; lists P and Q to be the two lists appended. Then the class precedence
-;; list for C is C . P1 . . . . Pn with duplicate classes removed by
-;; repeated application of the following rule: If a class appears twice in
-;; the resulting class precedence list, the leftmost occurrence is removed.
-(defun kiss::compute-cpl (c supers)
-  (let ((cpl (cons c (apply #'append (mapcar #'class-cpl supers)))))
-    ;; cpl = `(,c ,@cpl1 ,@cpl2 ,@cpl3 ... ,@cpln)
-    (mapcon (lambda (l)
-              (if (member (car l) (cdr l))
-                  '()
-                (list (car l))))
-            cpl)))
-
 (defun kiss::make-class (name supers metaclass)
   (if (and (not (eq metaclass (class <built-in-class>)))
            (null supers))

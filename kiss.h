@@ -356,7 +356,7 @@ typedef struct {
      kiss_obj* class;
      kiss_general_vector_t* slots;
      kiss_obj* slot_specs;
-     kiss_obj* name;
+     kiss_symbol_t* name;
      kiss_obj* supers;
      kiss_obj* cpl;
 } kiss_ilos_class_t;
@@ -395,6 +395,9 @@ kiss_symbol_t KISS_Udummy;
 #define KISS_DUMMY      ((kiss_obj*)(&KISS_Udummy))
 
 // predefined class names
+kiss_symbol_t KISS_Sc_object;
+kiss_symbol_t KISS_Sc_built_in_class;
+kiss_symbol_t KISS_Sc_standard_class;
 kiss_symbol_t KISS_Sc_null;
 kiss_symbol_t KISS_Sc_cons;
 kiss_symbol_t KISS_Sc_symbol;
