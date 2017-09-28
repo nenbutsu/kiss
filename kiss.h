@@ -50,7 +50,7 @@ typedef enum {
      KISS_FLOAT,
      KISS_STRING,
      KISS_GENERAL_VECTOR,
-     KISS_GENERAL_ARRAY_S,
+     KISS_GENERAL_ARRAY,
      KISS_STREAM,
      KISS_HASH_TABLE,
 
@@ -64,8 +64,7 @@ typedef enum {
      KISS_BLOCK,
      KISS_TAGBODY,
 
-     KISS_ILOS_OBJ,
-     KISS_ILOS_CLASS,
+     KISS_OO_OBJ,
 } kiss_type;
 
 #define kiss_ptr_int(x)    (((kiss_ptr_int)x)>>2)
@@ -94,10 +93,6 @@ struct kiss_gc_obj {
      void* pointer3;
      void* pointer4;
      void* pointer5;
-     void* pointer6;
-     void* pointer7;
-     void* pointer8;
-     void* pointer9;
 };
 typedef struct kiss_gc_obj kiss_gc_obj;
 
@@ -345,21 +340,8 @@ typedef struct {
 typedef struct {
      kiss_type type;
      void* gc_ptr;
-     kiss_obj* class;
-     kiss_general_vector_t* slots;
-} kiss_ilos_obj_t;
-
-typedef struct {
-     kiss_type type;
-     kiss_symbol_t* name;
-     kiss_obj* metaclass;
-     kiss_obj* supers;
-     kiss_obj* cpl;
-     kiss_obj* slot_specs;
-     kiss_obj* abstractp;
-} kiss_ilos_class_t;
-
-
+     kiss_obj* plist;
+} kiss_oo_obj_t;
 
 
 typedef struct {
@@ -375,7 +357,7 @@ typedef struct {
 
 extern kiss_obj* Kiss_Features;
 
-kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda, KISS_Skw_rest, KISS_Samp_rest, KISS_Ueos, KISS_Skw_size, KISS_Skw_test, KISS_Skw_weakness, KISS_Skw_rehash_size, KISS_Skw_rehash_threshold, KISS_Skw_metaclass, KISS_Skw_abstractp;
+kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda, KISS_Skw_rest, KISS_Samp_rest, KISS_Ueos, KISS_Skw_size, KISS_Skw_test, KISS_Skw_weakness, KISS_Skw_rehash_size, KISS_Skw_rehash_threshold;
 #define KISS_T        ((kiss_obj*)(&KISS_St))
 #define KISS_NIL      ((kiss_obj*)(&KISS_Snil))
 #define KISS_QUOTE    ((kiss_obj*)(&KISS_Squote))
@@ -391,24 +373,6 @@ kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda, KISS_Skw_rest, KISS
 
 kiss_symbol_t KISS_Udummy;
 #define KISS_DUMMY      ((kiss_obj*)(&KISS_Udummy))
-
-// predefined class names
-kiss_symbol_t KISS_Sc_object;
-kiss_symbol_t KISS_Sc_built_in_class;
-kiss_symbol_t KISS_Sc_standard_class;
-kiss_symbol_t KISS_Sc_null;
-kiss_symbol_t KISS_Sc_cons;
-kiss_symbol_t KISS_Sc_symbol;
-kiss_symbol_t KISS_Sc_character;
-kiss_symbol_t KISS_Sc_integer;
-kiss_symbol_t KISS_Sc_float;
-kiss_symbol_t KISS_Sc_string;
-kiss_symbol_t KISS_Sc_general_vector;
-kiss_symbol_t KISS_Sc_general_array_s;
-kiss_symbol_t KISS_Sc_stream;
-kiss_symbol_t KISS_Sc_function;
-kiss_symbol_t KISS_Sc_hash_table;
-
 
 #define KISS_CAR(x) ((void*)(((kiss_cons_t*)x)->car))
 #define KISS_CDR(x) ((void*)(((kiss_cons_t*)x)->cdr))
@@ -427,7 +391,7 @@ kiss_symbol_t KISS_Sc_hash_table;
 #define KISS_IS_FLOAT(x)             (KISS_OBJ_TYPE(x) == KISS_FLOAT)
 #define KISS_IS_STRING(x)            (KISS_OBJ_TYPE(x) == KISS_STRING)
 #define KISS_IS_GENERAL_VECTOR(x)    (KISS_OBJ_TYPE(x) == KISS_GENERAL_VECTOR)
-#define KISS_IS_GENERAL_ARRAY_S(x)   (KISS_OBJ_TYPE(x) == KISS_GENERAL_ARRAY_S)
+#define KISS_IS_GENERAL_ARRAY(x)     (KISS_OBJ_TYPE(x) == KISS_GENERAL_ARRAY)
 #define KISS_IS_TASH_TABLE(x)        (KISS_OBJ_TYPE(x) == KISS_HASH_TABLE)
 #define KISS_IS_SEQUENCE(x)          (KISS_IS_LIST(x) || KISS_IS_STRING(x) || KISS_IS_GENERAL_VECTOR(x))
 #define KISS_IS_FUNCTION(x)          (KISS_OBJ_TYPE(x) == KISS_FUNCTION)
@@ -438,9 +402,7 @@ kiss_symbol_t KISS_Sc_hash_table;
 #define KISS_IS_CLEANUP(x)           (KISS_OBJ_TYPE(x) == KISS_CLEANUP)
 #define KISS_IS_BLOCK(x)             (KISS_OBJ_TYPE(x) == KISS_BLOCK)
 #define KISS_IS_TAGBODY(x)           (KISS_OBJ_TYPE(x) == KISS_TAGBODY)
-#define KISS_IS_ILOS_OBJ(x)          (KISS_OBJ_TYPE(x) == KISS_ILOS_OBJ)
-#define KISS_IS_ILOS_CLASS(x)        (KISS_OBJ_TYPE(x) == KISS_ILOS_CLASS)
-     
+#define KISS_IS_OBJECT(x)            (KISS_OBJ_TYPE(x) == KISS_OO_OBJ)
 #define KISS_IS_STREAM(x)            (KISS_OBJ_TYPE(x) == KISS_STREAM)
 #define KISS_IS_INPUT_STREAM(x)     (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_INPUT_STREAM))
 #define KISS_IS_OUTPUT_STREAM(x)    (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_OUTPUT_STREAM))
@@ -479,10 +441,8 @@ kiss_obj* kiss_tagbody(kiss_obj* args);
 kiss_obj* kiss_go(kiss_obj* tag);
 
 /* error.c */
-_Noreturn
-void Kiss_Err(const wchar_t* const str, ...);
-_Noreturn
-void Kiss_Domain_Error(const kiss_obj* const obj, const wchar_t* const domain);
+_Noreturn void Kiss_Err(const wchar_t* const str, ...);
+_Noreturn void Kiss_Domain_Error(const kiss_obj* const obj, const wchar_t* const domain);
 
 kiss_obj* Kiss_Valid_Sequence_Index(const kiss_obj* const sequence, const kiss_obj* const index);
 kiss_stream_t* Kiss_Input_Char_Stream(const kiss_obj* const obj);
@@ -708,6 +668,15 @@ kiss_obj* kiss_dynamic(kiss_obj* name);
 kiss_obj* kiss_dynamic_let(kiss_obj* vspecs, kiss_obj* body);
 kiss_obj* kiss_set_dynamic(kiss_obj* form, kiss_obj* var);
 
+/* object.c */
+kiss_obj* kiss_object_p(kiss_obj* obj);
+kiss_obj* kiss_make_object(kiss_obj* info);
+kiss_obj* kiss_object_plist(kiss_obj* obj);
+kiss_obj* kiss_set_object_plist(kiss_obj* plist, kiss_obj* oo_obj);
+kiss_obj* kiss_object_plist_get(kiss_obj* obj, kiss_obj* property);
+kiss_obj* kiss_object_plist_put(kiss_obj* obj, kiss_obj* property,
+				kiss_obj* value);
+
 /* gf_invoke.c */
 kiss_obj* kiss_method_invoke(kiss_obj* m);
 
@@ -716,13 +685,6 @@ kiss_obj* kiss_method_invoke(kiss_obj* m);
 
 /* environment.c */
 void kiss_init_environment(void);
-
-/* ilos.c */
-kiss_obj* kiss_class(const kiss_obj* const name);
-kiss_obj* kiss_class_of(const kiss_obj* const obj);
-kiss_obj* kiss_subclassp(const kiss_obj* const subclass, const kiss_obj* const superclass);
-kiss_obj* kiss_instancep(const kiss_obj* const obj, const kiss_obj* const class);
-kiss_obj* kiss_assure(const kiss_obj* const class_name, const kiss_obj* const form);
 
 /* feature.c */
 kiss_obj* kiss_featurep(kiss_obj* feature);
@@ -784,7 +746,7 @@ kiss_ptr_int Kiss_Non_Zero_Fixnum(const kiss_obj* const obj) {
 
 inline
 kiss_obj* Kiss_General_Array(const kiss_obj* const obj) {
-     if (KISS_IS_GENERAL_VECTOR(obj) || KISS_IS_GENERAL_ARRAY_S(obj)) {
+     if (KISS_IS_GENERAL_VECTOR(obj) || KISS_IS_GENERAL_ARRAY(obj)) {
           return (kiss_obj*)obj;
      }
      Kiss_Domain_Error(obj, L"general array (<general-vector> or <general-array*>)");
@@ -797,14 +759,14 @@ kiss_obj* Kiss_Sequence(const kiss_obj* const obj) {
 }
 
 inline
-kiss_ilos_obj_t* Kiss_Object(const kiss_obj* const obj) {
-     if (KISS_IS_OBJECT(obj)) { return (kiss_ilos_obj_t*)obj; }
+kiss_oo_obj_t* Kiss_Object(const kiss_obj* const obj) {
+     if (KISS_IS_OBJECT(obj)) { return (kiss_oo_obj_t*)obj; }
      Kiss_Domain_Error(obj, L"ILOS object");
 }
 
 inline
 kiss_obj* Kiss_Basic_Array(const kiss_obj* const obj) {
-     if (KISS_IS_GENERAL_VECTOR(obj) || KISS_IS_GENERAL_ARRAY_S(obj) || KISS_IS_STRING(obj)) {
+     if (KISS_IS_GENERAL_VECTOR(obj) || KISS_IS_GENERAL_ARRAY(obj) || KISS_IS_STRING(obj)) {
           return (kiss_obj*)obj;
      }
      Kiss_Domain_Error(obj, L"<basic array>");
@@ -873,7 +835,7 @@ kiss_general_vector_t* Kiss_General_Vector(const kiss_obj* const obj) {
 
 inline
 kiss_general_array_t* Kiss_General_Array_S(const kiss_obj* const obj) {
-     if (KISS_IS_GENERAL_ARRAY_S(obj)) { return (kiss_general_array_t*)obj; }
+     if (KISS_IS_GENERAL_ARRAY(obj)) { return (kiss_general_array_t*)obj; }
      Kiss_Domain_Error(obj, L"<general-array*>");
 }
 
@@ -899,18 +861,6 @@ inline
 kiss_cfunction_t* Kiss_CMacro(const kiss_obj* const obj) {
      if (KISS_IS_CMACRO(obj)) { return (kiss_cfunction_t*)obj; }
      Kiss_Domain_Error(obj, L"c macro");
-}
-
-inline
-kiss_ilos_obj_t* Kiss_ILOS_Obj(const kiss_obj* const obj) {
-     if (KISS_IS_ILOS_OBJ(obj)) { return (kiss_ilos_obj_t*)obj; }
-     Kiss_Domain_Error(obj, L"ILOS obj");
-}
-
-inline
-kiss_ilos_class_t* Kiss_ILOS_Class(const kiss_obj* const obj) {
-     if (KISS_IS_ILOS_CLASS(obj)) { return (kiss_ilos_class_t*)obj; }
-     Kiss_Domain_Error(obj, L"ILOS class");
 }
 
 /* function: (not obj) -> boolean

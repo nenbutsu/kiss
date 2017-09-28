@@ -35,7 +35,7 @@ kiss_obj* kiss_make_hash_table(kiss_obj* size, kiss_obj* test, kiss_obj* weaknes
 kiss_obj* kiss_create_hash_table(kiss_obj* args) {
      kiss_obj* size = kiss_plist_get(args, KISS_KW_SIZE);
      if (size == KISS_NIL)
-          size = kiss_make_fixnum(1091);
+          size = kiss_make_fixnum(1024);
 
      kiss_obj* test = kiss_plist_get(args, KISS_KW_TEST);
 

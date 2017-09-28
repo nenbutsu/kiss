@@ -149,7 +149,3 @@
   (:metaclass <built-in-class>))
 (defclass <string> (<basic-vector>) ()
   (:metaclass <built-in-class>))
-
-(defclass <hash-table> (<object>) ()
-  (:metaclass <built-in-class>))
-

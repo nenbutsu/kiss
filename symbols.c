@@ -210,29 +210,6 @@ kiss_symbol_t KISS_Samp_rest = {
     KISS_NIL,                  /* plist */
 };
 
-kiss_symbol_t KISS_Skw_metaclass;
-kiss_symbol_t KISS_Skw_metaclass = {
-    KISS_SYMBOL,               /* type */
-    NULL,              /* gc_ptr */
-    L":metaclass",             /* name */
-    0,                    /* flags */
-    (kiss_obj*)&KISS_Skw_metaclass, /* var */
-    NULL,                 /* fun */
-    KISS_NIL,                  /* plist */
-};
-
-kiss_symbol_t KISS_Skw_abstractp;
-kiss_symbol_t KISS_Skw_abstractp = {
-    KISS_SYMBOL,               /* type */
-    NULL,              /* gc_ptr */
-    L":abstractp",             /* name */
-    0,                    /* flags */
-    (kiss_obj*)&KISS_Skw_abstractp, /* var */
-    NULL,                 /* fun */
-    KISS_NIL,                  /* plist */
-};
-
-
 kiss_symbol_t KISS_Skw_size;
 kiss_symbol_t KISS_Skw_size = {
     KISS_SYMBOL,               /* type */
@@ -3226,6 +3203,80 @@ kiss_symbol_t KISS_Sprovide = {
     KISS_NIL,                 /* plist */
 };
 
+/*** oo_obj.c ***/
+kiss_symbol_t KISS_Smake_object;
+kiss_cfunction_t KISS_CFmake_object = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Smake_object,   /* name */
+    (kiss_cf_t*)kiss_make_object,    /* C function name */
+    1,         /* minimum argument number */
+    1,        /* maximum argument number */
+};
+kiss_symbol_t KISS_Smake_object = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"kiss::make-object",
+    KISS_CONSTANT_FUN,
+    NULL,                /* var */
+    (kiss_obj*)&KISS_CFmake_object, /* fun */
+    KISS_NIL,                 /* plist */
+};
+
+kiss_symbol_t KISS_Sobject_p;
+kiss_cfunction_t KISS_CFobject_p = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Sobject_p,   /* name */
+    (kiss_cf_t*)kiss_object_p,    /* C function name */
+    1,         /* minimum argument number */
+    1,        /* maximum argument number */
+};
+kiss_symbol_t KISS_Sobject_p = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"object-p",
+    KISS_CONSTANT_FUN,
+    NULL,                /* var */
+    (kiss_obj*)&KISS_CFobject_p, /* fun */
+    KISS_NIL,                 /* plist */
+};
+
+kiss_symbol_t KISS_Sobject_plist;
+kiss_cfunction_t KISS_CFobject_plist = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Sobject_plist,   /* name */
+    (kiss_cf_t*)kiss_object_plist,    /* C function name */
+    1,         /* minimum argument number */
+    1,        /* maximum argument number */
+};
+kiss_symbol_t KISS_Sobject_plist = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"object-plist",
+    KISS_CONSTANT_FUN,
+    NULL,                /* var */
+    (kiss_obj*)&KISS_CFobject_plist, /* fun */
+    KISS_NIL,                 /* plist */
+};
+
+
+kiss_symbol_t KISS_Sset_object_plist;
+kiss_cfunction_t KISS_CFset_object_plist = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Sset_object_plist,   /* name */
+    (kiss_cf_t*)kiss_set_object_plist,    /* C function name */
+    2,         /* minimum argument number */
+    2,        /* maximum argument number */
+};
+kiss_symbol_t KISS_Sset_object_plist = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"set-object-plist",
+    KISS_CONSTANT_FUN,
+    NULL,                /* var */
+    (kiss_obj*)&KISS_CFset_object_plist, /* fun */
+    KISS_NIL,                 /* plist */
+};
+
 /*** gf_invoke.c ***/
 kiss_symbol_t KISS_Smethod_invoke;
 kiss_cfunction_t KISS_CFmethod_invoke = {
@@ -3282,235 +3333,6 @@ kiss_symbol_t KISS_Sgc_info = {
     KISS_NIL,                 /* plist */
 };
 
-/*** ilos.c ***/
-kiss_symbol_t KISS_Sclass;
-kiss_cfunction_t KISS_CFclass = {
-    KISS_CMACRO, /* type */
-    &KISS_Sclass,   /* name */
-    (kiss_cf_t*)kiss_class,    /* C function name */
-    1,         /* minimum argument number */
-    1,        /* maximum argument number */
-};
-kiss_symbol_t KISS_Sclass = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"class",
-    KISS_CONSTANT_FUN,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFclass, /* fun */
-    KISS_NIL,                 /* plist */
-};
-
-kiss_symbol_t KISS_Sclass_of;
-kiss_cfunction_t KISS_CFclass_of = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sclass_of,   /* name */
-    (kiss_cf_t*)kiss_class_of,    /* C function name */
-    1,         /* minimum argument number */
-    1,        /* maximum argument number */
-};
-kiss_symbol_t KISS_Sclass_of = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"class-of",
-    KISS_CONSTANT_FUN,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFclass_of, /* fun */
-    KISS_NIL,                 /* plist */
-};
-
-kiss_symbol_t KISS_Ssubclassp;
-kiss_cfunction_t KISS_CFsubclassp = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Ssubclassp,   /* name */
-    (kiss_cf_t*)kiss_subclassp,    /* C function name */
-    2,         /* minimum argument number */
-    2,        /* maximum argument number */
-};
-kiss_symbol_t KISS_Ssubclassp = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"subclassp",
-    KISS_CONSTANT_FUN,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFsubclassp, /* fun */
-    KISS_NIL,                 /* plist */
-};
-
-kiss_symbol_t KISS_Sinstancep;
-kiss_cfunction_t KISS_CFinstancep = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sinstancep,   /* name */
-    (kiss_cf_t*)kiss_instancep,    /* C function name */
-    2,         /* minimum argument number */
-    2,        /* maximum argument number */
-};
-kiss_symbol_t KISS_Sinstancep = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"instancep",
-    KISS_CONSTANT_FUN,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFinstancep, /* fun */
-    KISS_NIL,                 /* plist */
-};
-
-kiss_symbol_t KISS_Sassure;
-kiss_cfunction_t KISS_CFassure = {
-    KISS_CMACRO, /* type */
-    &KISS_Sassure,   /* name */
-    (kiss_cf_t*)kiss_assure,    /* C function name */
-    2,         /* minimum argument number */
-    2,        /* maximum argument number */
-};
-kiss_symbol_t KISS_Sassure = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"assure",
-    KISS_CONSTANT_FUN,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFassure, /* fun */
-    KISS_NIL,                 /* plist */
-};
-
-/**** -------------- Predefined class names --------------------- ****/
-kiss_symbol_t KISS_Sc_object = {
-    KISS_SYMBOL,
-    NULL,         /* gc_ptr */
-    L"<object>",
-    0,
-    NULL,         /* var */
-    NULL,         /* fun */
-    KISS_NIL,     /* plist */
-};
-kiss_symbol_t KISS_Sc_built_in_class = {
-    KISS_SYMBOL,
-    NULL,         /* gc_ptr */
-    L"<built-in-class>",
-    0,
-    NULL,         /* var */
-    NULL,         /* fun */
-    KISS_NIL,     /* plist */
-};
-kiss_symbol_t KISS_Sc_standard_class = {
-    KISS_SYMBOL,
-    NULL,         /* gc_ptr */
-    L"<standard-class>",
-    0,
-    NULL,         /* var */
-    NULL,         /* fun */
-    KISS_NIL,     /* plist */
-};
-kiss_symbol_t KISS_Sc_null = {
-    KISS_SYMBOL,
-    NULL,         /* gc_ptr */
-    L"<null>",
-    0,
-    NULL,         /* var */
-    NULL,         /* fun */
-    KISS_NIL,     /* plist */
-};
-kiss_symbol_t KISS_Sc_cons = {
-    KISS_SYMBOL,
-    NULL,         /* gc_ptr */
-    L"<cons>",
-    0,
-    NULL,         /* var */
-    NULL,         /* fun */
-    KISS_NIL,     /* plist */
-};
-kiss_symbol_t KISS_Sc_symbol = {
-    KISS_SYMBOL,
-    NULL,         /* gc_ptr */
-    L"<symbol>",
-    0,
-    NULL,         /* var */
-    NULL,         /* fun */
-    KISS_NIL,     /* plist */
-};
-kiss_symbol_t KISS_Sc_character = {
-    KISS_SYMBOL,
-    NULL,         /* gc_ptr */
-    L"<character>",
-    0,
-    NULL,         /* var */
-    NULL,         /* fun */
-    KISS_NIL,     /* plist */
-};
-kiss_symbol_t KISS_Sc_integer = {
-    KISS_SYMBOL,
-    NULL,         /* gc_ptr */
-    L"<integer>",
-    0,
-    NULL,         /* var */
-    NULL,         /* fun */
-    KISS_NIL,     /* plist */
-};
-kiss_symbol_t KISS_Sc_float = {
-    KISS_SYMBOL,
-    NULL,         /* gc_ptr */
-    L"<float>",
-    0,
-    NULL,         /* var */
-    NULL,         /* fun */
-    KISS_NIL,     /* plist */
-};
-kiss_symbol_t KISS_Sc_string = {
-    KISS_SYMBOL,
-    NULL,         /* gc_ptr */
-    L"<string>",
-    0,
-    NULL,         /* var */
-    NULL,         /* fun */
-    KISS_NIL,     /* plist */
-};
-kiss_symbol_t KISS_Sc_general_vector = {
-    KISS_SYMBOL,
-    NULL,         /* gc_ptr */
-    L"<general-vector>",
-    0,
-    NULL,         /* var */
-    NULL,         /* fun */
-    KISS_NIL,     /* plist */
-};
-kiss_symbol_t KISS_Sc_general_array_s = {
-    KISS_SYMBOL,
-    NULL,         /* gc_ptr */
-    L"<general-array*>",
-    0,
-    NULL,         /* var */
-    NULL,         /* fun */
-    KISS_NIL,     /* plist */
-};
-kiss_symbol_t KISS_Sc_stream = {
-    KISS_SYMBOL,
-    NULL,         /* gc_ptr */
-    L"<stream>",
-    0,
-    NULL,         /* var */
-    NULL,         /* fun */
-    KISS_NIL,     /* plist */
-};
-kiss_symbol_t KISS_Sc_function = {
-    KISS_SYMBOL,
-    NULL,         /* gc_ptr */
-    L"<function>",
-    0,
-    NULL,         /* var */
-    NULL,         /* fun */
-    KISS_NIL,     /* plist */
-};
-kiss_symbol_t KISS_Sc_hash_table = {
-    KISS_SYMBOL,
-    NULL,         /* gc_ptr */
-    L"<hash-table>",
-    0,
-    NULL,         /* var */
-    NULL,         /* fun */
-    KISS_NIL,     /* plist */
-};
-
-
 
 /**** symbol table ****/
 kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
@@ -3519,7 +3341,6 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Skw_rest, &KISS_Samp_rest,
     &KISS_Skw_size, &KISS_Skw_test, &KISS_Skw_weakness,
     &KISS_Skw_rehash_size, &KISS_Skw_rehash_threshold,
-    &KISS_Skw_metaclass, &KISS_Skw_abstractp,
 
     /* cons.c */
     &KISS_Scar, &KISS_Scdr, &KISS_Scons, &KISS_Scadr, &KISS_Scddr,
@@ -3612,6 +3433,9 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     /* read.c */
     &KISS_Sread, 
 
+    /* oo_obj.c */
+    &KISS_Smake_object, &KISS_Sobject_p, &KISS_Sobject_plist, &KISS_Sset_object_plist,
+
     /* gf_invoke.c */
     &KISS_Smethod_invoke,
 
@@ -3624,21 +3448,8 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     /* gc.c */
     &KISS_Sgc, &KISS_Sgc_info,
 
-    /* ilos.c */
-    &KISS_Sclass, &KISS_Sclass_of, &KISS_Ssubclassp, &KISS_Sinstancep,
-    &KISS_Sassure,
-
-    /* predefined class names */
-    &KISS_Sc_object, &KISS_Sc_built_in_class, &KISS_Sc_standard_class,
-    &KISS_Sc_null, &KISS_Sc_cons, &KISS_Sc_symbol, &KISS_Sc_character,
-    &KISS_Sc_integer, &KISS_Sc_float, &KISS_Sc_string, &KISS_Sc_general_vector,
-    &KISS_Sc_general_array_s, &KISS_Sc_stream, &KISS_Sc_function,
-    
-
     NULL,
 };
-
-
 
 /* Uninterned symbols used in lisp reader */
 kiss_symbol_t KISS_Udot = {
