@@ -351,11 +351,11 @@ typedef struct {
 
 typedef struct {
      kiss_type type;
-     kiss_obj* class;
-     kiss_obj* slot_specs;
      kiss_symbol_t* name;
+     kiss_obj* metaclass;
      kiss_obj* supers;
      kiss_obj* cpl;
+     kiss_obj* slot_specs;
      kiss_obj* abstractp;
 } kiss_ilos_class_t;
 

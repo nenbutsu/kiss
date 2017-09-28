@@ -196,12 +196,8 @@ static kiss_obj* compute_cpl(kiss_obj* class, kiss_obj* supers) {
       abstractp ::= t | nil */
 kiss_obj* kiss_defclass(kiss_obj* class_name, kiss_obj* sc_names, kiss_obj* slot_specs, kiss_obj* class_options)
 {
-     kiss_ilos_class_t* class = kiss_c_gethash((kiss_obj*)Kiss_Symbol(name), Kiss_Classes, KISS_NIL);
-     if (class == KISS_NIL) {
-          class= kiss_make_ilos_class((kiss_symbol_t*)class_name);
-     }
-     class->supers = kiss_c_mapc1((kiss_cf1_t)kiss_class, Kiss_Proper_List(sc_names));
-     class->cpl = compute_cpl(class, class->supers);
+     kiss_obj* supers = kiss_c_mapc1((kiss_cf1_t)kiss_class, Kiss_Proper_List(sc_names));
+     kiss_obj* cpl = compute_cpl(class, class->supers);
 
      kiss_obj* metaclass = kiss_plist_get((kiss_obj*)&KISS_Skw_metaclass, class_options);
      if (metaclass == KISS_NIL) {
@@ -209,8 +205,19 @@ kiss_obj* kiss_defclass(kiss_obj* class_name, kiss_obj* sc_names, kiss_obj* slot
      } else {
           metaclass = kiss_class(Kiss_Symbol(metaclass));
      }
-     class->class = metaclass;
 
-     class->abstractp = kiss_plist_get((kiss_obj*)&KISS_Skw_abstractp, class_options);
+     kiss_obj* abstractp = kiss_plist_get((kiss_obj*)&KISS_Skw_abstractp, class_options);
+
+
+
      
+     
+     kiss_ilos_class_t* class = kiss_c_gethash((kiss_obj*)Kiss_Symbol(name), Kiss_Classes, KISS_NIL);
+     if (class == KISS_NIL) {
+          class= kiss_make_ilos_class((kiss_symbol_t*)class_name);
+     }
+     class->supers = supers;
+     class->cpl = clp;
+     class->metaclass = metaclass;
+     class->abstractp = abstractp;
 }
