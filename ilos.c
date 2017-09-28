@@ -37,14 +37,14 @@ void kiss_init_ilos(void) {
 }
 
 kiss_ilos_class_t* kiss_make_ilos_class(kiss_symbol_t* class_name) {
-     kiss_ilos_class_t* p = Kiss_GC_Malloc(sizeof(kiss_ilos_class_t));
+     kiss_ilos_class_t* p = Kiss_Malloc(sizeof(kiss_ilos_class_t));
      p->type = KISS_ILOS_CLASS;
      p->class = NULL;
-     p->slots = NULL;
      p->slot_specs = NULL;
      p->name = class_name;
      p->supers = NULL;
      p->cpl = NULL;
+     p->abstractp = KISS_NIL;
      return p;
 }
 

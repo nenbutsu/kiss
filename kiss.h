@@ -347,14 +347,11 @@ typedef struct {
      void* gc_ptr;
      kiss_obj* class;
      kiss_general_vector_t* slots;
-     kiss_obj* slot_specs;
 } kiss_ilos_obj_t;
 
 typedef struct {
      kiss_type type;
-     void* gc_ptr;
      kiss_obj* class;
-     kiss_general_vector_t* slots;
      kiss_obj* slot_specs;
      kiss_symbol_t* name;
      kiss_obj* supers;
