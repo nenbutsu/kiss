@@ -202,5 +202,15 @@ kiss_obj* kiss_defclass(kiss_obj* class_name, kiss_obj* sc_names, kiss_obj* slot
      }
      class->supers = kiss_c_mapc1((kiss_cf1_t)kiss_class, Kiss_Proper_List(sc_names));
      class->cpl = compute_cpl(class, class->supers);
+
+     kiss_obj* metaclass = kiss_plist_get((kiss_obj*)&KISS_Skw_metaclass, class_options);
+     if (metaclass == KISS_NIL) {
+          metaclass = (kiss_obj*)Kiss_Standard_Class;
+     } else {
+          metaclass = kiss_class(Kiss_Symbol(metaclass));
+     }
+     class->class = metaclass;
+
+     class->abstractp = kiss_plist_get((kiss_obj*)&KISS_Skw_abstractp, class_options);
      
 }

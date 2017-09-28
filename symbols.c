@@ -210,6 +210,29 @@ kiss_symbol_t KISS_Samp_rest = {
     KISS_NIL,                  /* plist */
 };
 
+kiss_symbol_t KISS_Skw_metaclass;
+kiss_symbol_t KISS_Skw_metaclass = {
+    KISS_SYMBOL,               /* type */
+    NULL,              /* gc_ptr */
+    L":metaclass",             /* name */
+    0,                    /* flags */
+    (kiss_obj*)&KISS_Skw_metaclass, /* var */
+    NULL,                 /* fun */
+    KISS_NIL,                  /* plist */
+};
+
+kiss_symbol_t KISS_Skw_abstractp;
+kiss_symbol_t KISS_Skw_abstractp = {
+    KISS_SYMBOL,               /* type */
+    NULL,              /* gc_ptr */
+    L":abstractp",             /* name */
+    0,                    /* flags */
+    (kiss_obj*)&KISS_Skw_abstractp, /* var */
+    NULL,                 /* fun */
+    KISS_NIL,                  /* plist */
+};
+
+
 kiss_symbol_t KISS_Skw_size;
 kiss_symbol_t KISS_Skw_size = {
     KISS_SYMBOL,               /* type */
@@ -3496,6 +3519,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Skw_rest, &KISS_Samp_rest,
     &KISS_Skw_size, &KISS_Skw_test, &KISS_Skw_weakness,
     &KISS_Skw_rehash_size, &KISS_Skw_rehash_threshold,
+    &KISS_Skw_metaclass, &KISS_Skw_abstractp,
 
     /* cons.c */
     &KISS_Scar, &KISS_Scdr, &KISS_Scons, &KISS_Scadr, &KISS_Scddr,

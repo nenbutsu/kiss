@@ -359,6 +359,7 @@ typedef struct {
      kiss_symbol_t* name;
      kiss_obj* supers;
      kiss_obj* cpl;
+     kiss_obj* abstractp;
 } kiss_ilos_class_t;
 
 
@@ -377,7 +378,7 @@ typedef struct {
 
 extern kiss_obj* Kiss_Features;
 
-kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda, KISS_Skw_rest, KISS_Samp_rest, KISS_Ueos, KISS_Skw_size, KISS_Skw_test, KISS_Skw_weakness, KISS_Skw_rehash_size, KISS_Skw_rehash_threshold;
+kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda, KISS_Skw_rest, KISS_Samp_rest, KISS_Ueos, KISS_Skw_size, KISS_Skw_test, KISS_Skw_weakness, KISS_Skw_rehash_size, KISS_Skw_rehash_threshold, KISS_Skw_metaclass, KISS_Skw_abstractp;
 #define KISS_T        ((kiss_obj*)(&KISS_St))
 #define KISS_NIL      ((kiss_obj*)(&KISS_Snil))
 #define KISS_QUOTE    ((kiss_obj*)(&KISS_Squote))
