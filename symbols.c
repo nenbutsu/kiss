@@ -1528,6 +1528,24 @@ kiss_symbol_t KISS_Sequal = {
     KISS_NIL,                 /* plist */
 };
 
+kiss_symbol_t KISS_Scond;
+kiss_cfunction_t KISS_CFcond = {
+    KISS_CMACRO,  /* type */
+    &KISS_Scond, /* name */
+    (kiss_cf_t*)kiss_cond,   /* C function name */
+    0,       /* minimum argument number */
+    -1,       /* maximum argument number */
+};
+kiss_symbol_t KISS_Scond = {
+    KISS_SYMBOL,              /* type */
+    NULL,              /* gc_ptr */
+    L"cond",            /* name */
+    KISS_CONSTANT_FUN,        /* info */
+    NULL,                /* var */
+    (kiss_obj*)&KISS_CFcond, /* fun */
+    KISS_NIL,                 /* plist */
+};
+
 
 kiss_symbol_t KISS_Sif;
 kiss_cfunction_t KISS_CFif = {
@@ -3452,7 +3470,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sreturn_from, &KISS_Stagbody, &KISS_Sgo,
     &KISS_Sif, &KISS_Sprogn, &KISS_Swhile,
     &KISS_Seq, &KISS_Seql, &KISS_Squote, &KISS_Snot, &KISS_Sand, &KISS_Sor,
-    &KISS_Sequal,
+    &KISS_Sequal, &KISS_Scond,
     
     /* number.c */
     &KISS_Sintegerp, &KISS_Sfloatp, &KISS_Sminus, &KISS_Splus, &KISS_Smultiply, &KISS_Snum_eq,

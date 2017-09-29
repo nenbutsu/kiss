@@ -9,59 +9,11 @@
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
 ;; (at your option) any later version.
-
+;;
 ;; KISS is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
-
-;; special operator: (or form*) -> <object>
-;; or is the sequential logical `or'. forms are evaluated from
-;; left to right until either one of them evaluates to a non-nil value or
-;; else none are left. If one of them evaluates to a non-nil value,
-;; then this non-nil value is returned, otherwise nil is returned.
-;;;(defmacro or (&rest args)
-;;;  (cond
-;;;   ((eq args nil)                       ; (or) = 'nil
-;;;    'nil)
-;;;   ((eq (cdr args) nil)                 ; (or form) = form
-;;;    (car args))
-;;;   (t (let ((var (gensym)))
-;;;        ;; (or form1 form2 . . . formn) = 
-;;;        ;; ((lambda (var) (if var var (or form2 . . . formn))) form1)
-;;;        ;; where var does not occur in form2 . . . formn
-;;;        `((lambda (,var) (if ,var ,var (or ,@(cdr args)))) ,(car args))))))
-
-
-;; special operator: (cond (test form*)*) -> <object>
-;; Executing the prepared cond, the clauses (test form*) are scanned
-;; sequentially and in each case the test is evaluated; when a test delivers
-;; a non-nil value the scanning process stops and all forms associated
-;; with the corresponding clause are sequentially evaluated and the value
-;; of the last one is returned. If no test is true, then nil is returned.
-;; If no form exists for the successful test then the value of this test
-;; is returned.
-(defmacro cond (&rest args)
-  (if (eq args nil)                     
-      ;; (cond) = nil
-      nil
-    (let ((clause1 (car args))
-          (rest (cdr args)))
-      (if (eq (cdr clause1) nil)
-          ;; (cond (test1)         = (or test1
-          ;;       (test2 form2*)        (cond (test2 form2*)
-          ;;          ...)                   ...))
-        `(or ,(car clause1)
-             (cond ,@rest))
-        (let ((test1 (car clause1))
-              (forms1 (cdr clause1)))
-          ;; (cond (test1 form+1)  = (if test1
-          ;;       (test2 form2*)        (progn form+1)
-          ;;          ...)                  (cond (test2 form2*)
-          ;;                                    ...))
-          `(if ,test1
-               (progn ,@forms1)
-             (cond ,@rest)))))))
 
 ;; special operator: 
 ;; (for (iteration-spec*) (end-test result*) form*) -> <object> 

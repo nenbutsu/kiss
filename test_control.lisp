@@ -122,6 +122,8 @@
 	  ((< 3 3) 'less)
 	  (t       'equal))
     'equal)
+(eql (cond (10)) 10)
+(eq (cond) 'nil)
 
 ;;; case case-using
 (eq (case (* 2 3)

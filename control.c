@@ -432,3 +432,25 @@ kiss_obj* kiss_equal(const kiss_obj* const obj1, const kiss_obj* const obj2) {
           exit(EXIT_FAILURE);
      }
 }
+
+/* special operator: (cond (test form*)*) -> <object>
+   Executing the prepared cond, the clauses (test form*) are scanned
+   sequentially and in each case the TEST is evaluated; when a TEST delivers
+   a non-nil value the scanning process stops and all FORMS associated
+   with the corresponding clause are sequentially evaluated and the value
+   of the last one is returned. If no TEST is true, then nil is returned.
+   If no FORM exists for the successful test then the value of this test
+   is returned. */
+kiss_obj* kiss_cond(const kiss_obj* const clauses) {
+     for (const kiss_obj* p = clauses; KISS_IS_CONS(p); p = KISS_CDR(p)) {
+          const kiss_obj* clause = KISS_CAR(p);
+          const kiss_obj* const test = kiss_car(clause);
+          kiss_obj* result = kiss_eval(test);
+          if (result != KISS_NIL) {
+               kiss_obj* body = kiss_cdr(clause);
+               if (body == KISS_NIL) return result;
+               return kiss_eval_body(body);
+          }
+     }
+     return KISS_NIL;
+}

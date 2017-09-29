@@ -421,6 +421,7 @@ kiss_obj* kiss_quote(kiss_obj* obj);
 kiss_obj* kiss_and(const kiss_obj* const forms);
 kiss_obj* kiss_or(const kiss_obj* const forms);
 kiss_obj* kiss_equal(const kiss_obj* const obj1, const kiss_obj* const obj2);
+kiss_obj* kiss_cond(const kiss_obj* const clauses);
 kiss_obj* kiss_if(kiss_obj* test_form, kiss_obj* then_form, kiss_obj* rest);
 kiss_obj* kiss_progn(kiss_obj* body);
 kiss_obj* kiss_while(const kiss_obj* const test_form, const kiss_obj* const body);
