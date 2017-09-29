@@ -139,48 +139,6 @@
              (case-using ,pred ,var
                 ,@(cdr clauses)))))))))
 
-;; Emacs lisp
-;; macro: when condition then-forms...
-;; This is a variant of `if' where there are no ELSE-FORMS, and
-;; possibly several THEN-FORMS.  In particular,
-;;     (when CONDITION A B C)
-;; is entirely equivalent to
-;;     (if CONDITION (progn A B C) nil)
-;;(defmacro when (condition &rest then-forms)
-;;  `(if ,condition
-;;       (progn ,@then-forms)
-;;     nil))
-
-
-;; function: (equal obj1 obj2) -> boolean
-(defun equal (obj1 obj2)
-  (cond
-   ((and (null obj1) (null obj2)) t)
-   ((and (consp obj1) (consp obj2))
-    (if (and (equal (car obj1) (car obj2))
-             (equal (cdr obj1) (cdr obj2)))
-        t
-      nil))
-   ((and (stringp obj1) (stringp obj2))
-    (if (string= obj1 obj2)
-	t
-      nil))
-   ((and (general-vector-p obj1) (general-vector-p obj2))
-    (if (= (length obj1) (length obj2))
-	(let ((i 0))
-	  (while (< i (length obj1))
-	    (if (not (eql (elt obj1 i) (elt obj2 i)))
-		(return-from equal nil))
-	    (setq i (+ i 1)))
-	  t)
-      nil))
-   ((and (general-array*-p obj1) (general-array*-p obj2)
-	 (equal (array-dimensions obj1) (array-dimensions obj2)))
-    (if (equal (kiss::general-array*-to-list obj1) (kiss::general-array*-to-list obj2))
-	t
-      nil))
-   (t (eql obj1 obj2))))
-
 (defmacro prog1 (first-form &rest forms)
   (let ((result-var (gensym)))
     `(let ((,result-var ,first-form))

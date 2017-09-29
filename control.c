@@ -345,3 +345,90 @@ kiss_obj* kiss_while(const kiss_obj* const test_form, const kiss_obj* const body
      }
      return KISS_NIL;
 }
+
+
+
+ /* function: (equal obj1 obj2) → boolean
+    Tests whether OBJ1 and OBJ2 are isomorphic—i.e., whether OBJ1 and OBJ2 denote
+    the same structure with equivalent values. 
+    equal returns t if the test was satisfied, and nil if not. 
+
+    Specifically:
+    If OBJ1 and OBJ2 are direct instances of the same class, equal returns t if they are eql.
+    Otherwise (if they are direct instances of the same class but not eql),
+    the result is t if one of the following cases applies:
+
+    lists: either obj1 and obj2 are both the empty list (i.e., nil), or
+
+    (and (equal (car obj1) (car obj2))
+         (equal (cdr obj1) (cdr obj2))) holds;
+
+    basic arrays:
+
+    (equal (array-dimensions obj1)
+           (array-dimensions obj2))
+
+    holds and for every valid reference (aref obj1 ind1 ...indn)
+
+    (equal (aref obj1 ind1 … indn)
+           (aref obj2 ind1 … indn)) is satisfied.
+
+    Otherwise the value is nil.
+
+    OBJ1 and OBJ2 may be any ISLISP objects. */
+kiss_obj* kiss_equal(const kiss_obj* const obj1, const kiss_obj* const obj2) {
+     switch (KISS_OBJ_TYPE(obj1)) {
+     case KISS_CHARACTER:
+     case KISS_FIXNUM:
+     case KISS_BIGNUM:
+     case KISS_FLOAT:
+     case KISS_SYMBOL:
+     case KISS_STREAM:
+     case KISS_HASH_TABLE:
+     case KISS_FUNCTION:
+     case KISS_MACRO:
+     case KISS_CFUNCTION:
+     case KISS_CMACRO:
+     case KISS_CATCHER:
+     case KISS_BLOCK:
+     case KISS_CLEANUP:
+     case KISS_TAGBODY:
+     case KISS_OO_OBJ:
+          return kiss_eql(obj1, obj2);
+     case KISS_CONS:
+          if (!KISS_IS_CONS(obj2)) return KISS_NIL;
+          return (kiss_equal(KISS_CAR(obj1), KISS_CAR(obj2)) == KISS_T &&
+                  kiss_equal(KISS_CDR(obj1), KISS_CDR(obj2)) == KISS_T ? KISS_T : KISS_NIL);
+     case KISS_STRING: {
+          if (!KISS_IS_STRING(obj2)) return KISS_NIL;
+          size_t n = ((kiss_string_t*)obj1)->n;
+          if (((kiss_string_t*)obj2)->n != n) return KISS_NIL;
+          wchar_t* s1 = ((kiss_string_t*)obj1)->str;
+          wchar_t* s2 = ((kiss_string_t*)obj2)->str;
+          for (size_t i = 0; i < n; i++) {
+               if (s1[i] != s2[i]) return KISS_NIL;
+          }
+          return KISS_T;
+     }
+     case KISS_GENERAL_VECTOR: {
+          if (!KISS_IS_GENERAL_VECTOR(obj2)) return KISS_NIL;
+          size_t n = ((kiss_general_vector_t*)obj1)->n;
+          if (((kiss_general_vector_t*)obj2)->n != n) return KISS_NIL;
+          kiss_obj** v1 = ((kiss_general_vector_t*)obj1)->v;
+          kiss_obj** v2 = ((kiss_general_vector_t*)obj2)->v;
+          for (size_t i = 0; i < n; i++) {
+               if (kiss_equal(v1[i], v2[i]) == KISS_NIL) return KISS_NIL;
+          }
+          return KISS_T;
+     }
+     case KISS_GENERAL_ARRAY_S:
+          if (!KISS_IS_GENERAL_ARRAY_S(obj2)) return KISS_NIL;
+          if (kiss_equal(kiss_array_dimensions(obj1), kiss_array_dimensions(obj2)) == KISS_NIL)
+               return KISS_NIL;
+          return kiss_equal(((kiss_general_array_t*)obj1)->vector,
+                            ((kiss_general_array_t*)obj2)->vector);
+     default:
+          fwprintf(stderr, L"equal: unknown primitive object type = %d\n", KISS_OBJ_TYPE(obj1));
+          exit(EXIT_FAILURE);
+     }
+}

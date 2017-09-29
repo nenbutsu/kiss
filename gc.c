@@ -190,7 +190,7 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
 	  case KISS_GENERAL_VECTOR:
 	       kiss_gc_mark_general_vector((kiss_general_vector_t*)obj);
                break;
-	  case KISS_GENERAL_ARRAY:
+	  case KISS_GENERAL_ARRAY_S:
 	       kiss_gc_mark_general_array((kiss_general_array_t*)obj);
                break;
 	  case KISS_HASH_TABLE:
@@ -308,7 +308,7 @@ void kiss_gc_free_obj(kiss_gc_obj* obj) {
 	       break;
 	  case KISS_CONS:
 	  case KISS_GENERAL_VECTOR:
-	  case KISS_GENERAL_ARRAY:
+	  case KISS_GENERAL_ARRAY_S:
           case KISS_HASH_TABLE:
 	  case KISS_FUNCTION:
 	  case KISS_MACRO:

@@ -30,7 +30,7 @@
 //     case KISS_STRING:    class_name_str = L"<string>";    break;
 //     case KISS_GENERAL_VECTOR:
 //	  class_name_str = L"<general-vector>"; break;
-//     case KISS_GENERAL_ARRAY:
+//     case KISS_GENERAL_ARRAY_S:
 //	  class_name_str = L"<general-array*>"; break;
 //     case KISS_STREAM:    class_name_str = L"<stream>";    break;
 //     case KISS_FUNCTION:  class_name_str = L"<function>";  break;
