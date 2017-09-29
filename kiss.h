@@ -360,16 +360,7 @@ extern kiss_obj* Kiss_Features;
 kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda, KISS_Skw_rest, KISS_Samp_rest, KISS_Ueos, KISS_Skw_size, KISS_Skw_test, KISS_Skw_weakness, KISS_Skw_rehash_size, KISS_Skw_rehash_threshold;
 #define KISS_T        ((kiss_obj*)(&KISS_St))
 #define KISS_NIL      ((kiss_obj*)(&KISS_Snil))
-#define KISS_QUOTE    ((kiss_obj*)(&KISS_Squote))
-#define KISS_LAMBDA   ((kiss_obj*)(&KISS_Slambda))
-#define KISS_AMP_REST ((kiss_obj*)(&KISS_Samp_rest))
-#define KISS_KW_REST  ((kiss_obj*)(&KISS_Skw_rest))
 #define KISS_EOS      ((kiss_obj*)(&KISS_Ueos))
-#define KISS_KW_SIZE  ((kiss_obj*)(&KISS_Skw_size))
-#define KISS_KW_TEST  ((kiss_obj*)(&KISS_Skw_test))
-#define KISS_KW_WEAKNESS  ((kiss_obj*)(&KISS_Skw_weakness))
-#define KISS_KW_REHASH_SIZE  ((kiss_obj*)(&KISS_Skw_rehash_size))
-#define KISS_KW_REHASH_THRESHOLD  ((kiss_obj*)(&KISS_Skw_rehash_threshold))
 
 kiss_symbol_t KISS_Udummy;
 #define KISS_DUMMY      ((kiss_obj*)(&KISS_Udummy))
@@ -427,7 +418,8 @@ kiss_obj* kiss_cinvoke(const kiss_cfunction_t* const cfun, kiss_obj* args);
 
 /* control.c */
 kiss_obj* kiss_quote(kiss_obj* obj);
-kiss_obj* kiss_and(kiss_obj* forms);
+kiss_obj* kiss_and(const kiss_obj* const forms);
+kiss_obj* kiss_or(const kiss_obj* const forms);
 kiss_obj* kiss_if(kiss_obj* test_form, kiss_obj* then_form, kiss_obj* rest);
 kiss_obj* kiss_progn(kiss_obj* body);
 kiss_obj* kiss_while(const kiss_obj* const test_form, const kiss_obj* const body);
@@ -974,6 +966,19 @@ kiss_obj* kiss_cddr(const kiss_obj* const p)  { return kiss_cdr(kiss_cdr(p)); }
 inline
 kiss_obj* kiss_caddr(const kiss_obj* const p) { return kiss_car(kiss_cddr(p)); }
 
+/* function: (null obj) -> boolean
+   Returns t if OBJ is nil; otherwise, returns nil.
+   OBJ may be any ISLISP object. */
+inline
+kiss_obj* kiss_null(const kiss_obj* const p) { return (p == KISS_NIL ? KISS_T : KISS_NIL); }
+
+/* function: (listp obj) -> boolean
+   Returns t if OBJ is a list (instance of class <list>);
+   otherwise, returns nil. OBJ may be any ISLISP object. */
+inline
+kiss_obj* kiss_listp(const kiss_obj* const p) {
+     return (p == KISS_NIL || KISS_IS_CONS(p) ? KISS_T : KISS_NIL);
+}
 
 
 /* function (nreverse list) -> <list>

@@ -331,7 +331,7 @@ static kiss_obj* kiss_read_comma(const kiss_obj* const in) {
 static kiss_obj* kiss_expand_backquote(kiss_obj* p) {
     kiss_obj* stack = KISS_NIL;
     if (!KISS_IS_CONS(p))             /* `ATOM = 'ATOM */
-	return kiss_c_list(2, KISS_QUOTE, p);
+         return kiss_c_list(2, (kiss_obj*)&KISS_Squote, p);
     if (KISS_CAR(p) == KISS_COMMA)    /* `,FORM = FORM */
 	return kiss_cadr(p);
     if (KISS_CAR(p) == KISS_COMMA_AT) /* `,@FORM => error */
@@ -356,7 +356,7 @@ static kiss_obj* kiss_expand_backquote(kiss_obj* p) {
 		/* syntax list (a b COMMA_AT c) denotes (a b . ,@c) */
 		Kiss_Err(L"Invalid unquote-splicing(,@)");
 	    } else {
-		kiss_push(kiss_c_list(2, ((kiss_obj*)(&KISS_Slist)), kiss_c_list(2, KISS_QUOTE, x)),
+                 kiss_push(kiss_c_list(2, ((kiss_obj*)(&KISS_Slist)), kiss_c_list(2, (kiss_obj*)&KISS_Squote, x)),
 			  &stack);
 	    }
 
@@ -417,7 +417,7 @@ static kiss_obj* kiss_read_lexeme(const kiss_obj* const in) {
                kiss_c_read_char(in, KISS_NIL, KISS_NIL);
                p = kiss_c_read(in, KISS_NIL, KISS_EOS);
                if (p == KISS_EOS) { Kiss_Err(L"Stray quote '"); }
-               return kiss_c_list(2, KISS_QUOTE, p);
+               return kiss_c_list(2, (kiss_obj*)&KISS_Squote, p);
           }
           case L';': {
                do {

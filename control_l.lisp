@@ -20,17 +20,17 @@
 ;; left to right until either one of them evaluates to a non-nil value or
 ;; else none are left. If one of them evaluates to a non-nil value,
 ;; then this non-nil value is returned, otherwise nil is returned.
-(defmacro or (&rest args)
-  (cond
-   ((eq args nil)                       ; (or) = 'nil
-    'nil)
-   ((eq (cdr args) nil)                 ; (or form) = form
-    (car args))
-   (t (let ((var (gensym)))
-        ;; (or form1 form2 . . . formn) = 
-        ;; ((lambda (var) (if var var (or form2 . . . formn))) form1)
-        ;; where var does not occur in form2 . . . formn
-        `((lambda (,var) (if ,var ,var (or ,@(cdr args)))) ,(car args))))))
+;;;(defmacro or (&rest args)
+;;;  (cond
+;;;   ((eq args nil)                       ; (or) = 'nil
+;;;    'nil)
+;;;   ((eq (cdr args) nil)                 ; (or form) = form
+;;;    (car args))
+;;;   (t (let ((var (gensym)))
+;;;        ;; (or form1 form2 . . . formn) = 
+;;;        ;; ((lambda (var) (if var var (or form2 . . . formn))) form1)
+;;;        ;; where var does not occur in form2 . . . formn
+;;;        `((lambda (,var) (if ,var ,var (or ,@(cdr args)))) ,(car args))))))
 
 
 ;; special operator: (cond (test form*)*) -> <object>

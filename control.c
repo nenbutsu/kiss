@@ -304,19 +304,30 @@ kiss_obj* kiss_progn(kiss_obj* body) { return kiss_eval_body(body); }
    from left to right until either one of them evaluates to nil or else
    none are left. If one of them evaluates to nil, then nil is returned
    from the and; otherwise, the value of the last evaluated form is returned. */
-kiss_obj* kiss_and(kiss_obj* forms) {
-     if (forms == KISS_NIL) { return KISS_T; }
-     kiss_obj* obj = KISS_CAR(forms);
-     kiss_obj* result = kiss_eval(obj);
-     if (result == KISS_NIL) { return KISS_NIL; }
-
-     for (kiss_obj* p = KISS_CDR(forms); p != KISS_NIL; p = KISS_CDR(p)) {
-          obj = KISS_CAR(p);
+kiss_obj* kiss_and(const kiss_obj* const forms) {
+     kiss_obj* result = KISS_T;
+     for (const kiss_obj* p = forms; KISS_IS_CONS(p); p = KISS_CDR(p)) {
+          kiss_obj* obj = KISS_CAR(p);
           result = kiss_eval(obj);
           if (result == KISS_NIL) { return KISS_NIL; }
      }
      return result;
 }
+
+/* special operator: (or form*) -> <object>
+   or is the sequential logical `or'. forms are evaluated from
+   left to right until either one of them evaluates to a non-nil value or
+   else none are left. If one of them evaluates to a non-nil value,
+   then this non-nil value is returned, otherwise nil is returned. */
+kiss_obj* kiss_or(const kiss_obj* const forms) {
+     for (const kiss_obj* p = forms; KISS_IS_CONS(p); p = KISS_CDR(p)) {
+          kiss_obj* obj = KISS_CAR(p);
+          kiss_obj* result = kiss_eval(obj);
+          if (result != KISS_NIL) { return result; }
+     }
+     return KISS_NIL;
+}
+
 
 /* special operator: (while test-form body-form*) -> <null>
    Iterates while the test-form returns a true value. Specifically:

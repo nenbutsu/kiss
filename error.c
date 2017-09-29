@@ -169,7 +169,7 @@ kiss_obj* Kiss_Lambda_List(const kiss_obj* const list) {
 /* lambda-expression :: = (lambda LAMBDA-LIST form*) */
 kiss_obj* Kiss_Lambda_Expression(const kiss_obj* const p) {
     Kiss_Proper_List(p);
-    if (kiss_c_length(p) < 2 || KISS_CAR(p) != KISS_LAMBDA) {
+    if (kiss_c_length(p) < 2 || KISS_CAR(p) != (kiss_obj*)&KISS_Slambda) {
 	Kiss_Err(L"Invalid lambda expression ~S", p);
     }
     Kiss_Lambda_List(kiss_cadr(p));

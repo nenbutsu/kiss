@@ -47,8 +47,8 @@ void kiss_bind_funargs(kiss_obj* params, kiss_obj* args) {
     kiss_environment_t* env = Kiss_Get_Environment();
     int nparam = kiss_c_length(params);
     int narg = kiss_c_length(args);
-    int rest = kiss_member(KISS_KW_REST,  params) != KISS_NIL ||
-	kiss_member(KISS_AMP_REST, params) != KISS_NIL;
+    int rest = kiss_member((kiss_obj*)&KISS_Skw_rest,  params) != KISS_NIL ||
+         kiss_member((kiss_obj*)&KISS_Samp_rest, params) != KISS_NIL;
     if (!rest && nparam < narg) {
 	Kiss_Err(L"Too many arguments ~S ~S", params, args);
     }
@@ -59,7 +59,7 @@ void kiss_bind_funargs(kiss_obj* params, kiss_obj* args) {
     while (KISS_IS_CONS(params)) {
 	kiss_obj* p = KISS_CAR(params);
 	kiss_obj* a = KISS_CAR(args);
-	if (p == KISS_AMP_REST || p == KISS_KW_REST) {
+	if (p == (kiss_obj*)&KISS_Samp_rest || p == (kiss_obj*)&KISS_Skw_rest) {
 	    params = KISS_CDR(params);
 	    p = KISS_CAR(params);
 	    a = kiss_copy_list(args);
@@ -85,8 +85,8 @@ kiss_obj* kiss_linvoke(kiss_function_t* fun, kiss_obj* args) {
 /* special operator: (lambda lambda-list form*) -> <function> */
 kiss_obj* kiss_lambda(kiss_obj* params, kiss_obj* body) {
     kiss_obj* lambda =
-	kiss_c_list(3, KISS_LAMBDA, params,
-		   kiss_c_append(2, kiss_c_list(2, &KISS_Sblock, KISS_LAMBDA), body));
+         kiss_c_list(3, (kiss_obj*)&KISS_Slambda, params,
+		   kiss_c_append(2, kiss_c_list(2, &KISS_Sblock, &KISS_Slambda), body));
     /* (lambda () . body) -> (lambda () (block lambda . body)) */
     return (kiss_obj*)kiss_make_function(NULL, lambda);
 }
@@ -94,7 +94,7 @@ kiss_obj* kiss_lambda(kiss_obj* params, kiss_obj* body) {
 /* special operator: (defun function-name lambda-list form*) -> <symbol> */
 kiss_obj* kiss_defun(kiss_obj* name, kiss_obj* params, kiss_obj* body) {
     kiss_symbol_t* fname = Kiss_Symbol(name);
-    kiss_obj* lambda = kiss_c_list(3, KISS_LAMBDA, params,
+    kiss_obj* lambda = kiss_c_list(3, &KISS_Slambda, params,
 				  kiss_c_append(2, kiss_c_list(2, &KISS_Sblock, name), body));
     /* (defun foo () . body) -> (defun foo () (block foo . body)) */
     fname->fun = (kiss_obj*)kiss_make_function(fname, lambda);
@@ -104,7 +104,7 @@ kiss_obj* kiss_defun(kiss_obj* name, kiss_obj* params, kiss_obj* body) {
 /* special operator: (defmacro macro-name lambda-list form*) -> <symbol> */
 kiss_obj* kiss_defmacro(kiss_obj* name, kiss_obj* params, kiss_obj* body) {
     kiss_symbol_t* fname = Kiss_Symbol(name);
-    kiss_obj* lambda = kiss_c_list(3, KISS_LAMBDA, params,
+    kiss_obj* lambda = kiss_c_list(3, &KISS_Slambda, params,
 				  kiss_c_append(2, kiss_c_list(2, &KISS_Sblock, name), body));
     /* (defmacro foo () . body) -> (defmacro foo () (block foo . body)) */
     fname->fun = (kiss_obj*)kiss_make_macro(fname, lambda);
@@ -184,7 +184,7 @@ kiss_obj* kiss_flet(kiss_obj* fspecs, kiss_obj* body) {
     {
 	kiss_obj* spec = Kiss_Proper_List(KISS_CAR(fspecs));
 	kiss_symbol_t* name = Kiss_Symbol(kiss_car(spec));
-	kiss_obj* lambda = kiss_cons(KISS_LAMBDA, kiss_cdr(spec));
+	kiss_obj* lambda = kiss_cons((kiss_obj*)&KISS_Slambda, kiss_cdr(spec));
 	kiss_function_t* fun = kiss_make_function(name, lambda);
 	kiss_push(kiss_cons((kiss_obj*)name, (kiss_obj*)fun), &stack);
     }
@@ -216,7 +216,7 @@ kiss_obj* kiss_labels(kiss_obj* fspecs, kiss_obj* body) {
     {
 	kiss_obj* spec = Kiss_Proper_List(KISS_CAR(fspecs));
 	kiss_symbol_t* name = Kiss_Symbol(kiss_car(spec));
-	kiss_obj* lambda = kiss_cons(KISS_LAMBDA, kiss_cdr(spec));
+	kiss_obj* lambda = kiss_cons((kiss_obj*)&KISS_Slambda, kiss_cdr(spec));
 	/* temporarily store lambda expression instead of function object */
 	kiss_push(kiss_cons((kiss_obj*)name, lambda), &stack); 
     }

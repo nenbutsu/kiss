@@ -33,21 +33,21 @@ kiss_obj* kiss_make_hash_table(kiss_obj* size, kiss_obj* test, kiss_obj* weaknes
 }
 
 kiss_obj* kiss_create_hash_table(kiss_obj* args) {
-     kiss_obj* size = kiss_plist_get(args, KISS_KW_SIZE);
+     kiss_obj* size = kiss_plist_get(args, (kiss_obj*)&KISS_Skw_size);
      if (size == KISS_NIL)
           size = kiss_make_fixnum(1024);
 
-     kiss_obj* test = kiss_plist_get(args, KISS_KW_TEST);
+     kiss_obj* test = kiss_plist_get(args, (kiss_obj*)&KISS_Skw_test);
 
-     kiss_obj* weakness = kiss_plist_get(args, KISS_KW_WEAKNESS);
+     kiss_obj* weakness = kiss_plist_get(args, (kiss_obj*)&KISS_Skw_weakness);
      
-     kiss_obj* rehash_size = kiss_plist_get(args, KISS_KW_REHASH_SIZE);
+     kiss_obj* rehash_size = kiss_plist_get(args, (kiss_obj*)&KISS_Skw_rehash_size);
      if (rehash_size == KISS_NIL) {
           kiss_float_t* f = kiss_make_float(1.5);
           rehash_size = (kiss_obj*)f;
      }
 
-     kiss_obj* rehash_threshold = kiss_plist_get(args, KISS_KW_REHASH_THRESHOLD);
+     kiss_obj* rehash_threshold = kiss_plist_get(args, (kiss_obj*)&KISS_Skw_rehash_threshold);
      if (rehash_threshold == KISS_NIL) {
           kiss_float_t* f = kiss_make_float(0.8);
           rehash_threshold = (kiss_obj*)f;

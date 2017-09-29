@@ -435,6 +435,42 @@ kiss_symbol_t KISS_Sset_cdr = {
     KISS_NIL,                   /* plist */
 };
 
+kiss_symbol_t KISS_Snull;
+kiss_cfunction_t KISS_CFnull = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Snull, /* name */
+    (kiss_cf_t*)kiss_null,   /* C function name */
+    1,         /* minimum argument number */
+    1,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Snull = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"null",
+    KISS_CONSTANT_FUN,
+    NULL,                  /* var */
+    (kiss_obj*)&KISS_CFnull, /* fun */
+    KISS_NIL,                   /* plist */
+};
+
+kiss_symbol_t KISS_Slistp;
+kiss_cfunction_t KISS_CFlistp = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Slistp, /* name */
+    (kiss_cf_t*)kiss_listp,   /* C function name */
+    1,         /* minimum argument number */
+    1,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Slistp = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"listp",
+    KISS_CONSTANT_FUN,
+    NULL,                  /* var */
+    (kiss_obj*)&KISS_CFlistp, /* fun */
+    KISS_NIL,                   /* plist */
+};
+
 kiss_symbol_t KISS_Screate_list;
 kiss_cfunction_t KISS_CFcreate_list = {
     KISS_CFUNCTION, /* type */
@@ -1453,6 +1489,24 @@ kiss_symbol_t KISS_Sand = {
     KISS_CONSTANT_FUN,        /* info */
     NULL,                /* var */
     (kiss_obj*)&KISS_CFand, /* fun */
+    KISS_NIL,                 /* plist */
+};
+
+kiss_symbol_t KISS_Sor;
+kiss_cfunction_t KISS_CFor = {
+    KISS_CMACRO,  /* type */
+    &KISS_Sor, /* name */
+    (kiss_cf_t*)kiss_or,   /* C function name */
+    0,       /* minimum argument number */
+    -1,       /* maximum argument number */
+};
+kiss_symbol_t KISS_Sor = {
+    KISS_SYMBOL,              /* type */
+    NULL,              /* gc_ptr */
+    L"or",            /* name */
+    KISS_CONSTANT_FUN,        /* info */
+    NULL,                /* var */
+    (kiss_obj*)&KISS_CFor, /* fun */
     KISS_NIL,                 /* plist */
 };
 
@@ -3346,6 +3400,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Scar, &KISS_Scdr, &KISS_Scons, &KISS_Scadr, &KISS_Scddr,
     &KISS_Scaddr, &KISS_Sconsp,
     &KISS_Sset_car, &KISS_Sset_cdr, &KISS_Screate_list,
+    &KISS_Snull, &KISS_Slistp,
     &KISS_Slist, &KISS_Sappend, &KISS_Sappend_s,
     &KISS_Sreverse, &KISS_Snreverse,
     &KISS_Smember, &KISS_Smember_using,
@@ -3378,7 +3433,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sunwind_protect, &KISS_Scatch, &KISS_Sthrow, &KISS_Sblock,
     &KISS_Sreturn_from, &KISS_Stagbody, &KISS_Sgo,
     &KISS_Sif, &KISS_Sprogn, &KISS_Swhile,
-    &KISS_Seq, &KISS_Seql, &KISS_Squote, &KISS_Snot, &KISS_Sand,
+    &KISS_Seq, &KISS_Seql, &KISS_Squote, &KISS_Snot, &KISS_Sand, &KISS_Sor,
     
     /* number.c */
     &KISS_Sintegerp, &KISS_Sfloatp, &KISS_Sminus, &KISS_Splus, &KISS_Smultiply, &KISS_Snum_eq,

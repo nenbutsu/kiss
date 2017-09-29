@@ -15,20 +15,7 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
-;; function: (null obj) -> boolean
-;; Returns t if OBJ is nil; otherwise, returns nil.
-;; OBJ may be any ISLISP object.
-(defun null (obj) (eq obj nil))
-
-;; function: (listp obj) -> boolean
-;; Returns t if OBJ is a list (instance of class <list>);
-;; otherwise, returns nil. OBJ may be any ISLISP object.
-(defun listp (obj)
-  (if (or (null obj) (consp obj))
-      t
-    nil))
-
-;; Common Lisp, Emacs Lisp fucntion: last list &optional n => tail
+;; Common Lisp fucntion: last list &optional n => tail
 ;; Arguments and Values:
 ;; list---a list, which might be a dotted list but must not be a circular list.
 ;; n---a non-negative integer. The default is 1.
@@ -79,22 +66,6 @@
     (for ((p list (cdr p))) ((not (consp p)))
          (setq result `(,(funcall function (car p)) ,@result)))
     (nreverse result)))
-
-;; function: (mapcar function list+) -> <list>
-;; mapcar operates on successive elements of the lists. function is applied to
-;; the first element of each list, then to the second element of each list,
-;; and so on. The iteration terminates when the shortest list runs out,
-;; and excess elements in other lists are ignored.
-;; The value returned by mapcar is a list of the results of successive calls
-;; to function.
-;;;(defun mapcar (function list1 &rest rest)
-;;;  (let ((lists `(,list1 ,@rest))
-;;;        (result nil))
-;;;    (kiss::mapcar1 #'kiss::assure-list lists)
-;;;    (while (not (member nil lists))
-;;;      (setq result `(,(apply function (kiss::mapcar1 #'car lists)) ,@result))
-;;;      (setq lists (kiss::mapcar1 #'cdr lists)))
-;;;    (nreverse result)))
 
 ;; function: (mapc function list+) -> <list>
 ;; mapc is like mapcar except that the results of applying function are not accumulated;

@@ -148,6 +148,12 @@ extern inline
 kiss_obj* kiss_caddr(const kiss_obj* const p);
 
 extern inline
+kiss_obj* kiss_null(const kiss_obj* const p);
+
+extern inline
+kiss_obj* kiss_listp(const kiss_obj* const p);
+
+extern inline
 kiss_obj* kiss_nreverse(kiss_obj* p);
 
 extern inline
