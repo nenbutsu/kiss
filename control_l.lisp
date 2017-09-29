@@ -91,8 +91,3 @@
              (case-using ,pred ,var
                 ,@(cdr clauses)))))))))
 
-(defmacro prog1 (first-form &rest forms)
-  (let ((result-var (gensym)))
-    `(let ((,result-var ,first-form))
-       ,@forms
-       ,result-var)))

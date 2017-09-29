@@ -454,3 +454,9 @@ kiss_obj* kiss_cond(const kiss_obj* const clauses) {
      }
      return KISS_NIL;
 }
+
+kiss_obj* kiss_prog1(const kiss_obj* const form1, const kiss_obj* const forms) {
+     kiss_obj* result = kiss_eval(form1);
+     kiss_eval_body(forms);
+     return result;
+}

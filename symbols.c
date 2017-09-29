@@ -1583,6 +1583,24 @@ kiss_symbol_t KISS_Sprogn = {
     KISS_NIL,              /* plist */
 };
 
+kiss_symbol_t KISS_Sprog1;
+kiss_cfunction_t KISS_CFprog1 = {
+    KISS_CMACRO,  /* type */
+    &KISS_Sprog1, /* name */
+    (kiss_cf_t*)kiss_prog1,   /* C function name */
+    1,       /* minimum argument number */
+    -1,      /* maximum argument number */
+};
+kiss_symbol_t KISS_Sprog1 = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"prog1",
+    KISS_CONSTANT_FUN,
+    NULL,             /* var */
+    (kiss_obj*)&KISS_CFprog1, /* fun */
+    KISS_NIL,              /* plist */
+};
+
 kiss_symbol_t KISS_Swhile;
 kiss_cfunction_t KISS_CFwhile = {
     KISS_CMACRO,  /* type */
@@ -3468,7 +3486,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     /* control.c */
     &KISS_Sunwind_protect, &KISS_Scatch, &KISS_Sthrow, &KISS_Sblock,
     &KISS_Sreturn_from, &KISS_Stagbody, &KISS_Sgo,
-    &KISS_Sif, &KISS_Sprogn, &KISS_Swhile,
+    &KISS_Sif, &KISS_Sprogn, &KISS_Sprog1, &KISS_Swhile,
     &KISS_Seq, &KISS_Seql, &KISS_Squote, &KISS_Snot, &KISS_Sand, &KISS_Sor,
     &KISS_Sequal, &KISS_Scond,
     

@@ -424,6 +424,7 @@ kiss_obj* kiss_equal(const kiss_obj* const obj1, const kiss_obj* const obj2);
 kiss_obj* kiss_cond(const kiss_obj* const clauses);
 kiss_obj* kiss_if(kiss_obj* test_form, kiss_obj* then_form, kiss_obj* rest);
 kiss_obj* kiss_progn(kiss_obj* body);
+kiss_obj* kiss_prog1(const kiss_obj* const form1, const kiss_obj* const forms);
 kiss_obj* kiss_while(const kiss_obj* const test_form, const kiss_obj* const body);
 kiss_catcher_t* kiss_make_catcher(kiss_obj* tag, jmp_buf jmp);
 kiss_obj* kiss_catch(kiss_obj* tag_form, kiss_obj* body);
