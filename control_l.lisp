@@ -55,39 +55,3 @@
 	     ,@body
 	     ,@steps)
 	   ,@results)))))
-
-
-;; special operator: (case keyform ((key*) form*)* [(t form*)]) -> <object>
-(defmacro case (keyform &rest clauses)
-  `(case-using #'eql ,keyform
-     ,@clauses))
-
-;; special operator: (case-using predform keyform ((key*) form*)* [(t form*)])
-;;  -> <object>
-(defmacro case-using (predform keyform &rest clauses)
-  ;; clauses := (((key*) form*)* [(t form*)])
-  (cond
-   ((eq clauses nil)
-    ;; (case-using predform keyform)
-    `(progn ,predform ,keyform nil))
-   ((eq (car (car clauses)) t)
-    ;; (case-using predform keyform (t form*))
-    `(progn ,predform ,keyform ,@(cdr (car clauses))))
-   (t
-    ;; (case-using predform keyform ((key*) form*) ((key*) form*)* [(t form*)])
-    ;;                              ^^^^^^^^^^^^^^
-    ;;                                clause1
-    (flet ((make-test (pred var keys)
-             (let ((test nil))
-                 `(funcall #'member-using ,pred ,var ',keys))))
-      (let* ((pred (gensym))
-             (var (gensym))
-             (clause1 (car clauses))
-             (test (make-test pred var (car clause1))))
-        `(let ((,pred ,predform)
-               (,var ,keyform))
-           (if ,test
-               (progn ,@(cdr clause1))
-             (case-using ,pred ,var
-                ,@(cdr clauses)))))))))
-

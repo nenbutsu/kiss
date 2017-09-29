@@ -361,9 +361,12 @@ kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda, KISS_Skw_rest, KISS
 #define KISS_T        ((kiss_obj*)(&KISS_St))
 #define KISS_NIL      ((kiss_obj*)(&KISS_Snil))
 
+kiss_symbol_t KISS_Seql;
+
 kiss_symbol_t KISS_Ueos, KISS_Udummy;
 #define KISS_DUMMY    ((kiss_obj*)(&KISS_Udummy))
 #define KISS_EOS      ((kiss_obj*)(&KISS_Ueos))
+
 
 #define KISS_CAR(x) ((void*)(((kiss_cons_t*)x)->car))
 #define KISS_CDR(x) ((void*)(((kiss_cons_t*)x)->cdr))
@@ -422,6 +425,8 @@ kiss_obj* kiss_and(const kiss_obj* const forms);
 kiss_obj* kiss_or(const kiss_obj* const forms);
 kiss_obj* kiss_equal(const kiss_obj* const obj1, const kiss_obj* const obj2);
 kiss_obj* kiss_cond(const kiss_obj* const clauses);
+kiss_obj* kiss_case_using(const kiss_obj* const predform, const kiss_obj* const keyform, const kiss_obj* const clauses);
+kiss_obj* kiss_case(const kiss_obj* const keyform, const kiss_obj* const clauses);
 kiss_obj* kiss_if(kiss_obj* test_form, kiss_obj* then_form, kiss_obj* rest);
 kiss_obj* kiss_progn(kiss_obj* body);
 kiss_obj* kiss_prog1(const kiss_obj* const form1, const kiss_obj* const forms);

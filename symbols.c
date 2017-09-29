@@ -1565,6 +1565,42 @@ kiss_symbol_t KISS_Sif = {
     KISS_NIL,              /* plist */
 };
 
+kiss_symbol_t KISS_Scase;
+kiss_cfunction_t KISS_CFcase = {
+    KISS_CMACRO, /* type */
+    &KISS_Scase,   /* name */
+    (kiss_cf_t*)kiss_case,    /* C function name */
+    1,      /* minimum argument number */
+    -1,      /* maximum argument number */
+};
+kiss_symbol_t KISS_Scase = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"case",
+    KISS_CONSTANT_FUN,
+    NULL,             /* var */
+    (kiss_obj*)&KISS_CFcase, /* fun */
+    KISS_NIL,              /* plist */
+};
+
+kiss_symbol_t KISS_Scase_using;
+kiss_cfunction_t KISS_CFcase_using = {
+    KISS_CMACRO, /* type */
+    &KISS_Scase_using,   /* name */
+    (kiss_cf_t*)kiss_case_using,    /* C function name */
+    2,      /* minimum argument number */
+    -1,      /* maximum argument number */
+};
+kiss_symbol_t KISS_Scase_using = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"case-using",
+    KISS_CONSTANT_FUN,
+    NULL,             /* var */
+    (kiss_obj*)&KISS_CFcase_using, /* fun */
+    KISS_NIL,              /* plist */
+};
+
 kiss_symbol_t KISS_Sprogn;
 kiss_cfunction_t KISS_CFprogn = {
     KISS_CMACRO,  /* type */
@@ -3487,6 +3523,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sunwind_protect, &KISS_Scatch, &KISS_Sthrow, &KISS_Sblock,
     &KISS_Sreturn_from, &KISS_Stagbody, &KISS_Sgo,
     &KISS_Sif, &KISS_Sprogn, &KISS_Sprog1, &KISS_Swhile,
+    &KISS_Scase, &KISS_Scase_using,
     &KISS_Seq, &KISS_Seql, &KISS_Squote, &KISS_Snot, &KISS_Sand, &KISS_Sor,
     &KISS_Sequal, &KISS_Scond,
     

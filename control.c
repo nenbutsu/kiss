@@ -455,6 +455,44 @@ kiss_obj* kiss_cond(const kiss_obj* const clauses) {
      return KISS_NIL;
 }
 
+/* special operator: (case-using predform keyform ((key*) form*)* [(t form*)]) → object
+   The case and case-using special forms, called case forms, provide a mechanism to execute
+   a matching clause from a series of clauses based on the value of a dispatching form KEYFORM.
+
+   The clause to be executed is identified by a set of KEYS. A KEY can be any object.
+   If the keylist of the last clause is t the associated clause is executed if no key matches
+   the KEYFORM.
+
+   KEYFORM is a form to be computed at the beginning of execution of the case form. 
+   If the result of evaluating KEYFORM is equivalent to a KEY, then the FORMS, if any,
+   in the corresponding clause are evaluated sequentially and the value of the last one 
+   is returned as value of the whole case form. case determines match equivalence by using eql;
+   case-using match determines equivalence by using the result of evaluating PREDFORM. 
+   PREDFORM must be a boolean or quasi-boolean function that accepts two arguments, 
+   the value returned by KEYFORM and KEY. If no FORM exists for a matching key, the case
+   form evaluates to nil. If the value of KEYFORM is different from every KEY, and there is
+   a default clause, its FORMS, if any, are evaluated sequentially, and the value of the last
+   one is the result of the case form.
+
+   The same KEY (as determined by the match predicate) may occur only once in a case form. */
+kiss_obj* kiss_case_using(const kiss_obj* const predform, const kiss_obj* const keyform, const kiss_obj* const clauses) {
+     kiss_obj* predicate = kiss_eval(predform);
+     kiss_obj* key = kiss_eval(keyform);
+     for (const kiss_obj* p = clauses; KISS_IS_CONS(p); p = KISS_CDR(p)) {
+          kiss_obj* clause = KISS_CAR(p);
+          kiss_obj* key_list = kiss_car(clause);
+          if (key_list == KISS_T || kiss_member_using(predicate, key, key_list) != KISS_NIL) {
+               return kiss_eval_body(kiss_cdr(clause));
+          }
+     }
+     return KISS_NIL;
+}
+
+kiss_obj* kiss_case(const kiss_obj* const keyform, const kiss_obj* const clauses) {
+     return kiss_case_using(kiss_function((kiss_obj*)&KISS_Seql), keyform, clauses);
+}
+
+
 kiss_obj* kiss_prog1(const kiss_obj* const form1, const kiss_obj* const forms) {
      kiss_obj* result = kiss_eval(form1);
      kiss_eval_body(forms);
