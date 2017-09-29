@@ -3347,22 +3347,22 @@ kiss_symbol_t KISS_Sprovide = {
     KISS_NIL,                 /* plist */
 };
 
-/*** oo_obj.c ***/
-kiss_symbol_t KISS_Smake_object;
-kiss_cfunction_t KISS_CFmake_object = {
+/*** ilos.c ***/
+kiss_symbol_t KISS_Smake_ilos_obj;
+kiss_cfunction_t KISS_CFmake_ilos_obj = {
     KISS_CFUNCTION, /* type */
-    &KISS_Smake_object,   /* name */
-    (kiss_cf_t*)kiss_make_object,    /* C function name */
+    &KISS_Smake_ilos_obj,   /* name */
+    (kiss_cf_t*)kiss_make_ilos_obj,    /* C function name */
     1,         /* minimum argument number */
     1,        /* maximum argument number */
 };
-kiss_symbol_t KISS_Smake_object = {
+kiss_symbol_t KISS_Smake_ilos_obj = {
     KISS_SYMBOL,
     NULL,              /* gc_ptr */
-    L"kiss::make-object",
+    L"kiss::make-ilos-obj",
     KISS_CONSTANT_FUN,
     NULL,                /* var */
-    (kiss_obj*)&KISS_CFmake_object, /* fun */
+    (kiss_obj*)&KISS_CFmake_ilos_obj, /* fun */
     KISS_NIL,                 /* plist */
 };
 
@@ -3580,8 +3580,8 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     /* read.c */
     &KISS_Sread, 
 
-    /* oo_obj.c */
-    &KISS_Smake_object, &KISS_Sobject_p, &KISS_Sobject_plist, &KISS_Sset_object_plist,
+    /* ilos.c */
+    &KISS_Smake_ilos_obj, &KISS_Sobject_p, &KISS_Sobject_plist, &KISS_Sset_object_plist,
 
     /* gf_invoke.c */
     &KISS_Smethod_invoke,

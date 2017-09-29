@@ -64,7 +64,7 @@ typedef enum {
      KISS_BLOCK,
      KISS_TAGBODY,
 
-     KISS_OO_OBJ,
+     KISS_ILOS_OBJ,
 } kiss_type;
 
 #define kiss_ptr_int(x)    (((kiss_ptr_int)x)>>2)
@@ -341,7 +341,7 @@ typedef struct {
      kiss_type type;
      void* gc_ptr;
      kiss_obj* plist;
-} kiss_oo_obj_t;
+} kiss_ilos_obj_t;
 
 
 typedef struct {
@@ -396,7 +396,7 @@ kiss_symbol_t KISS_Ueos, KISS_Udummy;
 #define KISS_IS_CLEANUP(x)           (KISS_OBJ_TYPE(x) == KISS_CLEANUP)
 #define KISS_IS_BLOCK(x)             (KISS_OBJ_TYPE(x) == KISS_BLOCK)
 #define KISS_IS_TAGBODY(x)           (KISS_OBJ_TYPE(x) == KISS_TAGBODY)
-#define KISS_IS_OBJECT(x)            (KISS_OBJ_TYPE(x) == KISS_OO_OBJ)
+#define KISS_IS_ILOS_OBJ(x)            (KISS_OBJ_TYPE(x) == KISS_ILOS_OBJ)
 #define KISS_IS_STREAM(x)            (KISS_OBJ_TYPE(x) == KISS_STREAM)
 #define KISS_IS_INPUT_STREAM(x)     (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_INPUT_STREAM))
 #define KISS_IS_OUTPUT_STREAM(x)    (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_OUTPUT_STREAM))
@@ -670,7 +670,7 @@ kiss_obj* kiss_set_dynamic(kiss_obj* form, kiss_obj* var);
 
 /* object.c */
 kiss_obj* kiss_object_p(kiss_obj* obj);
-kiss_obj* kiss_make_object(kiss_obj* info);
+kiss_obj* kiss_make_ilos_obj(kiss_obj* info);
 kiss_obj* kiss_object_plist(kiss_obj* obj);
 kiss_obj* kiss_set_object_plist(kiss_obj* plist, kiss_obj* oo_obj);
 kiss_obj* kiss_object_plist_get(kiss_obj* obj, kiss_obj* property);
@@ -759,8 +759,8 @@ kiss_obj* Kiss_Sequence(const kiss_obj* const obj) {
 }
 
 inline
-kiss_oo_obj_t* Kiss_Object(const kiss_obj* const obj) {
-     if (KISS_IS_OBJECT(obj)) { return (kiss_oo_obj_t*)obj; }
+kiss_ilos_obj_t* Kiss_Object(const kiss_obj* const obj) {
+     if (KISS_IS_ILOS_OBJ(obj)) { return (kiss_ilos_obj_t*)obj; }
      Kiss_Domain_Error(obj, L"ILOS object");
 }
 

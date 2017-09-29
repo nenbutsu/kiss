@@ -64,7 +64,7 @@
                      ':before nil
                      ':after nil
                      ':around nil)))
-    (kiss::make-object plist)))
+    (kiss::make-ilos-obj plist)))
 
 
 ;; defining operator
@@ -123,11 +123,11 @@
                        ':specializers (specializers parameter-profile)
                        ':lambda-list (lambda-list parameter-profile)
                        ':body body)))
-      (kiss::make-object plist))))
+      (kiss::make-ilos-obj plist))))
 
 (defgeneric create (class &rest initargs))
 (defmethod  create (class &rest initargs)
-  (let ((obj (kiss::make-object `(:class ,class))))
+  (let ((obj (kiss::make-ilos-obj `(:class ,class))))
     (initialize-object obj initargs)))
 
 (defgeneric initialize-object (obj initargs))

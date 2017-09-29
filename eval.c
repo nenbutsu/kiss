@@ -40,7 +40,7 @@ static kiss_obj* kiss_invoke(kiss_obj* f, kiss_obj* args) {
 	  result = kiss_eval(form);
 	  break;
      }
-     case KISS_OO_OBJ:
+     case KISS_ILOS_OBJ:
 	  if (kiss_c_funcall(L"generic-function-p", kiss_c_list(1, f)) == KISS_T) {
 	       /* fwprintf(stderr, L"calling generic-function\n"); fflush(stderr); */
 	       result = kiss_c_funcall(L"generic-function-invoke",

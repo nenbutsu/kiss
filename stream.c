@@ -104,7 +104,7 @@ static int kiss_is_character_class(kiss_obj* obj) {
      if (KISS_IS_SYMBOL(obj) && wcscmp(((kiss_symbol_t*)obj)->name, L"<character>") == 0) {
           return 1;
      }
-     if (!KISS_IS_OBJECT(obj)) { return 0; }
+     if (!KISS_IS_ILOS_OBJ(obj)) { return 0; }
      kiss_obj* class = kiss_c_funcall(L"kiss::class", kiss_c_list(1, kiss_symbol(L"<character>")));
      return obj == class ? 1 : 0;
 }

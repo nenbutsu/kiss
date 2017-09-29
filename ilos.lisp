@@ -26,7 +26,7 @@
 
 ;; kiss::classes = ((name-symbol1 . class-object1) ...) ;; that is, an alist.
 (defglobal kiss::classes
-  `((<built-in-class> . ,(kiss::make-object 'nil))))
+  `((<built-in-class> . ,(kiss::make-ilos-obj 'nil))))
 
 ;; special operator: (class class-name) -> <class>
 ;; Returns the class object that corresponds to the class named class-name.
@@ -73,7 +73,7 @@
     (cond
      ((consp binding)
       (cdr binding))
-     (t (let ((class (kiss::make-object nil)))
+     (t (let ((class (kiss::make-ilos-obj nil)))
           (setq kiss::classes `(,(cons name class) ,@kiss::classes))
           class)))))
 
@@ -432,7 +432,7 @@
                      ':before nil
                      ':after nil
                      ':around nil)))
-    (kiss::make-object plist)))
+    (kiss::make-ilos-obj plist)))
 
 
 ;; defining operator
@@ -491,11 +491,11 @@
                        ':specializers (specializers parameter-profile)
                        ':lambda-list (lambda-list parameter-profile)
                        ':body body)))
-      (kiss::make-object plist))))
+      (kiss::make-ilos-obj plist))))
 
 (defgeneric create (class &rest initargs))
 (defmethod  create (class &rest initargs)
-  (let ((obj (kiss::make-object `(:class ,class))))
+  (let ((obj (kiss::make-ilos-obj `(:class ,class))))
     (initialize-object obj initargs)))
 
 (defgeneric initialize-object (obj initargs))
@@ -557,7 +557,7 @@
                      (object-plist-get m2 ':specializers))
                nil))
            (make-applicable (method args)
-             (let ((m (kiss::make-object (copy-list (object-plist method)))))
+             (let ((m (kiss::make-ilos-obj (copy-list (object-plist method)))))
                (object-plist-put m ':args args)
                m)))
       (sort (mapcan (lambda (method)

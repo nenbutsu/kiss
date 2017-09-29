@@ -393,7 +393,7 @@ kiss_obj* kiss_equal(const kiss_obj* const obj1, const kiss_obj* const obj2) {
      case KISS_BLOCK:
      case KISS_CLEANUP:
      case KISS_TAGBODY:
-     case KISS_OO_OBJ:
+     case KISS_ILOS_OBJ:
           return kiss_eql(obj1, obj2);
      case KISS_CONS:
           if (!KISS_IS_CONS(obj2)) return KISS_NIL;

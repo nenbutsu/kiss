@@ -1,5 +1,5 @@
 /*  -*- coding: utf-8 -*-
-  oo_obj.c --- defines the object mechanism of ISLisp processor KISS.
+  ilos.c --- defines the ILOS mechanism of ISLisp processor KISS.
 
   Copyright (C) 2017 Yuji Minejima.
 
@@ -18,25 +18,25 @@
 */
 #include "kiss.h"
 
-kiss_obj* kiss_make_object(kiss_obj* plist) {
-    kiss_oo_obj_t* p = Kiss_GC_Malloc(sizeof(kiss_oo_obj_t));
-    p->type = KISS_OO_OBJ;
+kiss_obj* kiss_make_ilos_obj(kiss_obj* plist) {
+    kiss_ilos_obj_t* p = Kiss_GC_Malloc(sizeof(kiss_ilos_obj_t));
+    p->type = KISS_ILOS_OBJ;
     p->plist = plist;
     return (kiss_obj*)p;
 }
 
 kiss_obj* kiss_object_p(kiss_obj* obj) {
-    if (KISS_IS_OBJECT(obj)) { return KISS_T; }
+    if (KISS_IS_ILOS_OBJ(obj)) { return KISS_T; }
     else                     { return KISS_NIL; }
 }
 
 kiss_obj* kiss_object_plist(kiss_obj* obj) {
-    kiss_oo_obj_t* p = Kiss_Object(obj);
+    kiss_ilos_obj_t* p = Kiss_Object(obj);
     return p->plist;
 }
 
 kiss_obj* kiss_set_object_plist(kiss_obj* plist, kiss_obj* obj) {
-    kiss_oo_obj_t* p = Kiss_Object(obj);
+    kiss_ilos_obj_t* p = Kiss_Object(obj);
     p->plist = plist;
     return obj;
 }

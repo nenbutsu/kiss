@@ -282,7 +282,7 @@ kiss_obj* kiss_basic_array_p (const kiss_obj* const obj) {
      case KISS_CLEANUP:
      case KISS_BLOCK:
      case KISS_TAGBODY:
-     case KISS_OO_OBJ:
+     case KISS_ILOS_OBJ:
 	  return KISS_NIL;
      case KISS_STRING:
      case KISS_GENERAL_VECTOR:
@@ -315,7 +315,7 @@ kiss_obj* kiss_basic_array_s_p (const kiss_obj* const obj) {
      case KISS_CLEANUP:
      case KISS_BLOCK:
      case KISS_TAGBODY:
-     case KISS_OO_OBJ:
+     case KISS_ILOS_OBJ:
      case KISS_STRING:
      case KISS_GENERAL_VECTOR:
 	  return KISS_NIL;
@@ -348,7 +348,7 @@ kiss_obj* kiss_general_array_s_p (const kiss_obj* const obj) {
      case KISS_CLEANUP:
      case KISS_BLOCK:
      case KISS_TAGBODY:
-     case KISS_OO_OBJ:
+     case KISS_ILOS_OBJ:
      case KISS_STRING:
      case KISS_GENERAL_VECTOR:
 	  return KISS_NIL;

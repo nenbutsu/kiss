@@ -17,7 +17,7 @@
 
 ;; kiss::classes = ((name-symbol1 . class-object1) ...) ;; that is, an alist.
 (defglobal kiss::classes
-  `((<built-in-class> . ,(kiss::make-object 'nil))))
+  `((<built-in-class> . ,(kiss::make-ilos-obj 'nil))))
 
 ;; special operator: (class class-name) -> <class>
 ;; Returns the class object that corresponds to the class named class-name.
@@ -64,7 +64,7 @@
     (cond
      ((consp binding)
       (cdr binding))
-     (t (let ((class (kiss::make-object nil)))
+     (t (let ((class (kiss::make-ilos-obj nil)))
           (setq kiss::classes `(,(cons name class) ,@kiss::classes))
           class)))))
 
