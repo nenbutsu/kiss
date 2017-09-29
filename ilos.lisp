@@ -15,11 +15,11 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
-(defun object-plist-get (object property)
+(defun kiss::oref (object property)
   (let ((plist (object-plist object)))
     (plist-get plist property)))
 
-(defun object-plist-put (object property value)
+(defun kiss::set-oref (value object property)
   (let ((plist (object-plist object)))
     (set-object-plist (plist-put plist property value) object)))
 
@@ -41,11 +41,11 @@
 
 (defun class-supers (c)
   (kiss::assure-class c)
-  (object-plist-get c ':direct-super-classes))
+  (kiss::oref c ':direct-super-classes))
 
 (defun class-cpl (c)
   (kiss::assure-class c)
-  (object-plist-get c ':class-precedence-list))
+  (kiss::oref c ':class-precedence-list))
 
 ;; spec. p. 51
 ;; Let C1, . . . , Cn be the direct superclasses of C in the order defined in
@@ -66,7 +66,7 @@
 
 (defun class-name (class)
   (kiss::assure-class class)
-  (object-plist-get class ':name))
+  (kiss::oref class ':name))
 
 (defun kiss::intern-class (name)
   (let ((binding (assoc name kiss::classes)))
@@ -83,10 +83,10 @@
       (setq supers (list (class <standard-object>))))
   (let* ((class (kiss::intern-class name))
          (cpl (kiss::compute-cpl class supers)))
-    (object-plist-put class ':name name)
-    (object-plist-put class ':direct-super-classes supers)
-    (object-plist-put class ':class metaclass)
-    (object-plist-put class ':class-precedence-list cpl)
+    (kiss::set-oref name class ':name)
+    (kiss::set-oref supers class ':direct-super-classes)
+    (kiss::set-oref metaclass class ':class)
+    (kiss::set-oref cpl class ':class-precedence-list)
     class))
 
 ;;defining operator
@@ -116,29 +116,28 @@
                                      (cadr metaclass-spec)
                                    '<standard-class>)))
          (class (kiss::make-class class-name supers metaclass)))
-    (object-plist-put class ':slot-specs
-                      (canonicalize-slot-specs class slot-specs))
+    (kiss::set-oref (canonicalize-slot-specs class slot-specs) class ':slot-specs)
     class-name))
 
 (defun kiss::slot-read (object slot-name)
-  (let* ((slots (object-plist-get object ':slots))
+  (let* ((slots (kiss::oref object ':slots))
          (binding (assoc slot-name slots)))
     (if (null binding)
         (error "Unbound slot ~S" slot-name))
     (cdr binding)))
 
 (defun kiss::slot-write (object slot-name value)
-  (let* ((slots (object-plist-get object ':slots))
+  (let* ((slots (kiss::oref object ':slots))
          (binding (assoc slot-name slots)))
     (if (null binding)
         (progn
           (setq slots (cons (cons slot-name value) slots))
-          (object-plist-put object ':slots slots))
+          (kiss::set-oref slots object ':slots))
       (set-cdr value binding)))
   value)
 
 (defun kiss::slot-boundp (object slot-name)
-  (let* ((slots (object-plist-get object ':slots))
+  (let* ((slots (kiss::oref object ':slots))
          (binding (assoc slot-name slots)))
     (consp binding)))
 
@@ -213,7 +212,7 @@
    ((general-array*-p obj)  (class <general-array*>))
    ((streamp obj)           (class <stream>))
    ((simple-function-p obj) (class <function>))
-   ((object-p obj)          (object-plist-get obj ':class))
+   ((object-p obj)          (kiss::oref obj ':class))
    (t (error "class-of: not-yet-implemented-class of ~S" obj))))
 
 (defun kiss::assure-class (class)
@@ -459,20 +458,20 @@
              (flet ((agreeing-member (methods method)
                       (block nil
                         (mapl (lambda (methods)
-                                (if (equal (object-plist-get method
+                                (if (equal (kiss::oref method
                                                              ':specializers)
-                                           (object-plist-get (car methods)
+                                           (kiss::oref (car methods)
                                                              ':specializers))
                                     (return-from nil methods)))
                               methods)
                           nil)))
-               (let* ((qualifier (object-plist-get m ':qualifier))
-                      (methods (object-plist-get gf qualifier))
+               (let* ((qualifier (kiss::oref m ':qualifier))
+                      (methods (kiss::oref gf qualifier))
                       (here (agreeing-member methods m)))
                  (if here
                      (set-car m here)
                    (setq methods (cons m methods)))
-                 (object-plist-put gf qualifier methods)))))
+                 (kiss::set-oref methods gf qualifier)))))
       (add-method gf m)
       func-spec)))
 
@@ -503,7 +502,7 @@
   (let* ((class (class-of obj))
          (cpl (class-cpl class))
          (slot-specs (mapcan (lambda (c)
-                               (copy-list (object-plist-get c ':slot-specs)))
+                               (copy-list (kiss::oref c ':slot-specs)))
                              cpl)))
     (flet ((initarg-to-slot-name (obj initarg)
              (block nil
@@ -541,7 +540,7 @@
 (defun applicable-methods (methods args)
   (let ((arg-classes (mapcar #'class-of args)))
     (flet ((applicablep (method arg-classes)
-             (let ((specializers (object-plist-get method ':specializers)))
+             (let ((specializers (kiss::oref method ':specializers)))
                (block nil
                  (mapc (lambda (c1 c2)
                          (if (and (not (eq c1 c2)) (not (subclassp c2 c1)))
@@ -553,12 +552,12 @@
                (mapc (lambda (c1 c2)
                        (if (subclassp c1 c2)
                            (return-from nil t)))
-                     (object-plist-get m1 ':specializers)
-                     (object-plist-get m2 ':specializers))
+                     (kiss::oref m1 ':specializers)
+                     (kiss::oref m2 ':specializers))
                nil))
            (make-applicable (method args)
              (let ((m (kiss::make-ilos-obj (copy-list (object-plist method)))))
-               (object-plist-put m ':args args)
+               (kiss::set-oref args m ':args)
                m)))
       (sort (mapcan (lambda (method)
                       (if (applicablep method arg-classes)
@@ -571,21 +570,21 @@
   (mapl (lambda (methods)
           (let ((method (car methods)))
             (if (consp (cdr methods))
-                (object-plist-put method ':next (cadr methods)))))
+                (kiss::set-oref (cadr methods) method ':next))))
         methods)
   nil)
 
 (defun generic-function-invoke (gf args)
-  (let ((around (applicable-methods (object-plist-get gf ':around) args))
-        (before (applicable-methods (object-plist-get gf ':before) args))
-        (primary (applicable-methods (object-plist-get gf ':primary) args))
-        (after (nreverse (applicable-methods (object-plist-get gf ':after)
+  (let ((around (applicable-methods (kiss::oref gf ':around) args))
+        (before (applicable-methods (kiss::oref gf ':before) args))
+        (primary (applicable-methods (kiss::oref gf ':primary) args))
+        (after (nreverse (applicable-methods (kiss::oref gf ':after)
                                               args))))
     (if (null primary)
         (error "No applicable primary method ~S" gf))
     (splice-methods (append around primary))
-    (object-plist-put (car primary) ':before before)
-    (object-plist-put (car primary) ':after after)
+    (kiss::set-oref before (car primary) ':before)
+    (kiss::set-oref after (car primary) ':after)
     (if around
         (method-invoke (car around))
       (method-invoke (car primary)))))

@@ -668,7 +668,7 @@ kiss_obj* kiss_dynamic(kiss_obj* name);
 kiss_obj* kiss_dynamic_let(kiss_obj* vspecs, kiss_obj* body);
 kiss_obj* kiss_set_dynamic(kiss_obj* form, kiss_obj* var);
 
-/* object.c */
+/* ilos.c */
 kiss_obj* kiss_object_p(kiss_obj* obj);
 kiss_obj* kiss_make_ilos_obj(kiss_obj* info);
 kiss_obj* kiss_object_plist(kiss_obj* obj);
