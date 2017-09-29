@@ -1,5 +1,5 @@
 ;;; -*- mode: lisp; coding: utf-8 -*- 
-;;; oo_obj_l.lisp --- defines the object mechanism of ISLisp processor KISS.
+;;; sequence_l.lisp --- defines the sequence handling mechanism of ISLisp processor KISS.
 
 ;; Copyright (C) 2017 Yuji Minejima.
 
@@ -16,10 +16,15 @@
 ;; GNU General Public License for more details.
 
 
-(defun object-plist-get (object property)
-  (let ((plist (object-plist object)))
-    (plist-get plist property)))
+(defun sort (seq predicate)
+  (if (not (listp seq))
+      (error "sort: non list sequence not implemented yet ~S" seq))
+  (if (null seq)
+      nil
+    (labels ((insert (elm list)
+               (cond
+                ((null list) (list elm))
+                ((funcall predicate elm (car list)) (cons elm list))
+                (t (cons (car list) (insert elm (cdr list)))))))
+      (insert (car seq) (sort (cdr seq) predicate)))))
 
-(defun object-plist-put (object property value)
-  (let ((plist (object-plist object)))
-    (set-object-plist (plist-put plist property value) object)))
