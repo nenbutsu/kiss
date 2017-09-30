@@ -671,11 +671,28 @@ kiss_obj* kiss_set_dynamic(kiss_obj* form, kiss_obj* var);
 /* ilos.c */
 kiss_obj* kiss_object_p(kiss_obj* obj);
 kiss_obj* kiss_make_ilos_obj(kiss_obj* info);
-kiss_obj* kiss_ilos_obj_plist(kiss_obj* obj);
-kiss_obj* kiss_set_ilos_obj_plist(kiss_obj* plist, kiss_obj* oo_obj);
-kiss_obj* kiss_oref(kiss_obj* obj, kiss_obj* property);
-kiss_obj* kiss_set_oref(kiss_obj* value, kiss_obj* obj, kiss_obj* property);
+kiss_obj* kiss_ilos_obj_plist(const kiss_obj* const obj);
+kiss_obj* kiss_set_ilos_obj_plist(const kiss_obj* const plist, kiss_obj* const obj);
+kiss_obj* kiss_oref(const kiss_obj* const obj, const kiss_obj* const property);
+kiss_obj* kiss_set_oref(const kiss_obj* const value, kiss_obj* const obj, const kiss_obj* const property);
 kiss_obj* kiss_k_class(const kiss_obj* const name);
+kiss_obj* kiss_class_of(const kiss_obj* const obj);
+// predefined class names
+kiss_symbol_t KISS_Sc_object;
+kiss_symbol_t KISS_Sc_built_in_class;
+kiss_symbol_t KISS_Sc_standard_class;
+kiss_symbol_t KISS_Sc_null;
+kiss_symbol_t KISS_Sc_cons;
+kiss_symbol_t KISS_Sc_symbol;
+kiss_symbol_t KISS_Sc_character;
+kiss_symbol_t KISS_Sc_integer;
+kiss_symbol_t KISS_Sc_float;
+kiss_symbol_t KISS_Sc_string;
+kiss_symbol_t KISS_Sc_general_vector;
+kiss_symbol_t KISS_Sc_general_array_s;
+kiss_symbol_t KISS_Sc_stream;
+kiss_symbol_t KISS_Sc_function;
+kiss_symbol_t KISS_Sc_hash_table;
 
 /* gf_invoke.c */
 kiss_obj* kiss_method_invoke(kiss_obj* m);

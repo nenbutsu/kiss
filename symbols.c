@@ -3352,7 +3352,16 @@ kiss_symbol_t KISS_Sk_classes = {
     KISS_SYMBOL,
     NULL,              /* gc_ptr */
     L"kiss::classes",
-    KISS_CONSTANT_FUN,
+    0,
+    NULL,                /* var */
+    NULL,                /* fun */
+    KISS_NIL,                 /* plist */
+};
+kiss_symbol_t KISS_Skw_class = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L":class",
+    0,
     NULL,                /* var */
     NULL,                /* fun */
     KISS_NIL,                 /* plist */
@@ -3486,6 +3495,24 @@ kiss_symbol_t KISS_Sset_oref = {
     KISS_NIL,                 /* plist */
 };
 
+kiss_symbol_t KISS_Sclass_of;
+kiss_cfunction_t KISS_CFclass_of = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Sclass_of,   /* name */
+    (kiss_cf_t*)kiss_class_of,    /* C function name */
+    1,         /* minimum argument number */
+    1,        /* maximum argument number */
+};
+kiss_symbol_t KISS_Sclass_of = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"class-of",
+    KISS_CONSTANT_FUN,
+    NULL,                /* var */
+    (kiss_obj*)&KISS_CFclass_of, /* fun */
+    KISS_NIL,                 /* plist */
+};
+
 /*** gf_invoke.c ***/
 kiss_symbol_t KISS_Smethod_invoke;
 kiss_cfunction_t KISS_CFmethod_invoke = {
@@ -3503,6 +3530,143 @@ kiss_symbol_t KISS_Smethod_invoke = {
     NULL,                /* var */
     (kiss_obj*)&KISS_CFmethod_invoke, /* fun */
     KISS_NIL,                 /* plist */
+};
+
+/**** -------------- Predefined class names --------------------- ****/
+kiss_symbol_t KISS_Sc_object = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<object>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_built_in_class = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<built-in-class>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_standard_class = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<standard-class>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_null = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<null>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_cons = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<cons>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_symbol = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<symbol>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_character = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<character>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_integer = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<integer>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_float = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<float>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_string = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<string>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_general_vector = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<general-vector>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_general_array_s = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<general-array*>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_stream = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<stream>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_function = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<function>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_hash_table = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<hash-table>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
 };
 
 /*** gc.c ***/
@@ -3648,8 +3812,14 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     /* ilos.c */
     &KISS_Sk_classes, &KISS_Sk_class,
     &KISS_Soref, &KISS_Sset_oref,
+    &KISS_Sclass_of,
     &KISS_Smake_ilos_obj, &KISS_Sobject_p, &KISS_Silos_obj_plist, &KISS_Sset_ilos_obj_plist,
     
+    /* predefined class names */
+    &KISS_Sc_object, &KISS_Sc_built_in_class, &KISS_Sc_standard_class,
+    &KISS_Sc_null, &KISS_Sc_cons, &KISS_Sc_symbol, &KISS_Sc_character,
+    &KISS_Sc_integer, &KISS_Sc_float, &KISS_Sc_string, &KISS_Sc_general_vector,
+    &KISS_Sc_general_array_s, &KISS_Sc_stream, &KISS_Sc_function,
 
     /* gf_invoke.c */
     &KISS_Smethod_invoke,
