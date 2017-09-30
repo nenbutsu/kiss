@@ -15,18 +15,7 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
-(defun kiss::oref (object property)
-  (let ((plist (object-plist object)))
-    (plist-get plist property)))
-
-(defun kiss::set-oref (value object property)
-  (let ((plist (object-plist object)))
-    (set-object-plist (plist-put plist property value) object)))
-
-
-;; kiss::classes = ((name-symbol1 . class-object1) ...) ;; that is, an alist.
 (defglobal kiss::classes (create-hash-table))
-
 (puthash '<built-in-class>  (kiss::make-ilos-obj 'nil) kiss::classes)
 
 ;; special operator: (class class-name) -> <class>
@@ -34,11 +23,6 @@
 ;; On error, signal <undefined-entity> see spec. p.119
 (defmacro class (class-name)
   `(kiss::class ',class-name))
-(defun kiss::class (class-name)
-  (let ((class (gethash class-name kiss::classes nil)))
-    (if class
-        class
-      (error "Undefined class ~S" class-name))))
 
 (defun class-supers (c)
   (kiss::assure-class c)
@@ -557,7 +541,7 @@
                      (kiss::oref m2 ':specializers))
                nil))
            (make-applicable (method args)
-             (let ((m (kiss::make-ilos-obj (copy-list (object-plist method)))))
+             (let ((m (kiss::make-ilos-obj (copy-list (ilos-obj-plist method)))))
                (kiss::set-oref args m ':args)
                m)))
       (sort (mapcan (lambda (method)
@@ -592,7 +576,7 @@
 
 
 (defun kiss::format-oo-object (out obj escapep)
-  (let* ((plist (object-plist obj))
+  (let* ((plist (ilos-obj-plist obj))
          (name (plist-get plist ':name))
          (class (plist-get plist ':class))
          (class-name (class-name class)))

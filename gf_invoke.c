@@ -59,11 +59,11 @@ static void kiss_bind_methodargs(kiss_obj* m) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_obj *binding, *next;
     /* fwprintf(stderr, L"bind_methodargs\n"); fflush(stderr); */
-    /* kiss_print(kiss_plist_get(kiss_object_plist(m),
+    /* kiss_print(kiss_plist_get(kiss_ilos_obj_plist(m),
        kiss_symbol(":lambda-list"))); */
-    kiss_bind_funargs(kiss_object_plist_get(m, kiss_symbol(L":lambda-list")),
-		      kiss_object_plist_get(m, kiss_symbol(L":args")));
-    next = kiss_object_plist_get(m, kiss_symbol(L":next"));
+    kiss_bind_funargs(kiss_oref(m, kiss_symbol(L":lambda-list")),
+		      kiss_oref(m, kiss_symbol(L":args")));
+    next = kiss_oref(m, kiss_symbol(L":next"));
     if (next != KISS_NIL) {
 	binding = kiss_cons(kiss_symbol(L"next-method-p"),
 			    (kiss_obj*)&KISS_CFtrue);
@@ -86,11 +86,11 @@ kiss_obj* kiss_method_invoke(kiss_obj* m) {
     kiss_lexical_environment_t saved_lexical_env = env->lexical_env;
     kiss_obj* result;
 
-    kiss_call_methods(kiss_object_plist_get(m, kiss_symbol(L":before")));
+    kiss_call_methods(kiss_oref(m, kiss_symbol(L":before")));
     env->lexical_env = Kiss_Null_Lexical_Env;
     kiss_bind_methodargs(m);
-    result = kiss_eval_body(kiss_object_plist_get(m, kiss_symbol(L":body")));
-    kiss_call_methods(kiss_object_plist_get(m, kiss_symbol(L":after")));
+    result = kiss_eval_body(kiss_oref(m, kiss_symbol(L":body")));
+    kiss_call_methods(kiss_oref(m, kiss_symbol(L":after")));
     env->lexical_env = saved_lexical_env;
     return result;
 }

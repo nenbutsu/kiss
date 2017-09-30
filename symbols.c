@@ -3377,6 +3377,24 @@ kiss_symbol_t KISS_Smake_ilos_obj = {
     KISS_NIL,                 /* plist */
 };
 
+kiss_symbol_t KISS_Sk_class;
+kiss_cfunction_t KISS_CFk_class = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Sk_class,   /* name */
+    (kiss_cf_t*)kiss_k_class,    /* C function name */
+    1,         /* minimum argument number */
+    1,        /* maximum argument number */
+};
+kiss_symbol_t KISS_Sk_class = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"kiss::class",
+    KISS_CONSTANT_FUN,
+    NULL,                /* var */
+    (kiss_obj*)&KISS_CFk_class, /* fun */
+    KISS_NIL,                 /* plist */
+};
+
 kiss_symbol_t KISS_Sobject_p;
 kiss_cfunction_t KISS_CFobject_p = {
     KISS_CFUNCTION, /* type */
@@ -3395,40 +3413,76 @@ kiss_symbol_t KISS_Sobject_p = {
     KISS_NIL,                 /* plist */
 };
 
-kiss_symbol_t KISS_Sobject_plist;
-kiss_cfunction_t KISS_CFobject_plist = {
+kiss_symbol_t KISS_Silos_obj_plist;
+kiss_cfunction_t KISS_CFilos_obj_plist = {
     KISS_CFUNCTION, /* type */
-    &KISS_Sobject_plist,   /* name */
-    (kiss_cf_t*)kiss_object_plist,    /* C function name */
+    &KISS_Silos_obj_plist,   /* name */
+    (kiss_cf_t*)kiss_ilos_obj_plist,    /* C function name */
     1,         /* minimum argument number */
     1,        /* maximum argument number */
 };
-kiss_symbol_t KISS_Sobject_plist = {
+kiss_symbol_t KISS_Silos_obj_plist = {
     KISS_SYMBOL,
     NULL,              /* gc_ptr */
-    L"object-plist",
+    L"ilos-obj-plist",
     KISS_CONSTANT_FUN,
     NULL,                /* var */
-    (kiss_obj*)&KISS_CFobject_plist, /* fun */
+    (kiss_obj*)&KISS_CFilos_obj_plist, /* fun */
     KISS_NIL,                 /* plist */
 };
 
 
-kiss_symbol_t KISS_Sset_object_plist;
-kiss_cfunction_t KISS_CFset_object_plist = {
+kiss_symbol_t KISS_Sset_ilos_obj_plist;
+kiss_cfunction_t KISS_CFset_ilos_obj_plist = {
     KISS_CFUNCTION, /* type */
-    &KISS_Sset_object_plist,   /* name */
-    (kiss_cf_t*)kiss_set_object_plist,    /* C function name */
+    &KISS_Sset_ilos_obj_plist,   /* name */
+    (kiss_cf_t*)kiss_set_ilos_obj_plist,    /* C function name */
     2,         /* minimum argument number */
     2,        /* maximum argument number */
 };
-kiss_symbol_t KISS_Sset_object_plist = {
+kiss_symbol_t KISS_Sset_ilos_obj_plist = {
     KISS_SYMBOL,
     NULL,              /* gc_ptr */
-    L"set-object-plist",
+    L"set-ilos-obj-plist",
     KISS_CONSTANT_FUN,
     NULL,                /* var */
-    (kiss_obj*)&KISS_CFset_object_plist, /* fun */
+    (kiss_obj*)&KISS_CFset_ilos_obj_plist, /* fun */
+    KISS_NIL,                 /* plist */
+};
+
+kiss_symbol_t KISS_Soref;
+kiss_cfunction_t KISS_CForef = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Soref,   /* name */
+    (kiss_cf_t*)kiss_oref,    /* C function name */
+    2,         /* minimum argument number */
+    2,        /* maximum argument number */
+};
+kiss_symbol_t KISS_Soref = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"kiss::oref",
+    KISS_CONSTANT_FUN,
+    NULL,                /* var */
+    (kiss_obj*)&KISS_CForef, /* fun */
+    KISS_NIL,                 /* plist */
+};
+
+kiss_symbol_t KISS_Sset_oref;
+kiss_cfunction_t KISS_CFset_oref = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Sset_oref,   /* name */
+    (kiss_cf_t*)kiss_set_oref,    /* C function name */
+    3,         /* minimum argument number */
+    3,        /* maximum argument number */
+};
+kiss_symbol_t KISS_Sset_oref = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"kiss::set-oref",
+    KISS_CONSTANT_FUN,
+    NULL,                /* var */
+    (kiss_obj*)&KISS_CFset_oref, /* fun */
     KISS_NIL,                 /* plist */
 };
 
@@ -3592,8 +3646,9 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sread, 
 
     /* ilos.c */
-    &KISS_Sk_classes,
-    &KISS_Smake_ilos_obj, &KISS_Sobject_p, &KISS_Sobject_plist, &KISS_Sset_object_plist,
+    &KISS_Sk_classes, &KISS_Sk_class,
+    &KISS_Soref, &KISS_Sset_oref,
+    &KISS_Smake_ilos_obj, &KISS_Sobject_p, &KISS_Silos_obj_plist, &KISS_Sset_ilos_obj_plist,
     
 
     /* gf_invoke.c */

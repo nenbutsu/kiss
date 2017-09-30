@@ -31,22 +31,28 @@ kiss_obj* kiss_object_p(kiss_obj* obj) {
     else                     { return KISS_NIL; }
 }
 
-kiss_obj* kiss_object_plist(kiss_obj* obj) {
+kiss_obj* kiss_ilos_obj_plist(kiss_obj* obj) {
     kiss_ilos_obj_t* p = Kiss_Object(obj);
     return p->plist;
 }
 
-kiss_obj* kiss_set_object_plist(kiss_obj* plist, kiss_obj* obj) {
+kiss_obj* kiss_set_ilos_obj_plist(kiss_obj* plist, kiss_obj* obj) {
     kiss_ilos_obj_t* p = Kiss_Object(obj);
     p->plist = plist;
     return obj;
 }
 
-kiss_obj* kiss_object_plist_get(kiss_obj* obj, kiss_obj* property) {
-    return kiss_plist_get(kiss_object_plist(obj), property);
+kiss_obj* kiss_oref(kiss_obj* obj, kiss_obj* property) {
+    return kiss_plist_get(kiss_ilos_obj_plist(obj), property);
 }
 
-kiss_obj* kiss_object_plist_put(kiss_obj* obj, kiss_obj* property, kiss_obj* value) {
-    kiss_obj* plist = kiss_plist_put(kiss_object_plist(obj), property, value);
-    return kiss_set_object_plist(plist, obj);    
+kiss_obj* kiss_set_oref(kiss_obj* value, kiss_obj* obj, kiss_obj* property) {
+    kiss_obj* plist = kiss_plist_put(kiss_ilos_obj_plist(obj), property, value);
+    return kiss_set_ilos_obj_plist(plist, obj);    
+}
+
+kiss_obj* kiss_k_class(const kiss_obj* const name) {
+     kiss_obj* class = kiss_gethash(name, KISS_Sk_classes.var, KISS_NIL);
+     if (class != KISS_NIL) return class;
+     Kiss_Err(L"Undefined Class: ~S", name);
 }

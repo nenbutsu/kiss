@@ -671,11 +671,11 @@ kiss_obj* kiss_set_dynamic(kiss_obj* form, kiss_obj* var);
 /* ilos.c */
 kiss_obj* kiss_object_p(kiss_obj* obj);
 kiss_obj* kiss_make_ilos_obj(kiss_obj* info);
-kiss_obj* kiss_object_plist(kiss_obj* obj);
-kiss_obj* kiss_set_object_plist(kiss_obj* plist, kiss_obj* oo_obj);
-kiss_obj* kiss_object_plist_get(kiss_obj* obj, kiss_obj* property);
-kiss_obj* kiss_object_plist_put(kiss_obj* obj, kiss_obj* property,
-				kiss_obj* value);
+kiss_obj* kiss_ilos_obj_plist(kiss_obj* obj);
+kiss_obj* kiss_set_ilos_obj_plist(kiss_obj* plist, kiss_obj* oo_obj);
+kiss_obj* kiss_oref(kiss_obj* obj, kiss_obj* property);
+kiss_obj* kiss_set_oref(kiss_obj* value, kiss_obj* obj, kiss_obj* property);
+kiss_obj* kiss_k_class(const kiss_obj* const name);
 
 /* gf_invoke.c */
 kiss_obj* kiss_method_invoke(kiss_obj* m);
