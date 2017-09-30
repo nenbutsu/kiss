@@ -3357,14 +3357,16 @@ kiss_symbol_t KISS_Sk_classes = {
     NULL,                /* fun */
     KISS_NIL,                 /* plist */
 };
+
+kiss_symbol_t KISS_Skw_class;
 kiss_symbol_t KISS_Skw_class = {
     KISS_SYMBOL,
-    NULL,              /* gc_ptr */
+    NULL,  /* gc_ptr */
     L":class",
     0,
-    NULL,                /* var */
-    NULL,                /* fun */
-    KISS_NIL,                 /* plist */
+    (kiss_obj*)&KISS_Skw_class,  /* var */
+    NULL,                        /* fun */
+    KISS_NIL,                    /* plist */
 };
 
 
@@ -3711,9 +3713,11 @@ kiss_symbol_t KISS_Sgc_info = {
 kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Snil, &KISS_St,
 
+    /* keywords */
     &KISS_Skw_rest, &KISS_Samp_rest,
     &KISS_Skw_size, &KISS_Skw_test, &KISS_Skw_weakness,
     &KISS_Skw_rehash_size, &KISS_Skw_rehash_threshold,
+    &KISS_Skw_class,
 
     /* cons.c */
     &KISS_Scar, &KISS_Scdr, &KISS_Scons, &KISS_Scadr, &KISS_Scddr,

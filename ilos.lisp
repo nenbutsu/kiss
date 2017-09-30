@@ -16,7 +16,7 @@
 ;; GNU General Public License for more details.
 
 (defglobal kiss::classes (create-hash-table))
-(puthash '<built-in-class>  (kiss::make-ilos-obj 'nil) kiss::classes)
+(puthash '<built-in-class>  (kiss::make-ilos-obj 'nil) kiss::classes) ;; dummy. replaced below
 
 ;; special operator: (class class-name) -> <class>
 ;; Returns the class object that corresponds to the class named class-name.
@@ -184,21 +184,21 @@
 ;; function: (class-of obj) -> <class>
 ;; Returns the class of which the  given obj is a direct instance.
 ;; obj may be any ISLISP object.
-(defun class-of (obj)
-  (cond
-   ((null obj)              (class <null>))
-   ((consp obj)             (class <cons>))
-   ((symbolp obj)           (class <symbol>))
-   ((characterp obj)        (class <character>))
-   ((integerp obj)          (class <integer>))
-   ((floatp obj)            (class <float>))
-   ((stringp obj)           (class <string>))
-   ((general-vector-p obj)  (class <general-vector>))
-   ((general-array*-p obj)  (class <general-array*>))
-   ((streamp obj)           (class <stream>))
-   ((simple-function-p obj) (class <function>))
-   ((object-p obj)          (kiss::oref obj ':class))
-   (t (error "class-of: not-yet-implemented-class of ~S" obj))))
+;;(defun class-of (obj)
+;;  (cond
+;;   ((null obj)              (class <null>))
+;;   ((consp obj)             (class <cons>))
+;;   ((symbolp obj)           (class <symbol>))
+;;   ((characterp obj)        (class <character>))
+;;   ((integerp obj)          (class <integer>))
+;;   ((floatp obj)            (class <float>))
+;;   ((stringp obj)           (class <string>))
+;;   ((general-vector-p obj)  (class <general-vector>))
+;;   ((general-array*-p obj)  (class <general-array*>))
+;;   ((streamp obj)           (class <stream>))
+;;   ((simple-function-p obj) (class <function>))
+;;   ((object-p obj)          (kiss::oref obj :class))
+;;   (t (error "class-of: not-yet-implemented-class of ~S" obj))))
 
 (defun kiss::assure-class (class)
   (let ((metaclass (class-of class)))
@@ -295,6 +295,8 @@
 ;;     +--> <standard-object>
 ;;     +--> <stream>
 
+
+
 (defclass <object> () ()
   (:metaclass <built-in-class>)
   (:abstractp t))
@@ -302,6 +304,13 @@
 (defclass <built-in-class> (<object>) ()
   (:metaclass <built-in-class>)
   (:abstractp t))
+
+(kiss::set-oref (class <built-in-class>) (class <object>) :class)
+(kiss::set-oref (class <built-in-class>) (class <built-in-class>) :class)
+
+
+(kiss::set-oref `(,(class <object>)) (class <object>) :class-precedence-list)
+(kiss::set-oref `(,(class <built-in-class>) ,(class <object>)) (class <built-in-class>) :class-precedence-list)
 
 (defclass <character> (<object>) ()
   (:metaclass <built-in-class>))
@@ -581,8 +590,8 @@
          (class (plist-get plist ':class))
          (class-name (class-name class)))
     (if (not name)
-        (setq name "no name"))
-    (format out "#{ILOS:~S(" name)
+        (setq name "instance"))
+    (format out "#{ILOS:~A(" name)
     (kiss::format-pointer out obj)
     (format out ") of ~S}" class-name)
     nil))
