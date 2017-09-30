@@ -17,6 +17,7 @@
 
 */
 #include "kiss.h"
+kiss_symbol_t KISS_Sk_classes;
 
 kiss_obj* kiss_make_ilos_obj(kiss_obj* plist) {
     kiss_ilos_obj_t* p = Kiss_GC_Malloc(sizeof(kiss_ilos_obj_t));

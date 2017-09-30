@@ -3348,6 +3348,17 @@ kiss_symbol_t KISS_Sprovide = {
 };
 
 /*** ilos.c ***/
+kiss_symbol_t KISS_Sk_classes = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"kiss::classes",
+    KISS_CONSTANT_FUN,
+    NULL,                /* var */
+    NULL,                /* fun */
+    KISS_NIL,                 /* plist */
+};
+
+
 kiss_symbol_t KISS_Smake_ilos_obj;
 kiss_cfunction_t KISS_CFmake_ilos_obj = {
     KISS_CFUNCTION, /* type */
@@ -3581,7 +3592,9 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sread, 
 
     /* ilos.c */
+    &KISS_Sk_classes,
     &KISS_Smake_ilos_obj, &KISS_Sobject_p, &KISS_Sobject_plist, &KISS_Sset_object_plist,
+    
 
     /* gf_invoke.c */
     &KISS_Smethod_invoke,

@@ -25,8 +25,9 @@
 
 
 ;; kiss::classes = ((name-symbol1 . class-object1) ...) ;; that is, an alist.
-(defglobal kiss::classes
-  `((<built-in-class> . ,(kiss::make-ilos-obj 'nil))))
+(defglobal kiss::classes (create-hash-table))
+
+(puthash '<built-in-class>  (kiss::make-ilos-obj 'nil) kiss::classes)
 
 ;; special operator: (class class-name) -> <class>
 ;; Returns the class object that corresponds to the class named class-name.
@@ -34,9 +35,9 @@
 (defmacro class (class-name)
   `(kiss::class ',class-name))
 (defun kiss::class (class-name)
-  (let ((binding (assoc class-name kiss::classes)))
-    (if binding
-        (cdr binding)
+  (let ((class (gethash class-name kiss::classes nil)))
+    (if class
+        class
       (error "Undefined class ~S" class-name))))
 
 (defun class-supers (c)
@@ -69,13 +70,13 @@
   (kiss::oref class ':name))
 
 (defun kiss::intern-class (name)
-  (let ((binding (assoc name kiss::classes)))
-    (cond
-     ((consp binding)
-      (cdr binding))
-     (t (let ((class (kiss::make-ilos-obj nil)))
-          (setq kiss::classes `(,(cons name class) ,@kiss::classes))
-          class)))))
+  (let ((class (gethash name kiss::classes nil)))
+    (or class
+        (progn
+          (setq class (kiss::make-ilos-obj nil))
+          (puthash name class kiss::classes)
+          class))))
+      
 
 (defun kiss::make-class (name supers metaclass)
   (if (and (not (eq metaclass (class <built-in-class>)))

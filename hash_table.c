@@ -24,6 +24,7 @@ kiss_obj* kiss_make_hash_table(kiss_obj* size, kiss_obj* test, kiss_obj* weaknes
      p->type = KISS_HASH_TABLE;
      p->n = 0;
      p->vector = NULL;
+     if (test == KISS_NIL) test = kiss_function((kiss_obj*)&KISS_Seql);
      p->test = test;
      p->weakness = weakness;
      p->rehash_size = rehash_size;
