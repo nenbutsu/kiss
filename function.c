@@ -36,18 +36,14 @@ static kiss_function_t* kiss_make_macro(kiss_symbol_t* name, kiss_obj* lambda) {
 }
 
 kiss_obj* kiss_simple_function_p(kiss_obj* obj) {
-    if (KISS_IS_FUNCTION(obj) || KISS_IS_CFUNCTION(obj)) {
-	return KISS_T;
-    } else {
-	return KISS_NIL;
-    }
+     return (KISS_IS_FUNCTION(obj) || KISS_IS_CFUNCTION(obj) ? KISS_T : KISS_NIL);
 }
 
 void kiss_bind_funargs(kiss_obj* params, kiss_obj* args) {
     kiss_environment_t* env = Kiss_Get_Environment();
     int nparam = kiss_c_length(params);
     int narg = kiss_c_length(args);
-    int rest = kiss_member((kiss_obj*)&KISS_Skw_rest,  params) != KISS_NIL ||
+    int rest = kiss_member((kiss_obj*)&KISS_Skw_rest, params) != KISS_NIL ||
          kiss_member((kiss_obj*)&KISS_Samp_rest, params) != KISS_NIL;
     if (!rest && nparam < narg) {
 	Kiss_Err(L"Too many arguments ~S ~S", params, args);
@@ -70,7 +66,7 @@ void kiss_bind_funargs(kiss_obj* params, kiss_obj* args) {
     }
 }
 
-kiss_obj* kiss_linvoke(kiss_function_t* fun, kiss_obj* args) {
+kiss_obj* kiss_lf_invoke(kiss_function_t* fun, kiss_obj* args) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_obj* body = KISS_CDDR(fun->lambda);
     kiss_lexical_environment_t saved_lexical_env = env->lexical_env;
@@ -133,7 +129,7 @@ kiss_obj* kiss_funcall(const kiss_obj* const f, const kiss_obj* const args) {
      case KISS_CFUNCTION:
 	  return kiss_cf_invoke((kiss_cfunction_t*)f, (kiss_obj*)args);
      case KISS_FUNCTION:
-	  return kiss_linvoke((kiss_function_t*)f, (kiss_obj*)args);
+	  return kiss_lf_invoke((kiss_function_t*)f, (kiss_obj*)args);
      case KISS_ILOS_OBJ:
 	  if (kiss_c_funcall(L"generic-function-p", kiss_c_list(1, f)) == KISS_T) {
 	       return kiss_c_funcall(L"generic-function-invoke", kiss_c_list(2, f, args));

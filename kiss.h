@@ -481,7 +481,7 @@ kiss_obj* kiss_print(kiss_obj* obj);
 /* function.c */
 kiss_function_t* kiss_make_function(kiss_symbol_t* name, kiss_obj* lambda);
 kiss_obj* kiss_simple_function_p(kiss_obj* obj);
-kiss_obj* kiss_linvoke(kiss_function_t* fun, kiss_obj* args);
+kiss_obj* kiss_lf_invoke(kiss_function_t* fun, kiss_obj* args);
 kiss_obj* kiss_lambda(kiss_obj* params, kiss_obj* body);
 kiss_obj* kiss_defun(kiss_obj* name, kiss_obj* params, kiss_obj* body);
 kiss_obj* kiss_defmacro(kiss_obj* name, kiss_obj* params, kiss_obj* body);
