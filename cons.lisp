@@ -67,17 +67,6 @@
          (setq result `(,(funcall function (car p)) ,@result)))
     (nreverse result)))
 
-;; function: (mapc function list+) -> <list>
-;; mapc is like mapcar except that the results of applying function are not accumulated;
-;; The first list is returned.
-(defun mapc (function list1 &rest rest)
-  (let ((lists `(,list1 ,@rest)))
-    (kiss::mapcar1 #'kiss::assure-list lists)
-    (while (not (member nil lists))
-      (apply function (kiss::mapcar1 #'car lists))
-      (setq lists (kiss::mapcar1 #'cdr lists)))
-    list1))
-
 ;; function: (mapcan function list+) -> <list>
 ;; mapcan is like mapcar, except that the results of applying function are combined
 ;; into a list by the use of an operation that performs a destructive form of

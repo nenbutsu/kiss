@@ -1480,6 +1480,40 @@ end:
 }
 
 inline
+kiss_obj* kiss_mapc1(const kiss_obj* const function, const kiss_obj* const list) {
+     for (const kiss_obj* p = list; KISS_IS_CONS(p); p = KISS_CDR(p)) {
+          kiss_funcall(function, kiss_c_list(1, KISS_CAR(p)));
+     }
+     return (kiss_obj*)list;
+}
+
+inline
+kiss_obj* kiss_mapc(const kiss_obj* const function, const kiss_obj* const list1, const kiss_obj* const rest)
+{
+     size_t n = kiss_c_length(rest);
+     if (n == 0) { return kiss_mapc1(function, list1); }
+     kiss_cons_t stack_rest[n];
+     kiss_copy_list_to_consarray(rest, stack_rest);
+     kiss_cons_t args;
+     kiss_init_cons(&args, list1, (kiss_obj*)stack_rest);
+     for (kiss_obj* x = (kiss_obj*)&args; KISS_IS_CONS(x); x = KISS_CDR(x))
+          Kiss_List(KISS_CAR(x));
+     if (kiss_member(KISS_NIL, (kiss_obj*)&args) != KISS_NIL) { return KISS_NIL; }
+     while(1) {
+          kiss_funcall(function, kiss_c_mapcar1((kiss_cf1_t)kiss_car, (kiss_obj*)&args));
+          for (kiss_obj* q = (kiss_obj*)&args; KISS_IS_CONS(q); q = KISS_CDR(q)) {
+               kiss_obj* obj = KISS_CDR(KISS_CAR(q));
+               if (!KISS_IS_CONS(obj)) {
+                    goto end;
+               }
+               kiss_set_car(obj, q);
+          }
+     }
+end:
+     return (kiss_obj*)list1;
+}
+
+inline
 kiss_obj* kiss_eval_compound_form(kiss_cons_t* p) {
      kiss_obj* op = p->car;
      switch (KISS_OBJ_TYPE(op)) {
