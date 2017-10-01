@@ -166,6 +166,9 @@ extern inline
 kiss_obj* kiss_last(const kiss_obj* const list, const kiss_obj* const rest);
 
 extern inline
+kiss_obj* kiss_nconc(kiss_obj* const lists);
+
+extern inline
 kiss_cons_t* kiss_init_cons(kiss_cons_t* const p, const kiss_obj* const left, const kiss_obj* const right);
 
 extern inline

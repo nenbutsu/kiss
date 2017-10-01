@@ -1458,6 +1458,25 @@ kiss_obj* kiss_last(const kiss_obj* const list, const kiss_obj* const rest) {
      return (kiss_obj*)p;
 }
 
+/* Common Lisp function: nconc &rest lists => concatenated-list
+   Arguments and Values:
+   list---each but the last must be a list (which might be a dotted list
+   but must not be a circular list); the last list may be any object.
+   concatenated-list---a list. */
+inline
+kiss_obj* kiss_nconc(kiss_obj* const lists) {
+     kiss_cons_t head;
+     kiss_init_cons(&head, KISS_NIL, KISS_NIL);
+     kiss_obj* q = (kiss_obj*)&head;
+     for (kiss_obj* p = lists; KISS_IS_CONS(p); p = KISS_CDR(p)) {
+          kiss_obj* l = Kiss_List(KISS_CAR(p));
+          kiss_set_cdr(l, q);
+          q = kiss_last(q, KISS_NIL);
+     }
+     return head.cdr;
+}
+
+
 /*  function: (mapcar function list+) -> <list>
     Operates on successive elements of the LISTS. FUNCTION is applied to
     the first element of each LIST, then to the second element of each LIST,
