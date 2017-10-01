@@ -1152,13 +1152,13 @@ kiss_obj* kiss_set_cdr(const kiss_obj* const obj, kiss_obj* const cons) {
    INITIAL-ELEMENT may be any ISLISP object. */
 inline
 kiss_obj* kiss_create_list(const kiss_obj* const i, const kiss_obj* const rest) {
-    long int n = Kiss_Non_Negative_Fixnum(i);
-    kiss_obj* init = rest == KISS_NIL ? KISS_NIL : KISS_CAR(rest);
-    kiss_obj* p = KISS_NIL;
-    for (; n > 0; n--) {
-         kiss_push(init, &p);
-    }
-    return p;
+     kiss_ptr_int n = Kiss_Non_Negative_Fixnum(i);
+     kiss_obj* init = rest == KISS_NIL ? KISS_NIL : KISS_CAR(rest);
+     kiss_obj* p = KISS_NIL;
+     for (; n > 0; n--) {
+          kiss_push(init, &p);
+     }
+     return p;
 }
 
 
@@ -1436,6 +1436,26 @@ kiss_obj* kiss_assoc_using(const kiss_obj* test, const kiss_obj* const obj, kiss
         if (kiss_funcall(test, kiss_c_list(2, obj, x->car)) != KISS_NIL) { return (kiss_obj*)x; }
     }
     return KISS_NIL;
+}
+
+/* Common Lisp fucntion: last list &optional n => tail
+   Arguments and Values:
+   list---a list, which might be a dotted list but must not be a circular list.
+   n---a non-negative integer. The default is 1.
+   tail---an object.
+  
+   Description:
+   last returns the last n conses (not the last n elements) of list).
+   If list is (), last returns ().
+   If n is zero, the atom that terminates list is returned. If n is greater
+   than or equal to the number of cons cells in list, the result is list. */
+inline
+kiss_obj* kiss_last(const kiss_obj* const list, const kiss_obj* const rest) {
+     kiss_ptr_int n = rest == KISS_NIL ? 1 : Kiss_Non_Negative_Fixnum(kiss_car(rest));
+     const kiss_obj* p = Kiss_List(list);
+     size_t len = kiss_c_length(list);
+     for (kiss_ptr_int i = len - n; i > 0; i--) p = kiss_cdr(p);
+     return (kiss_obj*)p;
 }
 
 /*  function: (mapcar function list+) -> <list>

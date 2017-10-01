@@ -15,28 +15,6 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
-;; Common Lisp fucntion: last list &optional n => tail
-;; Arguments and Values:
-;; list---a list, which might be a dotted list but must not be a circular list.
-;; n---a non-negative integer. The default is 1.
-;; tail---an object.
-;;
-;; Description:
-;; last returns the last n conses (not the last n elements) of list).
-;; If list is (), last returns ().
-;; If n is zero, the atom that terminates list is returned. If n is greater
-;; than or equal to the number of cons cells in list, the result is list.
-(defun last (list &rest args)
-  (let ((n (if (null args) 1 (car args))))
-    (if (< n 0)
-	(kiss::signal-non-negative-integer n nil))
-    (let* ((len (length list))
-           (i (- len n)))
-      (while (> i 0)
-        (setq i (- i 1))
-        (setq list (cdr list)))
-      list)))
-
 ;; Common Lisp function: nconc &rest lists => concatenated-list
 ;; Arguments and Values:
 ;; list---each but the last must be a list (which might be a dotted list
