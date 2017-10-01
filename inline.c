@@ -238,3 +238,11 @@ kiss_obj* kiss_plist_get (kiss_obj* plist, const kiss_obj* const property);
 extern inline
 kiss_obj* kiss_plist_put(kiss_obj* plist, const kiss_obj* const property, const kiss_obj* const value);
 
+extern inline
+kiss_obj* kiss_eval_compound_form(kiss_cons_t* p);
+
+extern inline
+kiss_obj* kiss_eval(const kiss_obj* const form);
+
+extern inline
+kiss_obj* kiss_eval_body(const kiss_obj* const body);

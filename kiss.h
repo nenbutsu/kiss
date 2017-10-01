@@ -465,8 +465,7 @@ void Kiss_Tagbody_Not_Found_Error(const kiss_obj* const name);
 kiss_obj* kiss_load(const kiss_obj* const filename);
 
 /* eval.c */
-kiss_obj* kiss_eval(const kiss_obj* const form);
-kiss_obj* kiss_eval_body(const kiss_obj* body);
+kiss_obj* kiss_invoke(kiss_obj* f, kiss_obj* args);
 
 /* format.c */
 kiss_obj* kiss_format(kiss_obj* out, kiss_obj* format, kiss_obj* args);
@@ -1478,6 +1477,39 @@ kiss_obj* kiss_mapcar(const kiss_obj* const function, const kiss_obj* const list
      }
 end:
      return KISS_CDR((kiss_obj*)&result);
+}
+
+inline
+kiss_obj* kiss_eval_compound_form(kiss_cons_t* p) {
+     kiss_obj* op = p->car;
+     switch (KISS_OBJ_TYPE(op)) {
+     case KISS_SYMBOL:
+	  return kiss_invoke(kiss_fun_ref((kiss_symbol_t*)op), p->cdr);
+     case KISS_CONS:
+	  return kiss_invoke((kiss_obj*)kiss_make_function(NULL, op), p->cdr);
+     default: Kiss_Err(L"eval: Invalid compound expression ~S", p);
+     }
+}
+
+inline
+kiss_obj* kiss_eval(const kiss_obj* const form) {
+     switch (KISS_OBJ_TYPE(form)) {
+     case KISS_CONS:
+          return kiss_eval_compound_form((kiss_cons_t*)Kiss_Proper_List(form));
+     case KISS_SYMBOL:
+          return kiss_var_ref((kiss_symbol_t*)form);
+     default: /* self-evaluating object. */
+          return (kiss_obj*)form;
+     }
+}
+
+inline
+kiss_obj* kiss_eval_body(const kiss_obj* const body) {
+     kiss_obj* result = KISS_NIL;
+     for (const kiss_obj* p = Kiss_Proper_List(body); KISS_IS_CONS(p); p = KISS_CDR(p)) {
+	  result = kiss_eval(KISS_CAR(p));
+     }
+     return result;
 }
 
 

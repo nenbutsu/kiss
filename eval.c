@@ -20,9 +20,18 @@
 
 extern kiss_gc_obj* Kiss_Heap_Stack[];
 
-static kiss_obj* kiss_eval_args(kiss_obj* args);
+static inline kiss_obj* kiss_eval_args(const kiss_obj* const args) {
+     kiss_cons_t head;
+     kiss_init_cons(&head, KISS_NIL, KISS_NIL);
+     kiss_obj* p = (kiss_obj*)&head;
+     for (const kiss_obj* q = Kiss_Proper_List(args); KISS_IS_CONS(q); q = KISS_CDR(q)) {
+          kiss_set_cdr(kiss_cons(kiss_eval(KISS_CAR(q)), KISS_NIL), p);
+          p = KISS_CDR(p);
+     }
+     return KISS_CDR((kiss_obj*)&head);
+}
 
-static kiss_obj* kiss_invoke(kiss_obj* f, kiss_obj* args) {
+kiss_obj* kiss_invoke(kiss_obj* f, kiss_obj* args) {
      kiss_obj* result = KISS_NIL;
      size_t saved_heap_top = Kiss_Heap_Top;
      switch (KISS_OBJ_TYPE(f)) {
@@ -63,48 +72,4 @@ static kiss_obj* kiss_invoke(kiss_obj* f, kiss_obj* args) {
      //fwprintf(stderr, L"Kiss_Heap_Top = %lu\n", Kiss_Heap_Top);
      return result;
 }
-
-static kiss_obj* kiss_eval_compound_form(kiss_cons_t* p) {
-     kiss_obj* op = p->car;
-     switch (KISS_OBJ_TYPE(op)) {
-     case KISS_SYMBOL: {
-	  kiss_obj* f = kiss_fun_ref((kiss_symbol_t*)op);
-	  return kiss_invoke(f, p->cdr);
-     }
-     case KISS_CONS: {
-	  kiss_obj* f = (kiss_obj*)kiss_make_function(NULL, op);
-	  return kiss_invoke(f, p->cdr);
-     }
-     default: Kiss_Err(L"Invalid compound expression ~S", p);
-     }
-     exit(EXIT_FAILURE); // not reach here
-}
-
-kiss_obj* kiss_eval(const kiss_obj* const form) {
-     switch (KISS_OBJ_TYPE(form)) {
-     case KISS_CONS:
-          return kiss_eval_compound_form((kiss_cons_t*)Kiss_Proper_List(form));
-     case KISS_SYMBOL:
-          return kiss_var_ref((kiss_symbol_t*)form);
-     default: /* self-evaluating object. */
-          return (kiss_obj*)form;
-     }
-}
-
-kiss_obj* kiss_eval_body(const kiss_obj* body) {
-     kiss_obj* result = KISS_NIL;
-     for (body = Kiss_Proper_List(body); KISS_IS_CONS(body); body = KISS_CDR(body)) {
-	  result = kiss_eval(KISS_CAR(body));
-     }
-     return result;
-}
-
-static kiss_obj* kiss_eval_args(kiss_obj* args) {
-    kiss_obj* stack = KISS_NIL;
-    for (args = Kiss_Proper_List(args); KISS_IS_CONS(args); args = KISS_CDR(args)) {
-	kiss_push(kiss_eval(KISS_CAR(args)), &stack);
-    }
-    return kiss_nreverse(stack);
-}
-
 
