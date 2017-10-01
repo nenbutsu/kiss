@@ -37,7 +37,7 @@
         (setq list (cdr list)))
       list)))
 
-;; Common Lisp, Emacs Lisp function: nconc &rest lists => concatenated-list
+;; Common Lisp function: nconc &rest lists => concatenated-list
 ;; Arguments and Values:
 ;; list---each but the last must be a list (which might be a dotted list
 ;; but must not be a circular list); the last list may be any object.
