@@ -24,22 +24,23 @@ static inline kiss_obj* kiss_eval_args(const kiss_obj* const args) {
      kiss_cons_t head;
      kiss_init_cons(&head, KISS_NIL, KISS_NIL);
      kiss_obj* p = (kiss_obj*)&head;
-     for (const kiss_obj* q = Kiss_Proper_List(args); KISS_IS_CONS(q); q = KISS_CDR(q)) {
+     for (const kiss_obj* q = args; KISS_IS_CONS(q); q = KISS_CDR(q)) {
           kiss_set_cdr(kiss_cons(kiss_eval(KISS_CAR(q)), KISS_NIL), p);
           p = KISS_CDR(p);
      }
      return KISS_CDR((kiss_obj*)&head);
 }
 
-kiss_obj* kiss_invoke(kiss_obj* f, kiss_obj* args) {
+kiss_obj* kiss_invoke(const kiss_obj* const f, kiss_obj* const args) {
      kiss_obj* result = KISS_NIL;
      size_t saved_heap_top = Kiss_Heap_Top;
+     Kiss_Proper_List(args);
      switch (KISS_OBJ_TYPE(f)) {
      case KISS_CFUNCTION:
-	  result = kiss_cinvoke((kiss_cfunction_t*)f, kiss_eval_args(args));
+	  result = kiss_cf_invoke((kiss_cfunction_t*)f, kiss_eval_args(args));
 	  break;
      case KISS_CMACRO:
-	  result = kiss_cinvoke((kiss_cfunction_t*)f, args);
+	  result = kiss_cf_invoke((kiss_cfunction_t*)f, args);
 	  break;
      case KISS_FUNCTION:
 	  result = kiss_linvoke((kiss_function_t*)f, kiss_eval_args(args));

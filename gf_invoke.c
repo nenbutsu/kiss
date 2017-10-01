@@ -55,7 +55,7 @@ kiss_cfunction_t KISS_CFnext_method_error = {
     0,                  /* maximum argument number */
 };
 
-static void kiss_bind_methodargs(kiss_obj* m) {
+static void kiss_bind_methodargs(const kiss_obj* const m) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_obj *binding, *next;
     /* fwprintf(stderr, L"bind_methodargs\n"); fflush(stderr); */
@@ -81,7 +81,7 @@ static void kiss_bind_methodargs(kiss_obj* m) {
 }
 
 void kiss_call_methods(kiss_obj* methods);
-kiss_obj* kiss_method_invoke(kiss_obj* m) {
+kiss_obj* kiss_method_invoke(const kiss_obj* const m) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_lexical_environment_t saved_lexical_env = env->lexical_env;
     kiss_obj* result;

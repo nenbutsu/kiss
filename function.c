@@ -131,7 +131,7 @@ kiss_obj* kiss_function(kiss_obj* name) { return kiss_fun_ref(Kiss_Symbol(name))
 kiss_obj* kiss_funcall(const kiss_obj* const f, const kiss_obj* const args) {
      switch (KISS_OBJ_TYPE(f)) {
      case KISS_CFUNCTION:
-	  return kiss_cinvoke((kiss_cfunction_t*)f, (kiss_obj*)args);
+	  return kiss_cf_invoke((kiss_cfunction_t*)f, (kiss_obj*)args);
      case KISS_FUNCTION:
 	  return kiss_linvoke((kiss_function_t*)f, (kiss_obj*)args);
      case KISS_ILOS_OBJ:

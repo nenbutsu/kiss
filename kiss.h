@@ -413,8 +413,8 @@ kiss_obj* kiss_characterp (const kiss_obj* const obj);
 kiss_obj* kiss_char_eq(const kiss_obj* const character1, const kiss_obj* const character2);
 kiss_obj* kiss_char_lessthan(const kiss_obj* const character1, const kiss_obj* const character2);
 
-/* cinvoke.c */
-kiss_obj* kiss_cinvoke(const kiss_cfunction_t* const cfun, kiss_obj* args);
+/* cf_invoke.c */
+kiss_obj* kiss_cf_invoke(const kiss_cfunction_t* const cfun, kiss_obj* args);
 
 /* cons.c */
 
@@ -465,7 +465,7 @@ void Kiss_Tagbody_Not_Found_Error(const kiss_obj* const name);
 kiss_obj* kiss_load(const kiss_obj* const filename);
 
 /* eval.c */
-kiss_obj* kiss_invoke(kiss_obj* f, kiss_obj* args);
+kiss_obj* kiss_invoke(const kiss_obj* const f, kiss_obj* const args);
 
 /* format.c */
 kiss_obj* kiss_format(kiss_obj* out, kiss_obj* format, kiss_obj* args);
@@ -694,7 +694,7 @@ kiss_symbol_t KISS_Sc_function;
 kiss_symbol_t KISS_Sc_hash_table;
 
 /* gf_invoke.c */
-kiss_obj* kiss_method_invoke(kiss_obj* m);
+kiss_obj* kiss_method_invoke(const kiss_obj* const m);
 
 /* class.c */
 //kiss_obj* kiss_type_to_class_name(kiss_type t);
