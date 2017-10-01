@@ -275,6 +275,21 @@
        (mapc (lambda (v) (setq x (+ x v))) '(3 5))
        x)
      8)
+(eql (let ((x 0))
+       (mapc (lambda (a b) (setq x (+ a b x))) '(1 2 3 4) '(9 8 7 6))
+       x)
+     40)
+
+(eql (let ((x 0))
+       (mapc (lambda (a b) (setq x (+ a b x))) '(1 2 3) '(9 8 7 6))
+       x)
+     30)
+
+(eql (let ((x 0))
+       (mapc (lambda (a b) (setq x (+ a b x))) '() '(9 8 7 6))
+       x)
+     0)
+
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
