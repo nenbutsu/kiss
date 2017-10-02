@@ -321,6 +321,13 @@
 
 (equal (maplist (lambda (x) (if (member (car x) (cdr x)) 0 1)) '(a b a c d b c))
        '(0 0 1 0 1 1 1))
+
+(eq (maplist #'append '(1 2 3 4) '() '(1 2 3))
+    '())
+
+(eq (maplist #'append '() '(1 2 3 4) '() '(1 2 3))
+    '())
+
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))

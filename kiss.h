@@ -1515,7 +1515,7 @@ kiss_obj* kiss_mapcar(const kiss_obj* const function, const kiss_obj* const list
           }
      }
 end:
-     return KISS_CDR((kiss_obj*)&result);
+     return result.cdr;
 }
 
 inline
@@ -1550,6 +1550,52 @@ kiss_obj* kiss_mapc(const kiss_obj* const function, const kiss_obj* const list1,
      }
 end:
      return (kiss_obj*)list1;
+}
+
+inline
+kiss_obj* kiss_maplist1(const kiss_obj* const function, const kiss_obj* const list) {
+     kiss_cons_t result;
+     kiss_init_cons(&result, KISS_NIL, KISS_NIL);
+     kiss_obj* p = (kiss_obj*)&result;
+     for (const kiss_obj* q = list; KISS_IS_CONS(q); q = KISS_CDR(q)) {
+          kiss_set_cdr(kiss_cons(kiss_funcall(function, q), KISS_NIL), p);
+          p = KISS_CDR(p);
+     }
+     return result.cdr;
+}
+
+/* function: (maplist function list+) -> <list>
+   maplist is like mapcar except that function is applied to successive sublists of
+   the lists. function is first applied to the lists themselves, and then to the cdr of
+   each list, and then to the cdr of the cdr of each list, and so on. */
+inline
+kiss_obj* kiss_maplist(const kiss_obj* const function, const kiss_obj* const list1, const kiss_obj* const rest)
+{
+     size_t n = kiss_c_length(rest);
+     if (n == 0) { return kiss_maplist1(function, list1); }
+     kiss_cons_t stack_rest[n];
+     kiss_copy_list_to_consarray(rest, stack_rest);
+     kiss_cons_t args;
+     kiss_init_cons(&args, list1, (kiss_obj*)stack_rest);
+     for (kiss_obj* x = (kiss_obj*)&args; KISS_IS_CONS(x); x = KISS_CDR(x))
+          Kiss_List(KISS_CAR(x));
+     kiss_cons_t result;
+     kiss_init_cons(&result, KISS_NIL, KISS_NIL);
+     kiss_obj* p = (kiss_obj*)&result;
+     if (kiss_member(KISS_NIL, (kiss_obj*)&args) != KISS_NIL) { return KISS_NIL; }
+     while(1) {
+          kiss_set_cdr(kiss_cons(kiss_funcall(function, (kiss_obj*)&args), KISS_NIL), p);
+          p = KISS_CDR(p);
+          for (kiss_obj* q = (kiss_obj*)&args; KISS_IS_CONS(q); q = KISS_CDR(q)) {
+               kiss_obj* obj = KISS_CDR(KISS_CAR(q));
+               if (!KISS_IS_CONS(obj)) {
+                    goto end;
+               }
+               kiss_set_car(obj, q);
+          }
+     }
+end:
+     return result.cdr;
 }
 
 inline
