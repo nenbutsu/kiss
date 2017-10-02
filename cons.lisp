@@ -15,30 +15,6 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
-;; Common Lisp function: nconc &rest lists => concatenated-list
-;; Arguments and Values:
-;; list---each but the last must be a list (which might be a dotted list
-;; but must not be a circular list); the last list may be any object.
-;; concatenated-list---a list.
-;;;(defun nconc (&rest lists)
-;;;  (cond
-;;;   ((null lists)
-;;;    ;; (nconc) =>  ()
-;;;    nil)
-;;;   ((null (car lists))
-;;;    ;; (nconc nil . lists) ==  (nconc . lists)
-;;;    (apply #'nconc (cdr lists)))
-;;;   ((null (cdr lists))
-;;;    ;; (nconc list) =>  list
-;;;    (car lists))
-;;;   ((null (cddr lists))
-;;;    ;; (nconc list-1 list-2) ==  (progn (set-cdr list-2 (last list-1)) list-1)
-;;;    (set-cdr (cadr lists) (last (car lists)))
-;;;    (car lists))
-;;;   (t
-;;;    ;; (nconc list-1 list-2 . lists) ==  (nconc (nconc list-1 list-2) . lists)
-;;;    (apply #'nconc (nconc (car lists) (cadr lists)) (cddr lists)))))
-
 (defun kiss::mapcar1 (function list)
   (let ((result nil))
     (for ((p list (cdr p))) ((not (consp p)))
