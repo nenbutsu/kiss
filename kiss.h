@@ -1558,7 +1558,7 @@ kiss_obj* kiss_maplist1(const kiss_obj* const function, const kiss_obj* const li
      kiss_init_cons(&result, KISS_NIL, KISS_NIL);
      kiss_obj* p = (kiss_obj*)&result;
      for (const kiss_obj* q = list; KISS_IS_CONS(q); q = KISS_CDR(q)) {
-          kiss_set_cdr(kiss_cons(kiss_funcall(function, q), KISS_NIL), p);
+          kiss_set_cdr(kiss_cons(kiss_funcall(function, kiss_cons(q, KISS_NIL)), KISS_NIL), p);
           p = KISS_CDR(p);
      }
      return result.cdr;
