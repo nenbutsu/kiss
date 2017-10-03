@@ -34,19 +34,6 @@
       (setq lists (kiss::mapcar1 #'cdr lists)))
     (apply #'nconc (nreverse result))))
 
-;; function: (maplist function list+) -> <list>
-;; maplist is like mapcar except that function is applied to successive sublists of
-;; the lists. function is first applied to the lists themselves, and then to the cdr of
-;; each list, and then to the cdr of the cdr of each list, and so on.
-;;;(defun maplist (function list1 &rest rest)
-;;;  (let ((lists `(,list1 ,@rest))
-;;;        (result nil))
-;;;    (kiss::mapcar1 #'kiss::assure-list lists)
-;;;    (while (not (member nil lists))
-;;;      (setq result `(,(apply function lists) ,@result))
-;;;      (setq lists (kiss::mapcar1 #'cdr lists)))
-;;;    (nreverse result)))
-
 ;; function: (mapl function list1 list*) -> list1
 ;; mapl is like maplist except that the results of applying function are not accumulated;
 ;; list1 is returned.

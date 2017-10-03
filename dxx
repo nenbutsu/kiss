@@ -1,4 +1,0 @@
-#/bin/sh
-gcc -Wall -g -O0 *.c -o kiss -lm -lgmp
-
-
