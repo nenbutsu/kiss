@@ -227,6 +227,12 @@ extern inline
 kiss_obj* kiss_maplist(const kiss_obj* const function, const kiss_obj* const list1, const kiss_obj* const rest);
 
 extern inline
+kiss_obj* kiss_mapl1(const kiss_obj* const function, const kiss_obj* const list);
+
+extern inline
+kiss_obj* kiss_mapl(const kiss_obj* const function, const kiss_obj* const list1, const kiss_obj* const rest);
+
+extern inline
 kiss_obj* kiss_append_s(kiss_obj* p);
 
 extern inline

@@ -675,6 +675,24 @@ kiss_symbol_t KISS_Smaplist = {
     KISS_NIL,                  /* plist */
 };
 
+kiss_symbol_t KISS_Smapl;
+kiss_cfunction_t KISS_CFmapl = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Smapl,  /* name */
+    (kiss_cf_t*)kiss_mapl,    /* C function name */
+    2,         /* minimum argument number */
+    -1,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Smapl = {
+    KISS_SYMBOL,               /* type */
+    NULL,              /* gc_ptr */
+    L"mapl",            /* name */
+    KISS_CONSTANT_FUN,         /* flags */
+    NULL,                 /* var */
+    (kiss_obj*)&KISS_CFmapl, /* fun */
+    KISS_NIL,                  /* plist */
+};
+
 kiss_symbol_t KISS_Sassoc;
 kiss_cfunction_t KISS_CFassoc = {
     KISS_CFUNCTION, /* type */
@@ -3799,7 +3817,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Slist, &KISS_Sappend, &KISS_Sappend_s,
     &KISS_Sreverse, &KISS_Snreverse,
     &KISS_Smember, &KISS_Smember_using,
-    &KISS_Smapcar, &KISS_Smapc, &KISS_Smaplist,
+    &KISS_Smapcar, &KISS_Smapc, &KISS_Smaplist, &KISS_Smapl,
     &KISS_Sassoc, &KISS_Sassoc_using, &KISS_Slast, &KISS_Snconc,
     &KISS_Scopy_list,
     &KISS_Splist_member, &KISS_Splist_put, &KISS_Splist_get, 

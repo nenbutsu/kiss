@@ -34,17 +34,6 @@
       (setq lists (kiss::mapcar1 #'cdr lists)))
     (apply #'nconc (nreverse result))))
 
-;; function: (mapl function list1 list*) -> list1
-;; mapl is like maplist except that the results of applying function are not accumulated;
-;; list1 is returned.
-(defun mapl (function list1 &rest rest)
-  (let ((lists `(,list1 ,@rest)))
-    (kiss::mapcar1 #'kiss::assure-list lists)
-    (while (not (member nil lists))
-      (apply function lists)
-      (setq lists (kiss::mapcar1 #'cdr lists)))
-    list1))
-
 ;; function: (mapcon function list+) -> <list>
 ;; mapcon  are like maplist, except that the results of applying function are combined
 ;; into a list by the use of an operation that performs a destructive form of append

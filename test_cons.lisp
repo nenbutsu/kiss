@@ -358,6 +358,27 @@
 	   '(a b a c d b c))
      k)
    4)
+(= (let ((k 0))
+     (mapl (lambda (x) (setq k (apply #'+ k x))) '(0 1 2 3))
+     k)
+   20)
+
+(= (let ((k 0))
+     (mapl (lambda (x) (setq k (apply #'+ k x))) '())
+     k)
+   0)
+
+(equal (let ((k nil))
+         (mapl (lambda (x) (setq k (list x k))) '(1 2 3))
+         k)
+       '((3) ((2 3) ((1 2 3) nil))))
+
+(equal (let ((k nil))
+         (mapl (lambda (x y) (setq k (list x y k))) '(1 2 3) '(a b c))
+         k)
+       '((3) (c) ((2 3) (b c) ((1 2 3) (a b c) nil))))
+
+
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
