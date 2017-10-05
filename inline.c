@@ -215,6 +215,9 @@ extern inline
 kiss_obj* kiss_mapcar(const kiss_obj* const function, const kiss_obj* const list1, const kiss_obj* const rest);
 
 extern inline
+kiss_obj* kiss_mapcan(const kiss_obj* const function, const kiss_obj* const list1, const kiss_obj* const rest);
+
+extern inline
 kiss_obj* kiss_mapc1(const kiss_obj* const function, const kiss_obj* const list);
      
 extern inline
