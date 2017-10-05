@@ -1608,6 +1608,16 @@ end:
      return result.cdr;
 }
 
+/* function: (mapcon function list+) -> <list>
+   mapcon  are like maplist, except that the results of applying function are combined
+   into a list by the use of an operation that performs a destructive form of append
+   rather than list. */
+inline
+kiss_obj* kiss_mapcon(const kiss_obj* const function, const kiss_obj* const list1, const kiss_obj* const rest)
+{
+     return kiss_nconc(kiss_maplist(function, list1, rest));
+}
+
 inline
 kiss_obj* kiss_mapl1(const kiss_obj* const function, const kiss_obj* const list) {
      for (const kiss_obj* q = list; KISS_IS_CONS(q); q = KISS_CDR(q)) {

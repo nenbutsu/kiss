@@ -15,39 +15,6 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
-(defun kiss::mapcar1 (function list)
-  (let ((result nil))
-    (for ((p list (cdr p))) ((not (consp p)))
-         (setq result `(,(funcall function (car p)) ,@result)))
-    (nreverse result)))
-
-;; function: (mapcan function list+) -> <list>
-;; mapcan is like mapcar, except that the results of applying function are combined
-;; into a list by the use of an operation that performs a destructive form of
-;; append rather than list.
-;;;(defun mapcan (function list1 &rest rest)
-;;;  (let ((lists `(,list1 ,@rest))
-;;;        (result nil))
-;;;    (kiss::mapcar1 #'kiss::assure-list lists)
-;;;    (while (not (member nil lists))
-;;;      (setq result `(,(apply function (kiss::mapcar1 #'car lists)) ,@result))
-;;;      (setq lists (kiss::mapcar1 #'cdr lists)))
-;;;    (apply #'nconc (nreverse result))))
-
-;; function: (mapcon function list+) -> <list>
-;; mapcon  are like maplist, except that the results of applying function are combined
-;; into a list by the use of an operation that performs a destructive form of append
-;; rather than list.
-(defun mapcon (function list1 &rest rest)
-  (let ((lists `(,list1 ,@rest))
-        (result nil))
-    (kiss::mapcar1 #'kiss::assure-list lists)
-    (while (not (member nil lists))
-      (setq result `(,(apply function lists) ,@result))
-      (setq lists (kiss::mapcar1 #'cdr lists)))
-    (apply #'nconc (nreverse result))))
-
-
 (defun plist-mapc (fun plist)
   (while (consp plist)
     (funcall fun (car plist) (cadr plist))
