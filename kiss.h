@@ -1406,17 +1406,16 @@ kiss_obj* kiss_plist_get (kiss_obj* plist, const kiss_obj* const property) {
 }
 
 /* Emacs Lisp function: (plist-put plist property value) -> modified-plist
-     This stores VALUE as the value of the PROPERTY property in the
-     property list PLIST.  It may modify PLIST destructively, or it may
-     construct a new list structure without altering the old.  The
-     function returns the modified property list, so you can store that
-     back in the place where you got PLIST.  For example,
+   This stores VALUE as the value of the PROPERTY property in the
+   property list PLIST.  It may modify PLIST destructively, or it may
+   construct a new list structure without altering the old.  The
+   function returns the modified property list, so you can store that
+   back in the place where you got PLIST.  For example,
 
-     Example:
-     (setq my-plist '(bar t foo 4)) => (bar t foo 4)
-     (setq my-plist (plist-put my-plist 'foo 69)) => (bar t foo 69)
-     (setq my-plist (plist-put my-plist 'quux '(a))) => (bar t foo 69 quux (a))
- */
+   Example:
+   (setq my-plist '(bar t foo 4)) => (bar t foo 4)
+   (setq my-plist (plist-put my-plist 'foo 69)) => (bar t foo 69)
+   (setq my-plist (plist-put my-plist 'quux '(a))) => (bar t foo 69 quux (a)) */
 inline
 kiss_obj* kiss_plist_put(kiss_obj* plist, const kiss_obj* const property, const kiss_obj* const value)
 {
@@ -1428,6 +1427,15 @@ kiss_obj* kiss_plist_put(kiss_obj* plist, const kiss_obj* const property, const 
         return plist;
     }
 }
+
+inline
+kiss_obj* kiss_plist_mapc(const kiss_obj* const function, const kiss_obj* const plist) {
+     for (const kiss_obj* p = Kiss_List(plist); KISS_IS_CONS(p); p = KISS_CDDR(p)) {
+          kiss_funcall(function, kiss_c_list(2, KISS_CAR(p), kiss_cadr(p)));
+     }
+     return (kiss_obj*)plist;
+}
+
 
 inline
 kiss_obj* kiss_assoc_using(const kiss_obj* test, const kiss_obj* const obj, kiss_obj* const alist) {

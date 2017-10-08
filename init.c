@@ -34,7 +34,7 @@ void kiss_initialize(void) {
      
      fwide(stdin,  1); // wide oriented
      fwide(stdout, 1); // wide oriented
-     fwide(stderr, 1); // narrow oriented
+     fwide(stderr, 1); // wide oriented
      setlocale (LC_ALL, "");
      fwprintf(stderr, L"LOCALE = %s\n", setlocale(LC_ALL, NULL));
      kiss_init_environment();

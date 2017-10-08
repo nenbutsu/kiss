@@ -876,6 +876,24 @@ kiss_symbol_t KISS_Splist_put = {
     KISS_NIL,                 /* plist */
 };
 
+kiss_symbol_t KISS_Splist_mapc;
+kiss_cfunction_t KISS_CFplist_mapc = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Splist_mapc,   /* name */
+    (kiss_cf_t*)kiss_plist_mapc,     /* C function name */
+    2,         /* minimum argument number */
+    2,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Splist_mapc = {
+    KISS_SYMBOL,              /* type */
+    NULL,              /* gc_ptr */
+    L"plist-mapc",            /* name */
+    KISS_CONSTANT_FUN,        /* flags */
+    NULL,                /* var */
+    (kiss_obj*)&KISS_CFplist_mapc, /* fun */
+    KISS_NIL,                 /* plist */
+};
+
 
 /*** array.c ***/
 kiss_symbol_t KISS_Screate_array;
@@ -3856,7 +3874,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Smapcar, &KISS_Smapcan, &KISS_Smapc, &KISS_Smaplist, &KISS_Smapcon, &KISS_Smapl,
     &KISS_Sassoc, &KISS_Sassoc_using, &KISS_Slast, &KISS_Snconc,
     &KISS_Scopy_list,
-    &KISS_Splist_member, &KISS_Splist_put, &KISS_Splist_get, 
+    &KISS_Splist_member, &KISS_Splist_put, &KISS_Splist_get, &KISS_Splist_mapc,
 
     /* array.c */
     &KISS_Sbasic_array_p, &KISS_Sbasic_array_s_p, &KISS_Sgeneral_array_s_p,
