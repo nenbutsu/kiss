@@ -11,6 +11,7 @@ $(objects) : kiss.h
 
 .PHONY: clean
 clean :
-	rm kiss.exe kiss
+	rm -f kiss.exe kiss
+
 
 

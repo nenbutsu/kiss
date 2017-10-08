@@ -15,11 +15,6 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
-;;;(defun plist-mapc (fun plist)
-;;;  (while (consp plist)
-;;;    (funcall fun (car plist) (cadr plist))
-;;;    (setq plist (cddr plist))))
-
 ;; Common Lisp
 ;; If object is the same as some tail of list, ldiff returns a fresh
 ;; list of the elements of list that precede object in the list
