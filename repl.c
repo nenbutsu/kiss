@@ -19,16 +19,16 @@
 #include "kiss.h"
 
 static wchar_t* libraries[] = {
-     L"cons.lisp",
-     L"character.lisp",
-     L"stream.lisp",
-     L"sequence.lisp",
-     L"control.lisp",
-     L"number.lisp",
-     L"string.lisp",
-     L"ilos.lisp",
-     L"condition.lisp",
-     L"init.lisp",
+     L"lisp/cons.lisp",
+     L"lisp/character.lisp",
+     L"lisp/stream.lisp",
+     L"lisp/sequence.lisp",
+     L"lisp/control.lisp",
+     L"lisp/number.lisp",
+     L"lisp/string.lisp",
+     L"lisp/ilos.lisp",
+     L"lisp/condition.lisp",
+     L"lisp/init.lisp",
      NULL,
 };
 
