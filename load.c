@@ -18,14 +18,3 @@
 */
 #include "kiss.h"
 
-kiss_obj* kiss_load(const kiss_obj* const filename) {
-     size_t saved_heap_top = Kiss_Heap_Top;
-     kiss_obj* in = kiss_open_input_file(filename, KISS_NIL);
-     kiss_obj* form = kiss_c_read(in, KISS_NIL, KISS_EOS);
-     while (form != KISS_EOS) {
-	  kiss_eval(form);
-	  form = kiss_c_read(in, KISS_NIL, KISS_EOS);
-     }
-     Kiss_Heap_Top = saved_heap_top;
-     return KISS_T;
-}
