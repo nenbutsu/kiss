@@ -32,10 +32,10 @@ void kiss_initialize(void) {
 
      assert(sizeof(long int) == sizeof(kiss_gc_obj*));
      
+     setlocale (LC_ALL, "");
      fwide(stdin,  1); // wide oriented
      fwide(stdout, 1); // wide oriented
      fwide(stderr, 1); // wide oriented
-     setlocale (LC_ALL, "");
      fwprintf(stderr, L"LOCALE = %s\n", setlocale(LC_ALL, NULL));
      kiss_init_environment();
      kiss_init_symbols();

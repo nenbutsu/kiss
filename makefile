@@ -11,7 +11,7 @@ $(objects) : kiss.h
 
 .PHONY: clean
 clean :
-	rm -f kiss.exe kiss
+	rm -f kiss.exe kiss newfile example.dat
 
 
 
