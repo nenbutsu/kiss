@@ -102,7 +102,8 @@ extern size_t Kiss_GC_Amount;
 extern void* Kiss_GC_Objects;
 extern kiss_gc_obj* Kiss_Heap_Stack[];
 
-_Noreturn void Kiss_System_Error (void);
+_Noreturn
+void Kiss_System_Error (void);
 
 /* gc.c */
 kiss_obj* kiss_gc_info(void);
@@ -357,9 +358,11 @@ typedef struct {
 
 extern kiss_obj* Kiss_Features;
 
-kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda, KISS_Skw_rest, KISS_Samp_rest, KISS_Skw_size, KISS_Skw_test, KISS_Skw_weakness, KISS_Skw_rehash_size, KISS_Skw_rehash_threshold;
+kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda;
 #define KISS_T        ((kiss_obj*)(&KISS_St))
 #define KISS_NIL      ((kiss_obj*)(&KISS_Snil))
+
+kiss_symbol_t KISS_Skw_rest, KISS_Samp_rest, KISS_Skw_size, KISS_Skw_test, KISS_Skw_weakness, KISS_Skw_rehash_size, KISS_Skw_rehash_threshold;
 
 kiss_symbol_t KISS_Seql;
 
@@ -441,8 +444,10 @@ kiss_obj* kiss_tagbody(kiss_obj* args);
 kiss_obj* kiss_go(kiss_obj* tag);
 
 /* error.c */
-_Noreturn void Kiss_Err(const wchar_t* const str, ...);
-_Noreturn void Kiss_Domain_Error(const kiss_obj* const obj, const wchar_t* const domain);
+_Noreturn
+void Kiss_Err(const wchar_t* const str, ...);
+_Noreturn
+void Kiss_Domain_Error(const kiss_obj* const obj, const wchar_t* const domain);
 
 kiss_obj* Kiss_Valid_Sequence_Index(const kiss_obj* const sequence, const kiss_obj* const index);
 kiss_stream_t* Kiss_Input_Char_Stream(const kiss_obj* const obj);
@@ -460,9 +465,6 @@ void Kiss_Unbound_Variable_Error(const kiss_obj* const obj);
 void Kiss_Catcher_Not_Found_Error(const kiss_obj* const tag);
 void Kiss_Block_Not_Found_Error(const kiss_obj* const name);
 void Kiss_Tagbody_Not_Found_Error(const kiss_obj* const name);
-
-/* load.c */
-kiss_obj* kiss_load(const kiss_obj* const filename);
 
 /* eval.c */
 kiss_obj* kiss_invoke(const kiss_obj* const f, kiss_obj* const args);
@@ -606,6 +608,8 @@ kiss_obj* kiss_open_io_file(kiss_obj* filename, kiss_obj* rest);
 kiss_obj* kiss_close(kiss_obj* obj);
 kiss_obj* kiss_finish_output (kiss_obj* obj);
 kiss_obj* kiss_stream_ready_p(kiss_obj* obj);
+
+kiss_obj* kiss_load(const kiss_obj* const filename);
 
 /* string.c */
 kiss_obj* kiss_create_string(const kiss_obj* const i, const kiss_obj* const rest);
