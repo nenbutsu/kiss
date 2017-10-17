@@ -47,14 +47,13 @@ static int kiss_is_delimiter(wint_t c) {
 static kiss_obj* kiss_read_list(const kiss_obj* const in) {
      kiss_cons_t head;
      kiss_init_cons(&head, KISS_NIL, KISS_NIL);
-     kiss_cons_t* const p = &head;
-     kiss_cons_t* tail = p;
+     kiss_cons_t* tail = &head;
      while(1) {
           kiss_obj* x = kiss_read_lexeme(in);
           if (x == NULL) Kiss_Err(L"Missing closing parenthesis");
           if (x == KISS_RPAREN) { break; }
           if (x == KISS_DOT) {
-               if (p == tail) { Kiss_Err(L"Illegal consing dot"); }
+               if (tail == &head) { Kiss_Err(L"Illegal consing dot"); }
                kiss_obj* const rest = kiss_read_lexeme(in);
                if (rest == NULL || rest == KISS_RPAREN || rest == KISS_DOT) {
                     Kiss_Err(L"Illegal consing dot");
@@ -68,7 +67,7 @@ static kiss_obj* kiss_read_list(const kiss_obj* const in) {
           tail->cdr = kiss_cons(x, KISS_NIL);
           tail = (kiss_cons_t*)tail->cdr;
      }
-     return p->cdr;
+     return head.cdr;
 }
 
 static kiss_obj* kiss_read_string(const kiss_obj* const in) {
