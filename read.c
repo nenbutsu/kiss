@@ -19,9 +19,6 @@
 #include "kiss.h"
 
 kiss_symbol_t KISS_Sfunction, KISS_Slist, KISS_Sappend_s;
-#define KISS_SFUNCTION   ((kiss_obj*)(&KISS_Sfunction))
-#define KISS_SLIST       ((kiss_obj*)(&KISS_Slist))
-#define KISS_SAPPEND_S   ((kiss_obj*)(&KISS_Sappend_s))
 kiss_symbol_t KISS_Udot, KISS_Urparen, KISS_Ucomma, KISS_Ucomma_at;
 #define KISS_DOT       ((kiss_obj*)(&KISS_Udot))
 #define KISS_RPAREN    ((kiss_obj*)(&KISS_Urparen))
@@ -272,7 +269,7 @@ static kiss_obj* kiss_read_sharp_reader_macro(const kiss_obj* const in) {
      switch (c) {
      case L'\'': /* #'f */
 	  kiss_c_read_char(in, KISS_NIL, KISS_EOS);
-	  return kiss_c_list(2, KISS_SFUNCTION, kiss_c_read(in, KISS_T, KISS_NIL));
+	  return kiss_c_list(2, (kiss_obj*)&KISS_Sfunction, kiss_c_read(in, KISS_T, KISS_NIL));
      case L'\\': /* #\c */
 	  kiss_c_read_char(in, KISS_NIL, KISS_EOS);
 	  return kiss_read_sharp_reader_macro_char(in);
@@ -336,12 +333,12 @@ static kiss_obj* kiss_expand_backquote(kiss_obj* p) {
 	return kiss_cadr(p);
     if (KISS_CAR(p) == KISS_COMMA_AT) /* `,@FORM => error */
 	Kiss_Err(L"Unquote-splicing(,@) out of list");
-    kiss_push(KISS_SAPPEND_S, &stack);
+    kiss_push((kiss_obj*)&KISS_Sappend_s, &stack);
     while (KISS_IS_CONS(p)) { /* `(FORM ...) */
 	kiss_obj* x = KISS_CAR(p);
 	if (KISS_IS_CONS(x)) {
 	    if (KISS_CAR(x) == KISS_COMMA)
-		kiss_push(kiss_c_list(2, KISS_SLIST, kiss_cadr(x)), &stack);
+                 kiss_push(kiss_c_list(2, (kiss_obj*)&KISS_Slist, kiss_cadr(x)), &stack);
 	    else if (KISS_CAR(x) == KISS_COMMA_AT)
 		kiss_push(kiss_cadr(x), &stack);
 	    else kiss_push(kiss_c_list(2, ((kiss_obj*)(&KISS_Slist)),
