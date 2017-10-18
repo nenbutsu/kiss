@@ -71,7 +71,9 @@ static kiss_obj* kiss_read_list(const kiss_obj* const in) {
 }
 
 static kiss_obj* kiss_read_string(const kiss_obj* const in) {
-     kiss_obj* stack = KISS_NIL;
+     kiss_cons_t head;
+     kiss_init_cons(&head, KISS_NIL, KISS_NIL);
+     kiss_cons_t* tail = &head;
      while (1) {
           kiss_obj* x = kiss_c_read_char(in, KISS_NIL, KISS_EOS);
           if (x == KISS_EOS) { Kiss_Err(L"Missing closing double quotation"); }
@@ -82,18 +84,19 @@ static kiss_obj* kiss_read_string(const kiss_obj* const in) {
                case L'\\':
                     x = kiss_c_read_char(in, KISS_NIL, KISS_EOS);
                     if (x == KISS_EOS) {
-                         Kiss_Err(L"Missing char after backquote in a string");
+                         Kiss_Err(L"Missing character after backslash in a string");
                     }
-                    kiss_push(x, &stack);
+                    tail->cdr = kiss_cons(x, KISS_NIL);
                     break;
                default:
-                    kiss_push(x, &stack);
+                    tail->cdr = kiss_cons(x, KISS_NIL);
                     break;
                }
+               tail = (kiss_cons_t*)tail->cdr;
           }
      }
 end:
-     return (kiss_obj*)kiss_chars_to_str(kiss_nreverse(stack));
+     return (kiss_obj*)kiss_chars_to_str(head.cdr);
 }
 
 static void kiss_push_lexeme_char(const kiss_obj* const x) {
