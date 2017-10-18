@@ -104,20 +104,20 @@ static void kiss_push_lexeme_char(const kiss_obj* const x) {
     env->lexeme_chars = kiss_cons(x, env->lexeme_chars);
 }
 
-static void kiss_read_single_escape(const kiss_obj* const in) {
+static void kiss_read_single_escaped_lexeme_char(const kiss_obj* const in) {
     kiss_obj* x = kiss_c_read_char(in, KISS_NIL, KISS_EOS);
     if (x == KISS_EOS) Kiss_Err(L"Missing single-escaped character");
     kiss_push_lexeme_char(x);
 }
 
-static void kiss_read_multiple_escape(const kiss_obj* const in) {
+static void kiss_read_multiple_escaped_lexeme_chars(const kiss_obj* const in) {
      while(1) {
           kiss_obj* x = kiss_c_read_char(in, KISS_NIL, KISS_EOS);
           if (x == KISS_EOS) Kiss_Err(L"Missing closing multiple-escape");
           wchar_t c = kiss_wchar(x);
           switch (c) {
           case L'|': return;
-          case L'\\': kiss_read_single_escape(in); continue;
+          case L'\\': kiss_read_single_escaped_lexeme_char(in); continue;
           default: kiss_push_lexeme_char(x); break;
           }
      }
@@ -133,16 +133,18 @@ static void kiss_collect_lexeme_chars(const kiss_obj* const in, int* const escap
 	switch (c) {
 	case L'|':
 	    *escaped = 1;
-	    kiss_read_multiple_escape(in);
+	    kiss_read_multiple_escaped_lexeme_chars(in);
 	    break;
 	case L'\\':
-	    *escaped = 1;
 	    kiss_c_read_char(in, KISS_NIL, KISS_NIL);
-	    kiss_read_single_escape(in);
+	    kiss_read_single_escaped_lexeme_char(in);
 	    break;
 	default:
 	    kiss_c_read_char(in, KISS_NIL, KISS_NIL);
-	    kiss_push_lexeme_char(kiss_make_character(towlower(c)));
+            if (!*escaped) {
+                 c = towlower(c);
+            }
+	    kiss_push_lexeme_char(kiss_make_character(c));
 	    break;
 	}
     }
