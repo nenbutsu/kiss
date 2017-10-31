@@ -1,5 +1,5 @@
 kiss: 
-	gcc -O3 -o kiss *.c -L/usr/lib/ -lm -lgmp
+	gcc -Wall -O3 -o kiss *.c -L/usr/lib/ -lm -lgmp
 
 debug: 
 	gcc -Wall -g -O0 *.c -o kiss -lm -lgmp
