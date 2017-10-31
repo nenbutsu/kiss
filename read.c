@@ -266,6 +266,34 @@ static kiss_obj* kiss_read_array(const kiss_obj* const in) {
      return array;
 }
 
+static kiss_obj* kiss_skip_comment(const kiss_obj* const in) {
+     while (1) {
+          kiss_obj* p = kiss_c_read_char(in, KISS_NIL, KISS_EOS);
+          if (p == KISS_EOS) { Kiss_Err(L"missing |# comment closer"); }
+          wchar_t c = kiss_wchar(p);
+          switch (c) {
+          case L'#': {
+               p = kiss_c_read_char(in, KISS_NIL, KISS_EOS);
+               if (p == KISS_EOS) { Kiss_Err(L"missing |# comment closer"); }
+               c = kiss_wchar(p);
+               if (c == L'|') {
+                    kiss_skip_comment(in); // comments can nest
+               }
+               break;
+          }
+          case L'|':
+               p = kiss_c_read_char(in, KISS_NIL, KISS_EOS);
+               if (p == KISS_EOS) { Kiss_Err(L"missing |# comment closer"); }
+               c = kiss_wchar(p);
+               if (c == L'#') {
+                    return NULL;
+               }
+               break;
+          }
+     }
+     return KISS_NIL;
+}
+
 static kiss_obj* kiss_read_sharp_reader_macro(const kiss_obj* const in) {
      kiss_obj* p = kiss_c_preview_char(in, KISS_NIL, KISS_EOS);
      if (p == KISS_EOS) { Kiss_Err(L"missing # macro reader character"); }
@@ -280,6 +308,11 @@ static kiss_obj* kiss_read_sharp_reader_macro(const kiss_obj* const in) {
      case L'(': /* #() */{
 	  kiss_c_read_char(in, KISS_NIL, KISS_EOS);
 	  return kiss_vector(kiss_read_list(in));
+     }
+     case L'|': {
+	  kiss_c_read_char(in, KISS_NIL, KISS_EOS);
+          kiss_skip_comment(in);
+          return NULL;
      }
      case L'1': case L'2': case L'3': case L'4': 
      case L'5': case L'6': case L'7': case L'8': case L'9':
@@ -433,7 +466,12 @@ static kiss_obj* kiss_read_lexeme(const kiss_obj* const in) {
           }
           case L'#': {
                kiss_c_read_char(in, KISS_NIL, KISS_NIL);
-               return kiss_read_sharp_reader_macro(in);
+               kiss_obj* x = kiss_read_sharp_reader_macro(in);
+               if (x == NULL) {
+                    break; // skipped comments
+               } else {
+                    return x;
+               }
           }
           default:
                return kiss_read_lexeme_chars(in);
