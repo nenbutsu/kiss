@@ -149,7 +149,9 @@ typedef struct {
 typedef enum {
     KISS_SYSTEM_CONSTANT_VAR = 1,
     KISS_CONSTANT_VAR = 2,
-    KISS_CONSTANT_FUN = 4,
+    KISS_CONST_FSLOT = 4,
+    KISS_SPECIAL_OPERATOR = 8,
+    KISS_DEFINING_OPERATOR = 16,
 } kiss_symbol_flags;
 
 typedef struct {

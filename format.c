@@ -270,8 +270,13 @@ static kiss_obj* kiss_format_cfunction(kiss_obj* out, kiss_obj* obj) {
 
 static kiss_obj* kiss_format_cmacro(kiss_obj* out, kiss_obj* obj) {
      kiss_cfunction_t* f = Kiss_CMacro(obj);
-     kiss_format_string(out, (kiss_obj*)kiss_make_string(L"#<c macro "),
-			KISS_NIL);
+     if (f->name->flags & KISS_SPECIAL_OPERATOR) {
+          kiss_format_string(out, (kiss_obj*)kiss_make_string(L"#<special operator "), KISS_NIL);
+     } else if (f->name->flags & KISS_DEFINING_OPERATOR) {
+          kiss_format_string(out, (kiss_obj*)kiss_make_string(L"#<defining operator "), KISS_NIL);
+     } else {
+          kiss_format_string(out, (kiss_obj*)kiss_make_string(L"#<c macro "), KISS_NIL);
+     }
      kiss_format_symbol(out, (kiss_obj*)f->name, KISS_T);
      kiss_format_string(out, (kiss_obj*)kiss_make_string(L">"), KISS_NIL);
      return KISS_NIL;

@@ -80,7 +80,7 @@ void Kiss_Domain_Error(const kiss_obj* const obj, const wchar_t* const domain) {
                               kiss_c_list(3, obj, kiss_make_string(domain), KISS_NIL));
           }
      } else {
-          Kiss_Err(L"~S is not ~S", obj, kiss_make_string(domain));
+          Kiss_Err(L"not a ~S: ~S", kiss_make_string(domain), obj);
      }
      exit(EXIT_FAILURE); // not reach here.
 }

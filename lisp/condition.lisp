@@ -256,33 +256,33 @@
   condition)
 
 (defmethod report-condition ((condition <arithmetic-error>) (stream <stream>))
-  (format stream "Arithmetic error ~S ~S"
+  (format stream "Arithmetic error: ~S ~S"
           (arithmetic-error-operation condition)
           (arithmetic-error-operands condition))
   condition)
 
 (defmethod report-condition ((condition <division-by-zero>) (stream <stream>))
-  (format stream "Division by zero error ~S ~S"
+  (format stream "Division by zero error: ~S ~S"
           (arithmetic-error-operation condition)
           (arithmetic-error-operands condition))
   condition)
 
 (defmethod report-condition ((condition <floating-point-overflow>)
                              (stream <stream>))
-  (format stream "Floating point overflow error ~S ~S"
+  (format stream "Floating point overflow error: ~S ~S"
           (arithmetic-error-operation condition)
           (arithmetic-error-operands condition))
   condition)
 
 (defmethod report-condition ((condition <floating-point-underflow>)
                              (stream <stream>))
-  (format stream "Floating point overflow error ~S ~S"
+  (format stream "Floating point overflow error: ~S ~S"
           (arithmetic-error-operation condition)
           (arithmetic-error-operands condition))
   condition)
 
 (defmethod report-condition ((condition <control-error>) (stream <stream>))
-  (format stream "Tag ~S not found for ~S"
+  (format stream "Control error: ~S not found for ~S"
           (control-error-name condition)
           (control-error-namespace condition))
   condition)
@@ -302,9 +302,9 @@
       (format stream "Domain error: ~S is not ~A"
               (domain-error-object condition)
               (error-id condition))
-    (format stream "Domain error: ~S is not ~A"
-            (domain-error-object condition)
-            (class-name (domain-error-expected-class condition))))
+      (format stream "Domain error: ~S is not ~A"
+              (domain-error-object condition)
+              (class-name (domain-error-expected-class condition))))
   condition)
 
 (defmethod report-condition ((condition <undefined-entity>) (stream <stream>))
@@ -345,7 +345,7 @@
 
 (defun kiss::signal-simple-domain-error (obj domain-name continuable)
   (signal-condition (create (class <simple-error>)
-				  'format-string "~S is not ~A"
+				  'format-string "Error, ~S is not ~A: ~S"
 				  'format-arguments (list obj domain-name))
 		    continuable))
 
