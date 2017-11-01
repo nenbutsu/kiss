@@ -85,10 +85,13 @@ void Kiss_Domain_Error(const kiss_obj* const obj, const wchar_t* const domain) {
      exit(EXIT_FAILURE); // not reach here.
 }
 
+/* https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#constant_violation 
+   A complying ISLISP text shall not attempt to create a lexical variable binding for
+   any named constant defined in this document. It is a violation if any such attempt is made. */
 kiss_symbol_t* Kiss_Variable_Name(const kiss_obj* const name) {
     kiss_symbol_t* symbol = Kiss_Symbol(name);
     if (symbol->flags & KISS_SYSTEM_CONSTANT_VAR) {
-         Kiss_Err(L"Cannot use a system constant name as a variable name: ~S", name);
+         Kiss_Err(L"Cannot use system constant name as variable name: ~S", name);
     }
     return symbol;
 }

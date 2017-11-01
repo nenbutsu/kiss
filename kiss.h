@@ -459,12 +459,20 @@ kiss_file_stream_t* Kiss_Open_File_Stream(const kiss_obj* const obj);
 kiss_string_stream_t* Kiss_String_Output_Stream(const kiss_obj* const obj);
 kiss_obj* Kiss_Lambda_List(const kiss_obj* const list);
 kiss_obj* Kiss_Lambda_Expression(const kiss_obj* const p);
+_Noreturn
 void Kiss_Cannot_Parse_Number_Error(const kiss_obj* const str);
+_Noreturn
 void Kiss_Division_By_Zero_Error(const kiss_obj* const i);
+_Noreturn
 void Kiss_End_Of_Stream_Error(const kiss_obj* const stream);
+
+_Noreturn
 void Kiss_Unbound_Variable_Error(const kiss_obj* const obj);
+_Noreturn
 void Kiss_Catcher_Not_Found_Error(const kiss_obj* const tag);
+_Noreturn
 void Kiss_Block_Not_Found_Error(const kiss_obj* const name);
+_Noreturn
 void Kiss_Tagbody_Not_Found_Error(const kiss_obj* const name);
 
 /* eval.c */

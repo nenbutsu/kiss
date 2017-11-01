@@ -38,11 +38,14 @@ kiss_obj* kiss_setq(kiss_obj* name, kiss_obj* form) {
 	  return value;
      } else if (symbol->var == NULL) {
 	  Kiss_Unbound_Variable_Error(name);
+     } else {
+          if (symbol->flags & (KISS_SYSTEM_CONSTANT_VAR | KISS_CONSTANT_VAR)) {
+               Kiss_Err(L"Cannot modify constant: ~S", name);
+          }
+          kiss_obj* value = kiss_eval(form);
+          symbol->var = value;
+          return value;
      }
-     kiss_obj* value;
-     value = kiss_eval(form);
-     symbol->var = value;
-     return value;
 }
 
 /* defining operator: (defglobal name form) -> <symbol> */
