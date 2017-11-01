@@ -367,7 +367,7 @@ kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda;
 #define KISS_T        ((kiss_obj*)(&KISS_St))
 #define KISS_NIL      ((kiss_obj*)(&KISS_Snil))
 
-kiss_symbol_t KISS_Skw_rest, KISS_Samp_rest, KISS_Skw_size, KISS_Skw_test, KISS_Skw_weakness, KISS_Skw_rehash_size, KISS_Skw_rehash_threshold;
+kiss_symbol_t KISS_Skw_rest, KISS_Samp_rest, KISS_Skw_size, KISS_Skw_test, KISS_Skw_weakness, KISS_Skw_rehash_size, KISS_Skw_rehash_threshold, KISS_Skw_name, KISS_Skw_class;
 
 kiss_symbol_t KISS_Seql;
 
@@ -734,7 +734,7 @@ kiss_cons_t* Kiss_Cons(const kiss_obj* const obj) {
 inline
 kiss_hash_table_t* Kiss_Hash_Table(const kiss_obj* const obj) {
      if (KISS_IS_TASH_TABLE(obj)) { return (kiss_hash_table_t*)obj; }
-     Kiss_Domain_Error(obj, L"bignum");
+     Kiss_Domain_Error(obj, L"hash-table");
 }
 
 inline
@@ -792,7 +792,7 @@ kiss_obj* Kiss_Sequence(const kiss_obj* const obj) {
 }
 
 inline
-kiss_ilos_obj_t* Kiss_Object(const kiss_obj* const obj) {
+kiss_ilos_obj_t* Kiss_ILOS_Obj(const kiss_obj* const obj) {
      if (KISS_IS_ILOS_OBJ(obj)) { return (kiss_ilos_obj_t*)obj; }
      Kiss_Domain_Error(obj, L"ILOS object");
 }

@@ -584,13 +584,3 @@
       (method-invoke (car primary)))))
 
 
-(defun kiss::format-oo-object (out obj escapep)
-  (let* ((plist (ilos-obj-plist obj))
-         (name (plist-get plist ':name))
-         (class (plist-get plist ':class))
-         (class-name (class-name class)))
-    (if (not name)
-        (setq name "instance"))
-    (format out "#{ILOS:~A" name)
-    (format out " of ~S}" class-name)
-    nil))

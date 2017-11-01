@@ -271,6 +271,17 @@ kiss_symbol_t KISS_Skw_rehash_threshold = {
     KISS_NIL,                  /* plist */
 };
 
+kiss_symbol_t KISS_Skw_name;
+kiss_symbol_t KISS_Skw_name = {
+    KISS_SYMBOL,               /* type */
+    NULL,              /* gc_ptr */
+    L":name",             /* name */
+    0,                    /* flags */
+    (kiss_obj*)&KISS_Skw_name, /* var */
+    NULL,                 /* fun */
+    KISS_NIL,                  /* plist */
+};
+
 /*** condition.lisp ***/
 kiss_symbol_t KISS_Ssignal_condition = {
     KISS_SYMBOL,
@@ -3888,6 +3899,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Skw_size, &KISS_Skw_test, &KISS_Skw_weakness,
     &KISS_Skw_rehash_size, &KISS_Skw_rehash_threshold,
     &KISS_Skw_class,
+    &KISS_Skw_name,
 
     /* condition.lisp */
     &KISS_Ssignal_condition,

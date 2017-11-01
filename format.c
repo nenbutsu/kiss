@@ -282,6 +282,21 @@ static kiss_obj* kiss_format_cmacro(kiss_obj* out, kiss_obj* obj) {
      return KISS_NIL;
 }
 
+kiss_obj* kiss_format_ilos_obj(kiss_obj* out, kiss_obj* object) {
+     kiss_ilos_obj_t* obj = Kiss_ILOS_Obj(object);
+     kiss_obj* plist = obj->plist;
+     kiss_obj* name = kiss_plist_get(plist, (kiss_obj*)&KISS_Skw_name);
+     kiss_obj* class = kiss_plist_get(plist, (kiss_obj*)&KISS_Skw_class);
+     kiss_obj* class_name = kiss_plist_get(((kiss_ilos_obj_t*)class)->plist, (kiss_obj*)&KISS_Skw_name);
+     if (name == KISS_NIL) {
+          name = (kiss_obj*)kiss_make_string(L"an instance of");
+     }
+     kiss_format(out, (kiss_obj*)kiss_make_string(L"#{ILOS: ~A of ~S}"),
+                 kiss_c_list(2, name, class_name));
+     return KISS_NIL;
+}
+
+
 /* (format-fresh-line output-stream) -> <null> */
 kiss_obj* kiss_format_fresh_line(kiss_obj* output) {
      kiss_stream_t* out = Kiss_Output_Char_Stream(output);
@@ -320,9 +335,7 @@ kiss_obj* kiss_format_object(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
      case KISS_MACRO: kiss_format_macro(out, obj); break;
      case KISS_CFUNCTION: kiss_format_cfunction(out, obj); break;
      case KISS_CMACRO: kiss_format_cmacro(out, obj); break;
-     case KISS_ILOS_OBJ:
-	  kiss_c_funcall(L"kiss::format-oo-object", kiss_c_list(3, out, obj, KISS_NIL));
-	  break;
+     case KISS_ILOS_OBJ: kiss_format_ilos_obj(out, obj); break;
      default:
 	  kiss_format_string(out, (kiss_obj*)kiss_make_string(L"unprintable object"), escapep);
 	  break;

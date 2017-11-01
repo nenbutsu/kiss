@@ -248,11 +248,11 @@
   condition)
 
 (defmethod report-condition ((condition <stream-error>) (stream <stream>))
-  (format stream "Stream error ~S" (stream-error-stream condition))
+  (format stream "Stream error: ~S" (stream-error-stream condition))
   condition)
 
 (defmethod report-condition ((condition <end-of-stream>) (stream <stream>))
-  (format stream "End of stream error ~S" (stream-error-stream condition))
+  (format stream "End of stream error: ~S" (stream-error-stream condition))
   condition)
 
 (defmethod report-condition ((condition <arithmetic-error>) (stream <stream>))
@@ -288,7 +288,7 @@
   condition)
 
 (defmethod report-condition ((condition <parse-error>) (stream <stream>))
-  (format stream "Parse error ~S expected ~S"
+  (format stream "Parse error: ~S cannot be parsed as ~S"
           (parse-error-string condition)
           (parse-error-expected-class condition))
   condition)
@@ -308,17 +308,17 @@
   condition)
 
 (defmethod report-condition ((condition <undefined-entity>) (stream <stream>))
-  (format stream "Undefined entity ~S not defined in namespace ~S"
+  (format stream "Undefined entity error: ~S not defined in namespace ~S"
           (undefined-entity-name condition)
           (undefined-entity-namespace condition))
   condition)
 
 (defmethod report-condition ((condition <unbound-variable>) (stream <stream>))
-  (format stream "Unbound variable ~S" (undefined-entity-name condition))
+  (format stream "Unbound variable error: ~S" (undefined-entity-name condition))
   condition)
 
 (defmethod report-condition ((condition <undefined-function>) (stream <stream>))
-  (format stream "Undefined function ~S" (undefined-entity-name condition))
+  (format stream "Undefined function error: ~S" (undefined-entity-name condition))
   condition)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -345,7 +345,7 @@
 
 (defun kiss::signal-simple-domain-error (obj domain-name continuable)
   (signal-condition (create (class <simple-error>)
-				  'format-string "Error, ~S is not ~A: ~S"
+				  'format-string "Error: ~S is not ~A"
 				  'format-arguments (list obj domain-name))
 		    continuable))
 
