@@ -42,4 +42,6 @@ void kiss_init_environment(void) {
 
     env->top_level                  = Top_Level;
     env->global_dynamic_vars        = KISS_NIL;
+    env->call_stack                 = KISS_NIL;
+    env->error_call_stack           = KISS_NIL;
 }

@@ -239,6 +239,8 @@ void kiss_gc_mark(void) {
      kiss_gc_mark_obj((kiss_obj*)(env->block_result));
      kiss_gc_mark_obj((kiss_obj*)(env->current_tagbody));
      kiss_gc_mark_obj((kiss_obj*)(env->global_dynamic_vars));
+     kiss_gc_mark_obj((kiss_obj*)(env->call_stack));
+     kiss_gc_mark_obj((kiss_obj*)(env->error_call_stack));
      kiss_gc_mark_obj((kiss_obj*)(Kiss_Features));
      for (size_t i = 0; i < Kiss_Heap_Top; i++) {
 	  kiss_obj* obj = (kiss_obj*)Kiss_Heap_Stack[i];

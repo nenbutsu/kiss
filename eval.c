@@ -32,8 +32,11 @@ static inline kiss_obj* kiss_eval_args(const kiss_obj* const args) {
 }
 
 kiss_obj* kiss_invoke(const kiss_obj* const f, kiss_obj* const args) {
+     kiss_environment_t* env = Kiss_Get_Environment();
      kiss_obj* result = KISS_NIL;
      size_t saved_heap_top = Kiss_Heap_Top;
+     kiss_obj* saved_call_stack = env->call_stack;
+     kiss_push(f, &(env->call_stack));
      Kiss_Proper_List(args);
      switch (KISS_OBJ_TYPE(f)) {
      case KISS_CFUNCTION:
@@ -71,6 +74,7 @@ kiss_obj* kiss_invoke(const kiss_obj* const f, kiss_obj* const args) {
 	  Kiss_Heap_Top = saved_heap_top;
      }
      //fwprintf(stderr, L"Kiss_Heap_Top = %lu\n", Kiss_Heap_Top);
+     env->call_stack = saved_call_stack;
      return result;
 }
 

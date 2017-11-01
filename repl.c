@@ -77,12 +77,15 @@ int kiss_read_eval_print_loop(void) {
                //fwprintf(stderr, L"Kiss_Heap_Top = %ld\n", Kiss_Heap_Top);
 	       fflush(stdout);
                
+               env->call_stack = KISS_NIL;
+
                fwprintf(stdout, L"\nKISS>"); fflush(stdout);
                form = kiss_c_read(kiss_standard_input(), KISS_NIL, KISS_EOS);
                if (form == KISS_EOS) {
                     break;
                }
 
+               env->call_stack = KISS_NIL;
 	       kiss_obj* result = kiss_eval(form);
 	       kiss_format_fresh_line(kiss_standard_output());
 	       kiss_print(result);
@@ -95,8 +98,9 @@ int kiss_read_eval_print_loop(void) {
 		    exit(1);
 	       } else {
 		    kiss_string_t* msg = (kiss_string_t*)result;
-		    fwprintf(stderr, L"\nKISS| ");
-		    fwprintf(stderr, L"%ls\n", msg->str);
+		    fwprintf(stderr, L"\nKISS| %ls\n", msg->str);
+		    fwprintf(stderr, L"KISS| ");
+                    kiss_format_object(kiss_error_output(), kiss_reverse(env->error_call_stack), KISS_NIL);
 		    fflush(stderr);
 		    fflush(stdout);
                     kiss_obj* c;
@@ -106,6 +110,7 @@ int kiss_read_eval_print_loop(void) {
                     if (c == KISS_EOS) { break; }
 		    env->dynamic_env = saved_dynamic_env;
 		    env->lexical_env = saved_lexical_env;
+                    env->call_stack = KISS_NIL;
 	       }
 	  }
 	  Kiss_Heap_Top = saved_heap_top;

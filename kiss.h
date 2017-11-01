@@ -355,6 +355,8 @@ typedef struct {
      kiss_tagbody_t* current_tagbody;
      void* top_level;
      kiss_obj* global_dynamic_vars;
+     kiss_obj* call_stack;
+     kiss_obj* error_call_stack;
 } kiss_environment_t;
 
 extern kiss_obj* Kiss_Features;
@@ -1673,12 +1675,19 @@ end:
      return (kiss_obj*)list1;
 }
 
+kiss_symbol_t KISS_Ssignal_condition;
+
 inline
 kiss_obj* kiss_eval_compound_form(kiss_cons_t* p) {
      kiss_obj* op = p->car;
      switch (KISS_OBJ_TYPE(op)) {
-     case KISS_SYMBOL:
+     case KISS_SYMBOL: {
+          if (op == (kiss_obj*)&KISS_Ssignal_condition) {
+               kiss_environment_t* env = Kiss_Get_Environment();
+               env->error_call_stack = env->call_stack;
+          }
 	  return kiss_invoke(kiss_fun_ref((kiss_symbol_t*)op), p->cdr);
+     }
      case KISS_CONS:
 	  return kiss_invoke((kiss_obj*)kiss_make_function(NULL, op), p->cdr);
      default: Kiss_Err(L"eval: Invalid compound expression ~S", p);

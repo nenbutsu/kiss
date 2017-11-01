@@ -66,6 +66,7 @@ kiss_obj* kiss_catch(kiss_obj* tag_form, kiss_obj* body) {
     kiss_obj* tag = kiss_eval(tag_form);
     kiss_lexical_environment_t saved_lexical_env = env->lexical_env;
     kiss_dynamic_environment_t saved_dynamic_env = env->dynamic_env;
+    kiss_obj* saved_call_stack = env->call_stack;
     kiss_obj* result;
     jmp_buf jmp;
     if (setjmp(jmp) == 0) {
@@ -79,6 +80,7 @@ kiss_obj* kiss_catch(kiss_obj* tag_form, kiss_obj* body) {
     }
     env->lexical_env = saved_lexical_env;
     env->dynamic_env = saved_dynamic_env;
+    env->call_stack = saved_call_stack;
     return result;
 }
 
@@ -128,8 +130,10 @@ kiss_obj* kiss_unwind_protect(kiss_obj* protected_form, kiss_obj* cleanup_body) 
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_obj* result;
     kiss_cleanup_t* cleanup = kiss_make_cleanup(cleanup_body);
+    kiss_obj* saved_call_stack = env->call_stack;
     env->dynamic_env.jumpers = kiss_cons((kiss_obj*)cleanup, env->dynamic_env.jumpers);
     result = kiss_eval(protected_form);
+    env->call_stack = saved_call_stack;
     kiss_eval_body(cleanup_body);
     return result;
 }
@@ -140,6 +144,7 @@ kiss_obj* kiss_block(kiss_obj* name, kiss_obj* body) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_lexical_environment_t saved_lexical_env = env->lexical_env;
     kiss_dynamic_environment_t saved_dynamic_env = env->dynamic_env;
+    kiss_obj* saved_call_stack = env->call_stack;
     kiss_obj* result;
     kiss_block_t* b;
     jmp_buf jmp;
@@ -155,6 +160,7 @@ kiss_obj* kiss_block(kiss_obj* name, kiss_obj* body) {
     }
     env->lexical_env = saved_lexical_env;
     env->dynamic_env = saved_dynamic_env;
+    env->call_stack = saved_call_stack;
     return result;
 }
 
@@ -176,7 +182,6 @@ static kiss_block_t* kiss_block_ref(kiss_symbol_t* name) {
      }
 error:
      Kiss_Block_Not_Found_Error((kiss_obj*)name);
-     exit(EXIT_FAILURE); // not reach here
 }
 
 /* special operator: (return-from name result-form) transfers control and data
@@ -236,9 +241,11 @@ kiss_obj* kiss_tagbody(kiss_obj* args) {
 	kiss_tagbody_t* t = KISS_CAR(p);
 	t->dynamic_env.jumpers = tagbody_dynamic_env.jumpers;
     }
+    kiss_obj* tagbody_call_stack = env->call_stack;
     while (1) {
 	env->lexical_env = tagbody_lexical_env;
 	env->dynamic_env = tagbody_dynamic_env;
+        env->call_stack  = tagbody_call_stack;
 	if (setjmp(jmp) == 0) {
 	    kiss_eval_body(body);
 	    break;
