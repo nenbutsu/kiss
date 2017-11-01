@@ -85,6 +85,13 @@ void Kiss_Domain_Error(const kiss_obj* const obj, const wchar_t* const domain) {
      exit(EXIT_FAILURE); // not reach here.
 }
 
+kiss_symbol_t* Kiss_Variable_Name(const kiss_obj* const name) {
+    kiss_symbol_t* symbol = Kiss_Symbol(name);
+    if (symbol->flags & KISS_SYSTEM_CONSTANT_VAR) {
+         Kiss_Err(L"Cannot use a system constant name as a variable name: ~S", name);
+    }
+    return symbol;
+}
 
 kiss_obj* Kiss_Valid_Sequence_Index(const kiss_obj* const sequence, const kiss_obj* const index)
 {

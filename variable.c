@@ -71,7 +71,7 @@ kiss_obj* kiss_let(kiss_obj* vspecs, kiss_obj* body) {
     Kiss_Proper_List(vspecs);
     for (vspecs = Kiss_Proper_List(vspecs); KISS_IS_CONS(vspecs); vspecs = KISS_CDR(vspecs)) {
 	kiss_cons_t* spec = Kiss_Proper_List_2(KISS_CAR(vspecs));
-	kiss_symbol_t* name = Kiss_Symbol(KISS_CAR(spec));
+	kiss_symbol_t* name = Kiss_Variable_Name(KISS_CAR(spec));
 	kiss_obj* value = kiss_eval(KISS_CADR(spec));
 	kiss_push(kiss_cons((kiss_obj*)name, value), &stack);
     }
@@ -88,7 +88,7 @@ kiss_obj* kiss_let_s(kiss_obj* vspecs, kiss_obj* body) {
     kiss_obj* result;
     for (vspecs = Kiss_Proper_List(vspecs); KISS_IS_CONS(vspecs); vspecs = KISS_CDR(vspecs)) {
 	kiss_cons_t* spec = Kiss_Proper_List_2(KISS_CAR(vspecs));
-	kiss_symbol_t* name = Kiss_Symbol(KISS_CAR(spec));
+	kiss_symbol_t* name = Kiss_Variable_Name(KISS_CAR(spec));
 	kiss_obj* value = kiss_eval(KISS_CADR(spec));
 	kiss_push(kiss_cons((kiss_obj*)name, value), &env->lexical_env.vars);
     }

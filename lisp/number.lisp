@@ -21,8 +21,6 @@
 ;; otherwise, returns nil.
 ;; The obj may be any ISLISP object.
 
-(defconstant *pi* 3.141592653589793)
-
 (defun numberp (obj) (or (integerp obj) (floatp obj)))
 
 ;; function: (/= x1 x2) -> boolean

@@ -28,6 +28,9 @@ size_t Kiss_Gensym_Count = 0;
 
 kiss_symbol_t KISS_Sstring_eq;
 
+kiss_symbol_t KISS_Ss_pi_s;
+
+
 void kiss_init_symbols(void) {
     size_t i;
     for (i = 0; i < KISS_SYMBOL_MAX; i++) { if (Kiss_Symbols[i] == NULL) break; }
@@ -40,6 +43,9 @@ void kiss_init_symbols(void) {
                               KISS_NIL,
                               (kiss_obj*)kiss_make_float(1.5),
                               (kiss_obj*)kiss_make_float(0.8));
+
+    // initialize *pi*
+    KISS_Ss_pi_s.var = (kiss_obj*)kiss_make_float(3.141592653589793);
 }
 
 static kiss_symbol_t* kiss_make_symbol(const wchar_t* const name) {
@@ -169,23 +175,23 @@ kiss_obj* kiss_remove_property(kiss_obj* const symbol, const kiss_obj* const pro
 /************************** Symbol definitions *******************************/
 
 kiss_symbol_t KISS_Snil = {
-    KISS_SYMBOL,       /* type  */
-    NULL,              /* gc_ptr */
-    L"nil",       /* name  */
-    KISS_CONSTANT_VAR, /* flags */
-    KISS_NIL,          /* var   */
-    NULL,         /* fun   */
-    KISS_NIL,          /* plist */
+    KISS_SYMBOL,              /* type   */
+    NULL,                     /* gc_ptr */
+    L"nil",                   /*  name  */
+    KISS_SYSTEM_CONSTANT_VAR, /*  flags */
+    KISS_NIL,                 /*  var   */
+    NULL,                     /*  fun   */
+    KISS_NIL,                 /*  plist */
 };
 
 kiss_symbol_t KISS_St = {
-    KISS_SYMBOL,       /* type */
-    NULL,              /* gc_ptr */
-    L"t",         /* name */
-    KISS_CONSTANT_VAR, /* flags */
-    KISS_T,            /* var */
-    NULL,         /* fun */
-    KISS_NIL,          /* plist */
+    KISS_SYMBOL,              /* type   */
+    NULL,                     /* gc_ptr */
+    L"t",                     /*  name  */
+    KISS_SYSTEM_CONSTANT_VAR, /*  flags */
+    KISS_T,                   /*  var   */
+    NULL,                     /*  fun   */
+    KISS_NIL,                 /*  plist */
 };
 
 kiss_symbol_t KISS_Skw_rest;
@@ -1971,6 +1977,16 @@ kiss_symbol_t KISS_Sgo = {
 
 
 /*** number.c ***/
+kiss_symbol_t KISS_Ss_pi_s = {
+    KISS_SYMBOL,
+    NULL,                        /* gc_ptr */
+    L"*pi*",                     /* name   */
+    KISS_SYSTEM_CONSTANT_VAR,    /* flags  */
+    NULL,                        /*  var   */
+    NULL,                        /*  fun   */
+    KISS_NIL,                    /*  plist */
+};
+
 kiss_symbol_t KISS_Sintegerp;
 kiss_cfunction_t KISS_CFintegerp = {
     KISS_CFUNCTION, /* type */
@@ -2954,33 +2970,33 @@ extern kiss_file_stream_t Kiss_Standard_Output;
 extern kiss_file_stream_t Kiss_Error_Output;
 
 kiss_symbol_t KISS_Ss_standard_input_s = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"*kiss::standard-input*",
-    KISS_CONSTANT_VAR,
-    (kiss_obj*)(&Kiss_Standard_Input), /* var */
-    NULL,                              /* fun */
-    KISS_NIL,                          /* plist */
+    KISS_SYMBOL,                       /* type   */
+    NULL,                              /* gc_ptr */
+    L"*kiss::standard-input*",         /*  name  */
+    KISS_SYSTEM_CONSTANT_VAR,          /*  flags */
+    (kiss_obj*)(&Kiss_Standard_Input), /*  var   */
+    NULL,                              /*  fun   */
+    KISS_NIL,                          /*  plist */
 };
 
 kiss_symbol_t KISS_Ss_standard_output_s = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"*kiss::standard-output*",
-    KISS_CONSTANT_VAR,
-    (kiss_obj*)(&Kiss_Standard_Output), /* var */
-    NULL,                               /* fun */
-    KISS_NIL,                           /* plist */
+    KISS_SYMBOL,                        /* type   */
+    NULL,                               /* gc_ptr */
+    L"*kiss::standard-output*",         /*  name  */
+    KISS_SYSTEM_CONSTANT_VAR,           /*  flags */
+    (kiss_obj*)(&Kiss_Standard_Output), /*  var   */
+    NULL,                               /*  fun   */
+    KISS_NIL,                           /*  plist */
 };
 
 kiss_symbol_t KISS_Ss_error_output_s = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"*kiss::error-output*",
-    KISS_CONSTANT_VAR,
-    (kiss_obj*)(&Kiss_Error_Output), /* var */
-    NULL,                            /* fun */
-    KISS_NIL,                        /* plist */
+    KISS_SYMBOL,                     /* type   */
+    NULL,                            /* gc_ptr */
+    L"*kiss::error-output*",         /*  name  */
+    KISS_SYSTEM_CONSTANT_VAR,        /*  flags */
+    (kiss_obj*)(&Kiss_Error_Output), /*  var   */
+    NULL,                            /*  fun   */
+    KISS_NIL,                        /*  plist */
 };
 
 kiss_symbol_t KISS_Sstreamp;
@@ -3906,6 +3922,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sequal, &KISS_Scond,
     
     /* number.c */
+    &KISS_Ss_pi_s,
     &KISS_Sintegerp, &KISS_Sfloatp, &KISS_Sminus, &KISS_Splus, &KISS_Smultiply, &KISS_Snum_eq,
     &KISS_Snum_lessthan, &KISS_Sabs, &KISS_Sexp, &KISS_Slog, &KISS_Ssin,&KISS_Scos, &KISS_Stan,
     &KISS_Sfloor, &KISS_Sceiling, &KISS_Struncate, &KISS_Sround, 

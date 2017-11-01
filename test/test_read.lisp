@@ -29,3 +29,12 @@ t
 
 ;;;; comments
 t
+
+#|
+  #| 
+    #| multi line comments |# 
+    comments |# 
+comments |#
+t
+
+
