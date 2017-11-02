@@ -3,7 +3,8 @@
 ;;
 
 (defglobal test-files
-    '("test/test_read.lisp"
+    '("test/test_var.lisp"
+      "test/test_read.lisp"
       "test/test_symbol.lisp"
       "test/test_cons.lisp"
       "test/test_control.lisp"
