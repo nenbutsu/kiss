@@ -116,6 +116,20 @@
                       (signal-condition condition nil)))
     (car "string"))
   nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (car))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (car '(a b) 2))
+  nil)
 
 ;; cdr
 (block a
