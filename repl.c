@@ -19,6 +19,7 @@
 #include "kiss.h"
 
 static wchar_t* libraries[] = {
+     L"lisp/setf.lisp",
      L"lisp/cons.lisp",
      L"lisp/character.lisp",
      L"lisp/stream.lisp",
