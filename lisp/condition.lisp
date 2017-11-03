@@ -114,7 +114,7 @@
 
 ;;; kiss specific, not in the spec.
 (defclass <arity-error> (<program-error>)
-  ((name :reader arity-error-operator-name :initarg name)
+  ((form :reader arity-error-form :initarg form)
    (message :reader arity-error-message :initarg message))
   (:metaclass <built-in-class>))
 
@@ -321,7 +321,7 @@
 (defmethod report-condition ((condition <arity-error>) (stream <stream>))
   (format stream "Arity error. ~A: ~S"
           (arity-error-message condition)
-          (arity-error-operator-name condition))
+          (arity-error-form condition))
   condition)
 
 (defmethod report-condition ((condition <unbound-variable>) (stream <stream>))
@@ -359,9 +359,9 @@
 				  'format-string "Error: ~S is not ~A"
 				  'format-arguments (list obj domain-name))
 		    continuable))
-(defun kiss::signal-arity-error (operator-name message continuable)
+(defun kiss::signal-arity-error (form message continuable)
   (signal-condition (create (class <arity-error>)
-                            'name operator-name
+                            'form form
                             'message message)
 		    continuable))
 

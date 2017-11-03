@@ -25,12 +25,12 @@ kiss_obj* kiss_cf_invoke(const kiss_cfunction_t* const cfun, kiss_obj* args) {
 				    */
      long int narg = kiss_c_length(args);
      if (narg < min) {
-          Kiss_Arity_Error((kiss_obj*)cfun->name,
-                           (kiss_obj*)kiss_make_string(L"Too few arguments ~S"));
+          Kiss_Arity_Error(kiss_cons((kiss_obj*)cfun->name, args),
+                           (kiss_obj*)kiss_make_string(L"Too few arguments"));
      }
      if (max >= 0 && narg > max) {
-          Kiss_Arity_Error((kiss_obj*)cfun->name,
-                           (kiss_obj*)kiss_make_string(L"Too many arguments ~S"));
+          Kiss_Arity_Error(kiss_cons((kiss_obj*)cfun->name, args),
+                           (kiss_obj*)kiss_make_string(L"Too many arguments"));
      }
      if (min == max) { /* exact number of argumets must be given  */
           switch (min) {
