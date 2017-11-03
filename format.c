@@ -216,7 +216,11 @@ kiss_obj* kiss_format_float(kiss_obj* out, kiss_obj* obj) {
      free(s);
      
      kiss_format_string(out, (kiss_obj*)kiss_make_string(L"0."), KISS_NIL);
-     kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs), KISS_NIL);
+     if (wcslen(wcs) == 0) {
+          kiss_format_string(out, (kiss_obj*)kiss_make_string(L"0"), KISS_NIL);
+     } else {
+          kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs), KISS_NIL);
+     }
      free(wcs);
      if (e != 0) {
           kiss_format_string(out, (kiss_obj*)kiss_make_string(L"e"), KISS_NIL);
