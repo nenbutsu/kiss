@@ -39,18 +39,20 @@ kiss_obj* kiss_simple_function_p(kiss_obj* obj) {
      return (KISS_IS_FUNCTION(obj) || KISS_IS_CFUNCTION(obj) ? KISS_T : KISS_NIL);
 }
 
-void kiss_bind_funargs(kiss_obj* params, kiss_obj* args) {
+void kiss_bind_funargs(kiss_obj* name, kiss_obj* params, kiss_obj* args) {
     kiss_environment_t* env = Kiss_Get_Environment();
     int nparam = kiss_c_length(params);
     int narg = kiss_c_length(args);
     int rest = kiss_member((kiss_obj*)&KISS_Skw_rest, params) != KISS_NIL ||
          kiss_member((kiss_obj*)&KISS_Samp_rest, params) != KISS_NIL;
     if (!rest && nparam < narg) {
-	Kiss_Err(L"Too many arguments ~S ~S", params, args);
+         Kiss_Arity_Error(kiss_cons(name, args),
+                          (kiss_obj*)kiss_make_string(L"Too many arguments"));
     }
     
     if ((!rest && nparam > narg) || (rest && nparam - 2 > narg)) {
-	Kiss_Err(L"Too few arguments ~S ~S", params, args);
+         Kiss_Arity_Error(kiss_cons(name, args),
+                          (kiss_obj*)kiss_make_string(L"Too few arguments"));
     }
     while (KISS_IS_CONS(params)) {
 	kiss_obj* p = KISS_CAR(params);
@@ -72,7 +74,8 @@ kiss_obj* kiss_lf_invoke(kiss_function_t* fun, kiss_obj* args) {
     kiss_lexical_environment_t saved_lexical_env = env->lexical_env;
     kiss_obj* result;
     env->lexical_env = fun->lexical_env;
-    kiss_bind_funargs(kiss_cadr(fun->lambda), args);
+    kiss_bind_funargs(fun->name == NULL ? fun->lambda : (kiss_obj*)fun->name,
+                      kiss_cadr(fun->lambda), args);
     result = kiss_eval_body(body);
     env->lexical_env = saved_lexical_env;
     return result;

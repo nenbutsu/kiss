@@ -509,7 +509,7 @@ kiss_obj* kiss_c_funcall(wchar_t* function_name, kiss_obj* args);
 kiss_obj* kiss_apply(kiss_obj* f, kiss_obj* obj, kiss_obj* rest);
 kiss_obj* kiss_flet(kiss_obj* fspecs, kiss_obj* body);
 kiss_obj* kiss_labels(kiss_obj* fspecs, kiss_obj* body);
-void kiss_bind_funargs(kiss_obj* params, kiss_obj* args);
+void kiss_bind_funargs(kiss_obj* name, kiss_obj* params, kiss_obj* args);
 
 /* vector.c */
 kiss_general_vector_t* kiss_make_general_vector(const size_t n, const kiss_obj* const obj);

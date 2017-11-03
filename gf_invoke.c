@@ -61,7 +61,8 @@ static void kiss_bind_methodargs(const kiss_obj* const m) {
     /* fwprintf(stderr, L"bind_methodargs\n"); fflush(stderr); */
     /* kiss_print(kiss_plist_get(kiss_ilos_obj_plist(m),
        kiss_symbol(":lambda-list"))); */
-    kiss_bind_funargs(kiss_oref(m, kiss_symbol(L":lambda-list")),
+    kiss_bind_funargs((kiss_obj*)kiss_symbol(L"{generic-function}"),
+                      kiss_oref(m, kiss_symbol(L":lambda-list")),
 		      kiss_oref(m, kiss_symbol(L":args")));
     next = kiss_oref(m, kiss_symbol(L":next"));
     if (next != KISS_NIL) {
