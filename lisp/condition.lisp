@@ -112,6 +112,12 @@
    (namespace :reader undefined-entity-namespace :initarg namespace))
   (:metaclass <built-in-class>))
 
+;;; kiss specific, not in the spec.
+(defclass <arity-error> (<program-error>)
+  ((name :reader arity-error-operator-name :initarg name)
+   (message :reader arity-error-message :initarg message))
+  (:metaclass <built-in-class>))
+
 (defclass <unbound-variable> (<undefined-entity>) ()
   (:metaclass <built-in-class>))
 
@@ -312,6 +318,11 @@
           (undefined-entity-name condition)
           (undefined-entity-namespace condition))
   condition)
+(defmethod report-condition ((condition <arity-error>) (stream <stream>))
+  (format stream "Arity error. ~A: ~S"
+          (arity-error-message condition)
+          (arity-error-operator-name condition))
+  condition)
 
 (defmethod report-condition ((condition <unbound-variable>) (stream <stream>))
   (format stream "Unbound variable error: ~S" (undefined-entity-name condition))
@@ -347,6 +358,11 @@
   (signal-condition (create (class <simple-error>)
 				  'format-string "Error: ~S is not ~A"
 				  'format-arguments (list obj domain-name))
+		    continuable))
+(defun kiss::signal-arity-error (operator-name message continuable)
+  (signal-condition (create (class <arity-error>)
+                            'name operator-name
+                            'message message)
 		    continuable))
 
 

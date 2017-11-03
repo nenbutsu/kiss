@@ -100,7 +100,7 @@ int kiss_read_eval_print_loop(void) {
 		    kiss_string_t* msg = (kiss_string_t*)result;
 		    fwprintf(stderr, L"\nKISS| %ls\n", msg->str);
 		    fwprintf(stderr, L"KISS| ");
-                    kiss_format_object(kiss_error_output(), kiss_reverse(env->error_call_stack), KISS_NIL);
+                    kiss_format_object(kiss_error_output(), kiss_car(kiss_reverse(env->error_call_stack)), KISS_NIL);
 		    fflush(stderr);
 		    fflush(stdout);
                     kiss_obj* c;

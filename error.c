@@ -245,3 +245,13 @@ void Kiss_Tagbody_Not_Found_Error(const kiss_obj* const tag) {
      exit(EXIT_FAILURE);
 }
 
+_Noreturn
+void Kiss_Arity_Error(const kiss_obj* const name, const kiss_obj* const message) {
+     if (is_condition_working()) {
+	  kiss_c_funcall(L"kiss::signal-arity-error", kiss_c_list(3, name, message, KISS_NIL));
+     } else {
+	  Kiss_Err(L"Arity error. ~S: ~S", message, name);
+     }
+     exit(EXIT_FAILURE);
+}
+

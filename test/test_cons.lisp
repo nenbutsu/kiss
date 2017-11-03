@@ -1,7 +1,7 @@
 ;;; -*- mode: lisp; coding: utf-8 -*- 
-;;; test_cons.lisp --- a bunch of forms with which ISLisp processor must return true.
+;;; test_cons.lisp --- forms with which a conforming ISLisp processor must return true.
 
-;; Copyright (C) 2017 Yuji Minejima.
+;; Copyright (C) 2017 Yuji Minejima (yuji@minejima.jp).
 
 ;; This file is part of ISLisp processor KISS.
 
@@ -15,31 +15,88 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
-;; consp
+;;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#list_class
+
+;;; consp
+;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_consp
 (eq (consp '(a . b)) t)
 (eq (consp '(a b c)) t)
 (eq (consp '()) nil)
-(eq (consp #(a b)) nil)
-(eq (consp "love") nil)
-(eq (consp #\x) nil)
+(eq (consp 'nil) nil)
+(eq (consp '#(a b)) nil)
+(eq (consp '"love") nil)
+(eq (consp '#\x) nil)
+(eq (consp '0.1) nil)
+(eq (consp '1) nil)
+(eq (consp '#2a((1) (2))) nil)
+(eq (consp #'car) nil)
+(eq (consp (class-of '())) nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <program-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (consp))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <program-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (consp 0 1))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <program-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (consp 0 1 2))
+  nil)
 
-;; cons
+;;; cons
+;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_cons
+(equal (cons nil nil) '(nil))
+(equal (cons nil t) '(nil . t))
 (equal (cons 'a '()) '(a))
+(equal (cons 't '(x y z)) '(t x y z))
 (equal (cons '(a) '(b c d)) '((a) b c d))
 (let ((l (cons "a" '(b c))))
   (and (string= (car l) "a")
        (equal (cdr l) '(b c))))
 (equal (cons 'a 3) '(a . 3))
 (equal (cons '(a b) 'c) '((a b) . c))
-
-;; car
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <program-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(car '()))
+                      (signal-condition condition nil)))
+    (cons))
   nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <program-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (cons 1))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <program-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (cons 1 2 3))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <program-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (cons 1 2 3 4))
+  nil)
+
+
+;;; car
+;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_car
 (eq (car '(a b c)) 'a)
 (equal (car '((a) b c d)) '(a))
 (= (car '(1 . 2)) 1)
@@ -47,10 +104,17 @@
 (equal (car '((a) b c d)) '(a))
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(car "string"))
+                      (signal-condition condition nil)))
+    (car '()))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (car "string"))
   nil)
 
 ;; cdr
