@@ -131,25 +131,49 @@
     (car '(a b) 2))
   nil)
 
-;; cdr
-(block a
-  (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
-		      (return-from a t)
-		    (signal-condition condition nil)))
-		(cdr '()))
-  nil)
+;;; cdr
+;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_cdr
+(equal (cdr '(a b c)) '(b c))
 (equal (cdr '((a) b c d)) '(b c d))
-(eql (cdr '(1 . 2)) 2)
+(= (cdr '(1 . 2)) 2)
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(cdr "string"))
+                      (signal-condition condition nil)))
+    (cdr '()))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (cdr "string"))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (cdr 1.2))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (cdr))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (cdr '(a b) 2))
   nil)
 
-;; set-car
+;;; set-car
+;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_set_car
 (let ((l (list 'a 'b)))
   (set-car 'x l)
   (equal l '(x b)))
@@ -159,10 +183,10 @@
   (eql c 2))
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(set-car 0 "string"))
+                      (signal-condition condition nil)))
+    (set-car 0 "string"))
   nil)
 
 ;; set-cdr
