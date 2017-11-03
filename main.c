@@ -21,4 +21,5 @@
 int main(void) {
     kiss_initialize();
     kiss_read_eval_print_loop();
+    return EXIT_SUCCESS;
 }
