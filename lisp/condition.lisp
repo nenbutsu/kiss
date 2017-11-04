@@ -305,12 +305,12 @@
 
 (defmethod report-condition ((condition <domain-error>) (stream <stream>))
   (if (error-id condition)
-      (format stream "Domain error: ~S is not ~A"
-              (domain-error-object condition)
-              (error-id condition))
-      (format stream "Domain error: ~S is not ~A"
-              (domain-error-object condition)
-              (class-name (domain-error-expected-class condition))))
+      (format stream "Domain error. ~A expected: ~S"
+              (error-id condition)
+              (domain-error-object condition))
+      (format stream "Domain error. ~A expected: ~S"
+              (class-name (domain-error-expected-class condition))
+              (domain-error-object condition)))
   condition)
 
 (defmethod report-condition ((condition <undefined-entity>) (stream <stream>))
@@ -356,8 +356,8 @@
 
 (defun kiss::signal-simple-domain-error (obj domain-name continuable)
   (signal-condition (create (class <simple-error>)
-				  'format-string "Error: ~S is not ~A"
-				  'format-arguments (list obj domain-name))
+				  'format-string "Error. <~A> expected: ~S"
+				  'format-arguments (list domain-name obj))
 		    continuable))
 (defun kiss::signal-arity-error (form message continuable)
   (signal-condition (create (class <arity-error>)
