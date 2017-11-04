@@ -298,7 +298,8 @@
   nil)
 
 
-;; null
+;;; null
+;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_null
 (eq (null '(a b c)) nil)
 (eq (null '()) t)
 (eq (null 'nil) t)
@@ -306,9 +307,25 @@
 (eq (null "") nil)
 (eq (null #\z) nil)
 (eq (null #()) nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (null))
+  nil)
+
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (null 1 2))
+  nil)
 
 
-;; listp
+;;; listp
+;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_listp
 (eq (listp '(a b c)) t)
 (eq (listp '()) t)
 (eq (listp '(a . b)) t)
@@ -317,27 +334,58 @@
 (eq (listp 'list) nil)
 (eq (listp #\z) nil)
 (eq (listp #()) nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (listp))
+  nil)
+
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (listp 1 2))
+  nil)
 
 
-;; create-list
+;;; create-list
+;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_create_list
 (equal (create-list 3 17) '(17 17 17))
 (equal (create-list 2 #\a) '(#\a #\a))
+(eq (create-list 0) '())
+(eq (create-list 0 t) '())
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(create-list 'a nil))
+                      (signal-condition condition nil)))
+    (create-list 'a nil))
   nil)
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(create-list -1 nil))
+                      (signal-condition condition nil)))
+    (create-list -1 nil))
   nil)
-(eq (create-list 0) nil)
-(eq (create-list 0 t) nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (create-list))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (create-list 3 t 'z))
+  nil)
+
 
 ;; list
 (equal (list 'a (+ 3 4) 'c) '(a 7 c))
