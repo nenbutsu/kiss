@@ -181,6 +181,7 @@
 (let* ((l (list 1 2))
        (c (set-car 2 l)))
   (eql c 2))
+
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
@@ -189,21 +190,111 @@
     (set-car 0 "string"))
   nil)
 
-;; set-cdr
-(let ((l (list 'a 'b)))
-  (set-cdr (cons 'z nil) l)
-  (equal  l '(a z)))
-
-(let ((l (list 1 2))
-      (l2 (list 3 4 5)))
-  (eq (set-cdr l2 l) l2))
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (set-car 0 (list 1 2) 'x 'y))
+  nil)
 
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (set-car 0))
+  nil)
+
+;;; (setf (car cons) obj)
+;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#s_setf_car
+(let ((l (list 'a 'b)))
+  (setf (car l) 'x)
+  (equal l '(x b)))
+
+(let* ((l (list 1 2))
+       (c (setf (car l) 2)))
+  (eql c 2))
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (set-car 0 "string"))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (setf (car (list 1 2)) 0 'x 'y))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (setf (car (list t))))
+  nil)
+
+;;; set-cdr
+;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_set_cdr
+(let ((l (list 'a 'b)))
+  (set-cdr (list 'z) l)
+  (equal  l '(a z)))
+(let ((l (list 1 2))
+      (l2 (list 3 4 5)))
+  (eq (set-cdr l2 l) l2))
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
 		      (return-from a t)
 		    (signal-condition condition nil)))
 		(set-cdr 0 "string"))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (set-cdr 0 (list 'a 'b) 'z))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (set-cdr 0))
+  nil)
+
+;;; (setf (set-cdr cons) obj)
+;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#s_setf_cdr
+(let ((l (list 'a 'b)))
+  (setf (cdr l) (list 'z))
+  (equal  l '(a z)))
+(let ((l (list 1 2))
+      (l2 (list 3 4 5)))
+  (eq (setf (cdr l) l2) l2))
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (setf (cdr "string") 0))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (setf (cdr (list 'a 'b)) 0 'z))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (setf (cdr (list 'a))))
   nil)
 
 
