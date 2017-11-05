@@ -387,11 +387,15 @@
   nil)
 
 
-;; list
-(equal (list 'a (+ 3 4) 'c) '(a 7 c))
+;;; list
+;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_list
+(equal (list 0 'a (+ 3 4) 'c #(x y z)) '(0 a 7 c #(x y z)))
 (eq (list) nil)
+(equal (apply #'list (create-list 10 nil))
+       '(nil nil nil nil nil nil nil nil nil nil))
 
-;; reverse
+;;; reverse
+;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_reverse
 (equal (reverse '(a b c d e)) '(e d c b a))
 (equal (reverse '(a)) '(a))
 (eq (reverse '()) '())
