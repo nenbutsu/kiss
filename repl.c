@@ -100,8 +100,10 @@ int kiss_read_eval_print_loop(void) {
 	       } else {
 		    kiss_string_t* msg = (kiss_string_t*)result;
 		    fwprintf(stderr, L"\nKISS| %ls\n", msg->str);
-		    fwprintf(stderr, L"KISS| ");
-                    kiss_format_object(kiss_error_output(), kiss_car(kiss_reverse(env->error_call_stack)), KISS_NIL);
+                    if (KISS_IS_CONS(form)) {
+                         fwprintf(stderr, L"KISS| ");
+                         kiss_format_object(kiss_error_output(), kiss_car(kiss_reverse(env->error_call_stack)), KISS_NIL);
+                    }
 		    fflush(stderr);
 		    fflush(stdout);
                     kiss_obj* c;
