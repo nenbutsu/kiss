@@ -480,35 +480,40 @@ static kiss_obj* kiss_read_lexeme(const kiss_obj* const in) {
 }
 
 kiss_obj* kiss_c_read(const kiss_obj* const in, const kiss_obj* const eos_err_p, const kiss_obj* const eos_val) {
-     kiss_obj* p = kiss_read_lexeme(in);
-     if (p == NULL) {
+     kiss_obj* x = kiss_read_lexeme(in);
+     if (x == NULL) { // end of stream
           if (eos_err_p != KISS_NIL) {
-               Kiss_End_Of_Stream_Error(in);
+               Kiss_End_Of_Stream_Error(in); // _Noreturn
           } else {
                return (kiss_obj*)eos_val;
           }
+     } else if (x == KISS_RPAREN) {
+          Kiss_Err(L"Error. Illegal right parenthesis: ~S", in); // _Noreturn
+     } else if (x == KISS_DOT) {
+          Kiss_Err(L"Error. Illegal consing dot: ~S", in); // _Noreturn
+     } else {
+          if (KISS_IS_SYMBOL(x)) { assert(kiss_is_interned((kiss_symbol_t*)x)); }
+          return x;
      }
-     else if (p == KISS_RPAREN)  { Kiss_Err(L"Illegal right parenthesis"); }
-     else if (p == KISS_DOT)     { Kiss_Err(L"Illegal consing dot"); }
-     else if (KISS_IS_SYMBOL(p)) { assert(kiss_is_interned((kiss_symbol_t*)p)); }
-     return p;
 }
 
-/* function: (read [input-stream [eos-error-p [eos-value]]]) -> <object> */
+// function: (read [input-stream [eos-error-p [eos-value]]]) -> <object> 
+// https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#argument_conventions
+// https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_read  
 kiss_obj* kiss_read(const kiss_obj* args) {
-    kiss_obj* in = kiss_standard_input();
-    kiss_obj* eos_err_p = KISS_T;
-    kiss_obj* eos_val = KISS_NIL;
-    if (KISS_IS_CONS(args)) {
-	in = KISS_CAR(args);
-	args = KISS_CDR(args);
-	if (KISS_IS_CONS(args)) {
-	    eos_err_p = KISS_CAR(args);
-	    args = KISS_CDR(args);
-	    if (KISS_IS_CONS(args)) {
-		eos_val = KISS_CAR(args);
-	    }
-	}
-    }
-    return kiss_c_read(in, eos_err_p, eos_val);
+     kiss_obj* in = kiss_standard_input();
+     kiss_obj* eos_err_p = KISS_T;
+     kiss_obj* eos_val = KISS_NIL;
+     if (KISS_IS_CONS(args)) {
+          in = (kiss_obj*)Kiss_Input_Char_Stream(KISS_CAR(args));
+          args = KISS_CDR(args);
+          if (KISS_IS_CONS(args)) {
+               eos_err_p = KISS_CAR(args);
+               args = KISS_CDR(args);
+               if (KISS_IS_CONS(args)) {
+                    eos_val = KISS_CAR(args);
+               }
+          }
+     }
+     return kiss_c_read(in, eos_err_p, eos_val);
 }
