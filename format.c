@@ -252,11 +252,20 @@ static kiss_obj* kiss_format_stream(kiss_obj* out, kiss_obj* obj) {
      }
      
      if (KISS_IS_CHARACTER_STREAM(obj)) {
-          kiss_format_string(out, (kiss_obj*)kiss_make_string(L"character stream "), KISS_NIL);
+          kiss_format_string(out, (kiss_obj*)kiss_make_string(L"character "), KISS_NIL);
      } else if (KISS_IS_BYTE_STREAM(obj)) {
-          kiss_format_string(out, (kiss_obj*)kiss_make_string(L"byte stream "), KISS_NIL);
+          kiss_format_string(out, (kiss_obj*)kiss_make_string(L"byte "), KISS_NIL);
      } else {
           fwprintf(stderr, L"kiss_format_stream: internal error. stream with unknown element.");
+          abort();
+     }
+
+     if (KISS_IS_FILE_STREAM(obj)) {
+          kiss_format_string(out, (kiss_obj*)kiss_make_string(L"file stream"), KISS_NIL);
+     } else if (KISS_IS_STRING_STREAM(obj)) {
+          kiss_format_string(out, (kiss_obj*)kiss_make_string(L"string stream"), KISS_NIL);
+     } else {
+          fwprintf(stderr, L"kiss_format_stream: internal error. stream with unknown source.");
           abort();
      }
      kiss_format_string(out, (kiss_obj*)kiss_make_string(L"("), KISS_NIL);

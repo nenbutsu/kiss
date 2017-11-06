@@ -488,9 +488,9 @@ kiss_obj* kiss_c_read(const kiss_obj* const in, const kiss_obj* const eos_err_p,
                return (kiss_obj*)eos_val;
           }
      } else if (x == KISS_RPAREN) {
-          Kiss_Err(L"Error. Illegal right parenthesis: ~S", in); // _Noreturn
+          Kiss_Err(L"Read error. Illegal right parenthesis: ~S", in); // _Noreturn
      } else if (x == KISS_DOT) {
-          Kiss_Err(L"Error. Illegal consing dot: ~S", in); // _Noreturn
+          Kiss_Err(L"Read error. Illegal consing dot: ~S", in); // _Noreturn
      } else {
           if (KISS_IS_SYMBOL(x)) { assert(kiss_is_interned((kiss_symbol_t*)x)); }
           return x;
