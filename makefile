@@ -5,7 +5,7 @@ debug:
 	gcc -Wall -g -O0 *.c -o kiss -lm -lgmp
 
 profile: 
-	gcc -Wall -pg -O3 *.c -o kiss -L/usr/lib/ -lm -lgmp
+	gcc -Wall -O3 *.c -o kiss -L/usr/lib/ -lm -lgmp -pg 
 
 $(objects) : kiss.h
 
