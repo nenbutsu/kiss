@@ -7,11 +7,15 @@ The current KISS is an interpreter written in C and ISLisp.
 
 
 run make and you get kiss.exe if you're lucky.
-(change makefile according to your environment.)
+(modify makefile according to your environment.)
+
+If you have rlwrap installed, it helps (./kis to invoke or ./kiss without rlwrap).
+
+(load "test/test.lisp") runs a test suite.
 
 kiss uses gnu mp library.
 
-I'm using msys2 mingw64 on Windows 10.
+I'm using msys2 mingw64 on Windows 10 and Ubuntu.
 
 The rep loop is already running.
 
@@ -28,10 +32,11 @@ ISLisp処理系KISS
 
 国際標準化機構(ISO)で定められたプログラミング言語ISLispの処理系KISSです。
 
-makeでコンパイル。(makefileを環境に合わせて変えてください)
+makeでコンパイル(makefileを環境に合わせて変えてください)
 
-私はWindows10 msys2 mingw64環境で開発しております。
-
+私はWindows10 msys2 mingw64環境とUbuntu環境で開発しております。
+rlwrapがインストールしてあれば./kisで起動します。（なければ./kiss）
+(load "test/test.lisp") でテストースーツが走ります。
 まだ開発の初期段階です。
 
 現状、repループは動いています。
