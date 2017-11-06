@@ -229,6 +229,42 @@ kiss_obj* kiss_format_float(kiss_obj* out, kiss_obj* obj) {
      return KISS_NIL;
 }
 
+static kiss_obj* kiss_format_stream(kiss_obj* out, kiss_obj* obj) {
+     if (KISS_IS_INPUT_STREAM(obj)) {
+          if (KISS_IS_OUTPUT_STREAM(obj)) {
+               kiss_format_string(out, (kiss_obj*)kiss_make_string(L"#<I/O "), KISS_NIL);
+          } else if (obj == kiss_standard_input()) {
+               kiss_format_string(out, (kiss_obj*)kiss_make_string(L"#<Standard input "), KISS_NIL);
+          } else {
+               kiss_format_string(out, (kiss_obj*)kiss_make_string(L"#<Input "), KISS_NIL);
+          }
+     } else if (KISS_IS_OUTPUT_STREAM(obj)) {
+          if (obj == kiss_standard_output()) {
+               kiss_format_string(out, (kiss_obj*)kiss_make_string(L"#<Standard output "), KISS_NIL);
+          } else if (obj == kiss_error_output()) {
+               kiss_format_string(out, (kiss_obj*)kiss_make_string(L"#<Error output "), KISS_NIL);
+          } else {
+               kiss_format_string(out, (kiss_obj*)kiss_make_string(L"#<Output "), KISS_NIL);
+          }
+     } else {
+          fwprintf(stderr, L"kiss_format_stream: internal error. stream with unknown I/O direction.");
+          abort();
+     }
+     
+     if (KISS_IS_CHARACTER_STREAM(obj)) {
+          kiss_format_string(out, (kiss_obj*)kiss_make_string(L"character stream "), KISS_NIL);
+     } else if (KISS_IS_BYTE_STREAM(obj)) {
+          kiss_format_string(out, (kiss_obj*)kiss_make_string(L"byte stream "), KISS_NIL);
+     } else {
+          fwprintf(stderr, L"kiss_format_stream: internal error. stream with unknown element.");
+          abort();
+     }
+     kiss_format_string(out, (kiss_obj*)kiss_make_string(L"("), KISS_NIL);
+     kiss_format_pointer(out, obj);
+     kiss_format_string(out, (kiss_obj*)kiss_make_string(L")>"), KISS_NIL);
+     return KISS_NIL;
+}
+
 static kiss_obj* kiss_format_function(kiss_obj* out, kiss_obj* obj) {
      kiss_function_t* f = Kiss_Function(obj);
      kiss_format_string(out, (kiss_obj*)kiss_make_string(L"#<"), KISS_NIL);
@@ -335,6 +371,7 @@ kiss_obj* kiss_format_object(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
           kiss_format_integer(out, obj, (kiss_obj*)kiss_make_fixnum(10));
 	  break;
      case KISS_FLOAT: kiss_format_float(out, obj); break;
+     case KISS_STREAM: kiss_format_stream(out, obj); break;
      case KISS_FUNCTION: kiss_format_function(out, obj); break;
      case KISS_MACRO: kiss_format_macro(out, obj); break;
      case KISS_CFUNCTION: kiss_format_cfunction(out, obj); break;
