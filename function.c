@@ -139,7 +139,7 @@ kiss_obj* kiss_funcall(const kiss_obj* const f, const kiss_obj* const args) {
 	  }
 	  // fall through
      default:
-	  Kiss_Err(L"Not a function ~S", f);
+	  Kiss_Domain_Error(f, L"<function>");
      }
     
 }
