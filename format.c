@@ -338,7 +338,7 @@ kiss_obj* kiss_format_ilos_obj(kiss_obj* out, kiss_obj* object) {
      kiss_obj* class = kiss_plist_get(plist, (kiss_obj*)&KISS_Skw_class);
      kiss_obj* class_name = kiss_plist_get(((kiss_ilos_obj_t*)class)->plist, (kiss_obj*)&KISS_Skw_name);
      if (name == KISS_NIL) {
-          name = (kiss_obj*)kiss_make_string(L"an instance of");
+          name = (kiss_obj*)kiss_make_string(L"an instance");
      }
      kiss_format(out, (kiss_obj*)kiss_make_string(L"#{ILOS: ~A of ~S}"),
                  kiss_c_list(2, name, class_name));
