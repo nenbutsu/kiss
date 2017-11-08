@@ -397,24 +397,40 @@
 ;;; reverse
 ;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_reverse
 (equal (reverse '(a b c d e)) '(e d c b a))
+(equal (reverse '(x y z)) '(z y x))
 (equal (reverse '(a)) '(a))
 (eq (reverse '()) '())
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(reverse "string"))
+                      (signal-condition condition nil)))
+    (reverse "string"))
   nil)
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(reverse #(x y z)))
+                      (signal-condition condition nil)))
+    (reverse #(x y z)))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (reverse))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (reverse '(a b c) '(x y z)))
   nil)
 
-;; nreverse
+;;; nreverse
+;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_nreverse
 (equal (nreverse (list 'a 'b 'c 'd 'e)) '(e d c b a))
 (equal (nreverse (list 'a)) '(a))
 (eq (nreverse '()) '())
@@ -422,52 +438,93 @@
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(nreverse "string"))
+                      (signal-condition condition nil)))
+    (nreverse "string"))
   nil)
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(nreverse #(x y z)))
+                      (signal-condition condition nil)))
+    (nreverse #(x y z)))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (nreverse))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (nreverse '(a b c) '(x y z)))
   nil)
 
-;; append
+;;; append
+;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_append
 (equal (append '(a b c) '(d e f)) '(a b c d e f))
 (eq (append) '())
 (eq (append '()) '())
 (equal (append '(a b c) '() '(d e f)) '(a b c d e f))
+(equal (append '() '(a b c) '() '() '() '(d e f)) '(a b c d e f))
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(append '(a b) 'x))
+                      (signal-condition condition nil)))
+    (append '(a b) 'x))
   nil)
 
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(append 'z))
+                      (signal-condition condition nil)))
+    (append 'z))
   nil)
 
-;; member
+;;; member
+;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_member
 (equal (member 'c '(a b c d e f)) '(c d e f))
-(not (member 'g '(a b c d e f)))
+(eq (member 'g '(a b c d e f)) nil)
+(eq (member 'a '()) '())
+(equal (member 'a '(c b a)) '(a))
 (equal (member 'c '(a b c a b c)) '(c a b c))
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(member 'a 'x))
+                      (signal-condition condition nil)))
+    (member 'a 'x))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (member))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (member 'a))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (member 'a '(c b aq) 'x 'y 'z))
   nil)
 
 
-;; mapcar
+;;; mapcar
+;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_mapcar
 (equal (mapcar #'car '((1 a) (2 b) (3 c))) '(1 2 3))
 (equal (mapcar #'car '()) '())
 (equal (mapcar #'abs '(3 -4 2 -5 -6)) '(3 4 2 5 6))
@@ -475,7 +532,9 @@
 (eq (mapcar (lambda (x y) (cons x y)) '() '(a b c)) nil)
 (equal (mapcar #'list '(a b c) '(1 2 3) '(x y z)) '((a 1 x) (b 2 y) (c 3 z)))
 (equal (mapcar #'list '(a b) '(1 2 3) '(x y z)) '((a 1 x) (b 2 y)))
+(equal (mapcar #'list '(1) '(a b c) '(x y z)) '((1 a x)))
 (equal (mapcar #'list '(a b c) '(1) '(x y z)) '((a 1 x)))
+(equal (mapcar #'list '(a b c) '(x y z) '(1)) '((a x 1)))
 (equal (mapcar #'list '(a b c) '(1 2 3) '()) '())
 (equal (mapcar #'cons '(a b c) '(1 2)) '((a . 1) (b . 2)))
 (equal (mapcar #'list '(a b c) '(1 2 3) '(x y z))
@@ -492,30 +551,44 @@
        '())
 (equal (mapcar #'list '() '() '())
        '())
+(let ((result nil))
+  (equal (mapcar (lambda (m n)
+                   (setq result (cons (list m n) result))
+                   (list m n))
+                 '(a b c) '(x y z))
+         (reverse result)))
 
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(mapcar 'not-a-function '(a b c) '(x y z)))
+                      (signal-condition condition nil)))
+    (mapcar 'not-a-function '(a b c) '(x y z)))
   nil)
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(mapcar #'cons 'not-a-list '(x y z)))
+                      (signal-condition condition nil)))
+    (mapcar #'cons 'not-a-list '(x y z)))
   nil)
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <arity-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(mapcar #'cons))
+                      (signal-condition condition nil)))
+    (mapcar #'cons))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (mapcar))
   nil)
 
-;; mapc
+
+;;; mapc
 (eql (let ((x 0))
        (mapc (lambda (v) (setq x (+ x v))) '(3 5))
        x)
