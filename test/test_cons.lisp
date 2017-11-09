@@ -570,6 +570,13 @@
 		  (if (instancep condition (class <domain-error>))
 		      (return-from a t)
                       (signal-condition condition nil)))
+    (mapcar 'not-a-function '(a b c)))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
     (mapcar #'cons 'not-a-list '(x y z)))
   nil)
 (block a
@@ -589,10 +596,12 @@
 
 
 ;;; mapc
+;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_mapc
 (eql (let ((x 0))
        (mapc (lambda (v) (setq x (+ x v))) '(3 5))
        x)
      8)
+
 (eql (let ((x 0))
        (mapc (lambda (a b) (setq x (+ a b x))) '(1 2 3 4) '(9 8 7 6))
        x)
@@ -608,26 +617,57 @@
        x)
      0)
 
+(equal (let ((result nil))
+         (mapc (lambda (x) (setq result (cons x result)))
+               '(a b c))
+         result)
+       '(c b a))
+
+
+(let ((a '(a b c)))
+  (eq (mapc #'list a) a))
+
+(eq (mapc #'list '()) '())
+
+(let ((a '(a b c)))
+  (eq (mapc #'list a '(x y z)) a))
+
+(let ((a '(a b c)))
+  (eq (mapc #'list a '(x y z) '()) a))
+
+(let ((a '(a b c)))
+  (eq (mapc #'list a '(x y z) '() '(l m n)) a))
+
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(mapc 'not-a-function '(a b c) '(x y z)))
+                      (signal-condition condition nil)))
+    (mapc 'not-a-function '(a b c) '(x y z)))
   nil)
+
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(mapc #'cons 'not-a-list '(x y z)))
+                      (signal-condition condition nil)))
+    (mapc #'cons 'not-a-list '(x y z)))
   nil)
+
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <arity-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(mapc #'cons))
+                      (signal-condition condition nil)))
+    (mapc #'cons))
+  nil)
+
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (mapc))
   nil)
 
 
