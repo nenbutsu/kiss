@@ -1574,7 +1574,9 @@ kiss_obj* kiss_mapc(const kiss_obj* const function, const kiss_obj* const list1,
      kiss_init_cons(&args, list1, (kiss_obj*)stack_rest);
      for (kiss_obj* x = (kiss_obj*)&args; KISS_IS_CONS(x); x = KISS_CDR(x))
           Kiss_List(KISS_CAR(x));
-     if (kiss_member(KISS_NIL, (kiss_obj*)&args) != KISS_NIL) { return KISS_NIL; }
+     if (kiss_member(KISS_NIL, (kiss_obj*)&args) != KISS_NIL) {
+          return (kiss_obj*)list1;
+     }
      while(1) {
           kiss_funcall(function, kiss_c_mapcar1((kiss_cf1_t)kiss_car, (kiss_obj*)&args));
           for (kiss_obj* q = (kiss_obj*)&args; KISS_IS_CONS(q); q = KISS_CDR(q)) {
