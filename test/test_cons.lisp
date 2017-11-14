@@ -671,9 +671,11 @@
   nil)
 
 
-;; maplist
+;;; maplist
+;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_maplist
 (equal (maplist #'append '(1 2 3 4) '(1 2) '(1 2 3))
        '((1 2 3 4 1 2 1 2 3) (2 3 4 2 2 3)))
+
 (equal (maplist (lambda (x) (cons 'foo x)) '(a b c d))
        '((foo a b c d) (foo b c d) (foo c d) (foo d)))
 
@@ -686,26 +688,42 @@
 (eq (maplist #'append '() '(1 2 3 4) '() '(1 2 3))
     '())
 
+(equal (let ((result nil))
+         (maplist (lambda (x) (setq result (cons x result)))
+                  '(a b c d))
+         result)
+       '((d) (c d) (b c d) (a b c d)))
+
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(maplist 'not-a-function '(a b c) '(x y z)))
+                      (signal-condition condition nil)))
+    (maplist 'not-a-function '(a b c) '(x y z)))
   nil)
+
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(maplist #'cons 'not-a-list '(x y z)))
+                      (signal-condition condition nil)))
+    (maplist #'cons 'not-a-list '(x y z)))
   nil)
+
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <arity-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(maplist #'cons))
+                      (signal-condition condition nil)))
+    (maplist #'cons))
+  nil)
+
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (maplist))
   nil)
 
 
