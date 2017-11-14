@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <unistd.h>
 #include <wchar.h>
 #include <wctype.h>
@@ -635,7 +636,11 @@ kiss_string_t* kiss_chars_to_str(const kiss_obj* const chars);
 kiss_obj* kiss_str_to_chars(const kiss_string_t* const str);
 kiss_obj* kiss_string_append(const kiss_obj* const rest);
 
-/* symbols.c */
+/* misc.c */
+kiss_obj* kiss_identity(kiss_obj* obj);
+kiss_obj* kiss_get_universal_time(void);
+
+/* symbol.c */
 extern size_t Kiss_Symbol_Number;
 extern kiss_symbol_t* Kiss_Symbols[];
 void kiss_init_symbols(void);
@@ -725,7 +730,10 @@ void kiss_init_environment(void);
 kiss_obj* kiss_featurep(kiss_obj* feature);
 kiss_obj* kiss_provide(kiss_obj* feature);
 
-
+inline
+kiss_obj* kiss_make_integer(kiss_ptr_int i) {
+     return (i > KISS_PTR_INT_MAX) ? (kiss_obj*)kiss_make_bignum(i) : kiss_make_fixnum(i);
+}
 
 inline
 kiss_cons_t* Kiss_Cons(const kiss_obj* const obj) {

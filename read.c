@@ -27,19 +27,17 @@ kiss_symbol_t KISS_Udot, KISS_Urparen, KISS_Ucomma, KISS_Ucomma_at;
 
 static kiss_obj* kiss_read_lexeme(const kiss_obj* const in);
 
-/*
-  Delimiters are separators along with the following characters:
-  ( ) ‘ , ’
+/*  https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#lexemes */
+//  Delimiters are separators along with the following characters:
+//  ( ) ‘ , ’
+//
+//  6.1 Separators
+//  Separators are as follows: blank, comments, newline, and an
+//  implementation-defined set of characters, (e.g., tabs). Separators
+//  have no meaning and can be replaced by each other without changing the
+//  meaning of the ISLISP text.
 
-  6.1 Separators
-  Separators are as follows: blank, comments, newline, and an
-  implementation-defined set of characters, (e.g., tabs). Separators
-  have no meaning and can be replaced by each other without changing the
-  meaning of the ISLISP text.
-
- */
-
-static int kiss_is_delimiter(wint_t c) {
+static inline int kiss_is_delimiter(wint_t c) {
      return iswspace(c) || wcschr(L"()`,'\"#;", c);
 }
 
@@ -423,49 +421,42 @@ static kiss_obj* kiss_read_lexeme(const kiss_obj* const in) {
           }
 
           switch (c) {
-          case L'(': {
-               kiss_c_read_char(in, KISS_NIL, KISS_NIL);
+          case L'(':
+               kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip (
                return kiss_read_list(in);
-          }
-          case L')': {
-               kiss_c_read_char(in, KISS_NIL, KISS_NIL);
+          case L')':
+               kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip )
                return KISS_RPAREN;
-          }
-          case L'`': {
-               kiss_c_read_char(in, KISS_NIL, KISS_NIL);
+          case L'`':
+               kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip `
                return kiss_read_backquote(in);
-          }
-          case L',': {
-               kiss_c_read_char(in, KISS_NIL, KISS_NIL);
+          case L',':
+               kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip ,
                p = kiss_c_preview_char(in, KISS_NIL, KISS_NIL);
-               if (p == KISS_NIL) { Kiss_Err(L"Stray unquote ,"); }
+               if (p == KISS_NIL) { Kiss_Err(L"Read error. Stray unquote ,: ~S", in); }
                c = kiss_wchar(p);
                if (c == L'@') {
-                    kiss_c_read_char(in, KISS_NIL, KISS_NIL);
+                    kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip @
                     return kiss_read_comma_at(in);
                } else {
                     return kiss_read_comma(in);
                }
-          }
-          case L'\'': {
-               kiss_c_read_char(in, KISS_NIL, KISS_NIL);
+          case L'\'':
+               kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip '
                p = kiss_c_read(in, KISS_NIL, KISS_EOS);
-               if (p == KISS_EOS) { Kiss_Err(L"Stray quote '"); }
+               if (p == KISS_EOS) { Kiss_Err(L"Read error. Stray quote ': ~S", in); }
                return kiss_c_list(2, (kiss_obj*)&KISS_Squote, p);
-          }
-          case L';': {
+          case L';':
                do {
                     p = kiss_c_read_char(in, KISS_NIL, KISS_NIL);
                } while (p != KISS_NIL && kiss_wchar(p) != L'\n');
                if (p == KISS_NIL) return NULL;
                break;
-          }
-          case L'"': {
-               kiss_c_read_char(in, KISS_NIL, KISS_NIL);
+          case L'"':
+               kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip "
                return kiss_read_string(in);
-          }
           case L'#': {
-               kiss_c_read_char(in, KISS_NIL, KISS_NIL);
+               kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip #
                kiss_obj* x = kiss_read_sharp_reader_macro(in);
                if (x == NULL) {
                     break; // skipped comments
@@ -479,6 +470,7 @@ static kiss_obj* kiss_read_lexeme(const kiss_obj* const in) {
      }
 }
 
+// Called from kiss_read
 kiss_obj* kiss_c_read(const kiss_obj* const in, const kiss_obj* const eos_err_p, const kiss_obj* const eos_val) {
      kiss_obj* x = kiss_read_lexeme(in);
      if (x == NULL) { // end of stream

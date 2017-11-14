@@ -2428,6 +2428,45 @@ kiss_symbol_t KISS_Stan = {
     KISS_NIL,                /* plist */
 };
 
+
+/*** misc.c ***/
+kiss_symbol_t KISS_Sidentity;
+kiss_cfunction_t KISS_CFidentity = {
+    KISS_CFUNCTION,            /* type */
+    &KISS_Sidentity,           /* name */
+    (kiss_cf_t*)kiss_identity, /* C function name */
+    1,                         /* minimum argument number */
+    1,                         /* maximum argument number */
+};
+kiss_symbol_t KISS_Sidentity = {
+     KISS_SYMBOL,                 /* type   */
+     NULL,                        /* gc_ptr */
+     L"identity",                 /* name   */
+     KISS_CONST_FSLOT,            /* flags  */
+     NULL,                        /*  var   */
+     (kiss_obj*)&KISS_CFidentity, /*  fun   */
+     KISS_NIL,                    /* plist  */
+};
+
+kiss_symbol_t KISS_Sget_universal_time;
+kiss_cfunction_t KISS_CFget_universal_time = {
+    KISS_CFUNCTION,                      /* type */
+    &KISS_Sget_universal_time,           /* name */
+    (kiss_cf_t*)kiss_get_universal_time, /* C function name */
+    0,                                   /* minimum argument number */
+    0,                                   /* maximum argument number */
+};
+kiss_symbol_t KISS_Sget_universal_time = {
+     KISS_SYMBOL,                           /* type   */
+     NULL,                                  /* gc_ptr */
+     L"get-universal-time",                 /* name   */
+     KISS_CONST_FSLOT,                      /* flags  */
+     NULL,                                  /*  var   */
+     (kiss_obj*)&KISS_CFget_universal_time, /*  fun   */
+     KISS_NIL,                              /* plist  */
+};
+
+
 /*** symbols.c ***/
 kiss_symbol_t KISS_Ssymbolp;
 kiss_cfunction_t KISS_CFsymbolp = {
@@ -3955,7 +3994,9 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sdiv, &KISS_Smod, &KISS_Sgcd, &KISS_Slcm, 
     &KISS_Sparse_number,
 
-
+    /* misc.c */
+    &KISS_Sidentity, &KISS_Sget_universal_time,
+    
     /* symbols.c */
     &KISS_Sgensym, &KISS_Ssymbolp,
     &KISS_Ssymbol_function, &KISS_Sset_symbol_function,
