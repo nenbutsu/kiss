@@ -19,7 +19,9 @@
 #include "kiss.h"
 
 int main(void) {
-    kiss_initialize();
-    kiss_read_eval_print_loop();
-    return EXIT_SUCCESS;
+     size_t saved_heap_top = Kiss_Heap_Top;
+     kiss_initialize();
+     Kiss_Heap_Top = saved_heap_top;
+     kiss_read_eval_print_loop();
+     return EXIT_SUCCESS;
 }
