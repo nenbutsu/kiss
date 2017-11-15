@@ -55,18 +55,19 @@ kiss_obj* kiss_internal_time_units_per_second(void) {
 }
 
 kiss_obj* kiss_time(kiss_obj* form) {
-     kiss_obj* run_start = kiss_get_internal_run_time();
-     kiss_obj* real_start = kiss_get_internal_real_time();
+     clock_t start, end;
+     double cpu_time_used;
+     
+     start = clock();
 
      kiss_obj* result = kiss_eval(form);
 
-     kiss_obj* run_end = kiss_get_internal_run_time();
-     kiss_obj* real_end = kiss_get_internal_real_time();
+     end = clock();
+     cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+
      kiss_format(kiss_standard_output(), (kiss_obj*)kiss_make_string(L"~S~%"),
                  kiss_c_list(1, result));
-     kiss_format(kiss_standard_output(), (kiss_obj*)kiss_make_string(L"~&Real time: ~S~&"),
-                 kiss_c_list(1, kiss_minus(real_end, kiss_c_list(1, real_start))));
-     kiss_format(kiss_standard_output(), (kiss_obj*)kiss_make_string(L"~&Run time : ~S~&"),
-                 kiss_c_list(1, kiss_minus(run_end, kiss_c_list(1, run_start))));
+     kiss_format(kiss_standard_output(), (kiss_obj*)kiss_make_string(L"~&Run time: ~S~&"),
+                 kiss_c_list(1, (kiss_obj*)kiss_make_float(cpu_time_used)));
      return result;
 }
