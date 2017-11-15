@@ -2466,6 +2466,78 @@ kiss_symbol_t KISS_Sget_universal_time = {
      KISS_NIL,                              /* plist  */
 };
 
+kiss_symbol_t KISS_Sget_internal_run_time;
+kiss_cfunction_t KISS_CFget_internal_run_time = {
+    KISS_CFUNCTION,                         /* type */
+    &KISS_Sget_internal_run_time,           /* name */
+    (kiss_cf_t*)kiss_get_internal_run_time, /* C function name */
+    0,                                      /* minimum argument number */
+    0,                                      /* maximum argument number */
+};
+kiss_symbol_t KISS_Sget_internal_run_time = {
+     KISS_SYMBOL,                              /* type   */
+     NULL,                                     /* gc_ptr */
+     L"get-internal-run-time",                 /* name   */
+     KISS_CONST_FSLOT,                         /* flags  */
+     NULL,                                     /*  var   */
+     (kiss_obj*)&KISS_CFget_internal_run_time, /*  fun   */
+     KISS_NIL,                                 /* plist  */
+};
+
+kiss_symbol_t KISS_Sget_internal_real_time;
+kiss_cfunction_t KISS_CFget_internal_real_time = {
+    KISS_CFUNCTION,                          /* type */
+    &KISS_Sget_internal_real_time,           /* name */
+    (kiss_cf_t*)kiss_get_internal_real_time, /* C function name */
+    0,                                       /* minimum argument number */
+    0,                                       /* maximum argument number */
+};
+kiss_symbol_t KISS_Sget_internal_real_time = {
+     KISS_SYMBOL,                               /* type   */
+     NULL,                                      /* gc_ptr */
+     L"get-internal-real-time",                 /* name   */
+     KISS_CONST_FSLOT,                          /* flags  */
+     NULL,                                      /*  var   */
+     (kiss_obj*)&KISS_CFget_internal_real_time, /*  fun   */
+     KISS_NIL,                                  /* plist  */
+};
+
+kiss_symbol_t KISS_Sinternal_time_units_per_second;
+kiss_cfunction_t KISS_CFinternal_time_units_per_second = {
+    KISS_CFUNCTION,                          /* type */
+    &KISS_Sinternal_time_units_per_second,           /* name */
+    (kiss_cf_t*)kiss_internal_time_units_per_second, /* C function name */
+    0,                                       /* minimum argument number */
+    0,                                       /* maximum argument number */
+};
+kiss_symbol_t KISS_Sinternal_time_units_per_second = {
+     KISS_SYMBOL,                               /* type   */
+     NULL,                                      /* gc_ptr */
+     L"internal-time-units-per-second",         /* name   */
+     KISS_CONST_FSLOT,                          /* flags  */
+     NULL,                                      /*  var   */
+     (kiss_obj*)&KISS_CFinternal_time_units_per_second, /*  fun   */
+     KISS_NIL,                                          /* plist  */
+};
+
+kiss_symbol_t KISS_Stime;
+kiss_cfunction_t KISS_CFtime = {
+    KISS_CFUNCTION,                          /* type */
+    &KISS_Stime,           /* name */
+    (kiss_cf_t*)kiss_time, /* C function name */
+    1,                                       /* minimum argument number */
+    1,                                       /* maximum argument number */
+};
+kiss_symbol_t KISS_Stime = {
+     KISS_SYMBOL,                               /* type   */
+     NULL,                                      /* gc_ptr */
+     L"time",         /* name   */
+     KISS_CONST_FSLOT,                          /* flags  */
+     NULL,                                      /*  var   */
+     (kiss_obj*)&KISS_CFtime, /*  fun   */
+     KISS_NIL,                                          /* plist  */
+};
+
 
 /*** symbols.c ***/
 kiss_symbol_t KISS_Ssymbolp;
@@ -3996,6 +4068,8 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
 
     /* misc.c */
     &KISS_Sidentity, &KISS_Sget_universal_time,
+    &KISS_Sget_internal_run_time, &KISS_Sget_internal_real_time,
+    &KISS_Sinternal_time_units_per_second, &KISS_Stime,
     
     /* symbols.c */
     &KISS_Sgensym, &KISS_Ssymbolp,

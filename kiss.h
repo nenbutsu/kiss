@@ -32,6 +32,7 @@
 #include <unistd.h>
 #include <wchar.h>
 #include <wctype.h>
+#include <sys/times.h>
 
 #include <gmp.h>
 
@@ -639,6 +640,10 @@ kiss_obj* kiss_string_append(const kiss_obj* const rest);
 /* misc.c */
 kiss_obj* kiss_identity(kiss_obj* obj);
 kiss_obj* kiss_get_universal_time(void);
+kiss_obj* kiss_get_internal_run_time(void);
+kiss_obj* kiss_get_internal_real_time(void);
+kiss_obj* kiss_internal_time_units_per_second(void);
+kiss_obj* kiss_time(kiss_obj* form);
 
 /* symbol.c */
 extern size_t Kiss_Symbol_Number;

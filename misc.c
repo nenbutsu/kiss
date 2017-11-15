@@ -29,3 +29,44 @@ kiss_obj* kiss_get_universal_time(void) {
      return kiss_plus2(kiss_make_integer((kiss_ptr_int)t), kiss_make_integer(2208988800));
 }
 
+kiss_obj* kiss_get_internal_run_time(void) {
+     clock_t t;
+
+     t = clock();
+     if (t == (clock_t)(-1)) {
+          Kiss_System_Error();
+     }
+     return kiss_make_integer((kiss_ptr_int)t);
+}
+
+kiss_obj* kiss_get_internal_real_time(void) {
+     clock_t t;
+     struct tms time;
+
+     t = times(&time);
+     if (t == (clock_t)(-1)) {
+          Kiss_System_Error();
+     }
+     return kiss_make_integer((kiss_ptr_int)t);
+}
+
+kiss_obj* kiss_internal_time_units_per_second(void) {
+     return kiss_make_integer((kiss_ptr_int)CLOCKS_PER_SEC);
+}
+
+kiss_obj* kiss_time(kiss_obj* form) {
+     kiss_obj* run_start = kiss_get_internal_run_time();
+     kiss_obj* real_start = kiss_get_internal_real_time();
+
+     kiss_obj* result = kiss_eval(form);
+
+     kiss_obj* run_end = kiss_get_internal_run_time();
+     kiss_obj* real_end = kiss_get_internal_real_time();
+     kiss_format(kiss_standard_output(), (kiss_obj*)kiss_make_string(L"~S~%"),
+                 kiss_c_list(1, result));
+     kiss_format(kiss_standard_output(), (kiss_obj*)kiss_make_string(L"~&Real time: ~S~&"),
+                 kiss_c_list(1, kiss_minus(real_end, kiss_c_list(1, real_start))));
+     kiss_format(kiss_standard_output(), (kiss_obj*)kiss_make_string(L"~&Run time : ~S~&"),
+                 kiss_c_list(1, kiss_minus(run_end, kiss_c_list(1, run_start))));
+     return result;
+}
