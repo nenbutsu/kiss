@@ -23,7 +23,6 @@ void kiss_init_error_catcher(void) {
     kiss_obj* tag = kiss_symbol(L"kiss::error");
     kiss_catcher_t* c = kiss_make_catcher(tag, env->top_level);
     env->dynamic_env.jumpers = kiss_cons((kiss_obj*)c, env->dynamic_env.jumpers);
-    //fwprintf(stderr, L"Kiss_Heap_Top = %ld\n", Kiss_Heap_Top);
 }
 
 static wchar_t* libraries[] = {
