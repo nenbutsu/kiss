@@ -214,18 +214,46 @@ kiss_obj* kiss_format_float(kiss_obj* out, kiss_obj* obj) {
      char* s = mpf_get_str(NULL, &e, 10, 0, f->mpf);
      wchar_t* wcs = kiss_mbstowcs(s);
      free(s);
+
+     size_t len = wcslen(wcs);
      
-     kiss_format_string(out, (kiss_obj*)kiss_make_string(L"0."), KISS_NIL);
-     if (wcslen(wcs) == 0) {
-          kiss_format_string(out, (kiss_obj*)kiss_make_string(L"0"), KISS_NIL);
+     if (len == 0) {
+          kiss_format_string(out, (kiss_obj*)kiss_make_string(L"0.0"), KISS_NIL);
      } else {
-          kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs), KISS_NIL);
+          if (e == 0) {
+               kiss_format_string(out, (kiss_obj*)kiss_make_string(L"0."), KISS_NIL);
+               kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs), KISS_NIL);
+          } else if (e == 1) {
+               if (len == 1) {
+                    kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs), KISS_NIL);
+                    kiss_format_string(out, (kiss_obj*)kiss_make_string(L".0"), KISS_NIL);
+               } else {
+                    wchar_t* wcs1 = malloc(sizeof(wchar_t) * 3);
+                    wcs1[0] = wcs[0];
+                    wcs1[1] = L'.';
+                    wcs1[2] = L'\0';
+                    kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs1), KISS_NIL);
+                    kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs + 1), KISS_NIL);
+                    free(wcs1);
+               }
+          } else {
+               if (len == 1) {
+                    kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs), KISS_NIL);
+                    kiss_format_string(out, (kiss_obj*)kiss_make_string(L".0"), KISS_NIL);
+               } else {
+                    wchar_t* wcs1 = malloc(sizeof(wchar_t) * 3);
+                    wcs1[0] = wcs[0];
+                    wcs1[1] = L'.';
+                    wcs1[2] = L'\0';
+                    kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs1), KISS_NIL);
+                    kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs + 1), KISS_NIL);
+                    free(wcs1);
+               }
+               kiss_format_string(out, (kiss_obj*)kiss_make_string(L"e"), KISS_NIL);
+               kiss_format_integer(out, (kiss_obj*)kiss_make_integer(e-1), kiss_make_integer(10));
+          }
      }
      free(wcs);
-     if (e != 0) {
-          kiss_format_string(out, (kiss_obj*)kiss_make_string(L"e"), KISS_NIL);
-          kiss_format_fixnum(out, kiss_fixnum(e), kiss_make_fixnum(10));
-     }
      return KISS_NIL;
 }
 
