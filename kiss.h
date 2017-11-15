@@ -129,7 +129,7 @@ void* Kiss_GC_Malloc(size_t const size) {
 
     Kiss_GC_Amount += size;
     if (Kiss_GC_Amount > 1024 * 1024 * 4) {
-         //fwprintf(stderr, L"\ngc...\n");
+         fwprintf(stderr, L"\ngc...\n");
 	 kiss_gc();
 	 Kiss_GC_Amount = 0;
     }
