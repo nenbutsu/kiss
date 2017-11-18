@@ -727,13 +727,15 @@
   nil)
 
 
-;; mapl
+;;; mapl
+;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_mapl
 (= (let ((k 0))
      (mapl (lambda (x)
 	     (setq k (+ k (if (member (car x) (cdr x)) 0 1))))
 	   '(a b a c d b c))
      k)
    4)
+
 (= (let ((k 0))
      (mapl (lambda (x) (setq k (apply #'+ k x))) '(0 1 2 3))
      k)
@@ -754,27 +756,73 @@
          k)
        '((3) (c) ((2 3) (b c) ((1 2 3) (a b c) nil))))
 
+(equal (let ((k nil))
+         (mapl (lambda (x y) (setq k (list x y k))) '(1 2) '(a b c))
+         k)
+       '((2) (b c) ((1 2) (a b c) nil)))
+
+(equal (let ((k nil))
+         (mapl (lambda (x y) (setq k (list x y k))) '(1 2 3) '(a b))
+         k)
+       '((2 3) (b) ((1 2 3) (a b) nil)))
+
+(equal (let ((k nil))
+         (mapl (lambda (x y) (setq k (list x y k))) '(1 2 3) '(a))
+         k)
+       '((1 2 3) (a) nil))
+
+(eq (let ((k nil))
+      (mapl (lambda (x y) (setq k (list x y k))) '(1 2 3) '())
+      k)
+    '())
+
+(let ((l (list 'x 'y 'z))
+      (k nil))
+  (eq (mapl (lambda (x) (setq k (list x k))) l)
+      l))
+
+(let ((l1 (list 'x 'y 'z))
+      (l2 (list 'a 'b))
+      (k nil))
+  (eq (mapl (lambda (x y) (setq k (list x y k))) l1 l2)
+      l1))
+
+(let ((l1 (list 'x 'y 'z))
+      (l2 '())
+      (k nil))
+  (eq (mapl (lambda (x y) (setq k (list x y k))) l1 l2)
+      l1))
 
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(mapl 'not-a-function '(a b c) '(x y z)))
+                      (signal-condition condition nil)))
+    (mapl 'not-a-function '(a b c) '(x y z)))
   nil)
+
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(mapl #'cons 'not-a-list '(x y z)))
+                      (signal-condition condition nil)))
+    (mapl #'cons 'not-a-list '(x y z)))
   nil)
+
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <arity-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(mapl #'cons))
+                      (signal-condition condition nil)))
+    (mapl #'cons))
+  nil)
+
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (mapl))
   nil)
 
 ;; mapcan
