@@ -825,57 +825,83 @@
     (mapl))
   nil)
 
-;; mapcan
+;;; mapcan
+;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_mapcan
 (equal (mapcan (lambda (x) (if (> x 0) (list x))) '(-3 4 0 5 -2 7))
+
        '(4 5 7))
+
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(mapcan 'not-a-function '(a b c) '(x y z)))
-  nil)
-(block a
-  (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
-		      (return-from a t)
-		    (signal-condition condition nil)))
-		(mapcan #'list 'not-a-list '(x y z)))
-  nil)
-(block a
-  (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
-		      (return-from a t)
-		    (signal-condition condition nil)))
-		(mapcan #'list))
+                      (signal-condition condition nil)))
+    (mapcan 'not-a-function '(a b c) '(x y z)))
   nil)
 
-;; mapcon
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (mapcan #'list 'not-a-list '(x y z)))
+  nil)
+
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (mapcan #'list))
+  nil)
+
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (mapcan))
+  nil)
+
+;;; mapcon
+;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_mapcon
 (equal (mapcon (lambda (x) (if (member (car x) (cdr x)) (list (car x))))
 	       '(a b a c d b c b c))
        '(a b c b c))
+
 (equal (mapcon #'list '(1 2 3 4))
        '((1 2 3 4) (2 3 4) (3 4) (4)))
+
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(mapcon 'not-a-function '(a b c) '(x y z)))
+                      (signal-condition condition nil)))
+    (mapcon 'not-a-function '(a b c) '(x y z)))
   nil)
+
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(mapcon #'list 'not-a-list '(x y z)))
+                      (signal-condition condition nil)))
+    (mapcon #'list 'not-a-list '(x y z)))
   nil)
+
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <arity-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(mapcon #'list))
+                      (signal-condition condition nil)))
+    (mapcon #'list))
+  nil)
+
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (mapcon))
   nil)
 
 ;; assoc
