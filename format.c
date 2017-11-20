@@ -42,6 +42,14 @@ static kiss_obj* kiss_format_list(kiss_obj* out, kiss_obj* obj, kiss_obj* escape
 	  kiss_format_string(out, (kiss_obj*)kiss_make_string(L"()"), KISS_NIL);
 	  return KISS_NIL;
      }
+
+     kiss_obj* op = KISS_CAR(obj);
+     if (op == (kiss_obj*)&KISS_Squote && kiss_c_length(obj) == 2) {
+          kiss_format_char(out, kiss_make_character(L'\''));
+          kiss_format_object(out, kiss_car(KISS_CDR(p)), escapep);
+          return KISS_NIL;
+     }
+     
      kiss_format_char(out, kiss_make_character(L'('));
      kiss_format_object(out, KISS_CAR(p), escapep);
      for (p = KISS_CDR(p); KISS_IS_CONS(p); p = KISS_CDR(p)) {
