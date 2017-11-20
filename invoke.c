@@ -68,10 +68,10 @@ kiss_obj* kiss_invoke(const kiss_obj* const f, kiss_obj* const args) {
      }
      assert(saved_heap_top <= Kiss_Heap_Top);
      if (saved_heap_top < Kiss_Heap_Top) {
-	  if (KISS_IS_GC_OBJ(result) && ((kiss_gc_obj*)result)->gc_ptr != NULL) {
-	       Kiss_Heap_Stack[saved_heap_top++] = (kiss_gc_obj*)result;
-	  }
-	  Kiss_Heap_Top = saved_heap_top;
+          if (KISS_IS_GC_OBJ(result) && ((kiss_gc_obj*)result)->gc_ptr != NULL) {
+               Kiss_Heap_Stack[saved_heap_top++] = (kiss_gc_obj*)result;
+          }
+          Kiss_Heap_Top = saved_heap_top;
      }
      //fwprintf(stderr, L"Kiss_Heap_Top = %lu\n", Kiss_Heap_Top);
      env->call_stack = saved_call_stack;

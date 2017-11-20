@@ -346,11 +346,9 @@ kiss_obj* kiss_or(const kiss_obj* const forms) {
         again with step 1. */
 kiss_obj* kiss_while(const kiss_obj* const test_form, const kiss_obj* const body) {
      kiss_obj* result = kiss_eval(test_form);
-     size_t saved_heap_top = Kiss_Heap_Top;
      while (result != KISS_NIL) {
           kiss_eval_body(body);
           result = kiss_eval(test_form);
-          Kiss_Heap_Top = saved_heap_top;
      }
      return KISS_NIL;
 }
