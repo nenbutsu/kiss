@@ -21,14 +21,11 @@
 int kiss_read_eval_print_loop(void) {
      kiss_environment_t* env = Kiss_Get_Environment();
      kiss_obj* form;
-     kiss_lexical_environment_t saved_lexical_env;
-     kiss_dynamic_environment_t saved_dynamic_env;
-     size_t saved_heap_top;
 
      while (1) {
-	  saved_dynamic_env = env->dynamic_env;
-	  saved_lexical_env = env->lexical_env;
-	  saved_heap_top = Kiss_Heap_Top;
+	  kiss_dynamic_environment_t saved_dynamic_env = env->dynamic_env;
+	  kiss_lexical_environment_t saved_lexical_env = env->lexical_env;
+	  size_t saved_heap_top = Kiss_Heap_Top;
 	  if (setjmp(env->top_level) == 0) {
                //fwprintf(stderr, L"Kiss_Heap_Top = %ld\n", Kiss_Heap_Top);
 	       fflush(stdout);
@@ -51,7 +48,7 @@ int kiss_read_eval_print_loop(void) {
 	       if (!KISS_IS_STRING(result)) {
 		    fwprintf(stderr, L"\nKISS| Internal error. Kiss_Err threw non-string obj.\n");
 		    fwprintf(stderr, L"\n");
-		    exit(1);
+		    exit(EXIT_FAILURE);
 	       } else {
 		    kiss_string_t* msg = (kiss_string_t*)result;
 		    fwprintf(stderr, L"\nKISS| %ls\n", msg->str);
