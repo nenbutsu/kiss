@@ -56,8 +56,8 @@ typedef enum {
      KISS_STREAM,
      KISS_HASH_TABLE,
 
-     KISS_FUNCTION,
-     KISS_MACRO,
+     KISS_LFUNCTION,
+     KISS_LMACRO,
      KISS_CFUNCTION,
      KISS_CMACRO,
 
@@ -398,8 +398,8 @@ kiss_symbol_t KISS_Ueos, KISS_Udummy;
 #define KISS_IS_GENERAL_ARRAY_S(x)     (KISS_OBJ_TYPE(x) == KISS_GENERAL_ARRAY_S)
 #define KISS_IS_TASH_TABLE(x)        (KISS_OBJ_TYPE(x) == KISS_HASH_TABLE)
 #define KISS_IS_SEQUENCE(x)          (KISS_IS_LIST(x) || KISS_IS_STRING(x) || KISS_IS_GENERAL_VECTOR(x))
-#define KISS_IS_FUNCTION(x)          (KISS_OBJ_TYPE(x) == KISS_FUNCTION)
-#define KISS_IS_MACRO(x)             (KISS_OBJ_TYPE(x) == KISS_MACRO)
+#define KISS_IS_LFUNCTION(x)          (KISS_OBJ_TYPE(x) == KISS_LFUNCTION)
+#define KISS_IS_LMACRO(x)             (KISS_OBJ_TYPE(x) == KISS_LMACRO)
 #define KISS_IS_CFUNCTION(x)         (KISS_OBJ_TYPE(x) == KISS_CFUNCTION)
 #define KISS_IS_CMACRO(x)            (KISS_OBJ_TYPE(x) == KISS_CMACRO)
 #define KISS_IS_CATCHER(x)           (KISS_OBJ_TYPE(x) == KISS_CATCHER)
@@ -888,14 +888,14 @@ kiss_general_array_t* Kiss_General_Array_S(const kiss_obj* const obj) {
 }
 
 inline
-kiss_function_t* Kiss_Function(const kiss_obj* const obj) {
+kiss_function_t* Kiss_LFunction(const kiss_obj* const obj) {
      if (KISS_IS_FUNCTION(obj)) { return (kiss_function_t*)obj; }
      Kiss_Domain_Error(obj, L"lisp function");
 }
 
 inline
-kiss_function_t* Kiss_Macro(const kiss_obj* const obj) {
-     if (KISS_IS_MACRO(obj)) { return (kiss_function_t*)obj; }
+kiss_function_t* Kiss_LMacro(const kiss_obj* const obj) {
+     if (KISS_IS_LMACRO(obj)) { return (kiss_function_t*)obj; }
      Kiss_Domain_Error(obj, L"lisp macro");
 }
 

@@ -21,7 +21,7 @@
 kiss_function_t* kiss_make_function(kiss_symbol_t* name, kiss_obj* lambda) {
     kiss_function_t* p = Kiss_GC_Malloc(sizeof(kiss_function_t));
     kiss_environment_t* env = Kiss_Get_Environment();
-    p->type = KISS_FUNCTION;
+    p->type = KISS_LFUNCTION;
     p->name = name;
     p->lambda = KISS_NIL;
     p->lexical_env = env->lexical_env;
@@ -31,12 +31,12 @@ kiss_function_t* kiss_make_function(kiss_symbol_t* name, kiss_obj* lambda) {
 
 static kiss_function_t* kiss_make_macro(kiss_symbol_t* name, kiss_obj* lambda) {
     kiss_function_t* p = kiss_make_function(name, lambda);
-    p->type = KISS_MACRO;
+    p->type = KISS_LMACRO;
     return p;
 }
 
 kiss_obj* kiss_simple_function_p(kiss_obj* obj) {
-     return (KISS_IS_FUNCTION(obj) || KISS_IS_CFUNCTION(obj) ? KISS_T : KISS_NIL);
+     return (KISS_IS_LFUNCTION(obj) || KISS_IS_CFUNCTION(obj) ? KISS_T : KISS_NIL);
 }
 
 void kiss_bind_funargs(kiss_obj* name, kiss_obj* params, kiss_obj* args) {
@@ -131,7 +131,7 @@ kiss_obj* kiss_funcall(const kiss_obj* const f, const kiss_obj* const args) {
      switch (KISS_OBJ_TYPE(f)) {
      case KISS_CFUNCTION:
 	  return kiss_cf_invoke((kiss_cfunction_t*)f, (kiss_obj*)args);
-     case KISS_FUNCTION:
+     case KISS_LFUNCTION:
 	  return kiss_lf_invoke((kiss_function_t*)f, (kiss_obj*)args);
      case KISS_ILOS_OBJ:
 	  if (kiss_c_funcall(L"generic-function-p", kiss_c_list(1, f)) == KISS_T) {

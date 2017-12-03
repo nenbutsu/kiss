@@ -83,8 +83,8 @@ kiss_obj* kiss_class_of(const kiss_obj* const obj) {
                return kiss_k_class((kiss_obj*)&KISS_Sc_hash_table);
 	  case KISS_STREAM:
                return kiss_k_class((kiss_obj*)&KISS_Sc_stream);
-	  case KISS_FUNCTION:
-	  case KISS_MACRO:
+	  case KISS_LFUNCTION:
+	  case KISS_LMACRO:
 	  case KISS_CFUNCTION:
 	  case KISS_CMACRO:
                return kiss_k_class((kiss_obj*)&KISS_Sc_function);

@@ -45,10 +45,10 @@ kiss_obj* kiss_invoke(const kiss_obj* const f, kiss_obj* const args) {
      case KISS_CMACRO:
 	  result = kiss_cf_invoke((kiss_cfunction_t*)f, args);
 	  break;
-     case KISS_FUNCTION:
+     case KISS_LFUNCTION:
 	  result = kiss_lf_invoke((kiss_function_t*)f, kiss_eval_args(args));
 	  break;
-     case KISS_MACRO: {
+     case KISS_LMACRO: {
 	  kiss_obj* form = kiss_lf_invoke((kiss_function_t*)f, args);
 	  result = kiss_eval(form);
 	  break;

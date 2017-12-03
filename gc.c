@@ -199,8 +199,8 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
 	  case KISS_STREAM:
 	       kiss_gc_mark_stream((kiss_stream_t*)obj);
 	       break;
-	  case KISS_FUNCTION:
-	  case KISS_MACRO:
+	  case KISS_LFUNCTION:
+	  case KISS_LMACRO:
 	       kiss_gc_mark_function((kiss_function_t*)obj);
 	       break;
 	  case KISS_CFUNCTION:
@@ -312,8 +312,8 @@ void kiss_gc_free_obj(kiss_gc_obj* obj) {
 	  case KISS_GENERAL_VECTOR:
 	  case KISS_GENERAL_ARRAY_S:
           case KISS_HASH_TABLE:
-	  case KISS_FUNCTION:
-	  case KISS_MACRO:
+	  case KISS_LFUNCTION:
+	  case KISS_LMACRO:
 	  case KISS_CFUNCTION:
 	  case KISS_CMACRO:
 	  case KISS_CATCHER:
