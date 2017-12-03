@@ -41,10 +41,10 @@ typedef long int kiss_ptr_int;
 #define KISS_PTR_INT_MIN (LONG_MIN>>2)
 _Static_assert (sizeof(kiss_ptr_int) == sizeof(void*), "We need a C int with the same width as void*");
 
-#define kiss_ptr_int(x)    (((kiss_ptr_int)x)>>2)
-#define kiss_wchar(x)      kiss_ptr_int(x)
+#define kiss_ptr_int(x)        (((kiss_ptr_int)x)>>2)
+#define kiss_wchar(x)          kiss_ptr_int(x)
 
-#define kiss_make_char(x)  (kiss_obj*)((((kiss_ptr_int)x)<<2) | 2)
+#define kiss_make_char(x)      (kiss_obj*)((((kiss_ptr_int)x)<<2) | 2)
 #define kiss_make_fixnum(x)    (kiss_obj*)((((kiss_ptr_int)x)<<2) | 1)
 
 typedef enum {
