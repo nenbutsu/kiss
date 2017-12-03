@@ -889,7 +889,7 @@ kiss_general_array_t* Kiss_General_Array_S(const kiss_obj* const obj) {
 
 inline
 kiss_function_t* Kiss_LFunction(const kiss_obj* const obj) {
-     if (KISS_IS_FUNCTION(obj)) { return (kiss_function_t*)obj; }
+     if (KISS_IS_LFUNCTION(obj)) { return (kiss_function_t*)obj; }
      Kiss_Domain_Error(obj, L"lisp function");
 }
 
