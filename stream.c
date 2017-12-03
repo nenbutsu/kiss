@@ -128,7 +128,7 @@ kiss_obj* kiss_open_input_file(const kiss_obj* const filename, const kiss_obj* c
           fwide(fp, 1); // wide oriented
 	  if (rest == KISS_NIL || kiss_is_character_class(kiss_car(rest))) {
 	       stream->flags |= (KISS_INPUT_STREAM | KISS_CHARACTER_STREAM);
-	  } else if (kiss_num_eq(kiss_car(rest), kiss_fixnum(8)) == KISS_T) {
+	  } else if (kiss_num_eq(kiss_car(rest), kiss_make_fixnum(8)) == KISS_T) {
 	       stream->flags |= (KISS_INPUT_STREAM | KISS_BYTE_STREAM);
 	  } else {
                kiss_close((kiss_obj*)stream);
@@ -157,7 +157,7 @@ kiss_obj* kiss_open_output_file(kiss_obj* filename, kiss_obj* rest) {
           fwide(fp, 1); // wide oriented
 	  if (rest == KISS_NIL || kiss_is_character_class(kiss_car(rest))) {
 	       stream->flags |= (KISS_OUTPUT_STREAM | KISS_CHARACTER_STREAM);
-	  } else if (kiss_num_eq(kiss_car(rest), kiss_fixnum(8)) == KISS_T) {
+	  } else if (kiss_num_eq(kiss_car(rest), kiss_make_fixnum(8)) == KISS_T) {
 	       stream->flags |= (KISS_OUTPUT_STREAM | KISS_BYTE_STREAM);
 	  } else {
                kiss_close((kiss_obj*)stream);
@@ -186,7 +186,7 @@ kiss_obj* kiss_open_io_file(kiss_obj* filename, kiss_obj* rest) {
           fwide(fp, 1); // wide oriented
 	  if (rest == KISS_NIL || kiss_is_character_class(kiss_car(rest))) {
 	       stream->flags |= (KISS_OUTPUT_STREAM | KISS_INPUT_STREAM | KISS_CHARACTER_STREAM);
-	  } else if (kiss_num_eq(kiss_car(rest), kiss_fixnum(8)) == KISS_T) {
+	  } else if (kiss_num_eq(kiss_car(rest), kiss_make_fixnum(8)) == KISS_T) {
 	       stream->flags |= (KISS_OUTPUT_STREAM | KISS_INPUT_STREAM | KISS_BYTE_STREAM);
 	  } else {
                kiss_close((kiss_obj*)stream);
@@ -256,7 +256,7 @@ kiss_obj* kiss_c_read_char(const kiss_obj* const in, const kiss_obj* const eos_e
           FILE* fp = file_stream->file_ptr;
           wint_t c = getwc(fp);
           if (c == WEOF) goto eos;
-          return kiss_make_character(c);
+          return kiss_make_char(c);
      } else if (KISS_IS_STRING_STREAM(in)) {
 	  kiss_string_stream_t* string_stream = (kiss_string_stream_t*)in;
 	  if (string_stream->list == KISS_NIL) {
@@ -344,7 +344,7 @@ kiss_obj* kiss_c_preview_char(const kiss_obj* const in, const kiss_obj* const eo
           wint_t c = getwc(fp);
           if (c == WEOF) goto eos;
           ungetwc(c, fp);
-          return kiss_make_character(c);
+          return kiss_make_char(c);
      } else if (KISS_IS_STRING_STREAM(in)) {
 	  kiss_string_stream_t* string_stream = (kiss_string_stream_t*)in;
 	  if (string_stream->list == KISS_NIL) {

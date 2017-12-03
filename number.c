@@ -602,7 +602,7 @@ kiss_obj* kiss_num_lessthan(kiss_obj* a, kiss_obj* b) {
 kiss_obj* kiss_fixnum_if_possible(const kiss_obj* const obj) {
      if (KISS_IS_BIGNUM(obj)) {
           kiss_bignum_t* z = (kiss_bignum_t*)obj;
-          return (kiss_obj*)((mpz_cmp_si(z->mpz, KISS_PTR_INT_MAX) <= 0 && mpz_cmp_si(z->mpz, KISS_PTR_INT_MIN) >= 0) ? kiss_fixnum(mpz_get_si(z->mpz)) : obj);
+          return (kiss_obj*)((mpz_cmp_si(z->mpz, KISS_PTR_INT_MAX) <= 0 && mpz_cmp_si(z->mpz, KISS_PTR_INT_MIN) >= 0) ? kiss_make_fixnum(mpz_get_si(z->mpz)) : obj);
      } else {
           return (kiss_obj*)obj;
      }

@@ -142,7 +142,7 @@ static void kiss_collect_lexeme_chars(const kiss_obj* const in, int* const escap
             if (!*escaped) {
                  c = towlower(c);
             }
-	    kiss_push_lexeme_char(kiss_make_character(c));
+	    kiss_push_lexeme_char(kiss_make_char(c));
 	    break;
 	}
     }
@@ -197,15 +197,15 @@ static kiss_obj* kiss_read_sharp_reader_macro_char(const kiss_obj* const in) {
     kiss_string_t* char_name = kiss_chars_to_str(kiss_reverse(env->lexeme_chars)); // used in err msg*/
     for (p = env->lexeme_chars; KISS_IS_CONS(p); p = KISS_CDR(p)) {/* downcase chars*/
          wchar_t c = kiss_wchar(KISS_CAR(p));
-         kiss_set_car(kiss_make_character(towlower(c)), p);
+         kiss_set_car(kiss_make_char(towlower(c)), p);
     }
     kiss_string_t* downcased_char_name = kiss_chars_to_str(kiss_reverse(env->lexeme_chars));
     
     if (wcscmp(downcased_char_name->str, L"newline") == 0) {
-	return kiss_make_character(L'\n');
+	return kiss_make_char(L'\n');
     }
     if (wcscmp(downcased_char_name->str, L"space") == 0) {
-	return kiss_make_character(L' ');
+	return kiss_make_char(L' ');
     }
     Kiss_Err(L"Invalid character name ~S", char_name);
 }
@@ -316,7 +316,7 @@ static kiss_obj* kiss_read_sharp_reader_macro(const kiss_obj* const in) {
      case L'5': case L'6': case L'7': case L'8': case L'9':
 	  return kiss_read_array(in);
      case L'b': case L'B': case L'o': case L'O': case L'x': case L'X': {
-          kiss_push_lexeme_char(kiss_make_character(L'#'));
+          kiss_push_lexeme_char(kiss_make_char(L'#'));
           kiss_push_lexeme_char(kiss_c_read_char(in, KISS_NIL, KISS_EOS));
           int escaped;
           kiss_collect_lexeme_chars(in, &escaped);

@@ -36,12 +36,16 @@
 
 #include <gmp.h>
 
-extern size_t Kiss_Heap_Top;
-
 typedef long int kiss_ptr_int;
 #define KISS_PTR_INT_MAX (LONG_MAX>>2)
 #define KISS_PTR_INT_MIN (LONG_MIN>>2)
-_Static_assert (sizeof(kiss_ptr_int) == sizeof(void*), "We need an int with the same width as void*");
+_Static_assert (sizeof(kiss_ptr_int) == sizeof(void*), "We need a C int with the same width as void*");
+
+#define kiss_ptr_int(x)    (((kiss_ptr_int)x)>>2)
+#define kiss_wchar(x)      kiss_ptr_int(x)
+
+#define kiss_make_char(x)  (kiss_obj*)((((kiss_ptr_int)x)<<2) | 2)
+#define kiss_make_fixnum(x)    (kiss_obj*)((((kiss_ptr_int)x)<<2) | 1)
 
 typedef enum {
      KISS_FIXNUM = 1,
@@ -69,16 +73,6 @@ typedef enum {
      KISS_ILOS_OBJ,
 } kiss_type;
 
-#define kiss_ptr_int(x)    (((kiss_ptr_int)x)>>2)
-#define kiss_wchar(x)      kiss_ptr_int(x)
-#define kiss_fixnum(x)     (kiss_obj*)((((kiss_ptr_int)x)<<2) | 1)
-#define kiss_fixchar(x)    (kiss_obj*)((((kiss_ptr_int)x)<<2) | 2)
-#define KISS_IS_FIXNUM(x)  ((kiss_ptr_int)x & 1)
-#define KISS_IS_FIXCHAR(x) ((kiss_ptr_int)x & 2)
-
-#define kiss_make_character(x)  kiss_fixchar(x)
-#define kiss_make_fixnum(x)    kiss_fixnum(x)
-
 typedef struct {
      kiss_type type;
      void* pointer1;
@@ -98,21 +92,22 @@ struct kiss_gc_obj {
 };
 typedef struct kiss_gc_obj kiss_gc_obj;
 
+
+#define KISS_HEAP_STACK_SIZE (1024 * 1024 * 2)
 extern size_t Kiss_Heap_Top;
+extern kiss_gc_obj* Kiss_Heap_Stack[];
+
 extern kiss_ptr_int Kiss_GC_Flag;
 extern size_t Kiss_GC_Amount;
 extern void* Kiss_GC_Objects;
-extern kiss_gc_obj* Kiss_Heap_Stack[];
-
-_Noreturn
-void Kiss_System_Error (void);
 
 /* gc.c */
 kiss_obj* kiss_gc_info(void);
 kiss_obj* kiss_gc(void);
 
+_Noreturn
+void Kiss_System_Error (void);
 
-#define KISS_HEAP_STACK_SIZE (1024 * 1024 * 2)
 #define kiss_gc_ptr(x)   ((void*)((kiss_ptr_int)x & (~0<<1)))
 /* An error shall be signaled if the requested memory cannot be allocated
    (error-id. <storage-exhausted>). */
@@ -150,8 +145,8 @@ typedef struct {
 
 typedef enum {
     KISS_SYSTEM_CONSTANT_VAR = 1,
-    KISS_CONSTANT_VAR = 2,
-    KISS_CONST_FSLOT = 4,
+    KISS_USER_CONSTANT_VAR = 2,
+    KISS_CONSTANT_FSLOT = 4,
     KISS_SPECIAL_OPERATOR = 8,
     KISS_DEFINING_OPERATOR = 16,
 } kiss_symbol_flags;
@@ -386,6 +381,8 @@ kiss_symbol_t KISS_Ueos, KISS_Udummy;
 
 #define KISS_OBJ_TYPE(x) (int)(((kiss_ptr_int)x & 3) ? ((kiss_ptr_int)x & 3) : (((kiss_obj*)x)->type))
 
+#define KISS_IS_FIXNUM(x)            ((kiss_ptr_int)x & 1)
+#define KISS_IS_FIXCHAR(x)           ((kiss_ptr_int)x & 2)
 #define KISS_IS_BIGNUM(x)            (KISS_OBJ_TYPE(x) == KISS_BIGNUM)
 #define KISS_IS_INTEGER(x)           (KISS_IS_FIXNUM(x) || KISS_IS_BIGNUM(x))
 #define KISS_IS_CHARACTER(x)         (KISS_IS_FIXCHAR(x))
@@ -395,27 +392,27 @@ kiss_symbol_t KISS_Ueos, KISS_Udummy;
 #define KISS_IS_FLOAT(x)             (KISS_OBJ_TYPE(x) == KISS_FLOAT)
 #define KISS_IS_STRING(x)            (KISS_OBJ_TYPE(x) == KISS_STRING)
 #define KISS_IS_GENERAL_VECTOR(x)    (KISS_OBJ_TYPE(x) == KISS_GENERAL_VECTOR)
-#define KISS_IS_GENERAL_ARRAY_S(x)     (KISS_OBJ_TYPE(x) == KISS_GENERAL_ARRAY_S)
+#define KISS_IS_GENERAL_ARRAY_S(x)   (KISS_OBJ_TYPE(x) == KISS_GENERAL_ARRAY_S)
 #define KISS_IS_TASH_TABLE(x)        (KISS_OBJ_TYPE(x) == KISS_HASH_TABLE)
 #define KISS_IS_SEQUENCE(x)          (KISS_IS_LIST(x) || KISS_IS_STRING(x) || KISS_IS_GENERAL_VECTOR(x))
-#define KISS_IS_LFUNCTION(x)          (KISS_OBJ_TYPE(x) == KISS_LFUNCTION)
-#define KISS_IS_LMACRO(x)             (KISS_OBJ_TYPE(x) == KISS_LMACRO)
+#define KISS_IS_LFUNCTION(x)         (KISS_OBJ_TYPE(x) == KISS_LFUNCTION)
+#define KISS_IS_LMACRO(x)            (KISS_OBJ_TYPE(x) == KISS_LMACRO)
 #define KISS_IS_CFUNCTION(x)         (KISS_OBJ_TYPE(x) == KISS_CFUNCTION)
 #define KISS_IS_CMACRO(x)            (KISS_OBJ_TYPE(x) == KISS_CMACRO)
 #define KISS_IS_CATCHER(x)           (KISS_OBJ_TYPE(x) == KISS_CATCHER)
 #define KISS_IS_CLEANUP(x)           (KISS_OBJ_TYPE(x) == KISS_CLEANUP)
 #define KISS_IS_BLOCK(x)             (KISS_OBJ_TYPE(x) == KISS_BLOCK)
 #define KISS_IS_TAGBODY(x)           (KISS_OBJ_TYPE(x) == KISS_TAGBODY)
-#define KISS_IS_ILOS_OBJ(x)            (KISS_OBJ_TYPE(x) == KISS_ILOS_OBJ)
+#define KISS_IS_ILOS_OBJ(x)          (KISS_OBJ_TYPE(x) == KISS_ILOS_OBJ)
 #define KISS_IS_STREAM(x)            (KISS_OBJ_TYPE(x) == KISS_STREAM)
-#define KISS_IS_INPUT_STREAM(x)     (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_INPUT_STREAM))
-#define KISS_IS_OUTPUT_STREAM(x)    (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_OUTPUT_STREAM))
-#define KISS_IS_CHARACTER_STREAM(x) (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_CHARACTER_STREAM))
-#define KISS_IS_BYTE_STREAM(x)      (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_BYTE_STREAM))
-#define KISS_IS_FILE_STREAM(x)      (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_FILE_STREAM))
-#define KISS_IS_STRING_STREAM(x)    (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_STRING_STREAM))
+#define KISS_IS_INPUT_STREAM(x)      (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_INPUT_STREAM))
+#define KISS_IS_OUTPUT_STREAM(x)     (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_OUTPUT_STREAM))
+#define KISS_IS_CHARACTER_STREAM(x)  (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_CHARACTER_STREAM))
+#define KISS_IS_BYTE_STREAM(x)       (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_BYTE_STREAM))
+#define KISS_IS_FILE_STREAM(x)       (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_FILE_STREAM))
+#define KISS_IS_STRING_STREAM(x)     (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_STRING_STREAM))
 
-#define KISS_IS_GC_OBJ(x)           !(KISS_IS_FIXNUM(x) || KISS_IS_FIXCHAR(x) || KISS_IS_CFUNCTION(x) || KISS_IS_CMACRO(x))
+#define KISS_IS_GC_OBJ(x)            !(KISS_IS_FIXNUM(x) || KISS_IS_FIXCHAR(x) || KISS_IS_CFUNCTION(x) || KISS_IS_CMACRO(x))
 
 
 /* character.c */

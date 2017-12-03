@@ -53,7 +53,7 @@ void Kiss_Err(const wchar_t* const str, ...) {
 	       }
 	       p++;
 	  } else {
-	       kiss_format_char(out, kiss_make_character(*p));
+	       kiss_format_char(out, kiss_make_char(*p));
 	  }
      }
      va_end(args);

@@ -39,7 +39,7 @@ kiss_obj* kiss_setq(kiss_obj* name, kiss_obj* form) {
      } else if (symbol->var == NULL) {
 	  Kiss_Unbound_Variable_Error(name);
      } else {
-          if (symbol->flags & (KISS_SYSTEM_CONSTANT_VAR | KISS_CONSTANT_VAR)) {
+          if (symbol->flags & (KISS_SYSTEM_CONSTANT_VAR | KISS_USER_CONSTANT_VAR)) {
                Kiss_Err(L"Cannot modify constant: ~S", name);
           }
           kiss_obj* value = kiss_eval(form);
@@ -61,7 +61,7 @@ kiss_obj* kiss_defconstant(kiss_obj* name, kiss_obj* form) {
     kiss_symbol_t* symbol = Kiss_Symbol(name);
     kiss_obj* value = kiss_eval(form);
     symbol->var = value;
-    symbol->flags = symbol->flags | KISS_CONSTANT_VAR;
+    symbol->flags = symbol->flags | KISS_USER_CONSTANT_VAR;
     return name;
 }
 

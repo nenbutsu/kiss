@@ -25,13 +25,13 @@ static kiss_obj* kiss_format_string(kiss_obj* out, kiss_obj* str, kiss_obj* esca
 	  if (escapep != KISS_NIL) {
 	       switch (*p) {
 	       case L'"': case L'\\':
-		    kiss_format_char(out, kiss_make_character(L'\\'));
+		    kiss_format_char(out, kiss_make_char(L'\\'));
 		    break;
 	       default:
 		    break;
 	       }
 	  }
-	  kiss_format_char(out, kiss_make_character(*p));
+	  kiss_format_char(out, kiss_make_char(*p));
      }
      return KISS_NIL;
 }
@@ -45,22 +45,22 @@ static kiss_obj* kiss_format_list(kiss_obj* out, kiss_obj* obj, kiss_obj* escape
 
      kiss_obj* op = KISS_CAR(obj);
      if (op == (kiss_obj*)&KISS_Squote && kiss_c_length(obj) == 2) {
-          kiss_format_char(out, kiss_make_character(L'\''));
+          kiss_format_char(out, kiss_make_char(L'\''));
           kiss_format_object(out, kiss_car(KISS_CDR(p)), escapep);
           return KISS_NIL;
      }
      
-     kiss_format_char(out, kiss_make_character(L'('));
+     kiss_format_char(out, kiss_make_char(L'('));
      kiss_format_object(out, KISS_CAR(p), escapep);
      for (p = KISS_CDR(p); KISS_IS_CONS(p); p = KISS_CDR(p)) {
-	  kiss_format_char(out, kiss_make_character(L' '));
+	  kiss_format_char(out, kiss_make_char(L' '));
 	  kiss_format_object(out, KISS_CAR(p), escapep);
      } 
      if (p != KISS_NIL) {
 	  kiss_format_string(out, (kiss_obj*)kiss_make_string(L" . "), KISS_NIL);
 	  kiss_format_object(out, p, escapep);
      }
-     kiss_format_char(out, kiss_make_character(L')'));
+     kiss_format_char(out, kiss_make_char(L')'));
      return KISS_NIL;
 }
 
@@ -71,23 +71,23 @@ static kiss_obj* kiss_format_general_vector(kiss_obj* out, kiss_obj* obj, kiss_o
 	  kiss_format_string(out, (kiss_obj*)kiss_make_string(L"#()"), KISS_NIL);
 	  return KISS_NIL;
      }
-     kiss_format_char(out, kiss_make_character(L'#'));
-     kiss_format_char(out, kiss_make_character(L'('));
+     kiss_format_char(out, kiss_make_char(L'#'));
+     kiss_format_char(out, kiss_make_char(L'('));
      kiss_format_object(out, v->v[0], escapep);
      for (i = 1; i < v->n; i++) {
-	  kiss_format_char(out, kiss_make_character(L' '));
+	  kiss_format_char(out, kiss_make_char(L' '));
 	  kiss_format_object(out, v->v[i], escapep);
      } 
-     kiss_format_char(out, kiss_make_character(L')'));
+     kiss_format_char(out, kiss_make_char(L')'));
      return KISS_NIL;
     
 }
 
 static kiss_obj* kiss_format_general_array(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
      kiss_general_array_t* array = Kiss_General_Array_S(obj);
-     kiss_format_char(out, kiss_make_character(L'#'));
+     kiss_format_char(out, kiss_make_char(L'#'));
      kiss_format_integer(out, (kiss_obj*)kiss_make_fixnum(array->rank), (kiss_obj*)kiss_make_fixnum(10));
-     kiss_format_char(out, kiss_make_character(L'a'));
+     kiss_format_char(out, kiss_make_char(L'a'));
      if (array->rank == 0) {
 	  kiss_format_object(out, array->vector, escapep);
      } else {
@@ -119,7 +119,7 @@ static int kiss_is_simple_name(wchar_t* name) {
 static kiss_obj* kiss_format_escaped_symbol(kiss_obj* out, kiss_obj* obj) {
      kiss_symbol_t* symbol = Kiss_Symbol(obj);
      wchar_t* p = symbol->name;
-     kiss_format_char(out, kiss_make_character(L'|'));
+     kiss_format_char(out, kiss_make_char(L'|'));
      for (p = symbol->name; *p != L'\0'; p++) {
 	  wchar_t c = *p;
 	  switch (c) {
@@ -130,11 +130,11 @@ static kiss_obj* kiss_format_escaped_symbol(kiss_obj* out, kiss_obj* obj) {
 	       kiss_format_string(out, (kiss_obj*)kiss_make_string(L"\\\\"), KISS_NIL);
 	       break;
 	  default:
-	       kiss_format_char(out, kiss_make_character(c));
+	       kiss_format_char(out, kiss_make_char(c));
 	       break;
 	  }
      }
-     kiss_format_char(out, kiss_make_character(L'|'));
+     kiss_format_char(out, kiss_make_char(L'|'));
      return KISS_NIL;
 }
 
@@ -181,17 +181,17 @@ kiss_obj* kiss_format_fixnum(kiss_obj* out, kiss_obj* obj, kiss_obj* radix) {
      /* be careful when changing sign, abs(LONG_MIN) == abs(LONG_MAX) + 1 */
      remainder = i % r;
      if (remainder < 0) { remainder = -remainder; }
-     kiss_push(kiss_make_character(*(digits + remainder)), &stack);
+     kiss_push(kiss_make_char(*(digits + remainder)), &stack);
     
      quotient = i / r;
      if (quotient < 0) { quotient = -quotient; };
     
      while (quotient > 0) {
 	  remainder = quotient % r;
-	  kiss_push(kiss_make_character(*(digits + remainder)), &stack);
+	  kiss_push(kiss_make_char(*(digits + remainder)), &stack);
 	  quotient = quotient / r;
      }
-     if (is_minus) { kiss_push(kiss_make_character(L'-'), &stack); }
+     if (is_minus) { kiss_push(kiss_make_char(L'-'), &stack); }
      kiss_format_string(out, (kiss_obj*)kiss_chars_to_str(stack), KISS_NIL);
      return KISS_NIL;
 }
@@ -386,7 +386,7 @@ kiss_obj* kiss_format_ilos_obj(kiss_obj* out, kiss_obj* object) {
 kiss_obj* kiss_format_fresh_line(kiss_obj* output) {
      kiss_stream_t* out = Kiss_Output_Char_Stream(output);
      if (out->column == 0) { return KISS_NIL; }
-     else { return kiss_format_char(output, kiss_make_character(L'\n')); }
+     else { return kiss_format_char(output, kiss_make_char(L'\n')); }
 }
 
 /* function: (format-object output-stream obj escape-p) -> <null> */
@@ -396,11 +396,11 @@ kiss_obj* kiss_format_object(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
      case KISS_CONS: kiss_format_list(out, obj, escapep); break;
      case KISS_STRING:
 	  if (escapep != KISS_NIL) {
-	       kiss_format_char(out, kiss_make_character(L'"'));
+	       kiss_format_char(out, kiss_make_char(L'"'));
 	  }
 	  kiss_format_string(out, obj, escapep);
 	  if (escapep != KISS_NIL) {
-	       kiss_format_char(out, kiss_make_character(L'"'));
+	       kiss_format_char(out, kiss_make_char(L'"'));
 	  }
 	  break;
      case KISS_GENERAL_VECTOR: kiss_format_general_vector(out, obj, escapep);
@@ -438,7 +438,7 @@ kiss_obj* kiss_format(kiss_obj* out, kiss_obj* format, kiss_obj* args) {
      while (i < n) {
 	  c = str->str[i++];
 	  if (c != L'~') {
-	       kiss_format_char(out, kiss_make_character(c));
+	       kiss_format_char(out, kiss_make_char(c));
 	  } else {
 	       c = str->str[i++];
 	       switch (c) {
@@ -492,7 +492,7 @@ kiss_obj* kiss_format(kiss_obj* out, kiss_obj* format, kiss_obj* args) {
 		    break;
 	       case L'%':
 		    /* (format-char output-stream #\newline) */
-		    kiss_format_char(out, kiss_make_character('\n'));
+		    kiss_format_char(out, kiss_make_char('\n'));
 		    break;
 	       case L'&':
 		    /* conditional newline: output a #\newline character if it cannot be
@@ -504,7 +504,7 @@ kiss_obj* kiss_format(kiss_obj* out, kiss_obj* format, kiss_obj* args) {
 	       case L'~':
 		    /* tilde: output a tilde ~̃. This effect is implemented by
 		       (format-char output-stream #\~) */
-		    kiss_format_char(out, kiss_make_character('~'));
+		    kiss_format_char(out, kiss_make_char('~'));
 		    break;
 	       case L'0': case L'1': case L'2': case L'3': case L'4':
 	       case L'5': case L'6': case L'7': case L'8': case L'9': {
@@ -515,9 +515,9 @@ kiss_obj* kiss_format(kiss_obj* out, kiss_obj* format, kiss_obj* args) {
 		    }
 		    if (*tailptr == L'T') {
 			 m = m - ((kiss_stream_t*)out)->column - 1;
-			 kiss_format_char(out, kiss_make_character(L' '));
+			 kiss_format_char(out, kiss_make_char(L' '));
 			 for (; m > 0; --m) {
-			      kiss_format_char(out, kiss_make_character(L' '));
+			      kiss_format_char(out, kiss_make_char(L' '));
 			 }
 			 i = tailptr - str->str + 1;
 			 break;
@@ -543,7 +543,7 @@ kiss_obj* kiss_format(kiss_obj* out, kiss_obj* format, kiss_obj* args) {
 
 kiss_obj* kiss_print(kiss_obj* obj) {
      kiss_format_object(kiss_standard_output(), obj, KISS_T);
-     kiss_format_char(kiss_standard_output(), kiss_make_character(L'\n'));
+     kiss_format_char(kiss_standard_output(), kiss_make_char(L'\n'));
      fflush(stdout);
      return KISS_NIL;
 }

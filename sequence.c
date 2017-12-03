@@ -59,7 +59,7 @@ kiss_obj* kiss_elt(const kiss_obj* const sequence, const kiss_obj* const z) {
      }
      case KISS_STRING: {
 	  kiss_string_t* string = (kiss_string_t*)sequence;
-	  return kiss_make_character(string->str[i]);
+	  return kiss_make_char(string->str[i]);
      }
      case KISS_GENERAL_VECTOR: {
 	  kiss_general_vector_t* vector = (kiss_general_vector_t*)sequence;
