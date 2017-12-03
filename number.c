@@ -610,7 +610,8 @@ kiss_obj* kiss_fixnum_if_possible(const kiss_obj* const obj) {
 
 /* function: (div z1 z2) -> <integer>
    div returns the greatest integer less than or equal to the quotient of Z1 and Z2.
-   An error shall be signaled if Z2 is zero (error-id. division-by-zero). */
+   An error shall be signaled if Z2 is zero (error-id. division-by-zero). 
+   An error shall be signaled if either z1 or z2 is not an integer (error-id. domain-error). */
 kiss_obj* kiss_div(kiss_obj* a, kiss_obj* b) {
      kiss_ptr_int i1 = Kiss_Fixnum(a);
      kiss_ptr_int i2 = Kiss_Non_Zero_Fixnum(b);
@@ -660,8 +661,7 @@ kiss_obj* kiss_div(kiss_obj* a, kiss_obj* b) {
    mod returns the remainder of the integer division of z1 by z2.
    The sign of the result is the sign of z2.
    The result lies between 0 (inclusive) and z2 (exclusive),
-   and the difference of z1 and this result is divisible by z2 without remainder.
-*/
+   and the difference of z1 and this result is divisible by z2 without remainder. */
 kiss_obj* kiss_mod(kiss_obj* z1, kiss_obj* z2) {
      fwprintf(stderr, L"kiss_mod: not implemented");
      exit(EXIT_FAILURE);
