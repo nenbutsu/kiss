@@ -33,9 +33,9 @@
 //     case KISS_GENERAL_ARRAY_S:
 //	  class_name_str = L"<general-array*>"; break;
 //     case KISS_STREAM:    class_name_str = L"<stream>";    break;
-//     case KISS_FUNCTION:  class_name_str = L"<function>";  break;
+//     case KISS_LFUNCTION:  class_name_str = L"<function>";  break;
 //     case KISS_CFUNCTION: class_name_str = L"<function>";  break;
-//     case KISS_MACRO:     class_name_str = L"<macro>";     break;
+//     case KISS_LMACRO:     class_name_str = L"<macro>";     break;
 //     case KISS_CMACRO:    class_name_str = L"<macro>";     break;
 //     default:
 //	  fwprintf(stderr, L"kiss_type_to_class_name_str: unexped kiss_type %d\n", t);

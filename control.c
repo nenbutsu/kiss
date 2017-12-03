@@ -392,8 +392,8 @@ kiss_obj* kiss_equal(const kiss_obj* const obj1, const kiss_obj* const obj2) {
      case KISS_SYMBOL:
      case KISS_STREAM:
      case KISS_HASH_TABLE:
-     case KISS_FUNCTION:
-     case KISS_MACRO:
+     case KISS_LFUNCTION:
+     case KISS_LMACRO:
      case KISS_CFUNCTION:
      case KISS_CMACRO:
      case KISS_CATCHER:

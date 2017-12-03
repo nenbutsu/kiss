@@ -94,10 +94,10 @@ extern inline
 kiss_general_array_t* Kiss_General_Array_S(const kiss_obj* const obj);
 
 extern inline
-kiss_function_t* Kiss_Function(const kiss_obj* const obj);
+kiss_function_t* Kiss_LFunction(const kiss_obj* const obj);
 
 extern inline
-kiss_function_t* Kiss_Macro(const kiss_obj* const obj);
+kiss_function_t* Kiss_LMacro(const kiss_obj* const obj);
 
 extern inline
 kiss_cfunction_t* Kiss_CFunction(const kiss_obj* const obj);

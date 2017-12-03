@@ -311,7 +311,7 @@ static kiss_obj* kiss_format_stream(kiss_obj* out, kiss_obj* obj) {
 }
 
 static kiss_obj* kiss_format_function(kiss_obj* out, kiss_obj* obj) {
-     kiss_function_t* f = Kiss_Function(obj);
+     kiss_function_t* f = Kiss_LFunction(obj);
      kiss_format_string(out, (kiss_obj*)kiss_make_string(L"#<"), KISS_NIL);
      if (f->name == NULL) {
 	  kiss_format_string(out, (kiss_obj*)kiss_make_string(L"anonymous function: "), KISS_NIL);
@@ -326,7 +326,7 @@ static kiss_obj* kiss_format_function(kiss_obj* out, kiss_obj* obj) {
 }
 
 static kiss_obj* kiss_format_macro(kiss_obj* out, kiss_obj* obj) {
-     kiss_function_t* f = Kiss_Macro(obj);
+     kiss_function_t* f = Kiss_LMacro(obj);
      kiss_format_string(out, (kiss_obj*)kiss_make_string(L"#<"), KISS_NIL);
      assert(f->name != NULL);
      kiss_format_string(out, (kiss_obj*)kiss_make_string(L"macro "), KISS_NIL);
@@ -417,8 +417,8 @@ kiss_obj* kiss_format_object(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
 	  break;
      case KISS_FLOAT: kiss_format_float(out, obj); break;
      case KISS_STREAM: kiss_format_stream(out, obj); break;
-     case KISS_FUNCTION: kiss_format_function(out, obj); break;
-     case KISS_MACRO: kiss_format_macro(out, obj); break;
+     case KISS_LFUNCTION: kiss_format_function(out, obj); break;
+     case KISS_LMACRO: kiss_format_macro(out, obj); break;
      case KISS_CFUNCTION: kiss_format_cfunction(out, obj); break;
      case KISS_CMACRO: kiss_format_cmacro(out, obj); break;
      case KISS_ILOS_OBJ: kiss_format_ilos_obj(out, obj); break;

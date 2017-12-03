@@ -32,7 +32,7 @@ kiss_float_t* kiss_make_float(double d) {
     return p;
 }
 
-/* function: (integeerp obj) -> boolean
+/* function: (integerp obj) -> boolean
    Returns t if obj is an integer otherwise, returns nil.*/
 kiss_obj* kiss_integerp(kiss_obj* obj) {
      return KISS_IS_INTEGER(obj) ? KISS_T : KISS_NIL;

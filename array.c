@@ -274,8 +274,8 @@ kiss_obj* kiss_basic_array_p (const kiss_obj* const obj) {
      case KISS_FLOAT:
      case KISS_STREAM:
      case KISS_HASH_TABLE:
-     case KISS_FUNCTION:
-     case KISS_MACRO:
+     case KISS_LFUNCTION:
+     case KISS_LMACRO:
      case KISS_CFUNCTION:
      case KISS_CMACRO:
      case KISS_CATCHER:
@@ -307,8 +307,8 @@ kiss_obj* kiss_basic_array_s_p (const kiss_obj* const obj) {
      case KISS_FLOAT:
      case KISS_STREAM:
      case KISS_HASH_TABLE:
-     case KISS_FUNCTION:
-     case KISS_MACRO:
+     case KISS_LFUNCTION:
+     case KISS_LMACRO:
      case KISS_CFUNCTION:
      case KISS_CMACRO:
      case KISS_CATCHER:
@@ -340,8 +340,8 @@ kiss_obj* kiss_general_array_s_p (const kiss_obj* const obj) {
      case KISS_FLOAT:
      case KISS_STREAM:
      case KISS_HASH_TABLE:
-     case KISS_FUNCTION:
-     case KISS_MACRO:
+     case KISS_LFUNCTION:
+     case KISS_LMACRO:
      case KISS_CFUNCTION:
      case KISS_CMACRO:
      case KISS_CATCHER:
