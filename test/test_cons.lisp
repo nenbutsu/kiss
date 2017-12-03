@@ -904,7 +904,8 @@
     (mapcon))
   nil)
 
-;; assoc
+;;; assoc
+;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_assoc
 (equal (assoc 'a '((a . 1) (b . 2))) '(a . 1))
 (equal (assoc 'a '((a . 1) (a . 2))) '(a . 1))
 (eq (assoc 'c '((a . 1) (b . 2))) nil)
@@ -916,11 +917,28 @@
 (equal (assoc 1 '((1 . 1) (2 . 2))) '(1 . 1))
 (equal (assoc 1 '((1 . 1) (1 . 2))) '(1 . 1))
 
+(eq (assoc 'a '()) nil)
 
 (block a
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from a t)
-		    (signal-condition condition nil)))
-		(assoc 'a 'not-a-list))
+                      (signal-condition condition nil)))
+    (assoc 'a 'not-a-list))
+  nil)
+
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (assoc 'a))
+  nil)
+
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (assoc))
   nil)
