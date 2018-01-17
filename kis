@@ -1,2 +1,2 @@
 #/bin/sh
-rlwrap -pgreen -b '(){}[].,#@;|`' ./kiss 
+rlwrap -pgreen -q "\"" -b '(){}[].,#@;|`' ./kiss 
