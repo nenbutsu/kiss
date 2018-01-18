@@ -1,27 +1,51 @@
-objects = array.o cf_invoke.o character.o class.o control.o environment.o error.o \
-          feature.o format.o function.o gc.o gf_invoke.o hash_table.o ilos.o init.o \
-          inline.o invoke.o main.o misc.o number.o read.o repl.o sequence.o stream.o \
-          string.o symbol.o variable.o vector.o wcs.o
+SRCS := $(wildcard *.c)
+OBJS := $(patsubst %.c,%.o,$(SRCS))
+DOBJS := $(addprefix debug/,$(OBJS))
+POBJS := $(addprefix profile/,$(OBJS))
+CC = gcc
+CFLAGS = -Wall -O3
+LDFLAGS =
+LIBS = -lm -lgmp
 
-CFLAGS= -Wall -O3
+UNAME = $(shell uname -a)
+ifneq (,$(findstring MINGW, $(UNAME)))
+	EXT = .exe
+else
+	EXT =
+endif
+TARGET = kiss$(EXT)
 
-kiss: $(objects)
-	cc -Wall -o kiss $(objects) -L/usr/lib/ -lm -lgmp
+.PHONY: all clean test
 
-.PHONY: all
-all: $(objects)
-	cc -Wall -o kiss $(objects) -L/usr/lib/ -lm -lgmp
+all: $(TARGET)
 
-.PHONY: debug
-debug: 
-	make "CFLAGS= -Wall -g -O0"
+debug: debug_dir debug/$(TARGET)
 
-.PHONY: profile
-profile: 
-	make "CFLAGS= -Wall -pg -O3"
+debug_dir:
+	-mkdir debug
 
-$(objects) : kiss.h
+profile: profile_dir profile/$(TARGET)
 
-.PHONY: clean
-clean :
-	rm -f kiss.exe kiss newfile example.dat *.o
+profile_dir:
+	-mkdir profile
+
+$(TARGET): $(OBJS)
+	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
+
+debug/$(TARGET): $(DOBJS)
+	$(CC) $(LDFLAGS) -g -o $@ $^ $(LIBS)
+
+profile/$(TARGET): $(POBJS)
+	$(CC) $(LDFLAGS) -pg -o $@ $^ $(LIBS)
+
+./%.o: %.c kiss.h
+	$(CC) -c $(CFLAGS) $< -o $@
+
+debug/%.o: %.c kiss.h
+	$(CC) -c $(CFLAGS) -g $< -o $@
+
+profile/%.o: %.c kiss.h
+	$(CC) -c $(CFLAGS) -pg $< -o $@
+
+clean:
+	rm -f $(TARGET) $(OBJS) $(DOBJS) $(POBJS) newfile example.dat
