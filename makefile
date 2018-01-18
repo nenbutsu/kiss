@@ -8,6 +8,7 @@ CFLAGS= -Wall -O3
 kiss: $(objects)
 	cc -Wall -o kiss $(objects) -L/usr/lib/ -lm -lgmp
 
+.PHONY: all
 all: $(objects)
 	cc -Wall -o kiss $(objects) -L/usr/lib/ -lm -lgmp
 
