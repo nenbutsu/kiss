@@ -5,6 +5,9 @@ objects = array.o cf_invoke.o character.o class.o control.o environment.o error.
 
 CFLAGS= -Wall -O3
 
+kiss: $(objects)
+	cc -Wall -o kiss $(objects) -L/usr/lib/ -lm -lgmp
+
 all: $(objects)
 	cc -Wall -o kiss $(objects) -L/usr/lib/ -lm -lgmp
 
