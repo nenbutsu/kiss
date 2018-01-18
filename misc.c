@@ -41,9 +41,8 @@ kiss_obj* kiss_get_internal_run_time(void) {
 
 kiss_obj* kiss_get_internal_real_time(void) {
      clock_t t;
-     struct tms time;
 
-     t = times(&time);
+     t = clock();
      if (t == (clock_t)(-1)) {
           Kiss_System_Error();
      }

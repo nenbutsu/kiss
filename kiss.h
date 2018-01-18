@@ -32,7 +32,6 @@
 #include <unistd.h>
 #include <wchar.h>
 #include <wctype.h>
-#include <sys/times.h>
 
 #include <gmp.h>
 
