@@ -20,44 +20,48 @@ TARGET = kiss$(EXT)
 
 .PHONY: all clean test
 
-all: release_dir release/$(TARGET) release_cp
+all: release release/$(TARGET) release_cp
 
-release_dir:
-	-mkdir release
+release:
+	mkdir release
 
 release_cp:
 	cp release/$(TARGET) .
 
-debug: debug_dir debug/$(TARGET) debug_cp
-
-debug_dir:
-	-mkdir debug
-
-debug_cp:
-	cp debug/$(TARGET) .
-
-profile: profile_dir profile/$(TARGET) profile_cp
-
-profile_dir:
-	-mkdir profile
-
-profile_cp:
-	cp profile/$(TARGET) .
-
 release/$(TARGET): $(ROBJS)
 	$(CC) $(LDFLAGS) -O3 -o $@ $^ $(LIBS)
-
-debug/$(TARGET): $(DOBJS)
-	$(CC) $(LDFLAGS) -O0 -g -o $@ $^ $(LIBS)
-
-profile/$(TARGET): $(POBJS)
-	$(CC) $(LDFLAGS) -O3 -pg -o $@ $^ $(LIBS)
 
 release/%.o: %.c kiss.h
 	$(CC) -c -O3 $(CFLAGS) $< -o $@
 
+
+# 'make d' for debug
+d: debug debug/$(TARGET) debug_cp
+
+debug:
+	mkdir debug
+
+debug_cp:
+	cp debug/$(TARGET) .
+
+debug/$(TARGET): $(DOBJS)
+	$(CC) $(LDFLAGS) -O0 -g -o $@ $^ $(LIBS)
+
 debug/%.o: %.c kiss.h
 	$(CC) -c -O0 $(CFLAGS) -g $< -o $@
+
+
+# 'make p' for profile
+p: profile profile/$(TARGET) profile_cp
+
+profile:
+	mkdir profile
+
+profile_cp:
+	cp profile/$(TARGET) .
+
+profile/$(TARGET): $(POBJS)
+	$(CC) $(LDFLAGS) -O3 -pg -o $@ $^ $(LIBS)
 
 profile/%.o: %.c kiss.h
 	$(CC) -c -O3 $(CFLAGS) -pg $< -o $@
