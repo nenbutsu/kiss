@@ -1,7 +1,7 @@
 /*
   kiss.h --- declarations of ISLisp processor KISS.
 
-  Copyright (C) 2017 Yuji Minejima.
+  Copyright (C) 2017, 2018 Yuji Minejima (yuji@minejima.jp).
 
   This file is part of ISLisp processor KISS.
 
@@ -143,11 +143,11 @@ typedef struct {
 } kiss_cons_t;
 
 typedef enum {
-    KISS_SYSTEM_CONSTANT_VAR = 1,
-    KISS_USER_CONSTANT_VAR = 2,
-    KISS_CONSTANT_FSLOT = 4,
-    KISS_SPECIAL_OPERATOR = 8,
-    KISS_DEFINING_OPERATOR = 16,
+    KISS_SYSTEM_CONSTANT_VAR =  1,
+    KISS_USER_CONSTANT_VAR   =  2,
+    KISS_CONSTANT_FSLOT      =  4,
+    KISS_SPECIAL_OPERATOR    =  8,
+    KISS_DEFINING_OPERATOR   = 16,
 } kiss_symbol_flags;
 
 typedef struct {
@@ -305,10 +305,10 @@ typedef struct {
 
 
 typedef enum {
-    KISS_INPUT_STREAM     = 1,
-    KISS_OUTPUT_STREAM    = 2,
-    KISS_CHARACTER_STREAM = 4,
-    KISS_BYTE_STREAM      = 8,
+    KISS_INPUT_STREAM     =  1,
+    KISS_OUTPUT_STREAM    =  2,
+    KISS_CHARACTER_STREAM =  4,
+    KISS_BYTE_STREAM      =  8,
     KISS_STRING_STREAM    = 16,
     KISS_FILE_STREAM      = 32,
 } kiss_stream_flags;
