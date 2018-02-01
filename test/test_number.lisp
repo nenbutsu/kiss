@@ -53,6 +53,11 @@
 (eql (div 14 -3) -5)
 (eql (div -12 -3) 4)
 (eql (div -14 -3) 4)
+(eql (div 3 5) 0)
+(eql (div 3 -5) 0)
+(eql (div -3 5) 0)
+(eql (div -3 -5) 0)
+
 ;;(eql (mod 12 3) 0)
 ;;(eql (mod 7 247) 7)
 ;;(eql (mod 247 7) 2)
