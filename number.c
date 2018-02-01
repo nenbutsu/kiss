@@ -589,10 +589,10 @@ kiss_obj* kiss_num_lessthan(kiss_obj* a, kiss_obj* b) {
                return kiss_ptr_int(a) < kiss_ptr_int(b) ? KISS_T : KISS_NIL;
           case KISS_BIGNUM:
                return mpz_cmp_si(((kiss_bignum_t*)b)->mpz, kiss_ptr_int(a)) >= 0 ?
-                    KISS_NIL : KISS_T;
+                    KISS_T : KISS_NIL;
           case KISS_FLOAT:
                return mpf_cmp_si(((kiss_float_t*)b)->mpf, kiss_ptr_int(a)) >= 0 ?
-                    KISS_NIL : KISS_T;
+                    KISS_T : KISS_NIL;
           default:
                fwprintf(stderr, L"kiss_num_lessthan: unexpected primitive number type = %d",
                         KISS_OBJ_TYPE(b));
