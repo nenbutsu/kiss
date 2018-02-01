@@ -59,24 +59,6 @@
 (not (= 1 5))
 (not (= 0 3))
 (not (= 0 0.1))
-
-;; /=
-(/= 3 4)
-(not (/= 3 3.0))
-(not (/= (parse-number "134.54") 134.54))
-(not (/= 0.0 -0.0))
-(not (/= 1 1))
-(not (/= 1 1.0))
-(not (/= 0 0.0))
-(not (/= 10.0 10))
-(not (/= 1.2 1.2))
-(not (/= 123 123))
-(not (/= 3.4 0.34e1))
-(/= 1 5)
-(/= 0 3)
-(/= 0 0.1)
-
-
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
@@ -98,6 +80,45 @@
 		    (signal-condition condition nil)))
                 (= 1 #(0 1)))
   nil)
+
+;; /=
+(/= 3 4)
+(not (/= 3 3.0))
+(not (/= (parse-number "134.54") 134.54))
+(not (/= 0.0 -0.0))
+(not (/= 1 1))
+(not (/= 1 1.0))
+(not (/= 0 0.0))
+(not (/= 10.0 10))
+(not (/= 1.2 1.2))
+(not (/= 123 123))
+(not (/= 3.4 0.34e1))
+(/= 1 5)
+(/= 0 3)
+(/= 0 0.1)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (/= 'a 1))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (/= "0" 'a))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (/= 1 #(0 1)))
+  nil)
+
+
 
 ;; integerp
 (integerp 0)
