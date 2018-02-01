@@ -2008,6 +2008,26 @@ kiss_symbol_t KISS_Ss_pi_s = {
     KISS_NIL,                    /*  plist */
 };
 
+kiss_symbol_t KISS_Ss_most_positive_fixnum_s = {
+    KISS_SYMBOL,
+    NULL,                               /* gc_ptr */
+    L"*most-positive-fixnum*",          /* name   */
+    KISS_SYSTEM_CONSTANT_VAR,           /* flags  */
+    kiss_make_fixnum(KISS_PTR_INT_MAX), /*  var   */
+    NULL,                               /*  fun   */
+    KISS_NIL,                           /*  plist */
+};
+
+kiss_symbol_t KISS_Ss_most_negative_fixnum_s = {
+    KISS_SYMBOL,
+    NULL,                               /* gc_ptr */
+    L"*most-negative-fixnum*",          /* name   */
+    KISS_SYSTEM_CONSTANT_VAR,           /* flags  */
+    kiss_make_fixnum(KISS_PTR_INT_MIN), /*  var   */
+    NULL,                               /*  fun   */
+    KISS_NIL,                           /*  plist */
+};
+
 kiss_symbol_t KISS_Sintegerp;
 kiss_cfunction_t KISS_CFintegerp = {
     KISS_CFUNCTION, /* type */
@@ -4058,7 +4078,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sequal, &KISS_Scond,
     
     /* number.c */
-    &KISS_Ss_pi_s,
+    &KISS_Ss_pi_s, &KISS_Ss_most_positive_fixnum_s, &KISS_Ss_most_negative_fixnum_s,
     &KISS_Sintegerp, &KISS_Sfloatp, &KISS_Sminus, &KISS_Splus, &KISS_Smultiply, &KISS_Snum_eq,
     &KISS_Snum_lessthan, &KISS_Sabs, &KISS_Sexp, &KISS_Slog, &KISS_Ssin,&KISS_Scos, &KISS_Stan,
     &KISS_Sfloor, &KISS_Sceiling, &KISS_Struncate, &KISS_Sround, 
