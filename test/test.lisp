@@ -44,6 +44,7 @@
           (if (null (eval form))
               (progn
                 (format (standard-output) "~%NIL returned. test: ~S~%" form)
+                (setq errors (+ errors 1))
                 (return-from t nil)))))
       (setq count (+ count 1))
       (setq form (read file nil 'eof)))
