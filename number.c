@@ -680,11 +680,11 @@ kiss_obj* kiss_div(kiss_obj* a, kiss_obj* b) {
      Kiss_Non_Zero_Integer(b);
      switch (KISS_OBJ_TYPE(a)) {
      case KISS_FIXNUM: {
-          kiss_ptr_int i1 = kiss_ptr_int(a);
           switch (KISS_OBJ_TYPE(b)) {
           case KISS_FIXNUM:
                return kiss_div_fixnum(a, b);
           case KISS_BIGNUM: {
+               kiss_ptr_int i1 = kiss_ptr_int(a);
                kiss_bignum_t* z1 = kiss_make_bignum(i1);
                kiss_bignum_t* z2 = (kiss_bignum_t*)b;
                mpz_fdiv_q(z1->mpz, z1->mpz, z2->mpz);
