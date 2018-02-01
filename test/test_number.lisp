@@ -44,6 +44,48 @@
 		(parse-number "-.5"))
   nil)
 
+;; =
+(= 1 1)
+(= 1 1.0)
+(= 0 0.0)
+(= 10.0 10)
+(= 1.2 1.2)
+(= 123 123)
+(= 3.4 0.34e1)
+(not (= 1 5))
+(not (= 0 3))
+(not (= 0 0.1))
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (= 'a 1))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (= "0" 'a))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (= 1 #(0 1)))
+  nil)
+
+;; integerp
+(integerp 0)
+(integerp -10)
+(integerp 100)
+(not (integerp 3.4))
+(not (integerp "4"))
+(not (integerp '(a b c)))
+
+
 ;; div, mod
 (eql (div 12 3) 4)
 (eql (div 14 3) 4)
