@@ -769,6 +769,15 @@ kiss_obj* Kiss_Integer(const kiss_obj* const obj) {
 }
 
 inline
+kiss_obj* Kiss_Non_Zero_Integer(const kiss_obj* const obj) {
+     Kiss_Integer(obj);
+     if (kiss_num_eq(obj, kiss_make_fixnum(0)) == KISS_T) {
+          Kiss_Domain_Error(obj, L"non zero integer");
+     }
+     return (kiss_obj*)obj;
+}
+
+inline
 kiss_obj* Kiss_Number(const kiss_obj* const obj) {
      if (KISS_IS_INTEGER(obj) || KISS_IS_FLOAT(obj)) { return (kiss_obj*)obj; }
      Kiss_Domain_Error(obj, L"<number>");
