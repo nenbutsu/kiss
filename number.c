@@ -653,13 +653,13 @@ kiss_obj* kiss_div_fixnum(kiss_obj* a, kiss_obj* b) {
           if (i2 > 0) {
                return (kiss_obj*)kiss_make_fixnum(q);
           } else {  // (div 14 -3) => -5
-               return r == 0 ?
+               return q == 0 || r == 0 ?
                     (kiss_obj*)kiss_make_fixnum(q) :
                     (kiss_obj*)kiss_make_fixnum(q - 1);
           }
      } else if (i1 < 0) {
           if (i2 > 0) { // (div -14 3) => -5
-               return r == 0 ?
+               return q == 0 || r == 0 ?
                     (kiss_obj*)kiss_make_fixnum(q) :
                     (kiss_obj*)kiss_make_fixnum(q - 1);
           } else {      // (div -14 -3) => 4
