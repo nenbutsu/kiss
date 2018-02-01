@@ -26,7 +26,9 @@
       "test/test_sequence.lisp"
       "test/test_array.lisp"
       "test/test_number.lisp"
-      "test/test_stream.lisp"))
+      "test/test_stream.lisp"
+      "test/test_kiss_number.lisp"
+      ))
 
 (defun test-file (name)
   (let* ((file (open-input-file name))
