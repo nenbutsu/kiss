@@ -15,9 +15,17 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
+;; <
+(< *most-positive-fixnum* (+ *most-positive-fixnum* 1))
+
+
 ;; integerp
 (integerp *most-positive-fixnum*)
 (integerp (+ *most-positive-fixnum* 1))
 (integerp *most-negative-fixnum*)
 (integerp (- *most-negative-fixnum* 1))
+
+;; div
+(= (div (- *most-negative-fixnum* 1) *most-negative-fixnum*) 1)
+(= (div (- *most-negative-fixnum* 1) *most-positive-fixnum*) -2)
 
