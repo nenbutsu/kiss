@@ -547,6 +547,8 @@ void kiss_initialize(void);
 kiss_obj* kiss_fixnum_if_possible(const kiss_obj* const obj);
 kiss_bignum_t* kiss_make_bignum(kiss_ptr_int i);
 kiss_obj* kiss_integerp(kiss_obj* obj);
+kiss_obj* kiss_fixnump(kiss_obj* obj);
+kiss_obj* kiss_bignump(kiss_obj* obj);
 kiss_obj* kiss_plus(kiss_obj* p);
 kiss_obj* kiss_plus2(kiss_obj* a, kiss_obj* b);
 kiss_obj* kiss_multiply(kiss_obj* p);

@@ -2046,6 +2046,42 @@ kiss_symbol_t KISS_Sintegerp = {
     KISS_NIL,                /* plist */
 };
 
+kiss_symbol_t KISS_Sfixnump;
+kiss_cfunction_t KISS_CFfixnump = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Sfixnump,    /* name */
+    (kiss_cf_t*)kiss_fixnump,     /* C function name */
+    1,         /* minimum argument number */
+    1,        /* maximum argument number */
+};
+kiss_symbol_t KISS_Sfixnump = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"fixnump",
+    KISS_CONSTANT_FSLOT,
+    NULL,               /* var */
+    (kiss_obj*)&KISS_CFfixnump, /* fun */
+    KISS_NIL,                /* plist */
+};
+
+kiss_symbol_t KISS_Sbignump;
+kiss_cfunction_t KISS_CFbignump = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Sbignump,    /* name */
+    (kiss_cf_t*)kiss_bignump,     /* C function name */
+    1,         /* minimum argument number */
+    1,        /* maximum argument number */
+};
+kiss_symbol_t KISS_Sbignump = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"bignump",
+    KISS_CONSTANT_FSLOT,
+    NULL,               /* var */
+    (kiss_obj*)&KISS_CFbignump, /* fun */
+    KISS_NIL,                /* plist */
+};
+
 kiss_symbol_t KISS_Sfloatp;
 kiss_cfunction_t KISS_CFfloatp = {
     KISS_CFUNCTION,   /* type */
@@ -4079,7 +4115,8 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     
     /* number.c */
     &KISS_Ss_pi_s, &KISS_Ss_most_positive_fixnum_s, &KISS_Ss_most_negative_fixnum_s,
-    &KISS_Sintegerp, &KISS_Sfloatp, &KISS_Sminus, &KISS_Splus, &KISS_Smultiply, &KISS_Snum_eq,
+    &KISS_Sintegerp, &KISS_Sfixnump, &KISS_Sbignump,
+    &KISS_Sfloatp, &KISS_Sminus, &KISS_Splus, &KISS_Smultiply, &KISS_Snum_eq,
     &KISS_Snum_lessthan, &KISS_Sabs, &KISS_Sexp, &KISS_Slog, &KISS_Ssin,&KISS_Scos, &KISS_Stan,
     &KISS_Sfloor, &KISS_Sceiling, &KISS_Struncate, &KISS_Sround, 
     &KISS_Sfloat,

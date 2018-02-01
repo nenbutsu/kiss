@@ -38,6 +38,15 @@ kiss_obj* kiss_integerp(kiss_obj* obj) {
      return KISS_IS_INTEGER(obj) ? KISS_T : KISS_NIL;
 }
 
+kiss_obj* kiss_fixnump(kiss_obj* obj) {
+     return KISS_IS_FIXNUM(obj) ? KISS_T : KISS_NIL;
+}
+
+kiss_obj* kiss_bignump(kiss_obj* obj) {
+     return KISS_IS_BIGNUM(obj) ? KISS_T : KISS_NIL;
+}
+
+
 /* function: (floatp obj) -> boolean
    Returns t if obj is an float otherwise, returns nil.*/
 kiss_obj* kiss_floatp(kiss_obj* obj) {
