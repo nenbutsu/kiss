@@ -643,18 +643,47 @@ kiss_obj* kiss_fixnum_if_possible(const kiss_obj* const obj) {
      }
 }
 
+static inline
+kiss_obj* kiss_div_fixnum(kiss_obj* a, kiss_obj* b) {
+     kiss_ptr_int i1 = kiss_ptr_int(a);
+     kiss_ptr_int i2 = kiss_ptr_int(b);
+     kiss_ptr_int q = i1 / i2;
+     kiss_ptr_int r = i1 % i2;
+     if (i1 >= 0) { // (div 14 3) => 4
+          if (i2 > 0) {
+               return (kiss_obj*)kiss_make_fixnum(q);
+          } else {  // (div 14 -3) => -5
+               return r == 0 ?
+                    (kiss_obj*)kiss_make_fixnum(q) :
+                    (kiss_obj*)kiss_make_fixnum(q - 1);
+          }
+     } else if (i1 < 0) {
+          if (i2 > 0) { // (div -14 3) => -5
+               return r == 0 ?
+                    (kiss_obj*)kiss_make_fixnum(q) :
+                    (kiss_obj*)kiss_make_fixnum(q - 1);
+          } else {      // (div -14 -3) => 4
+               return (kiss_obj*)kiss_make_fixnum(q);
+          }
+     } else {
+          fwprintf(stderr, L"kiss_div_fixnum: logical error i1 = %ld, i2 = %ld", i1, i2);
+          exit(EXIT_FAILURE);
+     }
+}
+
 /* function: (div z1 z2) -> <integer>
    div returns the greatest integer less than or equal to the quotient of Z1 and Z2.
    An error shall be signaled if Z2 is zero (error-id. division-by-zero). 
    An error shall be signaled if either z1 or z2 is not an integer (error-id. domain-error). */
 kiss_obj* kiss_div(kiss_obj* a, kiss_obj* b) {
-     kiss_ptr_int i1 = Kiss_Fixnum(a);
-     kiss_ptr_int i2 = Kiss_Non_Zero_Fixnum(b);
+     Kiss_Integer(a);
+     Kiss_Non_Zero_Integer(b);
      switch (KISS_OBJ_TYPE(a)) {
-     case KISS_FIXNUM:
+     case KISS_FIXNUM: {
+          kiss_ptr_int i1 = kiss_ptr_int(a);
           switch (KISS_OBJ_TYPE(b)) {
           case KISS_FIXNUM:
-               return(kiss_obj*)kiss_make_fixnum(floorf(((double)kiss_ptr_int(a)) / kiss_ptr_int(b)));
+               return kiss_div_fixnum(a, b);
           case KISS_BIGNUM: {
                kiss_bignum_t* z1 = kiss_make_bignum(i1);
                kiss_bignum_t* z2 = (kiss_bignum_t*)b;
@@ -667,19 +696,22 @@ kiss_obj* kiss_div(kiss_obj* a, kiss_obj* b) {
                exit(EXIT_FAILURE);
           }
           break;
+     }
      case KISS_BIGNUM:
           switch (KISS_OBJ_TYPE(b)) {
           case KISS_FIXNUM: {
+               kiss_ptr_int i2 = kiss_ptr_int(b);
                kiss_bignum_t* z1 = (kiss_bignum_t*)a;
                kiss_bignum_t* z2 = kiss_make_bignum(i2);
-               mpz_fdiv_q(z1->mpz, z1->mpz, z2->mpz);
-               return (kiss_obj*)z1;
+               mpz_fdiv_q(z2->mpz, z1->mpz, z2->mpz);
+               return (kiss_obj*)z2;
           }
           case KISS_BIGNUM: {
                kiss_bignum_t* z1 = (kiss_bignum_t*)a;
                kiss_bignum_t* z2 = (kiss_bignum_t*)b;
-               mpz_fdiv_q(z1->mpz, z1->mpz, z2->mpz);
-               return (kiss_obj*)z1;
+               kiss_bignum_t* q  = kiss_make_bignum(0);
+               mpz_fdiv_q(q->mpz, z1->mpz, z2->mpz);
+               return (kiss_obj*)q;
           }
           default:
                fwprintf(stderr, L"kiss_div: unexpected primitive integer type = %d",
