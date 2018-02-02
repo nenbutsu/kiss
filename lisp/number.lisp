@@ -16,12 +16,6 @@
 ;; GNU General Public License for more details.
 
 
-;; function: (numberp obj) -> boolean
-;; Returns t if obj is a number (instance of class <number>);
-;; otherwise, returns nil.
-;; The obj may be any ISLISP object.
-(defun numberp (obj) (or (integerp obj) (floatp obj)))
-
 ;; function: (>= x1 x2) -> boolean
 (defun >= (x1 x2) (not (< x1 x2)))
 

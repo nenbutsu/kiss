@@ -34,24 +34,36 @@ kiss_float_t* kiss_make_float(double d) {
 
 /* function: (integerp obj) -> boolean
    Returns t if obj is an integer otherwise, returns nil.*/
-kiss_obj* kiss_integerp(kiss_obj* obj) {
+kiss_obj* kiss_integerp(const kiss_obj* const obj) {
      return KISS_IS_INTEGER(obj) ? KISS_T : KISS_NIL;
 }
 
-kiss_obj* kiss_fixnump(kiss_obj* obj) {
+kiss_obj* kiss_fixnump(const kiss_obj* const obj) {
      return KISS_IS_FIXNUM(obj) ? KISS_T : KISS_NIL;
 }
 
-kiss_obj* kiss_bignump(kiss_obj* obj) {
+kiss_obj* kiss_bignump(const kiss_obj* const obj) {
      return KISS_IS_BIGNUM(obj) ? KISS_T : KISS_NIL;
 }
 
-
 /* function: (floatp obj) -> boolean
    Returns t if obj is an float otherwise, returns nil.*/
-kiss_obj* kiss_floatp(kiss_obj* obj) {
+kiss_obj* kiss_floatp(const kiss_obj* const obj) {
      return KISS_IS_FLOAT(obj) ? KISS_T : KISS_NIL;
 }
+
+/* function: (numberp obj) -> boolean
+   Returns t if obj is a number (instance of class <number>);
+   otherwise, returns nil.
+   The obj may be any ISLISP object. */
+kiss_obj* kiss_numberp(const kiss_obj* const obj) {
+     if (kiss_integerp(obj) == KISS_T || kiss_floatp(obj) == KISS_T) {
+          return KISS_T;
+     } else {
+          return KISS_NIL;
+     }
+}
+
 
 /* function: (float x) -> <float>
    Returns X itself if it is an instance of the class <float> and returns 

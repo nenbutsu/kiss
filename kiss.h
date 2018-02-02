@@ -546,9 +546,11 @@ void kiss_initialize(void);
 /* number.c */
 kiss_obj* kiss_fixnum_if_possible(const kiss_obj* const obj);
 kiss_bignum_t* kiss_make_bignum(kiss_ptr_int i);
-kiss_obj* kiss_integerp(kiss_obj* obj);
-kiss_obj* kiss_fixnump(kiss_obj* obj);
-kiss_obj* kiss_bignump(kiss_obj* obj);
+kiss_obj* kiss_integerp(const kiss_obj* const obj);
+kiss_obj* kiss_fixnump(const kiss_obj* const obj);
+kiss_obj* kiss_bignump(const kiss_obj* const obj);
+kiss_obj* kiss_floatp(const kiss_obj* const obj);
+kiss_obj* kiss_numberp(const kiss_obj* const obj);
 kiss_obj* kiss_plus(kiss_obj* p);
 kiss_obj* kiss_plus2(kiss_obj* a, kiss_obj* b);
 kiss_obj* kiss_multiply(kiss_obj* p);
@@ -558,7 +560,6 @@ kiss_obj* kiss_num_neq(const kiss_obj* const x, const kiss_obj* const y);
 kiss_obj* kiss_num_lessthan(kiss_obj* x, kiss_obj* y);
 
 kiss_float_t* kiss_make_float(double d);
-kiss_obj* kiss_floatp(kiss_obj* obj);
 kiss_obj* kiss_c_parse_number(kiss_obj* obj);
 kiss_obj* kiss_parse_number(kiss_obj* str);
 kiss_obj* kiss_float(kiss_obj* x);
