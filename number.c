@@ -670,6 +670,15 @@ kiss_obj* kiss_num_lessthan_eq(const kiss_obj* const a, const kiss_obj* const b)
      }
 }
 
+/* function: (> x1 x2) -> boolean */
+kiss_obj* kiss_num_greaterthan(const kiss_obj* const a, const kiss_obj* const b) {
+     return kiss_num_lessthan_eq(a, b) == KISS_T ? KISS_NIL : KISS_T;
+}
+
+/* function: (>= x1 x2) -> boolean */
+kiss_obj* kiss_num_greaterthan_eq(const kiss_obj* const a, const kiss_obj* const b) {
+     return kiss_num_lessthan(a, b) == KISS_T ? KISS_NIL : KISS_T;
+}
 
 kiss_obj* kiss_fixnum_if_possible(const kiss_obj* const obj) {
      if (KISS_IS_BIGNUM(obj)) {

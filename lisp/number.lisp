@@ -16,13 +16,6 @@
 ;; GNU General Public License for more details.
 
 
-;; function: (>= x1 x2) -> boolean
-(defun >= (x1 x2) (not (< x1 x2)))
-
-;; function: (> x1 x2) -> boolean
-(defun > (x1 x2) (not (<= x1 x2)))
-
-
 ;; function: (min x+) -> <number>
 ;; The function min returns the least (closest to negative infinity) of its arguments.
 ;; The comparison is done by < .

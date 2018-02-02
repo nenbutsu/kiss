@@ -559,6 +559,8 @@ kiss_obj* kiss_num_eq(const kiss_obj* const x, const kiss_obj* const y);
 kiss_obj* kiss_num_neq(const kiss_obj* const x, const kiss_obj* const y);
 kiss_obj* kiss_num_lessthan(const kiss_obj* const x, const kiss_obj* const y);
 kiss_obj* kiss_num_lessthan_eq(const kiss_obj* const a, const kiss_obj* const b);
+kiss_obj* kiss_num_greaterthan(const kiss_obj* const a, const kiss_obj* const b);
+kiss_obj* kiss_num_greaterthan_eq(const kiss_obj* const a, const kiss_obj* const b);
 
 kiss_float_t* kiss_make_float(double d);
 kiss_obj* kiss_c_parse_number(kiss_obj* obj);
