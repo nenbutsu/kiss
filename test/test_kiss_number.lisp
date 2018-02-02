@@ -21,6 +21,12 @@
 (not (= (* *most-positive-fixnum* 3) (* *most-positive-fixnum* 4)))
 (not (= 3.0 (* *most-positive-fixnum* 3)))
 
+;; /=
+(/= 1 (* *most-positive-fixnum* 3))
+(not (/= (* *most-positive-fixnum* 3) (* *most-positive-fixnum* 3)))
+(/= (* *most-positive-fixnum* 3) (* *most-positive-fixnum* 4))
+(/= 3.0 (* *most-positive-fixnum* 3))
+
 ;; <
 (< *most-positive-fixnum* (+ *most-positive-fixnum* 1))
 (< (* *most-positive-fixnum* 2) (* *most-positive-fixnum* 3))
