@@ -320,6 +320,42 @@
                 (max 5 3 'a))
   nil)
 
+;; min
+(= (min 0) 0)
+(= (min 5 4 -10 1) -10)
+(= (min 3 2 1) 1)
+(= (min 3.5 2.1 1.5) 1.5)
+(= (min 3.5 10 2.1 1.5) 1.5)
+(= (min -5 -2 -3 10 100) -5)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (min))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (min 'a))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (min 5 3 'a 1))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (min 5 3 'a))
+  nil)
+
 
 ;; integerp
 (integerp 0)
