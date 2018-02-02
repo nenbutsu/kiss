@@ -284,6 +284,41 @@
                 (>= 1 #(0 1)))
   nil)
 
+;; max
+(= (max 0 5 10) 10)
+(= (max 0 10 9) 10)
+(= (max -10) -10)
+(= (max -10 -3 -1 -5) -1)
+(= (max 1000 0 5 10) 1000)
+(= (max 5.1 3.0 1000 5432.1 0 5 10) 5432.1)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (max))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (max 'a))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (max 5 3 'a 1))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (max 5 3 'a))
+  nil)
 
 
 ;; integerp
