@@ -599,7 +599,7 @@ kiss_obj* kiss_num_neq(const kiss_obj* const x, const kiss_obj* const y) {
    < returns t if X1 is less than X2.
    The mathematical values of the arguments are compared. 
    An error shall be signaled if either X1 or X2 is not a number (error-id. domain-error). */
-kiss_obj* kiss_num_lessthan(kiss_obj* a, kiss_obj* b) {
+kiss_obj* kiss_num_lessthan(const kiss_obj* const a, const kiss_obj* const b) {
      Kiss_Number(a);
      Kiss_Number(b);
      switch (KISS_OBJ_TYPE(a)) {
@@ -660,6 +660,16 @@ kiss_obj* kiss_num_lessthan(kiss_obj* a, kiss_obj* b) {
           exit(EXIT_FAILURE);
      }
 }
+
+/* function: (<= x1 x2) -> boolean */
+kiss_obj* kiss_num_lessthan_eq(const kiss_obj* const a, const kiss_obj* const b) {
+     if (kiss_num_lessthan(a, b) == KISS_T || kiss_num_eq(a, b) == KISS_T) {
+          return KISS_T;
+     } else {
+          return KISS_NIL;
+     }
+}
+
 
 kiss_obj* kiss_fixnum_if_possible(const kiss_obj* const obj) {
      if (KISS_IS_BIGNUM(obj)) {

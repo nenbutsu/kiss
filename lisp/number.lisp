@@ -19,9 +19,6 @@
 ;; function: (>= x1 x2) -> boolean
 (defun >= (x1 x2) (not (< x1 x2)))
 
-;; function: (<= x1 x2) -> boolean 
-(defun <= (x1 x2) (or (< x1 x2) (= x1 x2)))
-
 ;; function: (> x1 x2) -> boolean
 (defun > (x1 x2) (not (<= x1 x2)))
 
