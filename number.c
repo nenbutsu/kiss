@@ -588,10 +588,10 @@ kiss_obj* kiss_num_lessthan(kiss_obj* a, kiss_obj* b) {
           case KISS_FIXNUM:
                return kiss_ptr_int(a) < kiss_ptr_int(b) ? KISS_T : KISS_NIL;
           case KISS_BIGNUM:
-               return mpz_cmp_si(((kiss_bignum_t*)b)->mpz, kiss_ptr_int(a)) >= 0 ?
+               return mpz_cmp_si(((kiss_bignum_t*)b)->mpz, kiss_ptr_int(a)) > 0 ?
                     KISS_T : KISS_NIL;
           case KISS_FLOAT:
-               return mpf_cmp_si(((kiss_float_t*)b)->mpf, kiss_ptr_int(a)) >= 0 ?
+               return mpf_cmp_si(((kiss_float_t*)b)->mpf, kiss_ptr_int(a)) > 0 ?
                     KISS_T : KISS_NIL;
           default:
                fwprintf(stderr, L"kiss_num_lessthan: unexpected primitive number type = %d",
@@ -608,8 +608,8 @@ kiss_obj* kiss_num_lessthan(kiss_obj* a, kiss_obj* b) {
                return mpz_cmp(((kiss_bignum_t*)a)->mpz, ((kiss_bignum_t*)b)->mpz) < 0 ?
                     KISS_T : KISS_NIL;
           case KISS_FLOAT:
-               return mpf_cmp_z(((kiss_float_t*)b)->mpf, ((kiss_bignum_t*)a)->mpz) >= 0 ?
-                    KISS_NIL : KISS_T;
+               return mpf_cmp_z(((kiss_float_t*)b)->mpf, ((kiss_bignum_t*)a)->mpz) > 0 ?
+                    KISS_T : KISS_NIL;
           default:
                fwprintf(stderr, L"kiss_plus2: unexpected primitive number type = %d",
                         KISS_OBJ_TYPE(b));
