@@ -554,6 +554,7 @@ kiss_obj* kiss_plus2(kiss_obj* a, kiss_obj* b);
 kiss_obj* kiss_multiply(kiss_obj* p);
 kiss_obj* kiss_minus(kiss_obj* number, kiss_obj* rest);
 kiss_obj* kiss_num_eq(const kiss_obj* const x, const kiss_obj* const y);
+kiss_obj* kiss_num_neq(const kiss_obj* const x, const kiss_obj* const y);
 kiss_obj* kiss_num_lessthan(kiss_obj* x, kiss_obj* y);
 
 kiss_float_t* kiss_make_float(double d);

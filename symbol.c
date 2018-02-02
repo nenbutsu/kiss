@@ -2193,6 +2193,24 @@ kiss_symbol_t KISS_Snum_eq = {
     KISS_NIL,                  /* plist */
 };
 
+kiss_symbol_t KISS_Snum_neq;
+kiss_cfunction_t KISS_CFnum_neq = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Snum_neq,  /* name */
+    (kiss_cf_t*)kiss_num_neq,   /* C function name */
+    2,         /* minimum argument number */
+    2,         /* maximum argument number */
+};
+kiss_symbol_t KISS_Snum_neq = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"/=",
+    KISS_CONSTANT_FSLOT,
+    NULL,                 /* var */
+    (kiss_obj*)&KISS_CFnum_neq, /* fun */
+    KISS_NIL,                  /* plist */
+};
+
 
 kiss_symbol_t KISS_Snum_lessthan;
 kiss_cfunction_t KISS_CFnum_lessthan = {
@@ -4116,7 +4134,8 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     /* number.c */
     &KISS_Ss_pi_s, &KISS_Ss_most_positive_fixnum_s, &KISS_Ss_most_negative_fixnum_s,
     &KISS_Sintegerp, &KISS_Sfixnump, &KISS_Sbignump,
-    &KISS_Sfloatp, &KISS_Sminus, &KISS_Splus, &KISS_Smultiply, &KISS_Snum_eq,
+    &KISS_Sfloatp, &KISS_Sminus, &KISS_Splus, &KISS_Smultiply,
+    &KISS_Snum_eq, &KISS_Snum_neq,
     &KISS_Snum_lessthan, &KISS_Sabs, &KISS_Sexp, &KISS_Slog, &KISS_Ssin,&KISS_Scos, &KISS_Stan,
     &KISS_Sfloor, &KISS_Sceiling, &KISS_Struncate, &KISS_Sround, 
     &KISS_Sfloat,

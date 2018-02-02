@@ -575,6 +575,14 @@ kiss_obj* kiss_num_eq(const kiss_obj* const a, const kiss_obj* const b) {
      }
 }
 
+/* function: (/= x1 x2) -> boolean
+   Returns t if x1 and x2 have mathematically distinct values; otherwise,
+   returns nil. An error shall be signaled if either x1 or x2 is not a number
+   (error-id. domain-error ). */
+kiss_obj* kiss_num_neq(const kiss_obj* const x, const kiss_obj* const y) {
+     return kiss_num_eq(x, y) == KISS_T ? KISS_NIL : KISS_T;
+}
+
 /* function: (< x1 x2) -> boolean 
    < returns t if X1 is less than X2.
    The mathematical values of the arguments are compared. 

@@ -20,14 +20,7 @@
 ;; Returns t if obj is a number (instance of class <number>);
 ;; otherwise, returns nil.
 ;; The obj may be any ISLISP object.
-
 (defun numberp (obj) (or (integerp obj) (floatp obj)))
-
-;; function: (/= x1 x2) -> boolean
-;; Returns t if x1 and x2 have mathematically distinct values; otherwise,
-;; returns nil. An error shall be signaled if either x1 or x2 is not a number
-;; (error-id. domain-error ).
-(defun /= (x1 x2) (not (= x1 x2)))
 
 ;; function: (>= x1 x2) -> boolean
 (defun >= (x1 x2) (not (< x1 x2)))
