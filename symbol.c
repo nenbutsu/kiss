@@ -2574,6 +2574,42 @@ kiss_symbol_t KISS_Stan = {
     KISS_NIL,                /* plist */
 };
 
+kiss_symbol_t KISS_Smax;
+kiss_cfunction_t KISS_CFmax = {
+    KISS_CFUNCTION,   /* type */
+    &KISS_Smax,       /* name */
+    (kiss_cf_t*)kiss_max,         /* C function name */
+    1,                /* minimum argument number */
+    -1,                /* maximum argument number */
+};
+kiss_symbol_t KISS_Smax = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"max",
+    KISS_CONSTANT_FSLOT,
+    NULL,                    /* var */
+    (kiss_obj*)&KISS_CFmax,  /* fun */
+    KISS_NIL,                /* plist */
+};
+
+kiss_symbol_t KISS_Smin;
+kiss_cfunction_t KISS_CFmin = {
+    KISS_CFUNCTION,   /* type */
+    &KISS_Smin,       /* name */
+    (kiss_cf_t*)kiss_min,         /* C function name */
+    1,                /* minimum argument number */
+    -1,                /* maximum argument number */
+};
+kiss_symbol_t KISS_Smin = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"min",
+    KISS_CONSTANT_FSLOT,
+    NULL,                    /* var */
+    (kiss_obj*)&KISS_CFmin,  /* fun */
+    KISS_NIL,                /* plist */
+};
+
 
 /*** misc.c ***/
 kiss_symbol_t KISS_Sidentity;
@@ -4214,6 +4250,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sfloat,
     &KISS_Sdiv, &KISS_Smod, &KISS_Sgcd, &KISS_Slcm, 
     &KISS_Sparse_number,
+    &KISS_Smax, &KISS_Smin,
 
     /* misc.c */
     &KISS_Sidentity, &KISS_Sget_universal_time,

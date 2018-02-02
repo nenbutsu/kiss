@@ -940,3 +940,29 @@ kiss_obj* kiss_tan(kiss_obj* x) {
      fwprintf(stderr, L"kiss_tan: not implemented");
      exit(EXIT_FAILURE);
 }
+
+/* function: (max x+) -> <number>
+   The function max returns the greatest (closest to positive infinity) of its arguments.
+   The comparison is done by >.
+   An error shall be signaled if any x is not a number (error-id. domain-error).*/
+kiss_obj* kiss_max(const kiss_obj* x, const kiss_obj* const rest) {
+     for (const kiss_obj* p = rest; p != KISS_NIL; p = kiss_cdr(p)) {
+          if (kiss_num_greaterthan(kiss_car(p), x) == KISS_T) {
+               x = KISS_CAR(p);
+          }
+     }
+     return (kiss_obj*)x;
+}
+
+/* function: (min x+) -> <number>
+   The function min returns the least (closest to negative infinity) of its arguments.
+   The comparison is done by <.
+   An error shall be signaled if any x is not a number (error-id. domain-error).*/
+kiss_obj* kiss_min(const kiss_obj* x, const kiss_obj* const rest) {
+     for (const kiss_obj* p = rest; p != KISS_NIL; p = kiss_cdr(p)) {
+          if (kiss_num_lessthan(kiss_car(p), x) == KISS_T) {
+               x = KISS_CAR(p);
+          }
+     }
+     return (kiss_obj*)x;
+}

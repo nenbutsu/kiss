@@ -584,6 +584,9 @@ kiss_obj* kiss_sin(kiss_obj* x);
 kiss_obj* kiss_cos(kiss_obj* x);
 kiss_obj* kiss_tan(kiss_obj* x);
 
+kiss_obj* kiss_max(const kiss_obj* x, const kiss_obj* const rest);
+kiss_obj* kiss_min(const kiss_obj* x, const kiss_obj* const rest);
+
 /* read.c */
 kiss_obj* kiss_c_read(const kiss_obj* const in, const kiss_obj* const eos_err_p, const kiss_obj* const eos_val);
 kiss_obj* kiss_read(const kiss_obj* args);
