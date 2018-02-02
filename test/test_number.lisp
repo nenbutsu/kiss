@@ -241,6 +241,49 @@
                 (> 1 #(0 1)))
   nil)
 
+;; >=
+(>= 5 3)
+(>= 5 3.0)
+(>= 5.0 1)
+(>= 4.3 2.0)
+(not (>= 3 4))
+(>= 3 3.0)
+(not (> 3.5 5))
+(not (> 3.5 5.6))
+(>= (parse-number "134.54") 134.54)
+(>= 0.0 -0.0)
+(>= 1 1)
+(>= 1 1.0)
+(>= 0 0.0)
+(>= 10.0 10)
+(>= 1.2 1.2)
+(>= 123 123)
+(>= 3.4 0.34e1)
+(not (>= 1 5))
+(not (>= 0 3))
+(not (>= 0 0.1))
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (>= 'a 1))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (>= "0" 'a))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (>= 1 #(0 1)))
+  nil)
+
 
 
 ;; integerp
