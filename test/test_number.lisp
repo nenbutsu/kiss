@@ -59,6 +59,8 @@
 (not (= 1 5))
 (not (= 0 3))
 (not (= 0 0.1))
+(not (= 3.5 1))
+(not (= 5.3 2.0))
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
