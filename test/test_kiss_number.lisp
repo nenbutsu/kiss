@@ -17,6 +17,9 @@
 
 ;; <
 (< *most-positive-fixnum* (+ *most-positive-fixnum* 1))
+(< (* *most-positive-fixnum* 2) (* *most-positive-fixnum* 3))
+(< 1 (* *most-positive-fixnum* 3))
+(< 3.3 (* *most-positive-fixnum* 3))
 
 
 ;; integerp
