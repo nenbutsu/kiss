@@ -32,7 +32,6 @@ static wchar_t* libraries[] = {
      L"lisp/stream.lisp",
      L"lisp/sequence.lisp",
      L"lisp/control.lisp",
-     L"lisp/number.lisp",
      L"lisp/string.lisp",
      L"lisp/ilos.lisp",
      L"lisp/condition.lisp",
