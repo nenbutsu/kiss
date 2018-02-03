@@ -905,22 +905,48 @@ kiss_obj* kiss_abs(kiss_obj* x) {
 }
 
 /* function: (exp x) -> <number>
-   Returns e raised to the power x, where e is the base of the natural logarithm.
-   An error shall be signaled if x is not a number (error-id. domain-error).
-*/
+   Returns e raised to the power X, where e is the base of the natural logarithm.
+   An error shall be signaled if X is not a number (error-id. domain-error). */
 kiss_obj* kiss_exp(kiss_obj* x) {
-     fwprintf(stderr, L"kiss_exp: not implemented");
-     exit(EXIT_FAILURE);
+     Kiss_Number(x);
+     switch (KISS_OBJ_TYPE(x)) {
+     case KISS_FIXNUM: {
+          return (kiss_obj*)kiss_make_float(exp(kiss_ptr_int(x)));
+     }
+     case KISS_BIGNUM: {
+          kiss_bignum_t* z = (kiss_bignum_t*)x;
+          return (kiss_obj*)kiss_make_float(exp(mpz_get_d(z->mpz)));
+     }
+     case KISS_FLOAT: {
+          kiss_float_t* f = (kiss_float_t*)x;
+          return (kiss_obj*)kiss_make_float(exp(f->f));
+     }
+     default:
+          fwprintf(stderr, L"kiss_exp: unknown primitive number type = %d",
+                   KISS_OBJ_TYPE(x));
+          exit(EXIT_FAILURE);
+     }
 }
 
 /* function: (floor x) -> <integer> 
    Returns the greatest integer less than or equal to x.
    Thatis, x is truncated towards negative infinity.
-   An error shall be signaled if x is not a number (error-id. domain-error).
-*/
+   An error shall be signaled if x is not a number (error-id. domain-error). */
 kiss_obj* kiss_floor(kiss_obj* x) {
-     fwprintf(stderr, L"kiss_exp: not implemented");
-     exit(EXIT_FAILURE);
+     Kiss_Number(x);
+     switch (KISS_OBJ_TYPE(x)) {
+     case KISS_FIXNUM:
+     case KISS_BIGNUM:
+          return x;
+     case KISS_FLOAT: {
+          kiss_float_t* f = (kiss_float_t*)x;
+          return (kiss_obj*)kiss_make_float(floor(f->f));
+     }
+     default:
+          fwprintf(stderr, L"kiss_floor: unknown primitive number type = %d",
+                   KISS_OBJ_TYPE(x));
+          exit(EXIT_FAILURE);
+     }
 }
 
 /* function: (ceiling x) -> <integer> 
@@ -1179,3 +1205,4 @@ kiss_obj* kiss_quotient(const kiss_obj* x, const kiss_obj* y, const kiss_obj* co
 kiss_obj* kiss_reciprocal(const kiss_obj* const x) {
      return kiss_quotient(kiss_make_fixnum(1), x, KISS_NIL);
 }
+
