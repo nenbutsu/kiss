@@ -870,8 +870,8 @@ kiss_obj* kiss_lcm(kiss_obj* z1, kiss_obj* z2) {
 
 
 /* function: (abs x) -> <number>
-   The function abs returns the absolute value of its argument.
-   An error shall be signaled if x is not a number (error-id. domain-error) */
+   The function ABS returns the absolute value of its argument.
+   An error shall be signaled if X is not a number (error-id. domain-error) */
 kiss_obj* kiss_abs(kiss_obj* x) {
      Kiss_Number(x);
      switch (KISS_OBJ_TYPE(x)) {
