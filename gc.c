@@ -267,7 +267,6 @@ void kiss_gc_free_bignum(kiss_bignum_t* const obj) {
 
 static inline
 void kiss_gc_free_float(kiss_float_t* const obj) {
-     mpf_clear(obj->mpf);
      free(obj);
 }
 

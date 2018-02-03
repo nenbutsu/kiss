@@ -218,50 +218,12 @@ kiss_obj* kiss_format_integer(kiss_obj* out, kiss_obj* obj, kiss_obj* radix) {
 /* function: (format-float output-stream float) -> <null> */
 kiss_obj* kiss_format_float(kiss_obj* out, kiss_obj* obj) {
      kiss_float_t* f = Kiss_Float(obj);
-     mp_exp_t e;
-     char* s = mpf_get_str(NULL, &e, 10, 0, f->mpf);
-     wchar_t* wcs = kiss_mbstowcs(s);
-     free(s);
-
-     size_t len = wcslen(wcs);
-     
-     if (len == 0) {
-          kiss_format_string(out, (kiss_obj*)kiss_make_string(L"0.0"), KISS_NIL);
-     } else {
-          if (e == 0) {
-               kiss_format_string(out, (kiss_obj*)kiss_make_string(L"0."), KISS_NIL);
-               kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs), KISS_NIL);
-          } else if (e == 1) {
-               if (len == 1) {
-                    kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs), KISS_NIL);
-                    kiss_format_string(out, (kiss_obj*)kiss_make_string(L".0"), KISS_NIL);
-               } else {
-                    wchar_t* wcs1 = malloc(sizeof(wchar_t) * 3);
-                    wcs1[0] = wcs[0];
-                    wcs1[1] = L'.';
-                    wcs1[2] = L'\0';
-                    kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs1), KISS_NIL);
-                    kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs + 1), KISS_NIL);
-                    free(wcs1);
-               }
-          } else {
-               if (len == 1) {
-                    kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs), KISS_NIL);
-                    kiss_format_string(out, (kiss_obj*)kiss_make_string(L".0"), KISS_NIL);
-               } else {
-                    wchar_t* wcs1 = malloc(sizeof(wchar_t) * 3);
-                    wcs1[0] = wcs[0];
-                    wcs1[1] = L'.';
-                    wcs1[2] = L'\0';
-                    kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs1), KISS_NIL);
-                    kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs + 1), KISS_NIL);
-                    free(wcs1);
-               }
-               kiss_format_string(out, (kiss_obj*)kiss_make_string(L"e"), KISS_NIL);
-               kiss_format_integer(out, (kiss_obj*)kiss_make_integer(e-1), kiss_make_integer(10));
-          }
+     wchar_t wcs[100];
+     if (swprintf(wcs, 500, L"%#g", f->f) < 0) {
+          fwprintf(stderr, L"kiss_format_float: internal error. buffer is too small.");
+          abort();
      }
-     free(wcs);
+     kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs), KISS_NIL);
      return KISS_NIL;
 }
 

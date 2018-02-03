@@ -169,7 +169,7 @@ typedef struct {
 typedef struct {
      kiss_type type;
      void* gc_ptr;
-     mpf_t mpf;
+     double f;
 } kiss_float_t;
 
 typedef struct {
