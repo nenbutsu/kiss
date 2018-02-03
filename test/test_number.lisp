@@ -572,7 +572,10 @@
 
 ;; floor
 (= (floor 1) 1)
+(integerp (floor 1))
 (= (floor 1.5) 1)
+(integerp (floor 1.5))
+(integerp (floor 1234.5))
 (= (floor 3.9) 3)
 (= (floor -1.5) -2)
 (= (floor (exp 2)) 7)
