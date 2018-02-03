@@ -516,3 +516,32 @@
 		    (signal-condition condition nil)))
                 (quotient 'a 'b))
   nil)
+
+;; abs
+(= (abs -3) 3)
+(= (abs 2.0) 2.0)
+(= (abs -0.0) 0.0)
+(= (abs 3.4) 3.4)
+(= (abs 5) 5)
+(= (abs -100) 100)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (abs))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (abs 1 2))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (abs 'a))
+  nil)
