@@ -453,6 +453,8 @@
 (= (reciprocal 2) 0.5)
 (and (integerp (quotient 10 5))
      (= (quotient 10 5) 2))
+(and (integerp (quotient 20 2))
+     (= (quotient 20 2) 10))
 (= (quotient 1 2) 0.5)
 (= (quotient 2 -0.5) -4.0)
 (block a
