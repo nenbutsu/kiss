@@ -759,14 +759,88 @@ kiss_obj* kiss_div(kiss_obj* a, kiss_obj* b) {
 }
 
 
+static inline
+kiss_obj* kiss_mod_fixnum(kiss_obj* a, kiss_obj* b) {
+     kiss_ptr_int i1 = kiss_ptr_int(a);
+     kiss_ptr_int i2 = kiss_ptr_int(b);
+     kiss_ptr_int q = i1 / i2;
+     kiss_ptr_int r = i1 % i2;
+     if (i1 >= 0) { // (div 14 3) => 2
+          if (i2 > 0) {
+               return (kiss_obj*)kiss_make_fixnum(r);
+          } else {  // (div 14 -3) => -1
+               return q == 0 || r == 0 ?
+                    (kiss_obj*)kiss_make_fixnum(r) :
+                    (kiss_obj*)kiss_make_fixnum(r + i2);
+          }
+     } else if (i1 < 0) {
+          if (i2 > 0) { // (div -14 3) => 1
+               return q == 0 || r == 0 ?
+                    (kiss_obj*)kiss_make_fixnum(r) :
+                    (kiss_obj*)kiss_make_fixnum(r + i2);
+          } else {      // (div -14 -3) => -2
+               return (kiss_obj*)kiss_make_fixnum(r);
+          }
+     } else {
+          fwprintf(stderr, L"kiss_div_fixnum: logical error i1 = %ld, i2 = %ld", i1, i2);
+          exit(EXIT_FAILURE);
+     }
+}
+
 /* function: (mod z1 z2) -> <integer>
    mod returns the remainder of the integer division of z1 by z2.
    The sign of the result is the sign of z2.
    The result lies between 0 (inclusive) and z2 (exclusive),
    and the difference of z1 and this result is divisible by z2 without remainder. */
-kiss_obj* kiss_mod(kiss_obj* z1, kiss_obj* z2) {
-     fwprintf(stderr, L"kiss_mod: not implemented");
-     exit(EXIT_FAILURE);
+kiss_obj* kiss_mod(kiss_obj* a, kiss_obj* b) {
+     Kiss_Integer(a);
+     Kiss_Non_Zero_Integer(b);
+     switch (KISS_OBJ_TYPE(a)) {
+     case KISS_FIXNUM: {
+          switch (KISS_OBJ_TYPE(b)) {
+          case KISS_FIXNUM:
+               return kiss_mod_fixnum(a, b);
+          case KISS_BIGNUM: {
+               kiss_ptr_int i1 = kiss_ptr_int(a);
+               kiss_bignum_t* z1 = kiss_make_bignum(i1);
+               kiss_bignum_t* z2 = (kiss_bignum_t*)b;
+               mpz_fdiv_r(z1->mpz, z1->mpz, z2->mpz);
+               return (kiss_obj*)z1;
+          }
+          default:
+               fwprintf(stderr, L"kiss_div: unexpected primitive integer type = %d",
+                        KISS_OBJ_TYPE(b));
+               exit(EXIT_FAILURE);
+          }
+          break;
+     }
+     case KISS_BIGNUM:
+          switch (KISS_OBJ_TYPE(b)) {
+          case KISS_FIXNUM: {
+               kiss_ptr_int i2 = kiss_ptr_int(b);
+               kiss_bignum_t* z1 = (kiss_bignum_t*)a;
+               kiss_bignum_t* z2 = kiss_make_bignum(i2);
+               mpz_fdiv_r(z2->mpz, z1->mpz, z2->mpz);
+               return (kiss_obj*)z2;
+          }
+          case KISS_BIGNUM: {
+               kiss_bignum_t* z1 = (kiss_bignum_t*)a;
+               kiss_bignum_t* z2 = (kiss_bignum_t*)b;
+               kiss_bignum_t* q  = kiss_make_bignum(0);
+               mpz_fdiv_r(q->mpz, z1->mpz, z2->mpz);
+               return (kiss_obj*)q;
+          }
+          default:
+               fwprintf(stderr, L"kiss_div: unexpected primitive integer type = %d",
+                        KISS_OBJ_TYPE(b));
+               exit(EXIT_FAILURE);
+          }
+          break;
+     default:
+          fwprintf(stderr, L"kiss_div: unexpected primitive integer type = %d",
+                   KISS_OBJ_TYPE(a));
+          exit(EXIT_FAILURE);
+     }
 }
 
 /* function: (gcd z1 z2) -> <integer>
