@@ -805,6 +805,15 @@ kiss_obj* Kiss_Non_Zero_Number(const kiss_obj* const obj) {
 }
 
 inline
+kiss_obj* Kiss_Positive_Number(const kiss_obj* const obj) {
+     Kiss_Number(obj);
+     if (kiss_num_lessthan_eq(obj, kiss_make_fixnum(0)) == KISS_T) {
+          Kiss_Domain_Error(obj, L"positive number");
+     }
+     return (kiss_obj*)obj;
+}
+
+inline
 kiss_ptr_int Kiss_Non_Negative_Fixnum(const kiss_obj* const obj) {
      const kiss_ptr_int i = Kiss_Fixnum(obj);
      if (i >= 0) { return i; }
