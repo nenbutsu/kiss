@@ -1025,3 +1025,156 @@ kiss_obj* kiss_min(const kiss_obj* x, const kiss_obj* const rest) {
      }
      return (kiss_obj*)x;
 }
+
+/* function: (quotient dividend divisor+) → <number>
+   The function QUOTIENT, given two arguments DIVIDEND and DIVISOR,
+   returns the quotient of those numbers. The result is an integer if
+   DIVIDEND and DIVISOR are integers and DIVISOR evenly divides
+   DIVIDEND, otherwise it will be a ﬂoat.
+
+   Given more than two arguments, QUOTIENT operates iteratively on each
+   of the DIVISOR1 … DIVISORn as in DIVIDEND / DIVISOR1 / … /
+   DIVISORn. The type of the result follows from the two-argument case
+   because the three-or-more-argument quotient can be defined as follows:
+
+   (quotient dividend divisor1 divisor2 …)  ≡ (quotient (quotient dividend divisor1)
+                                                          divisor2 …)
+
+   An error shall be signaled if DIVIDEND is not a number
+   (error-id. domain-error). An error shall be signaled if any DIVISOR is
+   not a number (error-id. domain-error). An error shall be signaled if
+   any DIVISOR is zero (error-id. division-by-zero). */
+kiss_obj* kiss_quotient2(const kiss_obj* const x, const kiss_obj* const y) {
+     switch (KISS_OBJ_TYPE(x)) {
+     case KISS_FIXNUM: {
+          kiss_ptr_int i1 = kiss_ptr_int(x);
+          switch (KISS_OBJ_TYPE(y)) {
+          case KISS_FIXNUM: {
+               kiss_ptr_int i2 = kiss_ptr_int(y);
+               if (i1 % i2 == 0) {
+                    return kiss_make_fixnum(i1 / i2);
+               } else {
+                    kiss_float_t* f = kiss_make_float(i1);
+                    f->f /= i2;
+                    return (kiss_obj*)f;
+               }
+          }
+          case KISS_BIGNUM: {
+               kiss_bignum_t* z1 = kiss_make_bignum(i1);
+               kiss_bignum_t* z2 = (kiss_bignum_t*)y;
+               kiss_bignum_t* r = kiss_make_bignum(0.0);
+               mpz_fdiv_qr(z1->mpz, r->mpz, z1->mpz, z2->mpz);
+               if (mpz_cmp_si(r->mpz, 0) == 0) {
+                    return (kiss_obj*)z1;
+               } else {
+                    kiss_float_t* f1 = kiss_make_float(i1);
+                    double f2 = mpz_get_d(z2->mpz);
+                    f1->f /= f2;
+                    return (kiss_obj*)f1;
+               }
+          }
+          case KISS_FLOAT: {
+               kiss_float_t* f1 = kiss_make_float(i1);
+               kiss_float_t* f2 = (kiss_float_t*)y;
+               f1->f /= f2->f;
+               return (kiss_obj*)f1;
+          }
+          default:
+               fwprintf(stderr, L"kiss_quotient2: unknown primitive number type = %d",
+                        KISS_OBJ_TYPE(y));
+               exit(EXIT_FAILURE);
+               
+          }
+     }
+     case KISS_BIGNUM: {
+          kiss_bignum_t* z1 = (kiss_bignum_t*)x;
+          switch (KISS_OBJ_TYPE(y)) {
+          case KISS_FIXNUM: {
+               kiss_ptr_int i2 = kiss_ptr_int(y);
+               kiss_bignum_t* z = kiss_make_bignum(i2);
+               kiss_bignum_t* r = kiss_make_bignum(0.0);
+               mpz_fdiv_qr(z->mpz, r->mpz, z1->mpz, z->mpz);
+               if (mpz_cmp_si(r->mpz, 0) == 0) {
+                    return (kiss_obj*)z;
+               } else {
+                    kiss_float_t* f = kiss_make_float(mpz_get_d(z1->mpz));
+                    f->f /= i2;
+                    return (kiss_obj*)f;
+               }
+          }
+          case KISS_BIGNUM: {
+               kiss_bignum_t* z = kiss_make_bignum(0);
+               kiss_bignum_t* z2 = (kiss_bignum_t*)y;
+               kiss_bignum_t* r = kiss_make_bignum(0.0);
+               mpz_fdiv_qr(z->mpz, r->mpz, z1->mpz, z2->mpz);
+               if (mpz_cmp_si(r->mpz, 0) == 0) {
+                    return (kiss_obj*)z;
+               } else {
+                    kiss_float_t* f1 = kiss_make_float(mpz_get_d(z1->mpz));
+                    double f2 = mpz_get_d(z2->mpz);
+                    f1->f /= f2;
+                    return (kiss_obj*)f1;
+               }
+          }
+          case KISS_FLOAT: {
+               kiss_float_t* f = kiss_make_float(mpz_get_d(z1->mpz));
+               double f2 = ((kiss_float_t*)y)->f;
+               f->f /= f2;
+               return (kiss_obj*)f;
+          }
+          default:
+               fwprintf(stderr, L"kiss_quotient2: unknown primitive number type = %d",
+                        KISS_OBJ_TYPE(y));
+               exit(EXIT_FAILURE);
+               
+          }
+     }
+     case KISS_FLOAT: {
+          kiss_float_t* f1 = (kiss_float_t*)x;
+          switch (KISS_OBJ_TYPE(y)) {
+          case KISS_FIXNUM: {
+               double f2 = kiss_ptr_int(y);
+               kiss_float_t* f = kiss_make_float(f1->f / f2);
+               return (kiss_obj*)f;
+          }
+          case KISS_BIGNUM: {
+               kiss_float_t* f = kiss_make_float(0.0);
+               double f2 = mpz_get_d(((kiss_bignum_t*)y)->mpz);
+               f->f = f1->f / f2;
+               return (kiss_obj*)f;
+          }
+          case KISS_FLOAT: {
+               kiss_float_t* f = kiss_make_float(f1->f);
+               double f2 = ((kiss_float_t*)y)->f;
+               f->f /= f2;
+               return (kiss_obj*)f;
+          }
+          default:
+               fwprintf(stderr, L"kiss_quotient2: unknown primitive number type = %d",
+                        KISS_OBJ_TYPE(y));
+               exit(EXIT_FAILURE);
+               
+          }
+
+     }
+     default:
+          fwprintf(stderr, L"kiss_quotient2: unknown primitive number type = %d",
+                   KISS_OBJ_TYPE(x));
+          exit(EXIT_FAILURE);
+     }
+}
+
+kiss_obj* kiss_quotient(const kiss_obj* x, const kiss_obj* const rest) {
+     Kiss_Number(x);
+     for (const kiss_obj* p = rest; p != KISS_NIL; p = kiss_cdr(p)) {
+          x = kiss_quotient2(x, KISS_CAR(p));
+     }
+     return (kiss_obj*)x;
+}
+
+/* (reciprocal x) → <number>
+   The function RECIPROCAL returns the reciprocal of its argument X;
+   that is, 1/X. An error shall be signaled if X is zero (error-id. division-by-zero). */
+kiss_obj* kiss_reciprocal(const kiss_obj* const x) {
+     return kiss_quotient(kiss_make_fixnum(1), kiss_c_list(1, x));
+}

@@ -2411,6 +2411,42 @@ kiss_symbol_t KISS_Sabs = {
     KISS_NIL,                /* plist */
 };
 
+kiss_symbol_t KISS_Sreciprocal;
+kiss_cfunction_t KISS_CFreciprocal = {
+    KISS_CFUNCTION,   /* type */
+    &KISS_Sreciprocal,       /* name */
+    (kiss_cf_t*)kiss_reciprocal,         /* C function name */
+    1,                /* minimum argument number */
+    1,                /* maximum argument number */
+};
+kiss_symbol_t KISS_Sreciprocal = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"reciprocal",
+    KISS_CONSTANT_FSLOT,
+    NULL,                    /* var */
+    (kiss_obj*)&KISS_CFreciprocal,  /* fun */
+    KISS_NIL,                /* plist */
+};
+
+kiss_symbol_t KISS_Squotient;
+kiss_cfunction_t KISS_CFquotient = {
+    KISS_CFUNCTION,   /* type */
+    &KISS_Squotient,       /* name */
+    (kiss_cf_t*)kiss_quotient,         /* C function name */
+    1,                /* minimum argument number */
+    -1,                /* maximum argument number */
+};
+kiss_symbol_t KISS_Squotient = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"quotient",
+    KISS_CONSTANT_FSLOT,
+    NULL,                    /* var */
+    (kiss_obj*)&KISS_CFquotient,  /* fun */
+    KISS_NIL,                /* plist */
+};
+
 kiss_symbol_t KISS_Sexp;
 kiss_cfunction_t KISS_CFexp = {
     KISS_CFUNCTION,   /* type */
@@ -4251,6 +4287,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sdiv, &KISS_Smod, &KISS_Sgcd, &KISS_Slcm, 
     &KISS_Sparse_number,
     &KISS_Smax, &KISS_Smin,
+    &KISS_Squotient, &KISS_Sreciprocal,
 
     /* misc.c */
     &KISS_Sidentity, &KISS_Sget_universal_time,
