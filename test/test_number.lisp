@@ -545,3 +545,57 @@
 		    (signal-condition condition nil)))
                 (abs 'a))
   nil)
+
+;; exp
+(= (exp 0) 1)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (exp))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (exp 2 3))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (exp 'a))
+  nil)
+
+;; floor
+(= (floor 1) 1)
+(= (floor 1.5) 1)
+(= (floor 3.9) 3)
+(= (floor -1.5) -2)
+(= (floor (exp 2)) 7)
+(= (floor -1000) -1000)
+(= (floor 1000) 1000)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (floor))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (floor 2 3))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (floor 'a))
+  nil)
