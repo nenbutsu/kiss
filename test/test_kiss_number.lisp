@@ -33,6 +33,16 @@
 (< 1 (* *most-positive-fixnum* 3))
 (< 3.3 (* *most-positive-fixnum* 3))
 
+;; + *
+(= (* *most-positive-fixnum* 2) (+ *most-positive-fixnum* *most-positive-fixnum*))
+(= (* *most-negative-fixnum* 2) (+ *most-negative-fixnum* *most-negative-fixnum*))
+(= (* *most-positive-fixnum* 3)
+   (+ *most-positive-fixnum* *most-positive-fixnum* *most-positive-fixnum*))
+(= (* *most-negative-fixnum* 3)
+   (+ *most-negative-fixnum* *most-negative-fixnum* *most-negative-fixnum*))
+(= (* *most-positive-fixnum* -2) (+ (* -1 *most-positive-fixnum*) (* *most-positive-fixnum* -1)))
+(= (* *most-negative-fixnum* -2) (+ (* -1 *most-negative-fixnum*) (* -1 *most-negative-fixnum*)))
+
 
 ;; integerp
 (integerp *most-positive-fixnum*)
