@@ -451,12 +451,15 @@
 
 ;; quotient reciprocal
 (= (reciprocal 2) 0.5)
+(= (reciprocal 4) 0.25)
 (and (integerp (quotient 10 5))
      (= (quotient 10 5) 2))
 (and (integerp (quotient 20 2))
      (= (quotient 20 2) 10))
 (= (quotient 1 2) 0.5)
 (= (quotient 2 -0.5) -4.0)
+(= (quotient 10 5 2) 1)
+(= (quotient 10 -5 -2) 1)
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
@@ -498,4 +501,18 @@
 		      (return-from a t)
 		    (signal-condition condition nil)))
                 (quotient 3))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (reciprocal 'a))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (quotient 'a 'b))
   nil)
