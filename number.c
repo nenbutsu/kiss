@@ -956,48 +956,95 @@ kiss_obj* kiss_floor(kiss_obj* x) {
 }
 
 /* function: (ceiling x) -> <integer> 
-   Returns the smallest integer that is not smaller than x. 
-   Thatis, x is truncated towards positive infinity.
-   An error shall be signaled if x is not a number (error-id. domain-error).   
-*/
+   Returns the smallest integer that is not smaller than X. 
+   Thatis, X is truncated towards positive infinity.
+   An error shall be signaled if X is not a number (error-id. domain-error). */
 kiss_obj* kiss_ceiling(kiss_obj* x) {
-     fwprintf(stderr, L"kiss_ceiling: not implemented");
-     exit(EXIT_FAILURE);
+     Kiss_Number(x);
+     switch (KISS_OBJ_TYPE(x)) {
+     case KISS_FIXNUM:
+     case KISS_BIGNUM:
+          return x;
+     case KISS_FLOAT: {
+          double f = ceil(((kiss_float_t*)x)->f);
+          if (f > KISS_PTR_INT_MAX || f < KISS_PTR_INT_MIN) {
+               kiss_bignum_t* z = kiss_make_bignum(0);
+               mpz_set_d(z->mpz, f);
+               return (kiss_obj*)z;
+          } else {
+               return (kiss_obj*)kiss_make_fixnum(f);
+          }
+     }
+     default:
+          fwprintf(stderr, L"kiss_ceiling: unknown primitive number type = %d",
+                   KISS_OBJ_TYPE(x));
+          exit(EXIT_FAILURE);
+     }
 }
 
 /* function: (truncate x) -> <integer> 
-   Returns the integer between 0 and x(inclusive) that is nearest to x.
-   Thatis, x is truncated towards zero.
-   An error shall be signaled if x is not a number (error-id. domain-error).
-*/
+   Returns the integer between 0 and X(inclusive) that is nearest to X.
+   Thatis, X is truncated towards zero.
+   An error shall be signaled if X is not a number (error-id. domain-error). */
 kiss_obj* kiss_truncate(kiss_obj* x) {
-     fwprintf(stderr, L"kiss_truncate: not implemented");
-     exit(EXIT_FAILURE);
+     Kiss_Number(x);
+     switch (KISS_OBJ_TYPE(x)) {
+     case KISS_FIXNUM:
+     case KISS_BIGNUM:
+          return x;
+     case KISS_FLOAT: {
+          double f = trunc(((kiss_float_t*)x)->f);
+          if (f > KISS_PTR_INT_MAX || f < KISS_PTR_INT_MIN) {
+               kiss_bignum_t* z = kiss_make_bignum(0);
+               mpz_set_d(z->mpz, f);
+               return (kiss_obj*)z;
+          } else {
+               return (kiss_obj*)kiss_make_fixnum(f);
+          }
+     }
+     default:
+          fwprintf(stderr, L"kiss_truncate: unknown primitive number type = %d",
+                   KISS_OBJ_TYPE(x));
+          exit(EXIT_FAILURE);
+     }
 }
 
 /* function: (round x) -> <integer> 
-   Returns the integer nearest to x. If x is exactly halfway between two integers,
+   Returns the integer nearest to X. If X is exactly halfway between two integers,
    the even one is chosen. 
-   An error shall be signaled if x is not a number (error-id. domain-error).
-*/
+   An error shall be signaled if x is not a number (error-id. domain-error). */
 kiss_obj* kiss_round(kiss_obj* x) {
-     Kiss_Err(L"c library function 'roundevenf' is not supported as of this writing.");
-     /*
      Kiss_Number(x);
-     if (KISS_IS_INTEGER(x)) {
-	  return (kiss_obj*)kiss_make_integer(roundevenf(Kiss_Integer(x)->i));
-     } else {
-	  return (kiss_obj*)kiss_make_integer(roundevenf(Kiss_Float(x)->f));
+     switch (KISS_OBJ_TYPE(x)) {
+     case KISS_FIXNUM:
+     case KISS_BIGNUM:
+          return x;
+     case KISS_FLOAT: {
+          double f = ((kiss_float_t*)x)->f;
+          double rounded = round(f);
+          if (f > 0 && f == rounded - 0.5 && ((kiss_ptr_int)rounded) % 2 != 0) {
+               rounded--;
+          } else if (f < 0 && f == rounded + 0.5 && ((kiss_ptr_int)rounded) % 2 != 0) {
+               rounded++;
+          }
+          if (rounded > KISS_PTR_INT_MAX || rounded < KISS_PTR_INT_MIN) {
+               kiss_bignum_t* z = kiss_make_bignum(0);
+               mpz_set_d(z->mpz, rounded);
+               return (kiss_obj*)z;
+          } else {
+               return (kiss_obj*)kiss_make_fixnum(rounded);
+          }
      }
-     */
+     default:
+          fwprintf(stderr, L"kiss_round: unknown primitive number type = %d",
+                   KISS_OBJ_TYPE(x));
+          exit(EXIT_FAILURE);
+     }
 }
-
-
 
 /* function: (log x) -> <number>
    Returns the natural logarithm of x.
-   An error shall be signaled if x is not a positive number (error-id. domain-error).
-*/
+   An error shall be signaled if x is not a positive number (error-id. domain-error). */
 kiss_obj* kiss_log(kiss_obj* x) {
      fwprintf(stderr, L"kiss_log: not implemented");
      exit(EXIT_FAILURE);
