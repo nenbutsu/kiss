@@ -224,7 +224,7 @@ kiss_obj* kiss_format_float(kiss_obj* out, kiss_obj* obj) {
           abort();
      }
      kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs), KISS_NIL);
-     if (wcschr (wcs, L'.') == NULL) {
+     if (wcschr (wcs, L'.') == NULL && wcschr (wcs, L'e') == NULL) {
           kiss_format_string(out, (kiss_obj*)kiss_make_string(L".0"), KISS_NIL);
      }
      return KISS_NIL;
