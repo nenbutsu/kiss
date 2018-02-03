@@ -1043,11 +1043,22 @@ kiss_obj* kiss_round(kiss_obj* x) {
 }
 
 /* function: (log x) -> <number>
-   Returns the natural logarithm of x.
-   An error shall be signaled if x is not a positive number (error-id. domain-error). */
+   Returns the natural logarithm of X.
+   An error shall be signaled if X is not a positive number (error-id. domain-error). */
 kiss_obj* kiss_log(kiss_obj* x) {
-     fwprintf(stderr, L"kiss_log: not implemented");
-     exit(EXIT_FAILURE);
+     Kiss_Positive_Number(x);
+     switch (KISS_OBJ_TYPE(x)) {
+     case KISS_FIXNUM:
+          return (kiss_obj*)kiss_make_float(log(kiss_ptr_int(x)));
+     case KISS_BIGNUM:
+          return (kiss_obj*)kiss_make_float(log(mpz_get_d(((kiss_bignum_t*)x)->mpz)));
+     case KISS_FLOAT:
+          return (kiss_obj*)kiss_make_float(log(((kiss_float_t*)x)->f));
+     default:
+          fwprintf(stderr, L"kiss_log: unknown primitive number type = %d",
+                   KISS_OBJ_TYPE(x));
+          exit(EXIT_FAILURE);
+     }
 }
 
 /* function: (sin x) -> <number>
