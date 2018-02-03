@@ -1164,10 +1164,11 @@ kiss_obj* kiss_quotient2(const kiss_obj* const x, const kiss_obj* const y) {
      }
 }
 
-kiss_obj* kiss_quotient(const kiss_obj* x, const kiss_obj* const rest) {
+kiss_obj* kiss_quotient(const kiss_obj* x, const kiss_obj* y, const kiss_obj* const rest) {
      Kiss_Number(x);
+     x = kiss_quotient2(x, Kiss_Non_Zero_Number(y));
      for (const kiss_obj* p = rest; p != KISS_NIL; p = kiss_cdr(p)) {
-          x = kiss_quotient2(x, KISS_CAR(p));
+          x = kiss_quotient2(x, Kiss_Non_Zero_Number(KISS_CAR(p)));
      }
      return (kiss_obj*)x;
 }
@@ -1176,5 +1177,5 @@ kiss_obj* kiss_quotient(const kiss_obj* x, const kiss_obj* const rest) {
    The function RECIPROCAL returns the reciprocal of its argument X;
    that is, 1/X. An error shall be signaled if X is zero (error-id. division-by-zero). */
 kiss_obj* kiss_reciprocal(const kiss_obj* const x) {
-     return kiss_quotient(kiss_make_fixnum(1), kiss_c_list(1, x));
+     return kiss_quotient(kiss_make_fixnum(1), x, KISS_NIL);
 }

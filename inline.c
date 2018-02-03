@@ -46,6 +46,9 @@ extern inline
 kiss_obj* Kiss_Number(const kiss_obj* const obj);
 
 extern inline
+kiss_obj* Kiss_Non_Zero_Number(const kiss_obj* const obj);
+     
+extern inline
 kiss_ptr_int Kiss_Non_Negative_Fixnum(const kiss_obj* const obj);
 
 extern inline

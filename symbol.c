@@ -2434,7 +2434,7 @@ kiss_cfunction_t KISS_CFquotient = {
     KISS_CFUNCTION,   /* type */
     &KISS_Squotient,       /* name */
     (kiss_cf_t*)kiss_quotient,         /* C function name */
-    1,                /* minimum argument number */
+    2,                /* minimum argument number */
     -1,                /* maximum argument number */
 };
 kiss_symbol_t KISS_Squotient = {

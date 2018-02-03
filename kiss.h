@@ -561,7 +561,7 @@ kiss_obj* kiss_num_lessthan(const kiss_obj* const x, const kiss_obj* const y);
 kiss_obj* kiss_num_lessthan_eq(const kiss_obj* const a, const kiss_obj* const b);
 kiss_obj* kiss_num_greaterthan(const kiss_obj* const a, const kiss_obj* const b);
 kiss_obj* kiss_num_greaterthan_eq(const kiss_obj* const a, const kiss_obj* const b);
-kiss_obj* kiss_quotient(const kiss_obj* x, const kiss_obj* const rest);
+kiss_obj* kiss_quotient(const kiss_obj* x, const kiss_obj* y, const kiss_obj* const rest);
 kiss_obj* kiss_reciprocal(const kiss_obj* const x);
 
 kiss_float_t* kiss_make_float(double d);
@@ -793,6 +793,15 @@ inline
 kiss_obj* Kiss_Number(const kiss_obj* const obj) {
      if (KISS_IS_INTEGER(obj) || KISS_IS_FLOAT(obj)) { return (kiss_obj*)obj; }
      Kiss_Domain_Error(obj, L"<number>");
+}
+
+inline
+kiss_obj* Kiss_Non_Zero_Number(const kiss_obj* const obj) {
+     Kiss_Number(obj);
+     if (kiss_num_eq(obj, kiss_make_fixnum(0)) == KISS_T) {
+          Kiss_Domain_Error(obj, L"non zero number");
+     }
+     return (kiss_obj*)obj;
 }
 
 inline
