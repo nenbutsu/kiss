@@ -150,19 +150,15 @@ kiss_obj* kiss_c_parse_number(kiss_obj* obj) {
      }
      if (base != 10) { return NULL; }
 
-     if (!is_valid_float_textual_representation(p)) {
-          return NULL;
-     } else {
-          wchar_t * tailptr = NULL;
-          double f = wcstod(p, &tailptr);
-          if (*tailptr != L'\0') {
-               fwprintf(stderr, L"parse-string: cannot parse valid float %ls\n", p);
-               exit(EXIT_FAILURE);
-          }
-          kiss_float_t* x = kiss_make_float(f);
-          return (kiss_obj*)x;
+     if (!is_valid_float_textual_representation(p)) { return NULL; }
+     wchar_t * tailptr = NULL;
+     double f = wcstod(p, &tailptr);
+     if (*tailptr != L'\0') {
+          fwprintf(stderr, L"parse-string: cannot parse valid float %ls\n", p);
+          exit(EXIT_FAILURE);
      }
-     exit(EXIT_FAILURE);
+     kiss_float_t* x = kiss_make_float(f);
+     return (kiss_obj*)x;
 }
 
 /* function: (parse-number string) -> <number>
@@ -173,17 +169,14 @@ kiss_obj* kiss_c_parse_number(kiss_obj* obj) {
    (error-id. cannot-parse-number) */
 kiss_obj* kiss_parse_number(kiss_obj* obj) {
      kiss_obj* p = kiss_c_parse_number(obj);
-     if (p == NULL) {
-          Kiss_Cannot_Parse_Number_Error(obj);
-     } else {
-          return p;
-     }
-     exit(EXIT_FAILURE); // not reach here
+     if (p == NULL) { Kiss_Cannot_Parse_Number_Error(obj); }
+     return p;
 }
 
-kiss_obj* kiss_plus2_fixnum2 (kiss_obj* a, kiss_obj* b) {
-     kiss_ptr_int i1 = kiss_ptr_int(a);
-     kiss_ptr_int i2 = kiss_ptr_int(b);
+static inline
+kiss_obj* kiss_plus2_fixnum2 (const kiss_obj* const a, const kiss_obj* const b) {
+     const kiss_ptr_int i1 = kiss_ptr_int(a);
+     const kiss_ptr_int i2 = kiss_ptr_int(b);
      if ((i1 >= 0 && i2 <=0) || (i1 <= 0 && i2 >=0)) {
           return (kiss_obj*)kiss_make_fixnum(i1 + i2);
      } else if (i1 > 0 && i2 > 0) {
@@ -211,6 +204,7 @@ kiss_obj* kiss_plus2_fixnum2 (kiss_obj* a, kiss_obj* b) {
      }
 }
 
+static inline
 kiss_obj* kiss_plus2_fixnum_bignum (kiss_obj* a, kiss_obj* b) {
      kiss_bignum_t* z1 = kiss_make_bignum(kiss_ptr_int(a));
      kiss_bignum_t* z2 = (kiss_bignum_t*)b;
@@ -218,22 +212,24 @@ kiss_obj* kiss_plus2_fixnum_bignum (kiss_obj* a, kiss_obj* b) {
      return (kiss_obj*)z1;
 }
 
+static inline
 kiss_obj* kiss_plus2_fixnum_float(kiss_obj* a, kiss_obj* b) {
      kiss_float_t* f1 = kiss_make_float(kiss_ptr_int(a));
      kiss_float_t* f2 = (kiss_float_t*)b;
-     f1->f = f1->f + f2->f;
+     f1->f += f2->f;
      return (kiss_obj*)f1;
 }
 
+static inline
 kiss_obj* kiss_plus2_bignum2(kiss_obj* a, kiss_obj* b) {
      kiss_bignum_t* z1 = (kiss_bignum_t*)a;
      kiss_bignum_t* z2 = (kiss_bignum_t*)b;
      kiss_bignum_t* p = kiss_make_bignum(0);
-     mpz_set(p->mpz, z1->mpz);
-     mpz_add(p->mpz, p->mpz, z2->mpz);
+     mpz_add(p->mpz, z1->mpz, z2->mpz);
      return (kiss_obj*)p;
 }
 
+static inline
 kiss_obj* kiss_plus2_bignum_float(kiss_obj* a, kiss_obj* b) {
      kiss_bignum_t* z1 = (kiss_bignum_t*)a;
      kiss_float_t* p = kiss_make_float(mpz_get_d(z1->mpz));
@@ -242,6 +238,7 @@ kiss_obj* kiss_plus2_bignum_float(kiss_obj* a, kiss_obj* b) {
      return (kiss_obj*)p;
 }
 
+static inline
 kiss_obj* kiss_plus2_float2(kiss_obj* a, kiss_obj* b) {
      kiss_float_t* f1 = (kiss_float_t*)a;
      kiss_float_t* f2 = (kiss_float_t*)b;
@@ -249,7 +246,7 @@ kiss_obj* kiss_plus2_float2(kiss_obj* a, kiss_obj* b) {
      return (kiss_obj*)p;
 }
 
- kiss_obj* kiss_plus2(kiss_obj* a, kiss_obj* b) {
+kiss_obj* kiss_plus2(kiss_obj* a, kiss_obj* b) {
      Kiss_Number(a);
      Kiss_Number(b);
      switch (KISS_OBJ_TYPE(a)) {
@@ -365,12 +362,14 @@ kiss_obj* kiss_minus(kiss_obj* number, kiss_obj* rest) {
      return number;     
 }
 
+static inline
 kiss_obj* kiss_multiply2_fixnum_bignum(kiss_obj* a, kiss_obj* b) {
      kiss_bignum_t* z = kiss_make_bignum(kiss_ptr_int(a));
      mpz_mul(z->mpz, z->mpz, ((kiss_bignum_t*)b)->mpz);
      return (kiss_obj*)z;
 }
 
+static inline
 kiss_obj* kiss_multiply2_fixnum2 (kiss_obj* a, kiss_obj* b) {
      kiss_ptr_int i1 = kiss_ptr_int(a);
      kiss_ptr_int i2 = kiss_ptr_int(b);
@@ -410,12 +409,14 @@ kiss_obj* kiss_multiply2_fixnum2 (kiss_obj* a, kiss_obj* b) {
      }
 }
 
+static inline
 kiss_obj* kiss_multiply2_fixnum_float(kiss_obj* a, kiss_obj* b) {
      kiss_float_t* f = kiss_make_float(((kiss_float_t*)b)->f);
      f->f *= kiss_ptr_int(a);
      return (kiss_obj*)f;
 }
 
+static inline
 kiss_obj* kiss_multiply2_bignum2(kiss_obj* a, kiss_obj* b) {
      kiss_bignum_t* z = kiss_make_bignum(0);
      mpz_set(z->mpz, ((kiss_bignum_t*)a)->mpz);
@@ -423,18 +424,21 @@ kiss_obj* kiss_multiply2_bignum2(kiss_obj* a, kiss_obj* b) {
      return (kiss_obj*)z;
 }
 
+static inline
 kiss_obj* kiss_multiply2_bignum_float(kiss_obj* a, kiss_obj* b) {
      kiss_float_t* f = kiss_make_float(((kiss_float_t*)b)->f);
      f->f *= mpz_get_d(((kiss_bignum_t*)a)->mpz);
      return (kiss_obj*)f;
 }
 
+static inline
 kiss_obj* kiss_multiply2_float2(kiss_obj* a, kiss_obj* b) {
      kiss_float_t* f = kiss_make_float(((kiss_float_t*)a)->f);
      f->f *= ((kiss_float_t*)b)->f;
      return (kiss_obj*)f;
 }
 
+static inline
 kiss_obj* kiss_multiply2(kiss_obj* a, kiss_obj* b) {
      Kiss_Number(a);
      Kiss_Number(b);
