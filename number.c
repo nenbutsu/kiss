@@ -939,8 +939,14 @@ kiss_obj* kiss_floor(kiss_obj* x) {
      case KISS_BIGNUM:
           return x;
      case KISS_FLOAT: {
-          kiss_float_t* f = (kiss_float_t*)x;
-          return (kiss_obj*)kiss_make_float(floor(f->f));
+          double f = floor(((kiss_float_t*)x)->f);
+          if (f > KISS_PTR_INT_MAX || f < KISS_PTR_INT_MIN) {
+               kiss_bignum_t* z = kiss_make_bignum(0);
+               mpz_set_d(z->mpz, f);
+               return (kiss_obj*)z;
+          } else {
+               return (kiss_obj*)kiss_make_fixnum(f);
+          }
      }
      default:
           fwprintf(stderr, L"kiss_floor: unknown primitive number type = %d",
