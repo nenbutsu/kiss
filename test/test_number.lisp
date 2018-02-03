@@ -707,3 +707,36 @@
 		    (signal-condition condition nil)))
                 (round 'a))
   nil)
+
+;; log
+(= (log 2.718281828459045) 1)
+(= (log 1) 0)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (log))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (log 2 3))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (log 'a))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (log -10))
+  nil)
+
