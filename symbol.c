@@ -43,9 +43,6 @@ void kiss_init_symbols(void) {
                               KISS_NIL,
                               (kiss_obj*)kiss_make_float(1.5),
                               (kiss_obj*)kiss_make_float(0.8));
-
-    // initialize *pi*
-    KISS_Ss_pi_s.var = (kiss_obj*)kiss_make_float(3.141592653589793);
 }
 
 static kiss_symbol_t* kiss_make_symbol(const wchar_t* const name) {
@@ -1998,12 +1995,47 @@ kiss_symbol_t KISS_Sgo = {
 
 
 /*** number.c ***/
+kiss_float_t KISS_Fs_pi_s = {
+     KISS_FLOAT,
+     NULL,
+     3.141592653589793,
+};
 kiss_symbol_t KISS_Ss_pi_s = {
     KISS_SYMBOL,
     NULL,                        /* gc_ptr */
     L"*pi*",                     /* name   */
     KISS_SYSTEM_CONSTANT_VAR,    /* flags  */
-    NULL,                        /*  var   */
+    (kiss_obj*)&KISS_Fs_pi_s,    /*  var   */
+    NULL,                        /*  fun   */
+    KISS_NIL,                    /*  plist */
+};
+
+kiss_float_t KISS_Fs_most_positive_float_s = {
+     KISS_FLOAT,
+     NULL,
+     DBL_MAX,
+};
+kiss_symbol_t KISS_Ss_most_positive_float_s = {
+    KISS_SYMBOL,
+    NULL,                        /* gc_ptr */
+    L"*most-positive-float*",    /* name   */
+    KISS_SYSTEM_CONSTANT_VAR,    /* flags  */
+    (kiss_obj*)&KISS_Fs_most_positive_float_s, /*  var   */
+    NULL,                        /*  fun   */
+    KISS_NIL,                    /*  plist */
+};
+
+kiss_float_t KISS_Fs_most_negative_float_s = {
+     KISS_FLOAT,
+     NULL,
+     DBL_MIN,
+};
+kiss_symbol_t KISS_Ss_most_negative_float_s = {
+    KISS_SYMBOL,
+    NULL,                        /* gc_ptr */
+    L"*most-negative-float*",    /* name   */
+    KISS_SYSTEM_CONSTANT_VAR,    /* flags  */
+    (kiss_obj*)&KISS_Fs_most_negative_float_s, /*  var   */
     NULL,                        /*  fun   */
     KISS_NIL,                    /*  plist */
 };
@@ -4330,7 +4362,8 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sequal, &KISS_Scond,
     
     /* number.c */
-    &KISS_Ss_pi_s, &KISS_Ss_most_positive_fixnum_s, &KISS_Ss_most_negative_fixnum_s,
+    &KISS_Ss_pi_s, &KISS_Ss_most_positive_float_s, &KISS_Ss_most_negative_float_s,
+    &KISS_Ss_most_positive_fixnum_s, &KISS_Ss_most_negative_fixnum_s,
     &KISS_Snumberp, &KISS_Sintegerp, &KISS_Sfixnump, &KISS_Sbignump,
     &KISS_Sfloatp, &KISS_Sminus, &KISS_Splus, &KISS_Smultiply,
     &KISS_Snum_eq, &KISS_Snum_neq,
