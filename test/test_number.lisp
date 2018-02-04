@@ -1045,3 +1045,8 @@
 		    (signal-condition condition nil)))
                 (isqrt 'a))
   nil)
+
+;; *most-positive-float*, *most-negative-float*
+(floatp *most-positive-float*)
+(floatp *most-negative-float*)
+
