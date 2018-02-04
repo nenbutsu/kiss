@@ -69,5 +69,8 @@
    (* (lcm (* *most-positive-fixnum* 3) (* *most-positive-fixnum* 6))
       (gcd (* *most-positive-fixnum* 3) (* *most-positive-fixnum* 6))))
 
-   
-
+;; expt
+(= (expt (* *most-positive-fixnum* 3) 2)
+   (* (* *most-positive-fixnum* 3) (* *most-positive-fixnum* 3)))
+(= (expt (* *most-negative-fixnum* 3) 2)
+   (* (* *most-negative-fixnum* 3) (* *most-negative-fixnum* 3)))
