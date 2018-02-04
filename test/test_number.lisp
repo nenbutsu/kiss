@@ -967,3 +967,37 @@
                 (expt -3 3.2))
   nil)
 
+
+;; sqrt
+(= (sqrt 4) 2)
+(= (sqrt 9) 3)
+(= (sqrt 16) 4)
+(= (sqrt 25) 5)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (sqrt -1))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (sqrt))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (sqrt 2 3))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (sqrt 'a))
+  nil)
