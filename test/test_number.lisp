@@ -1072,3 +1072,29 @@
 		    (signal-condition condition nil)))
                 (atan 'a))
   nil)
+
+;; atan2
+(= (atan2 0 3.0) 0)
+(= (atan2 3 1) (atan 3))
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (atan2))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (atan2 2 3 4))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (atan2 'a 1))
+  nil)
+
