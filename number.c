@@ -665,12 +665,25 @@ kiss_obj* kiss_num_greaterthan_eq(const kiss_obj* const a, const kiss_obj* const
 }
 
 kiss_obj* kiss_fixnum_if_possible(const kiss_obj* const obj) {
-     if (KISS_IS_BIGNUM(obj)) {
+     switch (KISS_OBJ_TYPE(obj)) {
+     case KISS_FIXNUM:
+          return (kiss_obj*)obj;
+     case KISS_BIGNUM: {
           kiss_bignum_t* z = (kiss_bignum_t*)obj;
           return (kiss_obj*)((mpz_cmp_si(z->mpz, KISS_PTR_INT_MAX) <= 0 &&
                               mpz_cmp_si(z->mpz, KISS_PTR_INT_MIN) >= 0) ?
                              kiss_make_fixnum(mpz_get_si(z->mpz)) : obj);
-     } else {
+     }
+     case KISS_FLOAT: {
+          double f = ((kiss_float_t*)obj)->f;
+          kiss_ptr_int i = f;
+          if (i == f && i >= KISS_PTR_INT_MIN && i <= KISS_PTR_INT_MAX) {
+               return kiss_make_fixnum(i);
+          } else {
+               return (kiss_obj*)obj;
+          }
+     }
+     default:
           return (kiss_obj*)obj;
      }
 }
@@ -979,6 +992,32 @@ kiss_obj* kiss_expt(const kiss_obj* const x1, const kiss_obj* const x2) {
           double f2 = ((kiss_float_t*)kiss_float(x2))->f;
           return (kiss_obj*)kiss_make_float(pow(f1, f2));
      }
+}
+
+/* function: (sqrt x) -> <number>
+   Returns the non-negative square root of x. 
+   An error shall be signaled if x is not a non-negative number (error-id. domain-error). */
+kiss_obj* kiss_sqrt(const kiss_obj* const x) {
+     Kiss_Non_Negative_Number(x);
+     double f = 0.0;
+     switch (KISS_OBJ_TYPE(x)) {
+     case KISS_FIXNUM:
+          f = kiss_ptr_int(x);
+          break;
+     case KISS_BIGNUM: {
+          kiss_bignum_t* z = (kiss_bignum_t*)x;
+          f = mpz_get_d(z->mpz);
+          break;
+     }
+     case KISS_FLOAT:
+          f = ((kiss_float_t*)x)->f;
+          break;
+     default:
+          fwprintf(stderr, L"kiss_sqrt: unknown primitive number type = %d",
+                   KISS_OBJ_TYPE(x));
+          exit(EXIT_FAILURE);
+     }
+     return kiss_fixnum_if_possible((kiss_obj*)kiss_make_float(sqrt(f)));
 }
 
 /* function: (floor x) -> <integer> 

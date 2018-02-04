@@ -572,6 +572,7 @@ kiss_obj* kiss_float(const kiss_obj* const x);
 kiss_obj* kiss_abs(kiss_obj* x);
 kiss_obj* kiss_exp(kiss_obj* x);
 kiss_obj* kiss_expt(const kiss_obj* const x1, const kiss_obj* const x2);
+kiss_obj* kiss_sqrt(const kiss_obj* const x);
 kiss_obj* kiss_log(kiss_obj* x);
 kiss_obj* kiss_floor(kiss_obj* x);
 kiss_obj* kiss_ceiling(kiss_obj* x);
@@ -810,6 +811,15 @@ kiss_obj* Kiss_Positive_Number(const kiss_obj* const obj) {
      Kiss_Number(obj);
      if (kiss_num_lessthan_eq(obj, kiss_make_fixnum(0)) == KISS_T) {
           Kiss_Domain_Error(obj, L"positive number");
+     }
+     return (kiss_obj*)obj;
+}
+
+inline
+kiss_obj* Kiss_Non_Negative_Number(const kiss_obj* const obj) {
+     Kiss_Number(obj);
+     if (kiss_num_lessthan(obj, kiss_make_fixnum(0)) == KISS_T) {
+          Kiss_Domain_Error(obj, L"non negative number");
      }
      return (kiss_obj*)obj;
 }
