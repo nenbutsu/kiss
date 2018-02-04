@@ -79,7 +79,7 @@ kiss_obj* kiss_float(const kiss_obj* const x) {
           return (kiss_obj*)kiss_make_float(mpz_get_d(((kiss_bignum_t*)x)->mpz));
      }
      case KISS_FLOAT:
-          return (kiss_obj*)kiss_make_float(((kiss_float_t*)x)->f);
+          return (kiss_obj*)x;
      default:
           fwprintf(stderr, L"kiss_float: unknown primitive number type = %d", KISS_OBJ_TYPE(x));
           exit(EXIT_FAILURE);
@@ -937,7 +937,8 @@ kiss_obj* kiss_abs(kiss_obj* x) {
    Returns e raised to the power X, where e is the base of the natural logarithm.
    An error shall be signaled if X is not a number (error-id. domain-error). */
 kiss_obj* kiss_exp(kiss_obj* x) {
-     kiss_float_t* f = (kiss_float_t*)kiss_float(x);
+     kiss_float_t* f = KISS_IS_FLOAT(x) ? kiss_make_float(((kiss_float_t*)x)->f) :
+          (kiss_float_t*)kiss_float(x);
      f->f = exp(f->f);
      return (kiss_obj*)f;
 }
@@ -1131,7 +1132,8 @@ kiss_obj* kiss_round(kiss_obj* x) {
    An error shall be signaled if X is not a positive number (error-id. domain-error). */
 kiss_obj* kiss_log(kiss_obj* x) {
      Kiss_Positive_Number(x);
-     kiss_float_t* f = (kiss_float_t*)kiss_float(x);
+     kiss_float_t* f = KISS_IS_FLOAT(x) ? kiss_make_float(((kiss_float_t*)x)->f) :
+          (kiss_float_t*)kiss_float(x);
      f->f = log(f->f);
      return (kiss_obj*)f;
 }
@@ -1139,7 +1141,8 @@ kiss_obj* kiss_log(kiss_obj* x) {
 /* function: (sin x) -> <number>
    The function sin returns the sine of X. X must be given in radians. */
 kiss_obj* kiss_sin(kiss_obj* x) {
-     kiss_float_t* f = (kiss_float_t*)kiss_float(x);
+     kiss_float_t* f = KISS_IS_FLOAT(x) ? kiss_make_float(((kiss_float_t*)x)->f) :
+          (kiss_float_t*)kiss_float(x);
      f->f = sin(f->f);
      return (kiss_obj*)f;
 }
@@ -1147,7 +1150,8 @@ kiss_obj* kiss_sin(kiss_obj* x) {
 /* function: (cos x) -> <number>
    The function cos returns the cosine of X. X must be given in radians. */
 kiss_obj* kiss_cos(kiss_obj* x) {
-     kiss_float_t* f = (kiss_float_t*)kiss_float(x);
+     kiss_float_t* f = KISS_IS_FLOAT(x) ? kiss_make_float(((kiss_float_t*)x)->f) :
+          (kiss_float_t*)kiss_float(x);
      f->f = cos(f->f);
      return (kiss_obj*)f;
 }
@@ -1155,7 +1159,8 @@ kiss_obj* kiss_cos(kiss_obj* x) {
 /* function: (tan x) -> <number>
    The function tan returns the tangent of X. X must be given in radians. */
 kiss_obj* kiss_tan(kiss_obj* x) {
-     kiss_float_t* f = (kiss_float_t*)kiss_float(x);
+     kiss_float_t* f = KISS_IS_FLOAT(x) ? kiss_make_float(((kiss_float_t*)x)->f) :
+          (kiss_float_t*)kiss_float(x);
      f->f = tan(f->f);
      return (kiss_obj*)f;
 }
@@ -1167,7 +1172,8 @@ kiss_obj* kiss_tan(kiss_obj* x) {
    arctan x = (log (1 + ix) - log (1 - ix)) / 2i
    An error shall be signaled if x is not a number (error-id. domain-error).*/
 kiss_obj* kiss_atan(kiss_obj* x) {
-     kiss_float_t* f = (kiss_float_t*)kiss_float(x);
+     kiss_float_t* f = KISS_IS_FLOAT(x) ? kiss_make_float(((kiss_float_t*)x)->f) :
+          (kiss_float_t*)kiss_float(x);
      f->f = atan(f->f);
      return (kiss_obj*)f;
 }
