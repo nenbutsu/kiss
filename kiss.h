@@ -592,6 +592,11 @@ kiss_obj* kiss_tan(kiss_obj* x);
 kiss_obj* kiss_atan(kiss_obj* x);
 kiss_obj* kiss_atan2(kiss_obj* x1, kiss_obj* x2);
 
+kiss_obj* kiss_sinh(kiss_obj* x);
+kiss_obj* kiss_cosh(kiss_obj* x);
+kiss_obj* kiss_tanh(kiss_obj* x);
+kiss_obj* kiss_atanh(kiss_obj* x);
+
 kiss_obj* kiss_max(const kiss_obj* x, const kiss_obj* const rest);
 kiss_obj* kiss_min(const kiss_obj* x, const kiss_obj* const rest);
 

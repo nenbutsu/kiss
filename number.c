@@ -1197,6 +1197,47 @@ kiss_obj* kiss_atan2(kiss_obj* x1, kiss_obj* x2) {
      return (kiss_obj*)f;
 }
 
+/* function: (sinh x) -> <number> 
+   The function SINH returns the hyperbolic sine of X. */
+kiss_obj* kiss_sinh(kiss_obj* x) {
+     kiss_float_t* f = KISS_IS_FLOAT(x) ? kiss_make_float(((kiss_float_t*)x)->f) :
+          (kiss_float_t*)kiss_float(x);
+     f->f = sinh(f->f);
+     return (kiss_obj*)f;
+}
+
+/* function: (cosh x) -> <number>
+   The function COSH returns the hyperbolic cosine of X. */
+kiss_obj* kiss_cosh(kiss_obj* x) {
+     kiss_float_t* f = KISS_IS_FLOAT(x) ? kiss_make_float(((kiss_float_t*)x)->f) :
+          (kiss_float_t*)kiss_float(x);
+     f->f = cosh(f->f);
+     return (kiss_obj*)f;
+}
+
+/* function: (tanh x) -> <number>
+   The function TANH returns the hyperbolic tangent of X. */
+kiss_obj* kiss_tanh(kiss_obj* x) {
+     kiss_float_t* f = KISS_IS_FLOAT(x) ? kiss_make_float(((kiss_float_t*)x)->f) :
+          (kiss_float_t*)kiss_float(x);
+     f->f = tanh(f->f);
+     return (kiss_obj*)f;
+}
+
+/* function: (atanh x) -> <number>
+   Returns the hyperbolic arc tangent of X. 
+   An error shall be signaled if x is not a number with absolute value less than 1
+   (error-id. domain-error).*/
+kiss_obj* kiss_atanh(kiss_obj* x) {
+     kiss_float_t* f = KISS_IS_FLOAT(x) ? kiss_make_float(((kiss_float_t*)x)->f) :
+          (kiss_float_t*)kiss_float(x);
+     if (((kiss_float_t*)kiss_abs((kiss_obj*)f))->f >= 1.0) {
+          Kiss_Err(L"X is not a number with absolute value less than 1: ~S", x);
+     }
+     f->f = atanh(f->f);
+     return (kiss_obj*)f;
+}
+
 /* function: (max x+) -> <number>
    The function max returns the greatest (closest to positive infinity) of its arguments.
    The comparison is done by >.

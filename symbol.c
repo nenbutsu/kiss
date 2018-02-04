@@ -2696,6 +2696,78 @@ kiss_symbol_t KISS_Stan = {
     KISS_NIL,                /* plist */
 };
 
+kiss_symbol_t KISS_Ssinh;
+kiss_cfunction_t KISS_CFsinh = {
+    KISS_CFUNCTION,   /* type */
+    &KISS_Ssinh,       /* name */
+    (kiss_cf_t*)kiss_sinh,         /* C function name */
+    1,                /* minimum argument number */
+    1,                /* maximum argument number */
+};
+kiss_symbol_t KISS_Ssinh = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"sinh",
+    KISS_CONSTANT_FSLOT,
+    NULL,                    /* var */
+    (kiss_obj*)&KISS_CFsinh,  /* fun */
+    KISS_NIL,                /* plist */
+};
+
+kiss_symbol_t KISS_Scosh;
+kiss_cfunction_t KISS_CFcosh = {
+    KISS_CFUNCTION,   /* type */
+    &KISS_Scosh,       /* name */
+    (kiss_cf_t*)kiss_cosh,         /* C function name */
+    1,                /* minimum argument number */
+    1,                /* maximum argument number */
+};
+kiss_symbol_t KISS_Scosh = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"cosh",
+    KISS_CONSTANT_FSLOT,
+    NULL,                    /* var */
+    (kiss_obj*)&KISS_CFcosh,  /* fun */
+    KISS_NIL,                /* plist */
+};
+
+kiss_symbol_t KISS_Stanh;
+kiss_cfunction_t KISS_CFtanh = {
+    KISS_CFUNCTION,   /* type */
+    &KISS_Stanh,       /* name */
+    (kiss_cf_t*)kiss_tanh,         /* C function name */
+    1,                /* minimum argument number */
+    1,                /* maximum argument number */
+};
+kiss_symbol_t KISS_Stanh = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"tanh",
+    KISS_CONSTANT_FSLOT,
+    NULL,                    /* var */
+    (kiss_obj*)&KISS_CFtanh,  /* fun */
+    KISS_NIL,                /* plist */
+};
+
+kiss_symbol_t KISS_Satanh;
+kiss_cfunction_t KISS_CFatanh = {
+    KISS_CFUNCTION,   /* type */
+    &KISS_Satanh,       /* name */
+    (kiss_cf_t*)kiss_atanh,         /* C function name */
+    1,                /* minimum argument number */
+    1,                /* maximum argument number */
+};
+kiss_symbol_t KISS_Satanh = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"atanh",
+    KISS_CONSTANT_FSLOT,
+    NULL,                    /* var */
+    (kiss_obj*)&KISS_CFatanh,  /* fun */
+    KISS_NIL,                /* plist */
+};
+
 kiss_symbol_t KISS_Satan;
 kiss_cfunction_t KISS_CFatan = {
     KISS_CFUNCTION,   /* type */
@@ -4406,6 +4478,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Snum_lessthan, &KISS_Snum_lessthan_eq, &KISS_Snum_greaterthan, &KISS_Snum_greaterthan_eq,
     &KISS_Sabs, &KISS_Sexp, &KISS_Sexpt, &KISS_Slog, &KISS_Ssin,&KISS_Scos,
     &KISS_Stan, &KISS_Satan, &KISS_Satan2,
+    &KISS_Ssinh, &KISS_Scosh, &KISS_Stanh, &KISS_Satanh, 
     &KISS_Ssqrt, &KISS_Sisqrt,
     &KISS_Sfloor, &KISS_Sceiling, &KISS_Struncate, &KISS_Sround, 
     &KISS_Sfloat,
