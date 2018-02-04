@@ -69,7 +69,7 @@ kiss_obj* kiss_numberp(const kiss_obj* const obj) {
    Returns X itself if it is an instance of the class <float> and returns 
    a floating-point approximation of X otherwise. An error shall be signaled if
    X is not a number (error-id. domain-error). */
-kiss_obj* kiss_float(kiss_obj* x) {
+kiss_obj* kiss_float(const kiss_obj* const x) {
      Kiss_Number(x);
      switch (KISS_OBJ_TYPE(x)) {
      case KISS_FIXNUM: {
@@ -79,7 +79,7 @@ kiss_obj* kiss_float(kiss_obj* x) {
           return (kiss_obj*)kiss_make_float(mpz_get_d(((kiss_bignum_t*)x)->mpz));
      }
      case KISS_FLOAT:
-          return x;
+          return (kiss_obj*)x;
      default:
           fwprintf(stderr, L"kiss_float: unknown primitive number type = %d", KISS_OBJ_TYPE(x));
           exit(EXIT_FAILURE);
@@ -944,8 +944,41 @@ kiss_obj* kiss_exp(kiss_obj* x) {
      }
 }
 
-kiss_obj* kiss_expt(const kiss_obj* const x, const kiss_obj* const y) {
-     
+/* function: (expt x1 x2) -> <number>
+   Returns X1 raised to the power X2. The result will be an integer if
+   X1 is an integer and X2 is a non-negative integer. An error shall
+   be signaled if X1 is zero and X2 is negative, or if X1 is zero and
+   X2 is a zero ﬂoat, or if X1 is negative and X2 is not an integer.*/
+kiss_obj* kiss_expt(const kiss_obj* const x1, const kiss_obj* const x2) {
+     Kiss_Number(x1);
+     Kiss_Number(x2);
+     if (kiss_num_eq(x1, kiss_make_fixnum(0)) == KISS_T) {
+          if (kiss_num_lessthan(x2, kiss_make_fixnum(0)) == KISS_T) {
+               Kiss_Err(L"X1 is zero and X2 is negative: ~S ~S", x1, x2); // noreturn
+          }
+          if (kiss_floatp(x2) == KISS_T && kiss_num_eq(x2, kiss_make_fixnum(0)) == KISS_T) {
+               Kiss_Err(L"X1 is zero and X2 is a zero float: ~S ~S", x1, x2); // noreturn
+          }
+     }
+     if (kiss_num_lessthan(x1, kiss_make_fixnum(0)) == KISS_T) {
+          if (kiss_integerp(x2) == KISS_NIL) {
+               Kiss_Err(L"X1 is negative and X2 is not an integer: ~S ~S", x1, x2); // noreturn
+          }
+     }
+     if (KISS_IS_INTEGER(x1) && KISS_IS_INTEGER(x2) &&
+         kiss_num_greaterthan_eq(x2, kiss_make_fixnum(0)) == KISS_T) {
+          kiss_bignum_t* z1 = KISS_IS_FIXNUM(x1) ? kiss_make_bignum(kiss_ptr_int(x1)) :
+               (kiss_bignum_t*)x1;
+          unsigned long int i2 = KISS_IS_FIXNUM(x2) ? kiss_ptr_int(x2) :
+               mpz_get_ui(((kiss_bignum_t*)x2)->mpz);
+          kiss_bignum_t* z = kiss_make_bignum(0);
+          mpz_pow_ui(z->mpz, z1->mpz, i2);
+          return kiss_fixnum_if_possible((kiss_obj*)z);
+     } else {
+          double f1 = ((kiss_float_t*)kiss_float(x1))->f;
+          double f2 = ((kiss_float_t*)kiss_float(x2))->f;
+          return (kiss_obj*)kiss_make_float(pow(f1, f2));
+     }
 }
 
 /* function: (floor x) -> <integer> 

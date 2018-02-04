@@ -567,10 +567,11 @@ kiss_obj* kiss_reciprocal(const kiss_obj* const x);
 kiss_float_t* kiss_make_float(double d);
 kiss_obj* kiss_c_parse_number(kiss_obj* obj);
 kiss_obj* kiss_parse_number(kiss_obj* str);
-kiss_obj* kiss_float(kiss_obj* x);
+kiss_obj* kiss_float(const kiss_obj* const x);
 
 kiss_obj* kiss_abs(kiss_obj* x);
 kiss_obj* kiss_exp(kiss_obj* x);
+kiss_obj* kiss_expt(const kiss_obj* const x1, const kiss_obj* const x2);
 kiss_obj* kiss_log(kiss_obj* x);
 kiss_obj* kiss_floor(kiss_obj* x);
 kiss_obj* kiss_ceiling(kiss_obj* x);
