@@ -49,6 +49,8 @@
 (integerp (+ *most-positive-fixnum* 1))
 (integerp *most-negative-fixnum*)
 (integerp (- *most-negative-fixnum* 1))
+(integerp (* *most-positive-fixnum* 10))
+(integerp (* *most-negative-fixnum* 10))
 
 ;; div
 (= (div (- *most-negative-fixnum* 1) *most-negative-fixnum*) 1)
