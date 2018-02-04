@@ -74,3 +74,5 @@
    (* (* *most-positive-fixnum* 3) (* *most-positive-fixnum* 3)))
 (= (expt (* *most-negative-fixnum* 3) 2)
    (* (* *most-negative-fixnum* 3) (* *most-negative-fixnum* 3)))
+
+;; sqrt
