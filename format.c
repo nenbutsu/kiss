@@ -219,14 +219,11 @@ kiss_obj* kiss_format_integer(kiss_obj* out, kiss_obj* obj, kiss_obj* radix) {
 kiss_obj* kiss_format_float(kiss_obj* out, kiss_obj* obj) {
      kiss_float_t* f = Kiss_Float(obj);
      wchar_t wcs[100];
-     if (swprintf(wcs, 100, L"%g", f->f) < 0) {
+     if (swprintf(wcs, 100, L"%#g", f->f) < 0) {
           fwprintf(stderr, L"kiss_format_float: internal error. buffer is too small.");
           abort();
      }
      kiss_format_string(out, (kiss_obj*)kiss_make_string(wcs), KISS_NIL);
-     if (wcschr (wcs, L'.') == NULL && wcschr (wcs, L'e') == NULL) {
-          kiss_format_string(out, (kiss_obj*)kiss_make_string(L".0"), KISS_NIL);
-     }
      return KISS_NIL;
 }
 
