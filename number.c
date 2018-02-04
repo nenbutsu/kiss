@@ -1230,6 +1230,28 @@ kiss_obj* kiss_tan(kiss_obj* x) {
      }
 }
 
+/* function: (atan x) -> <number>
+   Returns the arc tangent of x.
+   The result is a (real) number that lies between −π/2 and π/2 (both exclusive).
+   The following definition for (one-argument) arc tangent determines the range and branch cuts:
+   arctan x = (log (1 + ix) - log (1 - ix)) / 2i
+   An error shall be signaled if x is not a number (error-id. domain-error).*/
+kiss_obj* kiss_atan(kiss_obj* x) {
+     Kiss_Number(x);
+     switch (KISS_OBJ_TYPE(x)) {
+     case KISS_FIXNUM:
+          return (kiss_obj*)kiss_make_float(atan(kiss_ptr_int(x)));
+     case KISS_BIGNUM:
+          return (kiss_obj*)kiss_make_float(atan(mpz_get_d(((kiss_bignum_t*)x)->mpz)));
+     case KISS_FLOAT:
+          return (kiss_obj*)kiss_make_float(atan(((kiss_float_t*)x)->f));
+     default:
+          fwprintf(stderr, L"kiss_atan: unknown primitive number type = %d",
+                   KISS_OBJ_TYPE(x));
+          exit(EXIT_FAILURE);
+     }
+}
+
 /* function: (max x+) -> <number>
    The function max returns the greatest (closest to positive infinity) of its arguments.
    The comparison is done by >.

@@ -589,6 +589,7 @@ kiss_obj* kiss_lcm(kiss_obj* z1, kiss_obj* z2);
 kiss_obj* kiss_sin(kiss_obj* x);
 kiss_obj* kiss_cos(kiss_obj* x);
 kiss_obj* kiss_tan(kiss_obj* x);
+kiss_obj* kiss_atan(kiss_obj* x);
 
 kiss_obj* kiss_max(const kiss_obj* x, const kiss_obj* const rest);
 kiss_obj* kiss_min(const kiss_obj* x, const kiss_obj* const rest);
