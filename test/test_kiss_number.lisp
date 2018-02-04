@@ -54,3 +54,18 @@
 (= (div (- *most-negative-fixnum* 1) *most-negative-fixnum*) 1)
 (= (div (- *most-negative-fixnum* 1) *most-positive-fixnum*) -2)
 
+;; gcd
+(= (gcd (* *most-positive-fixnum* 3) (* *most-positive-fixnum* 6))
+   (* *most-positive-fixnum* 3))
+
+
+;; lcm
+(= (lcm (* *most-positive-fixnum* 3) (* *most-positive-fixnum* 6))
+   (* *most-positive-fixnum* 6))
+
+(= (* (* *most-positive-fixnum* 3) (* *most-positive-fixnum* 6))
+   (* (lcm (* *most-positive-fixnum* 3) (* *most-positive-fixnum* 6))
+      (gcd (* *most-positive-fixnum* 3) (* *most-positive-fixnum* 6))))
+
+   
+

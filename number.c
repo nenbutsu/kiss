@@ -944,6 +944,10 @@ kiss_obj* kiss_exp(kiss_obj* x) {
      }
 }
 
+kiss_obj* kiss_expt(const kiss_obj* const x, const kiss_obj* const y) {
+     
+}
+
 /* function: (floor x) -> <integer> 
    Returns the greatest integer less than or equal to x.
    Thatis, x is truncated towards negative infinity.
