@@ -2501,6 +2501,24 @@ kiss_symbol_t KISS_Ssqrt = {
     KISS_NIL,                /* plist */
 };
 
+kiss_symbol_t KISS_Sisqrt;
+kiss_cfunction_t KISS_CFisqrt = {
+    KISS_CFUNCTION,   /* type */
+    &KISS_Sisqrt,       /* name */
+    (kiss_cf_t*)kiss_isqrt,         /* C function name */
+    1,                /* minimum argument number */
+    1,                /* maximum argument number */
+};
+kiss_symbol_t KISS_Sisqrt = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"isqrt",
+    KISS_CONSTANT_FSLOT,
+    NULL,                    /* var */
+    (kiss_obj*)&KISS_CFisqrt,  /* fun */
+    KISS_NIL,                /* plist */
+};
+
 kiss_symbol_t KISS_Slog;
 kiss_cfunction_t KISS_CFlog = {
     KISS_CFUNCTION,   /* type */
@@ -4318,7 +4336,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Snum_eq, &KISS_Snum_neq,
     &KISS_Snum_lessthan, &KISS_Snum_lessthan_eq, &KISS_Snum_greaterthan, &KISS_Snum_greaterthan_eq,
     &KISS_Sabs, &KISS_Sexp, &KISS_Sexpt, &KISS_Slog, &KISS_Ssin,&KISS_Scos, &KISS_Stan,
-    &KISS_Ssqrt,
+    &KISS_Ssqrt, &KISS_Sisqrt,
     &KISS_Sfloor, &KISS_Sceiling, &KISS_Struncate, &KISS_Sround, 
     &KISS_Sfloat,
     &KISS_Sdiv, &KISS_Smod, &KISS_Sgcd, &KISS_Slcm, 

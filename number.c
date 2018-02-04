@@ -1020,6 +1020,29 @@ kiss_obj* kiss_sqrt(const kiss_obj* const x) {
      return kiss_fixnum_if_possible((kiss_obj*)kiss_make_float(sqrt(f)));
 }
 
+/* function: (isqrt z) -> <integer>
+   Returns the greatest integer less than or equal to the exact positive square root of Z.
+   An error shall be signaled if Z is not a non-negative integer (error-id. domain-error).*/
+kiss_obj* kiss_isqrt(const kiss_obj* const x) {
+     Kiss_Non_Negative_Integer(x);
+     switch (KISS_OBJ_TYPE(x)) {
+     case KISS_FIXNUM: {
+          kiss_bignum_t* z = kiss_make_bignum(kiss_ptr_int(x));
+          mpz_sqrt(z->mpz, z->mpz);
+          return kiss_fixnum_if_possible((kiss_obj*)z);
+     }
+     case KISS_BIGNUM: {
+          kiss_bignum_t* z = kiss_make_bignum(0);
+          mpz_sqrt(z->mpz, ((kiss_bignum_t*)x)->mpz);
+          return (kiss_obj*)z;
+     }
+     default:
+          fwprintf(stderr, L"kiss_isqrt: unknown primitive number type = %d",
+                   KISS_OBJ_TYPE(x));
+          exit(EXIT_FAILURE);
+     }
+}
+
 /* function: (floor x) -> <integer> 
    Returns the greatest integer less than or equal to x.
    Thatis, x is truncated towards negative infinity.

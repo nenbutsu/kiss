@@ -573,6 +573,7 @@ kiss_obj* kiss_abs(kiss_obj* x);
 kiss_obj* kiss_exp(kiss_obj* x);
 kiss_obj* kiss_expt(const kiss_obj* const x1, const kiss_obj* const x2);
 kiss_obj* kiss_sqrt(const kiss_obj* const x);
+kiss_obj* kiss_isqrt(const kiss_obj* const x);
 kiss_obj* kiss_log(kiss_obj* x);
 kiss_obj* kiss_floor(kiss_obj* x);
 kiss_obj* kiss_ceiling(kiss_obj* x);
@@ -787,6 +788,15 @@ kiss_obj* Kiss_Non_Zero_Integer(const kiss_obj* const obj) {
      Kiss_Integer(obj);
      if (kiss_num_eq(obj, kiss_make_fixnum(0)) == KISS_T) {
           Kiss_Domain_Error(obj, L"non zero integer");
+     }
+     return (kiss_obj*)obj;
+}
+
+inline
+kiss_obj* Kiss_Non_Negative_Integer(const kiss_obj* const obj) {
+     Kiss_Integer(obj);
+     if (kiss_num_lessthan(obj, kiss_make_fixnum(0)) == KISS_T) {
+          Kiss_Domain_Error(obj, L"non negative integer");
      }
      return (kiss_obj*)obj;
 }
