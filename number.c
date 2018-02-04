@@ -844,28 +844,44 @@ kiss_obj* kiss_mod(kiss_obj* a, kiss_obj* b) {
 }
 
 /* function: (gcd z1 z2) -> <integer>
-   gcd returns the greatest common divisor of its integer arguments. 
+   GCD returns the greatest common divisor of its integer arguments. 
    The result is a non-negative integer. 
-   For nonzero arguments the greatest common divisor is the largest integer z 
-   such that z1 and z2 are integral multiples of z.
-   An error shall be signaled if either z1 or z2 is not an integer 
-   (error-id. domain-error).
-*/
+   For nonzero arguments the greatest common divisor is the largest integer z
+   such that Z1 and Z2 are integral multiples of Z.
+   An error shall be signaled if either Z1 or Z2 is not an integer 
+   (error-id. domain-error). */
 kiss_obj* kiss_gcd(kiss_obj* z1, kiss_obj* z2) {
-     fwprintf(stderr, L"kiss_gcd: not implemented");
-     exit(EXIT_FAILURE);
+     // Euclidean algorithm
+     Kiss_Integer(z1);
+     Kiss_Integer(z2);
+     z1 = kiss_abs(z1);
+     z2 = kiss_abs(z2);
+     if (kiss_num_lessthan(z2, z1) == KISS_T) {
+          kiss_obj* tmp = z2;
+          z2 = z1;
+          z1 = tmp;
+     }
+     // z1 <= z2
+     while (kiss_num_eq(z1, kiss_make_fixnum(0)) == KISS_NIL) {
+          kiss_obj* r = kiss_mod(z2, z1);
+          z2 = z1;
+          z1 = r;
+     }
+     return z2;
 }
 
 /* function: (lcm z1 z2) -> <integer>
-   lcm returns the least common multiple of its integer arguments.
-   gcd and lcm satisfies: (= (* (gcd m n) (lcm m n)) (abs (* m n)))
+   LCM returns the least common multiple of its integer arguments.
+   GCD and LCM satisfies: (= (* (gcd m n) (lcm m n)) (abs (* m n)))
    That is, the evaluation of the above form always return t.
-   An error shall be signaled if either z1 or z2 is not an integer
-   (error-id. domain-error).
-*/
+   An error shall be signaled if either Z1 or Z2 is not an integer
+   (error-id. domain-error). */
 kiss_obj* kiss_lcm(kiss_obj* z1, kiss_obj* z2) {
-     fwprintf(stderr, L"kiss_lcm: not implemented");
-     exit(EXIT_FAILURE);
+     kiss_obj* gcd = kiss_gcd(z1, z2);
+     if (kiss_num_eq(gcd, kiss_make_fixnum(0)) == KISS_T) {
+          return kiss_make_fixnum(0);
+     }
+     return kiss_div(kiss_multiply2(kiss_abs(z1), kiss_abs(z2)), gcd);
 }
 
 
@@ -1062,30 +1078,57 @@ kiss_obj* kiss_log(kiss_obj* x) {
 }
 
 /* function: (sin x) -> <number>
-   The function sin returns the sine of x. 
-   x must be given in radians.
-*/
+   The function sin returns the sine of X. X must be given in radians. */
 kiss_obj* kiss_sin(kiss_obj* x) {
-     fwprintf(stderr, L"kiss_sin: not implemented");
-     exit(EXIT_FAILURE);
+     Kiss_Number(x);
+     switch (KISS_OBJ_TYPE(x)) {
+     case KISS_FIXNUM:
+          return (kiss_obj*)kiss_make_float(sin(kiss_ptr_int(x)));
+     case KISS_BIGNUM:
+          return (kiss_obj*)kiss_make_float(sin(mpz_get_d(((kiss_bignum_t*)x)->mpz)));
+     case KISS_FLOAT:
+          return (kiss_obj*)kiss_make_float(sin(((kiss_float_t*)x)->f));
+     default:
+          fwprintf(stderr, L"kiss_sin: unknown primitive number type = %d",
+                   KISS_OBJ_TYPE(x));
+          exit(EXIT_FAILURE);
+     }
 }
 
 /* function: (cos x) -> <number>
-   The function cos returns the cosine of x. 
-   x must be given in radians.
-*/
+   The function cos returns the cosine of X. X must be given in radians. */
 kiss_obj* kiss_cos(kiss_obj* x) {
-     fwprintf(stderr, L"kiss_cos: not implemented");
-     exit(EXIT_FAILURE);
+     Kiss_Number(x);
+     switch (KISS_OBJ_TYPE(x)) {
+     case KISS_FIXNUM:
+          return (kiss_obj*)kiss_make_float(cos(kiss_ptr_int(x)));
+     case KISS_BIGNUM:
+          return (kiss_obj*)kiss_make_float(cos(mpz_get_d(((kiss_bignum_t*)x)->mpz)));
+     case KISS_FLOAT:
+          return (kiss_obj*)kiss_make_float(cos(((kiss_float_t*)x)->f));
+     default:
+          fwprintf(stderr, L"kiss_sin: unknown primitive number type = %d",
+                   KISS_OBJ_TYPE(x));
+          exit(EXIT_FAILURE);
+     }
 }
 
 /* function: (tan x) -> <number>
-   The function tan returns the tangent of x. 
-   x must be given in radians.
-*/
+   The function tan returns the tangent of X. X must be given in radians. */
 kiss_obj* kiss_tan(kiss_obj* x) {
-     fwprintf(stderr, L"kiss_tan: not implemented");
-     exit(EXIT_FAILURE);
+     Kiss_Number(x);
+     switch (KISS_OBJ_TYPE(x)) {
+     case KISS_FIXNUM:
+          return (kiss_obj*)kiss_make_float(tan(kiss_ptr_int(x)));
+     case KISS_BIGNUM:
+          return (kiss_obj*)kiss_make_float(tan(mpz_get_d(((kiss_bignum_t*)x)->mpz)));
+     case KISS_FLOAT:
+          return (kiss_obj*)kiss_make_float(tan(((kiss_float_t*)x)->f));
+     default:
+          fwprintf(stderr, L"kiss_sin: unknown primitive number type = %d",
+                   KISS_OBJ_TYPE(x));
+          exit(EXIT_FAILURE);
+     }
 }
 
 /* function: (max x+) -> <number>
