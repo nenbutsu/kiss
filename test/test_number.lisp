@@ -1098,3 +1098,105 @@
                 (atan2 'a 1))
   nil)
 
+;; sinh
+(= (sinh 0) 0)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (sinh))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (sinh 2 3))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (sinh 'a))
+  nil)
+
+;; cosh
+(= (cosh 0) 1)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (cosh))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (cosh 2 3))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (cosh 'a))
+  nil)
+
+;; tanh
+(= (tanh 0) 0)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (tanh))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (tanh 2 3))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (tanh 'a))
+  nil)
+
+;; atanh
+(= (atanh 0) 0)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (atanh 1))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (atanh))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (atanh 2 3))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (atanh 'a))
+  nil)
