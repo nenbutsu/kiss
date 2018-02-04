@@ -79,7 +79,7 @@ kiss_obj* kiss_float(const kiss_obj* const x) {
           return (kiss_obj*)kiss_make_float(mpz_get_d(((kiss_bignum_t*)x)->mpz));
      }
      case KISS_FLOAT:
-          return (kiss_obj*)x;
+          return (kiss_obj*)kiss_make_float(((kiss_float_t*)x)->f);
      default:
           fwprintf(stderr, L"kiss_float: unknown primitive number type = %d", KISS_OBJ_TYPE(x));
           exit(EXIT_FAILURE);
@@ -937,24 +937,9 @@ kiss_obj* kiss_abs(kiss_obj* x) {
    Returns e raised to the power X, where e is the base of the natural logarithm.
    An error shall be signaled if X is not a number (error-id. domain-error). */
 kiss_obj* kiss_exp(kiss_obj* x) {
-     Kiss_Number(x);
-     switch (KISS_OBJ_TYPE(x)) {
-     case KISS_FIXNUM: {
-          return (kiss_obj*)kiss_make_float(exp(kiss_ptr_int(x)));
-     }
-     case KISS_BIGNUM: {
-          kiss_bignum_t* z = (kiss_bignum_t*)x;
-          return (kiss_obj*)kiss_make_float(exp(mpz_get_d(z->mpz)));
-     }
-     case KISS_FLOAT: {
-          kiss_float_t* f = (kiss_float_t*)x;
-          return (kiss_obj*)kiss_make_float(exp(f->f));
-     }
-     default:
-          fwprintf(stderr, L"kiss_exp: unknown primitive number type = %d",
-                   KISS_OBJ_TYPE(x));
-          exit(EXIT_FAILURE);
-     }
+     kiss_float_t* f = (kiss_float_t*)kiss_float(x);
+     f->f = exp(f->f);
+     return (kiss_obj*)f;
 }
 
 /* function: (expt x1 x2) -> <number>
@@ -999,25 +984,9 @@ kiss_obj* kiss_expt(const kiss_obj* const x1, const kiss_obj* const x2) {
    An error shall be signaled if x is not a non-negative number (error-id. domain-error). */
 kiss_obj* kiss_sqrt(const kiss_obj* const x) {
      Kiss_Non_Negative_Number(x);
-     double f = 0.0;
-     switch (KISS_OBJ_TYPE(x)) {
-     case KISS_FIXNUM:
-          f = kiss_ptr_int(x);
-          break;
-     case KISS_BIGNUM: {
-          kiss_bignum_t* z = (kiss_bignum_t*)x;
-          f = mpz_get_d(z->mpz);
-          break;
-     }
-     case KISS_FLOAT:
-          f = ((kiss_float_t*)x)->f;
-          break;
-     default:
-          fwprintf(stderr, L"kiss_sqrt: unknown primitive number type = %d",
-                   KISS_OBJ_TYPE(x));
-          exit(EXIT_FAILURE);
-     }
-     return kiss_fixnum_if_possible((kiss_obj*)kiss_make_float(sqrt(f)));
+     kiss_float_t* f = (kiss_float_t*)kiss_float(x);
+     f->f = sqrt(f->f);
+     return kiss_fixnum_if_possible((kiss_obj*)f);
 }
 
 /* function: (isqrt z) -> <integer>
@@ -1162,72 +1131,33 @@ kiss_obj* kiss_round(kiss_obj* x) {
    An error shall be signaled if X is not a positive number (error-id. domain-error). */
 kiss_obj* kiss_log(kiss_obj* x) {
      Kiss_Positive_Number(x);
-     switch (KISS_OBJ_TYPE(x)) {
-     case KISS_FIXNUM:
-          return (kiss_obj*)kiss_make_float(log(kiss_ptr_int(x)));
-     case KISS_BIGNUM:
-          return (kiss_obj*)kiss_make_float(log(mpz_get_d(((kiss_bignum_t*)x)->mpz)));
-     case KISS_FLOAT:
-          return (kiss_obj*)kiss_make_float(log(((kiss_float_t*)x)->f));
-     default:
-          fwprintf(stderr, L"kiss_log: unknown primitive number type = %d",
-                   KISS_OBJ_TYPE(x));
-          exit(EXIT_FAILURE);
-     }
+     kiss_float_t* f = (kiss_float_t*)kiss_float(x);
+     f->f = log(f->f);
+     return (kiss_obj*)f;
 }
 
 /* function: (sin x) -> <number>
    The function sin returns the sine of X. X must be given in radians. */
 kiss_obj* kiss_sin(kiss_obj* x) {
-     Kiss_Number(x);
-     switch (KISS_OBJ_TYPE(x)) {
-     case KISS_FIXNUM:
-          return (kiss_obj*)kiss_make_float(sin(kiss_ptr_int(x)));
-     case KISS_BIGNUM:
-          return (kiss_obj*)kiss_make_float(sin(mpz_get_d(((kiss_bignum_t*)x)->mpz)));
-     case KISS_FLOAT:
-          return (kiss_obj*)kiss_make_float(sin(((kiss_float_t*)x)->f));
-     default:
-          fwprintf(stderr, L"kiss_sin: unknown primitive number type = %d",
-                   KISS_OBJ_TYPE(x));
-          exit(EXIT_FAILURE);
-     }
+     kiss_float_t* f = (kiss_float_t*)kiss_float(x);
+     f->f = sin(f->f);
+     return (kiss_obj*)f;
 }
 
 /* function: (cos x) -> <number>
    The function cos returns the cosine of X. X must be given in radians. */
 kiss_obj* kiss_cos(kiss_obj* x) {
-     Kiss_Number(x);
-     switch (KISS_OBJ_TYPE(x)) {
-     case KISS_FIXNUM:
-          return (kiss_obj*)kiss_make_float(cos(kiss_ptr_int(x)));
-     case KISS_BIGNUM:
-          return (kiss_obj*)kiss_make_float(cos(mpz_get_d(((kiss_bignum_t*)x)->mpz)));
-     case KISS_FLOAT:
-          return (kiss_obj*)kiss_make_float(cos(((kiss_float_t*)x)->f));
-     default:
-          fwprintf(stderr, L"kiss_sin: unknown primitive number type = %d",
-                   KISS_OBJ_TYPE(x));
-          exit(EXIT_FAILURE);
-     }
+     kiss_float_t* f = (kiss_float_t*)kiss_float(x);
+     f->f = cos(f->f);
+     return (kiss_obj*)f;
 }
 
 /* function: (tan x) -> <number>
    The function tan returns the tangent of X. X must be given in radians. */
 kiss_obj* kiss_tan(kiss_obj* x) {
-     Kiss_Number(x);
-     switch (KISS_OBJ_TYPE(x)) {
-     case KISS_FIXNUM:
-          return (kiss_obj*)kiss_make_float(tan(kiss_ptr_int(x)));
-     case KISS_BIGNUM:
-          return (kiss_obj*)kiss_make_float(tan(mpz_get_d(((kiss_bignum_t*)x)->mpz)));
-     case KISS_FLOAT:
-          return (kiss_obj*)kiss_make_float(tan(((kiss_float_t*)x)->f));
-     default:
-          fwprintf(stderr, L"kiss_sin: unknown primitive number type = %d",
-                   KISS_OBJ_TYPE(x));
-          exit(EXIT_FAILURE);
-     }
+     kiss_float_t* f = (kiss_float_t*)kiss_float(x);
+     f->f = tan(f->f);
+     return (kiss_obj*)f;
 }
 
 /* function: (atan x) -> <number>
@@ -1237,19 +1167,28 @@ kiss_obj* kiss_tan(kiss_obj* x) {
    arctan x = (log (1 + ix) - log (1 - ix)) / 2i
    An error shall be signaled if x is not a number (error-id. domain-error).*/
 kiss_obj* kiss_atan(kiss_obj* x) {
-     Kiss_Number(x);
-     switch (KISS_OBJ_TYPE(x)) {
-     case KISS_FIXNUM:
-          return (kiss_obj*)kiss_make_float(atan(kiss_ptr_int(x)));
-     case KISS_BIGNUM:
-          return (kiss_obj*)kiss_make_float(atan(mpz_get_d(((kiss_bignum_t*)x)->mpz)));
-     case KISS_FLOAT:
-          return (kiss_obj*)kiss_make_float(atan(((kiss_float_t*)x)->f));
-     default:
-          fwprintf(stderr, L"kiss_atan: unknown primitive number type = %d",
-                   KISS_OBJ_TYPE(x));
-          exit(EXIT_FAILURE);
-     }
+     kiss_float_t* f = (kiss_float_t*)kiss_float(x);
+     f->f = atan(f->f);
+     return (kiss_obj*)f;
+}
+
+/* function: (atan x1 x2) -> <number>
+   Given a point (x2, x1) in rectangular coordinates, this function
+   returns the phase of its representation in polar coordinates. If x1
+   is zero and x2 is negative, the result is positive. If x1 and x2
+   are both zero, the result is implementation defined.
+
+   An error shall be signaled if x is not a number (error-id. domain-error).
+
+   The value of atan2 is always between −π (exclusive) and π
+   (inclusive) when minus zero is not supported; when minus zero is
+   supported, the range includes −π. */
+kiss_obj* kiss_atan2(kiss_obj* x1, kiss_obj* x2) {
+     kiss_float_t* f1 = (kiss_float_t*)kiss_float(x1);
+     kiss_float_t* f2 = (kiss_float_t*)kiss_float(x2);
+     kiss_float_t* f  = kiss_make_float(0.0);
+     f->f = atan2(f1->f, f2->f);
+     return (kiss_obj*)f;
 }
 
 /* function: (max x+) -> <number>
