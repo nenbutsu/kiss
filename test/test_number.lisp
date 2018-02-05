@@ -1576,5 +1576,3 @@
 		    (signal-condition condition nil)))
                 (isqrt 'a))
   nil)
-
-
