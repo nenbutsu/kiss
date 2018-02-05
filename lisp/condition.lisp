@@ -364,6 +364,11 @@
                             'form form
                             'message message)
 		    continuable))
+(defun kiss::signal-division-by-zero-error (operation operands continuable)
+  (signal-condition (create (class <division-by-zero>)
+                            'operation operation
+                            'operands operands)
+		    continuable))
 
 
 
