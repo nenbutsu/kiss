@@ -194,8 +194,13 @@ void Kiss_Cannot_Parse_Number_Error(const kiss_obj* const str) {
 }
 
 _Noreturn
-void Kiss_Division_By_Zero_Error(const kiss_obj* const i) {
-     Kiss_Err(L"Division by zero: ~S", i);
+void Kiss_Division_By_Zero_Error(const kiss_obj* const operation, const kiss_obj* const operands) {
+     if (is_condition_working()) {
+	  kiss_c_funcall(L"kiss::signal-division-by-zero-error",
+                         kiss_c_list(3, operation, operands, KISS_NIL));
+     } else {
+          Kiss_Err(L"Division by zero: ~S", operation);
+     }
      exit(EXIT_FAILURE);
 }
 
