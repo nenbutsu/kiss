@@ -1410,11 +1410,23 @@ kiss_obj* kiss_quotient2(const kiss_obj* const x, const kiss_obj* const y) {
      }
 }
 
-kiss_obj* kiss_quotient(const kiss_obj* x, const kiss_obj* y, const kiss_obj* const rest) {
+kiss_obj* kiss_quotient(const kiss_obj* a, const kiss_obj* b, const kiss_obj* const rest) {
+     const kiss_obj* x = a;
+     const kiss_obj* y = b;
      Kiss_Number(x);
+     Kiss_Number(y);
+     if (kiss_num_eq(y, kiss_make_fixnum(0)) == KISS_T) {
+          Kiss_Division_By_Zero_Error(kiss_symbol(L"quotient"), kiss_c_list(3, a, b, rest));
+     }
+     
      x = kiss_quotient2(x, Kiss_Non_Zero_Number(y));
      for (const kiss_obj* p = rest; p != KISS_NIL; p = kiss_cdr(p)) {
-          x = kiss_quotient2(x, Kiss_Non_Zero_Number(KISS_CAR(p)));
+          y = KISS_CAR(p);
+          Kiss_Number(y);
+          if (kiss_num_eq(y, kiss_make_fixnum(0)) == KISS_T) {
+               Kiss_Division_By_Zero_Error(kiss_symbol(L"quotient"), kiss_c_list(3, a, b, rest));
+          }
+          x = kiss_quotient2(x, y);
      }
      return (kiss_obj*)x;
 }
