@@ -722,7 +722,10 @@ kiss_obj* kiss_div_fixnum(kiss_obj* a, kiss_obj* b) {
    An error shall be signaled if either z1 or z2 is not an integer (error-id. domain-error). */
 kiss_obj* kiss_div(kiss_obj* a, kiss_obj* b) {
      Kiss_Integer(a);
-     Kiss_Non_Zero_Integer(b);
+     Kiss_Integer(b);
+     if (kiss_num_eq(b, kiss_make_fixnum(0)) == KISS_T) {
+          Kiss_Division_By_Zero_Error(kiss_symbol(L"div"), kiss_c_list(2, a, b));
+     }
      switch (KISS_OBJ_TYPE(a)) {
      case KISS_FIXNUM: {
           switch (KISS_OBJ_TYPE(b)) {
@@ -807,7 +810,10 @@ kiss_obj* kiss_mod_fixnum(kiss_obj* a, kiss_obj* b) {
    and the difference of z1 and this result is divisible by z2 without remainder. */
 kiss_obj* kiss_mod(kiss_obj* a, kiss_obj* b) {
      Kiss_Integer(a);
-     Kiss_Non_Zero_Integer(b);
+     Kiss_Integer(b);
+     if (kiss_num_eq(b, kiss_make_fixnum(0)) == KISS_T) {
+          Kiss_Division_By_Zero_Error(kiss_symbol(L"mod"), kiss_c_list(2, a, b));
+     }
      switch (KISS_OBJ_TYPE(a)) {
      case KISS_FIXNUM: {
           switch (KISS_OBJ_TYPE(b)) {

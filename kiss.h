@@ -465,7 +465,7 @@ kiss_obj* Kiss_Lambda_Expression(const kiss_obj* const p);
 _Noreturn
 void Kiss_Cannot_Parse_Number_Error(const kiss_obj* const str);
 _Noreturn
-void Kiss_Division_By_Zero_Error(const kiss_obj* const i);
+void Kiss_Division_By_Zero_Error(const kiss_obj* const operation, const kiss_obj* const operands);
 _Noreturn
 void Kiss_End_Of_Stream_Error(const kiss_obj* const stream);
 
