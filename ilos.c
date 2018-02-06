@@ -200,3 +200,33 @@ kiss_obj* kiss_subclassp(const kiss_obj* const sub, const kiss_obj* const super)
      kiss_obj* cpl = kiss_slotref(sub, kiss_symbol(L":cpl"));
      return kiss_member(super, cpl) != KISS_NIL ? KISS_T : KISS_NIL;
 }
+
+/* spec. p. 51
+   Let C1, . . . , Cn be the direct superclasses of C in the order defined in
+   the defclass defining form for C. Let P1, . . ., Pn be the class precedence
+   lists for C1, . . . , Cn, respectively. Define P . Q on class precedence
+   lists P and Q to be the two lists appended. Then the class precedence
+   list for C is C . P1 . . . . Pn with duplicate classes removed by
+   repeated application of the following rule: If a class appears twice in
+   the resulting class precedence list, the leftmost occurrence is removed. */
+kiss_obj* kiss_compute_cpl(const kiss_obj* const class, const kiss_obj* const supers) {
+     kiss_obj* head = kiss_cons(KISS_NIL, KIS_NIL);
+     kiss_obj* tail = head;
+     kiss_obj* cpl_name = kiss_symbol(L":cpl");
+     for (const kiss_obj* p = supers; KISS_IS_CONS(p); p = KISS_CDR(p)) {
+          kiss_obj* s = Kiss_Class(KISS_CAR(p));
+          kiss_obj* cpl = kiss_slotref(s, cpl_name);
+          kiss_set_cdr(kiss_cons(cpl, KISS_NIL), tail);
+          tail = KISS_CDR(tail);
+     }
+     kiss_obj* list = kiss_append(KISS_CDR(head));
+     tail = head;
+     for (const kiss_obj* p = list; KISS_IS_CONS(p); p = KISS_CDR(p)) {
+          kiss_obj* obj = KISS_CAR(p);
+          if (kiss_member(obj, KISS_CDR(p)) == KISS_NIL) {
+               kiss_set_cdr(kiss_cons(obj, KISS_NIL), tail);
+               tail = KISS_CDR(tail);
+          }
+     }
+     return KISS_CDR(head);
+}
