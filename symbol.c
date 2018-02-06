@@ -4052,7 +4052,7 @@ kiss_symbol_t KISS_Sprovide = {
 };
 
 /*** ilos.c ***/
-kiss_symbol_t KISS_Sk_classes = {
+kiss_symbol_t KISS_Skiss_classes = {
     KISS_SYMBOL,
     NULL,              /* gc_ptr */
     L"kiss::classes",
@@ -4092,112 +4092,39 @@ kiss_symbol_t KISS_Smake_ilos_obj = {
     KISS_NIL,                 /* plist */
 };
 
-kiss_symbol_t KISS_Sk_class;
-kiss_cfunction_t KISS_CFk_class = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sk_class,   /* name */
-    (kiss_cf_t*)kiss_k_class,    /* C function name */
+kiss_symbol_t KISS_Sclass;
+kiss_cfunction_t KISS_CFclass = {
+    KISS_CMACRO, /* type */
+    &KISS_Sclass,   /* name */
+    (kiss_cf_t*)kiss_class,    /* C function name */
     1,         /* minimum argument number */
     1,        /* maximum argument number */
 };
-kiss_symbol_t KISS_Sk_class = {
+kiss_symbol_t KISS_Sclass = {
     KISS_SYMBOL,
     NULL,              /* gc_ptr */
-    L"kiss::class",
+    L"class",
     KISS_CONSTANT_FSLOT,
     NULL,                /* var */
-    (kiss_obj*)&KISS_CFk_class, /* fun */
+    (kiss_obj*)&KISS_CFclass, /* fun */
     KISS_NIL,                 /* plist */
 };
 
-kiss_symbol_t KISS_Sobject_p;
-kiss_cfunction_t KISS_CFobject_p = {
+kiss_symbol_t KISS_Silos_obj_p;
+kiss_cfunction_t KISS_CFilos_obj_p = {
     KISS_CFUNCTION, /* type */
-    &KISS_Sobject_p,   /* name */
-    (kiss_cf_t*)kiss_object_p,    /* C function name */
+    &KISS_Silos_obj_p,   /* name */
+    (kiss_cf_t*)kiss_ilos_obj_p,    /* C function name */
     1,         /* minimum argument number */
     1,        /* maximum argument number */
 };
-kiss_symbol_t KISS_Sobject_p = {
+kiss_symbol_t KISS_Silos_obj_p = {
     KISS_SYMBOL,
     NULL,              /* gc_ptr */
-    L"object-p",
+    L"ilos-obj-p",
     KISS_CONSTANT_FSLOT,
     NULL,                /* var */
-    (kiss_obj*)&KISS_CFobject_p, /* fun */
-    KISS_NIL,                 /* plist */
-};
-
-kiss_symbol_t KISS_Silos_obj_plist;
-kiss_cfunction_t KISS_CFilos_obj_plist = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Silos_obj_plist,   /* name */
-    (kiss_cf_t*)kiss_ilos_obj_plist,    /* C function name */
-    1,         /* minimum argument number */
-    1,        /* maximum argument number */
-};
-kiss_symbol_t KISS_Silos_obj_plist = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"ilos-obj-plist",
-    KISS_CONSTANT_FSLOT,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFilos_obj_plist, /* fun */
-    KISS_NIL,                 /* plist */
-};
-
-
-kiss_symbol_t KISS_Sset_ilos_obj_plist;
-kiss_cfunction_t KISS_CFset_ilos_obj_plist = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sset_ilos_obj_plist,   /* name */
-    (kiss_cf_t*)kiss_set_ilos_obj_plist,    /* C function name */
-    2,         /* minimum argument number */
-    2,        /* maximum argument number */
-};
-kiss_symbol_t KISS_Sset_ilos_obj_plist = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"set-ilos-obj-plist",
-    KISS_CONSTANT_FSLOT,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFset_ilos_obj_plist, /* fun */
-    KISS_NIL,                 /* plist */
-};
-
-kiss_symbol_t KISS_Soref;
-kiss_cfunction_t KISS_CForef = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Soref,   /* name */
-    (kiss_cf_t*)kiss_oref,    /* C function name */
-    2,         /* minimum argument number */
-    2,        /* maximum argument number */
-};
-kiss_symbol_t KISS_Soref = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"kiss::oref",
-    KISS_CONSTANT_FSLOT,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CForef, /* fun */
-    KISS_NIL,                 /* plist */
-};
-
-kiss_symbol_t KISS_Sset_oref;
-kiss_cfunction_t KISS_CFset_oref = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sset_oref,   /* name */
-    (kiss_cf_t*)kiss_set_oref,    /* C function name */
-    3,         /* minimum argument number */
-    3,        /* maximum argument number */
-};
-kiss_symbol_t KISS_Sset_oref = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"kiss::set-oref",
-    KISS_CONSTANT_FSLOT,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFset_oref, /* fun */
+    (kiss_obj*)&KISS_CFilos_obj_p, /* fun */
     KISS_NIL,                 /* plist */
 };
 
@@ -4216,6 +4143,42 @@ kiss_symbol_t KISS_Sclass_of = {
     KISS_CONSTANT_FSLOT,
     NULL,                /* var */
     (kiss_obj*)&KISS_CFclass_of, /* fun */
+    KISS_NIL,                 /* plist */
+};
+
+kiss_symbol_t KISS_Sslotref;
+kiss_cfunction_t KISS_CFslotref = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Sslotref,   /* name */
+    (kiss_cf_t*)kiss_slotref,    /* C function name */
+    2,         /* minimum argument number */
+    2,        /* maximum argument number */
+};
+kiss_symbol_t KISS_Sslotref = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"kiss::slotref",
+    KISS_CONSTANT_FSLOT,
+    NULL,                /* var */
+    (kiss_obj*)&KISS_CFslotref, /* fun */
+    KISS_NIL,                 /* plist */
+};
+
+kiss_symbol_t KISS_Sset_slotref;
+kiss_cfunction_t KISS_CFset_slotref = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Sset_slotref,   /* name */
+    (kiss_cf_t*)kiss_set_slotref,    /* C function name */
+    3,         /* minimum argument number */
+    3,        /* maximum argument number */
+};
+kiss_symbol_t KISS_Sset_slotref = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"kiss::set-slotref",
+    KISS_CONSTANT_FSLOT,
+    NULL,                /* var */
+    (kiss_obj*)&KISS_CFset_slotref, /* fun */
     KISS_NIL,                 /* plist */
 };
 
@@ -4537,10 +4500,10 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sread, 
 
     /* ilos.c */
-    &KISS_Sk_classes, &KISS_Sk_class,
-    &KISS_Soref, &KISS_Sset_oref,
+    &KISS_Skiss_classes, &KISS_Sclass,
     &KISS_Sclass_of,
-    &KISS_Smake_ilos_obj, &KISS_Sobject_p, &KISS_Silos_obj_plist, &KISS_Sset_ilos_obj_plist,
+    &KISS_Smake_ilos_obj, &KISS_Silos_obj_p,
+    &KISS_Sslotref, &KISS_Sset_slotref,
     
     /* predefined class names */
     &KISS_Sc_object, &KISS_Sc_built_in_class, &KISS_Sc_standard_class,

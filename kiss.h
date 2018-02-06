@@ -341,7 +341,8 @@ typedef struct {
 typedef struct {
      kiss_type type;
      void* gc_ptr;
-     kiss_obj* plist;
+     kiss_obj* class;
+     kiss_obj* slots;
 } kiss_ilos_obj_t;
 
 
@@ -716,14 +717,13 @@ kiss_obj* kiss_dynamic_let(kiss_obj* vspecs, kiss_obj* body);
 kiss_obj* kiss_set_dynamic(kiss_obj* form, kiss_obj* var);
 
 /* ilos.c */
-kiss_obj* kiss_object_p(kiss_obj* obj);
-kiss_obj* kiss_make_ilos_obj(kiss_obj* info);
-kiss_obj* kiss_ilos_obj_plist(const kiss_obj* const obj);
-kiss_obj* kiss_set_ilos_obj_plist(const kiss_obj* const plist, kiss_obj* const obj);
-kiss_obj* kiss_oref(const kiss_obj* const obj, const kiss_obj* const property);
-kiss_obj* kiss_set_oref(const kiss_obj* const value, kiss_obj* const obj, const kiss_obj* const property);
-kiss_obj* kiss_k_class(const kiss_obj* const name);
+kiss_obj* kiss_ilos_obj_p(const kiss_obj* const obj);
+kiss_obj* kiss_make_ilos_obj(const kiss_obj* const class);
+kiss_obj* kiss_class(const kiss_obj* const name);
 kiss_obj* kiss_class_of(const kiss_obj* const obj);
+kiss_obj* kiss_subclassp(const kiss_obj* const sub, const kiss_obj* const super);
+kiss_obj* kiss_slotref(const kiss_obj* const obj, const kiss_obj* const name);
+kiss_obj* kiss_set_slotref(const kiss_obj* const value, kiss_obj* const obj, kiss_obj* const name);
 // predefined class names
 kiss_symbol_t KISS_Sc_object;
 kiss_symbol_t KISS_Sc_built_in_class;
