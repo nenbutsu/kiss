@@ -16,7 +16,9 @@
   GNU General Public License for more details. */
 #include "kiss.h"
 
-/*
+/* Spec. p.14 Figure 1. Class Inheritance  
+   https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#figure_1
+
     <object>
        |
        +--> <basic-array>
@@ -82,16 +84,55 @@
        +--> <stream>
  */
 
-kiss_symbol_t KISS_Skiss_classes, KISS_Skw_class;
+// <object>
+kiss_ilos_obj_t KISS_ILOS_CLASS_built_in_class;
 
-void kiss_init_ilos(void) {
-     KISS_Skiss_classes.var = kiss_create_hash_table(KISS_NIL);
-}
+kiss_ilos_obj_t KISS_ILOS_CLASS_object = {
+     KISS_ILOS_CLASS, // type
+     NULL,          // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL, // slots
+     (kiss_obj*)&KISS_Sc_object, // name
+     KISS_T, // abstractp
+     KISS_NIL, // cpl
+};
+
+
+// <built-in-class>
+kiss_cons_t KISS_ILOS_cpl01 = {
+     KISS_CONS,
+     NULL,        // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_object,
+     KISS_NIL,
+};
+
+kiss_ilos_obj_t KISS_ILOS_CLASS_built_in_class = {
+     KISS_ILOS_CLASS, // type
+     NULL,          // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL, // slots
+     (kiss_obj*)&KISS_Sc_built_in_class, // name
+     KISS_T, // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01, // cpl
+};
+
+// <character>
+kiss_ilos_obj_t KISS_ILOS_CLASS_character = {
+     KISS_ILOS_CLASS, // type
+     NULL,          // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL, // slots
+     (kiss_obj*)&KISS_Sc_character, // name
+     KISS_NIL, // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01, // cpl
+};
+
+
 
 kiss_obj* kiss_make_ilos_obj(const kiss_obj* const class) {
     kiss_ilos_obj_t* p = Kiss_GC_Malloc(sizeof(kiss_ilos_obj_t));
     p->type = KISS_ILOS_OBJ;
-    p->class = class;
+    p->class = (kiss_obj*)class;
     p->slots = KISS_NIL;
     return (kiss_obj*)p;
 }
@@ -143,6 +184,7 @@ kiss_obj* kiss_class_of(const kiss_obj* const obj) {
 	  case KISS_CMACRO:
                return kiss_class((kiss_obj*)&KISS_Sc_function);
 	  case KISS_ILOS_OBJ:
+          case KISS_ILOS_CLASS:
                return ((kiss_ilos_obj_t*)obj)->class;
 	  case KISS_CATCHER:
 	  case KISS_BLOCK:
@@ -158,11 +200,9 @@ kiss_obj* kiss_class_of(const kiss_obj* const obj) {
 	  }
 }
 
-kiss_obj* Kiss_Class(const kiss_obj* const obj) {
-     kiss_obj* metaclass = kiss_class_of(obj);
-     if (metaclass == kiss_class((kiss_obj*)&KISS_Sc_built_in_class) ||
-         metaclass == kiss_class((kiss_obj*)&KISS_Sc_standard_class)) {
-          return obj;
+kiss_ilos_class_t* Kiss_Class(const kiss_obj* const obj) {
+     if (KISS_IS_ILOS_CLASS(obj)) {
+          return (kiss_ilos_class_t*)obj;
      } else {
           Kiss_Err(L"Not a class object: ~S", obj);
      }
@@ -177,10 +217,15 @@ kiss_obj* kiss_slotref(const kiss_obj* const obj, const kiss_obj* const name) {
      }
 }
 
+kiss_obj* kiss_slot_bound_p(const kiss_obj* const obj, const kiss_obj* const name) {
+     const kiss_obj* const binding = kiss_assoc(name, Kiss_ILOS_Obj(obj)->slots);
+     return kiss_consp(binding);
+}
+
 kiss_obj* kiss_set_slotref(const kiss_obj* const value, kiss_obj* const obj, kiss_obj* const name)
 {
-     kiss_ilos_obj* const ilos_obj = Kiss_ILOS_Obj(obj);
-     const kiss_obj* const binding = kiss_assoc(name, ilos_obj->slots);
+     kiss_ilos_obj_t* const ilos_obj = Kiss_ILOS_Obj(obj);
+     kiss_obj* binding = kiss_assoc(name, ilos_obj->slots);
      if (binding == KISS_NIL) {
           binding = kiss_cons(name, value);
           ilos_obj->slots = kiss_cons(binding, ilos_obj->slots);
@@ -190,14 +235,16 @@ kiss_obj* kiss_set_slotref(const kiss_obj* const value, kiss_obj* const obj, kis
      return (kiss_obj*)value;
 }
 
+
+
 /* function: (subclassp subclass superclass) -> boolean
    Returns t if the class SUBCLASS is a subclass of the class SUPERCLASS;
    otherwise, returns nil. An error shall be signaled if either SUBCLASS or
    SUPERCLASS is not a class object (error-id. domain-error). */
 kiss_obj* kiss_subclassp(const kiss_obj* const sub, const kiss_obj* const super) {
-     Kiss_Class(sub);
+     kiss_ilos_class_t* a = Kiss_Class(sub);
      Kiss_Class(super);
-     kiss_obj* cpl = kiss_slotref(sub, kiss_symbol(L":cpl"));
+     kiss_obj* cpl = a->cpl;
      return kiss_member(super, cpl) != KISS_NIL ? KISS_T : KISS_NIL;
 }
 
@@ -210,12 +257,11 @@ kiss_obj* kiss_subclassp(const kiss_obj* const sub, const kiss_obj* const super)
    repeated application of the following rule: If a class appears twice in
    the resulting class precedence list, the leftmost occurrence is removed. */
 kiss_obj* kiss_compute_cpl(const kiss_obj* const class, const kiss_obj* const supers) {
-     kiss_obj* head = kiss_cons(KISS_NIL, KIS_NIL);
+     kiss_obj* head = kiss_cons(KISS_NIL, KISS_NIL);
      kiss_obj* tail = head;
-     kiss_obj* cpl_name = kiss_symbol(L":cpl");
      for (const kiss_obj* p = supers; KISS_IS_CONS(p); p = KISS_CDR(p)) {
-          kiss_obj* s = Kiss_Class(KISS_CAR(p));
-          kiss_obj* cpl = kiss_slotref(s, cpl_name);
+          kiss_ilos_class_t* s = Kiss_Class(KISS_CAR(p));
+          kiss_obj* cpl = s->cpl;
           kiss_set_cdr(kiss_cons(cpl, KISS_NIL), tail);
           tail = KISS_CDR(tail);
      }
@@ -230,3 +276,14 @@ kiss_obj* kiss_compute_cpl(const kiss_obj* const class, const kiss_obj* const su
      }
      return KISS_CDR(head);
 }
+
+/* function: (instancep obj class) -> boolean
+   Returns t if OBJ is an instance (directly or otherwise) of the class CLASS; 
+   otherwise, returns nil. OBJ may be any ISLISP object. 
+   An error shall be signaled if CLASS is not a class object (error-id. domain-error ). */
+kiss_obj* kiss_instancp(const kiss_obj* const obj, const kiss_obj* const class) {
+     Kiss_Class(class);
+     kiss_obj* c = kiss_class_of(obj);
+     return c == class || kiss_subclassp(c, class) ? KISS_T : KISS_NIL;
+}
+

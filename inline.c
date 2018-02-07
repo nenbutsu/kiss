@@ -269,7 +269,7 @@ extern inline
 kiss_obj* kiss_reverse(kiss_obj* p);
 
 extern inline
-kiss_obj* kiss_member(kiss_obj* const obj, kiss_obj* const list);
+kiss_obj* kiss_member(const kiss_obj* const obj, kiss_obj* const list);
 
 extern inline
 kiss_obj* kiss_member_using(const kiss_obj* const predicate, kiss_obj* const obj, kiss_obj* const list);

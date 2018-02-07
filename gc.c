@@ -163,7 +163,8 @@ static inline
 void kiss_gc_mark_oo_obj(kiss_ilos_obj_t* const obj) {
      if (is_marked((kiss_gc_obj*)obj)) { return; }
      mark_flag((kiss_gc_obj*)obj);
-     kiss_gc_mark_obj(obj->plist);
+     kiss_gc_mark_obj(obj->class);
+     kiss_gc_mark_obj(obj->slots);
 }
 
 void kiss_gc_mark_obj(kiss_obj* obj) {

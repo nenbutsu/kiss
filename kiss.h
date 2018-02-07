@@ -71,6 +71,7 @@ typedef enum {
      KISS_TAGBODY,
 
      KISS_ILOS_OBJ,
+     KISS_ILOS_CLASS,
 } kiss_type;
 
 typedef struct {
@@ -345,6 +346,16 @@ typedef struct {
      kiss_obj* slots;
 } kiss_ilos_obj_t;
 
+typedef struct {
+     kiss_type type;
+     void* gc_ptr;
+     kiss_obj* class;
+     kiss_obj* slots;
+     kiss_obj* name;
+     kiss_obj* abstractp;
+     kiss_obj* cpl;
+} kiss_ilos_class_t;
+
 
 typedef struct {
      kiss_lexical_environment_t lexical_env;
@@ -405,6 +416,7 @@ kiss_symbol_t KISS_Ueos, KISS_Udummy;
 #define KISS_IS_BLOCK(x)             (KISS_OBJ_TYPE(x) == KISS_BLOCK)
 #define KISS_IS_TAGBODY(x)           (KISS_OBJ_TYPE(x) == KISS_TAGBODY)
 #define KISS_IS_ILOS_OBJ(x)          (KISS_OBJ_TYPE(x) == KISS_ILOS_OBJ)
+#define KISS_IS_ILOS_CLASS(x)        (KISS_OBJ_TYPE(x) == KISS_ILOS_CLASS)
 #define KISS_IS_STREAM(x)            (KISS_OBJ_TYPE(x) == KISS_STREAM)
 #define KISS_IS_INPUT_STREAM(x)      (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_INPUT_STREAM))
 #define KISS_IS_OUTPUT_STREAM(x)     (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_OUTPUT_STREAM))
@@ -717,6 +729,7 @@ kiss_obj* kiss_dynamic_let(kiss_obj* vspecs, kiss_obj* body);
 kiss_obj* kiss_set_dynamic(kiss_obj* form, kiss_obj* var);
 
 /* ilos.c */
+void kiss_init_ilos(void);
 kiss_obj* kiss_ilos_obj_p(const kiss_obj* const obj);
 kiss_obj* kiss_make_ilos_obj(const kiss_obj* const class);
 kiss_obj* kiss_class(const kiss_obj* const name);
@@ -724,6 +737,7 @@ kiss_obj* kiss_class_of(const kiss_obj* const obj);
 kiss_obj* kiss_subclassp(const kiss_obj* const sub, const kiss_obj* const super);
 kiss_obj* kiss_slotref(const kiss_obj* const obj, const kiss_obj* const name);
 kiss_obj* kiss_set_slotref(const kiss_obj* const value, kiss_obj* const obj, kiss_obj* const name);
+kiss_obj* kiss_slot_bound_p(const kiss_obj* const obj, const kiss_obj* const name);
 // predefined class names
 kiss_symbol_t KISS_Sc_object;
 kiss_symbol_t KISS_Sc_built_in_class;
@@ -872,7 +886,7 @@ kiss_obj* Kiss_Sequence(const kiss_obj* const obj) {
 
 inline
 kiss_ilos_obj_t* Kiss_ILOS_Obj(const kiss_obj* const obj) {
-     if (KISS_IS_ILOS_OBJ(obj)) { return (kiss_ilos_obj_t*)obj; }
+     if (KISS_IS_ILOS_OBJ(obj) || KISS_IS_ILOS_CLASS) { return (kiss_ilos_obj_t*)obj; }
      Kiss_Domain_Error(obj, L"ILOS object");
 }
 
@@ -1413,7 +1427,7 @@ kiss_obj* kiss_reverse(kiss_obj* p) {
 
    Example: (member 'c '(a b c d e f)) => (c d e f) */
 inline
-kiss_obj* kiss_member(kiss_obj* const obj, kiss_obj* const list) {
+kiss_obj* kiss_member(const kiss_obj* const obj, kiss_obj* const list) {
      for (const kiss_obj* p = Kiss_List(list); KISS_IS_CONS(p); p = KISS_CDR(p)) {
           if (kiss_eql(KISS_CAR(p), obj) == KISS_T) { return (kiss_obj*)p; }
      }

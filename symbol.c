@@ -13,9 +13,7 @@
   KISS is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-*/
+  GNU General Public License for more details. */
 #include "kiss.h"
 
 #define KISS_SYMBOL_MAX 1024
@@ -196,7 +194,7 @@ kiss_symbol_t KISS_Skw_rest = {
     KISS_SYMBOL,               /* type */
     NULL,                      /* gc_ptr */
     L":rest",                  /* name */
-    0,                         /* flags */
+    KISS_SYSTEM_CONSTANT_VAR,  /* flags */
     (kiss_obj*)&KISS_Skw_rest, /* var */
     NULL,                      /* fun */
     KISS_NIL,                  /* plist */
@@ -207,7 +205,7 @@ kiss_symbol_t KISS_Samp_rest = {
     KISS_SYMBOL,                /* type */
     NULL,                       /* gc_ptr */
     L"&rest",                   /* name */
-    0,                          /* flags */
+    KISS_SYSTEM_CONSTANT_VAR,   /* flags */
     (kiss_obj*)&KISS_Samp_rest, /* var */
     NULL,                       /* fun */
     KISS_NIL,                   /* plist */
@@ -218,7 +216,7 @@ kiss_symbol_t KISS_Skw_size = {
     KISS_SYMBOL,               /* type */
     NULL,              /* gc_ptr */
     L":size",             /* name */
-    0,                    /* flags */
+    KISS_SYSTEM_CONSTANT_VAR, /*  flags */
     (kiss_obj*)&KISS_Skw_size, /* var */
     NULL,                 /* fun */
     KISS_NIL,                  /* plist */
@@ -229,7 +227,7 @@ kiss_symbol_t KISS_Skw_test = {
     KISS_SYMBOL,               /* type */
     NULL,              /* gc_ptr */
     L":test",             /* name */
-    0,                    /* flags */
+    KISS_SYSTEM_CONSTANT_VAR, /*  flags */
     (kiss_obj*)&KISS_Skw_test, /* var */
     NULL,                 /* fun */
     KISS_NIL,                  /* plist */
@@ -240,7 +238,7 @@ kiss_symbol_t KISS_Skw_weakness = {
     KISS_SYMBOL,               /* type */
     NULL,              /* gc_ptr */
     L":weakness",             /* name */
-    0,                    /* flags */
+    KISS_SYSTEM_CONSTANT_VAR, /*  flags */
     (kiss_obj*)&KISS_Skw_weakness, /* var */
     NULL,                 /* fun */
     KISS_NIL,                  /* plist */
@@ -251,7 +249,7 @@ kiss_symbol_t KISS_Skw_rehash_size = {
     KISS_SYMBOL,               /* type */
     NULL,              /* gc_ptr */
     L":rehash-size",             /* name */
-    0,                    /* flags */
+    KISS_SYSTEM_CONSTANT_VAR, /*  flags */
     (kiss_obj*)&KISS_Skw_rehash_size, /* var */
     NULL,                 /* fun */
     KISS_NIL,                  /* plist */
@@ -262,19 +260,8 @@ kiss_symbol_t KISS_Skw_rehash_threshold = {
     KISS_SYMBOL,               /* type */
     NULL,              /* gc_ptr */
     L":rehash-threshold",             /* name */
-    0,                    /* flags */
+    KISS_SYSTEM_CONSTANT_VAR, /*  flags */
     (kiss_obj*)&KISS_Skw_rehash_threshold, /* var */
-    NULL,                 /* fun */
-    KISS_NIL,                  /* plist */
-};
-
-kiss_symbol_t KISS_Skw_name;
-kiss_symbol_t KISS_Skw_name = {
-    KISS_SYMBOL,               /* type */
-    NULL,              /* gc_ptr */
-    L":name",             /* name */
-    0,                    /* flags */
-    (kiss_obj*)&KISS_Skw_name, /* var */
     NULL,                 /* fun */
     KISS_NIL,                  /* plist */
 };
@@ -4062,18 +4049,6 @@ kiss_symbol_t KISS_Skiss_classes = {
     KISS_NIL,                 /* plist */
 };
 
-kiss_symbol_t KISS_Skw_class;
-kiss_symbol_t KISS_Skw_class = {
-    KISS_SYMBOL,
-    NULL,  /* gc_ptr */
-    L":class",
-    0,
-    (kiss_obj*)&KISS_Skw_class,  /* var */
-    NULL,                        /* fun */
-    KISS_NIL,                    /* plist */
-};
-
-
 kiss_symbol_t KISS_Smake_ilos_obj;
 kiss_cfunction_t KISS_CFmake_ilos_obj = {
     KISS_CFUNCTION, /* type */
@@ -4161,6 +4136,24 @@ kiss_symbol_t KISS_Sslotref = {
     KISS_CONSTANT_FSLOT,
     NULL,                /* var */
     (kiss_obj*)&KISS_CFslotref, /* fun */
+    KISS_NIL,                 /* plist */
+};
+
+kiss_symbol_t KISS_Sslot_bound_p;
+kiss_cfunction_t KISS_CFslot_bound_p = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Sslot_bound_p,   /* name */
+    (kiss_cf_t*)kiss_slot_bound_p,    /* C function name */
+    2,         /* minimum argument number */
+    2,        /* maximum argument number */
+};
+kiss_symbol_t KISS_Sslot_bound_p = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"kiss::slot-bound-p",
+    KISS_CONSTANT_FSLOT,
+    NULL,                /* var */
+    (kiss_obj*)&KISS_CFslot_bound_p, /* fun */
     KISS_NIL,                 /* plist */
 };
 
@@ -4384,8 +4377,6 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Skw_rest, &KISS_Samp_rest,
     &KISS_Skw_size, &KISS_Skw_test, &KISS_Skw_weakness,
     &KISS_Skw_rehash_size, &KISS_Skw_rehash_threshold,
-    &KISS_Skw_class,
-    &KISS_Skw_name,
 
     /* condition.lisp */
     &KISS_Ssignal_condition,
@@ -4503,7 +4494,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Skiss_classes, &KISS_Sclass,
     &KISS_Sclass_of,
     &KISS_Smake_ilos_obj, &KISS_Silos_obj_p,
-    &KISS_Sslotref, &KISS_Sset_slotref,
+    &KISS_Sslotref, &KISS_Sset_slotref, &KISS_Sslot_bound_p, 
     
     /* predefined class names */
     &KISS_Sc_object, &KISS_Sc_built_in_class, &KISS_Sc_standard_class,

@@ -329,14 +329,12 @@ static kiss_obj* kiss_format_cmacro(kiss_obj* out, kiss_obj* obj) {
      return KISS_NIL;
 }
 
-kiss_obj* kiss_format_ilos_obj(kiss_obj* out, kiss_obj* object) {
-     kiss_ilos_obj_t* obj = Kiss_ILOS_Obj(object);
-     kiss_obj* plist = obj->plist;
-     kiss_obj* name = kiss_plist_get(plist, (kiss_obj*)&KISS_Skw_name);
-     kiss_obj* class = kiss_plist_get(plist, (kiss_obj*)&KISS_Skw_class);
-     kiss_obj* class_name = kiss_plist_get(((kiss_ilos_obj_t*)class)->plist, (kiss_obj*)&KISS_Skw_name);
-     if (name == KISS_NIL) {
-          name = (kiss_obj*)kiss_make_string(L"an instance");
+kiss_obj* kiss_format_ilos_obj(kiss_obj* out, kiss_obj* obj) {
+     kiss_obj* class = kiss_class_of(obj);
+     kiss_obj* class_name = kiss_slotref(class, (kiss_obj*)&KISS_Skw_name);
+     kiss_obj* name = (kiss_obj*)kiss_make_string(L"an instance");
+     if (kiss_slot_bound_p(obj, (kiss_obj*)&KISS_Skw_name) == KISS_T) {
+          name = kiss_slotref(obj, (kiss_obj*)&KISS_Skw_name);
      }
      kiss_format(out, (kiss_obj*)kiss_make_string(L"#{ILOS: ~A of ~S}"),
                  kiss_c_list(2, name, class_name));
