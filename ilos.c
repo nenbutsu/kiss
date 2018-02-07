@@ -145,7 +145,7 @@ kiss_ilos_obj_t KISS_ILOS_CLASS_list = {
      (kiss_obj*)&KISS_ILOS_CLASS_built_in_class, // class
      KISS_NIL, // slots
      (kiss_obj*)&KISS_Sc_list, // name
-     KISS_NIL, // abstractp
+     KISS_T, // abstractp
      (kiss_obj*)&KISS_ILOS_cpl01, // cpl
 };
 
@@ -165,6 +165,24 @@ kiss_ilos_obj_t KISS_ILOS_CLASS_cons = {
      (kiss_obj*)&KISS_Sc_cons, // name
      KISS_NIL, // abstractp
      (kiss_obj*)&KISS_ILOS_cpl02, // cpl
+};
+
+// <null>
+kiss_cons_t KISS_ILOS_cpl03 = {
+     KISS_CONS,
+     NULL,        // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_symbol,
+     (kiss_obj*)&KISS_ILOS_cpl02,
+};
+
+kiss_ilos_obj_t KISS_ILOS_CLASS_null = {
+     KISS_ILOS_CLASS, // type
+     NULL,          // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL, // slots
+     (kiss_obj*)&KISS_Sc_null, // name
+     KISS_T, // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl03, // cpl
 };
 
 
