@@ -185,6 +185,31 @@ kiss_ilos_obj_t KISS_ILOS_CLASS_null = {
      (kiss_obj*)&KISS_ILOS_cpl03, // cpl
 };
 
+// <standard-class>
+kiss_ilos_obj_t KISS_ILOS_CLASS_standard_class = {
+     KISS_ILOS_CLASS, // type
+     NULL,          // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL, // slots
+     (kiss_obj*)&KISS_Sc_standard_class, // name
+     KISS_T, // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01, // cpl
+};
+
+// <standard-object> spec. p.13
+// The class named <standard-object> is an instance of the class
+// <standard-class> and is a superclass of every class that is an
+// instance of <standard-class> except itself. 
+kiss_ilos_obj_t KISS_ILOS_CLASS_standard_object = {
+     KISS_ILOS_CLASS, // type
+     NULL,          // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_standard_class, // class
+     KISS_NIL, // slots
+     (kiss_obj*)&KISS_Sc_standard_object, // name
+     KISS_T, // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01, // cpl
+};
+
 
 
 kiss_obj* kiss_make_ilos_obj(const kiss_obj* const class) {
