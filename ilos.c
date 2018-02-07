@@ -127,6 +127,46 @@ kiss_ilos_obj_t KISS_ILOS_CLASS_character = {
      (kiss_obj*)&KISS_ILOS_cpl01, // cpl
 };
 
+// <symbol>
+kiss_ilos_obj_t KISS_ILOS_CLASS_symbol = {
+     KISS_ILOS_CLASS, // type
+     NULL,          // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL, // slots
+     (kiss_obj*)&KISS_Sc_symbol, // name
+     KISS_NIL, // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01, // cpl
+};
+
+// <list>
+kiss_ilos_obj_t KISS_ILOS_CLASS_list = {
+     KISS_ILOS_CLASS, // type
+     NULL,          // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL, // slots
+     (kiss_obj*)&KISS_Sc_list, // name
+     KISS_NIL, // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01, // cpl
+};
+
+// <cons>
+kiss_cons_t KISS_ILOS_cpl02 = {
+     KISS_CONS,
+     NULL,        // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_list,
+     (kiss_obj*)&KISS_ILOS_cpl01,
+};
+
+kiss_ilos_obj_t KISS_ILOS_CLASS_cons = {
+     KISS_ILOS_CLASS, // type
+     NULL,          // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL, // slots
+     (kiss_obj*)&KISS_Sc_cons, // name
+     KISS_NIL, // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl02, // cpl
+};
+
 
 
 kiss_obj* kiss_make_ilos_obj(const kiss_obj* const class) {
