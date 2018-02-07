@@ -319,6 +319,81 @@ kiss_ilos_obj_t KISS_ILOS_CLASS_basic_array = {
      (kiss_obj*)&KISS_ILOS_cpl01, // cpl
 };
 
+// <basic-array*>
+kiss_cons_t KISS_ILOS_cpl07 = {
+     KISS_CONS,
+     NULL,        // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_basic_array,
+     (kiss_obj*)&KISS_ILOS_cpl01,
+};
+
+kiss_ilos_obj_t KISS_ILOS_CLASS_basic_array_s = {
+     KISS_ILOS_CLASS, // type
+     NULL,          // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL, // slots
+     (kiss_obj*)&KISS_Sc_basic_array_s, // name
+     KISS_T, // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl07, // cpl
+};
+
+// <general-array*>
+kiss_cons_t KISS_ILOS_cpl08 = {
+     KISS_CONS,
+     NULL,        // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_basic_array_s,
+     (kiss_obj*)&KISS_ILOS_cpl07,
+};
+
+kiss_ilos_obj_t KISS_ILOS_CLASS_general_array_s = {
+     KISS_ILOS_CLASS, // type
+     NULL,          // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL, // slots
+     (kiss_obj*)&KISS_Sc_general_array_s, // name
+     KISS_NIL, // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl08, // cpl
+};
+
+// <basic-vector>
+kiss_ilos_obj_t KISS_ILOS_CLASS_basic_vector = {
+     KISS_ILOS_CLASS, // type
+     NULL,          // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL, // slots
+     (kiss_obj*)&KISS_Sc_basic_vector, // name
+     KISS_T, // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl07, // cpl
+};
+
+// <general-vector>
+kiss_cons_t KISS_ILOS_cpl09 = {
+     KISS_CONS,
+     NULL,        // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_basic_vector,
+     (kiss_obj*)&KISS_ILOS_cpl07,
+};
+
+kiss_ilos_obj_t KISS_ILOS_CLASS_general_vector = {
+     KISS_ILOS_CLASS, // type
+     NULL,          // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL, // slots
+     (kiss_obj*)&KISS_Sc_general_vector, // name
+     KISS_NIL, // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl09, // cpl
+};
+
+// <string>
+kiss_ilos_obj_t KISS_ILOS_CLASS_string = {
+     KISS_ILOS_CLASS, // type
+     NULL,          // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL, // slots
+     (kiss_obj*)&KISS_Sc_string, // name
+     KISS_NIL, // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl09, // cpl
+};
 
 
 kiss_obj* kiss_make_ilos_obj(const kiss_obj* const class) {
