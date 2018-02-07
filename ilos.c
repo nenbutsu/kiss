@@ -268,6 +268,57 @@ kiss_ilos_obj_t KISS_ILOS_CLASS_standard_generic_function = {
      (kiss_obj*)&KISS_ILOS_cpl05, // cpl
 };
 
+// <number>
+kiss_ilos_obj_t KISS_ILOS_CLASS_number = {
+     KISS_ILOS_CLASS, // type
+     NULL,          // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL, // slots
+     (kiss_obj*)&KISS_Sc_number, // name
+     KISS_T, // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01, // cpl
+};
+
+// <integer>
+kiss_cons_t KISS_ILOS_cpl06 = {
+     KISS_CONS,
+     NULL,        // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_number,
+     (kiss_obj*)&KISS_ILOS_cpl01,
+};
+
+kiss_ilos_obj_t KISS_ILOS_CLASS_integer = {
+     KISS_ILOS_CLASS, // type
+     NULL,          // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL, // slots
+     (kiss_obj*)&KISS_Sc_integer, // name
+     KISS_NIL, // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl06, // cpl
+};
+
+// <float>
+kiss_ilos_obj_t KISS_ILOS_CLASS_float = {
+     KISS_ILOS_CLASS, // type
+     NULL,          // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL, // slots
+     (kiss_obj*)&KISS_Sc_float, // name
+     KISS_NIL, // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl06, // cpl
+};
+
+// <basic-array>
+kiss_ilos_obj_t KISS_ILOS_CLASS_basic_array = {
+     KISS_ILOS_CLASS, // type
+     NULL,          // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL, // slots
+     (kiss_obj*)&KISS_Sc_basic_array, // name
+     KISS_T, // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01, // cpl
+};
+
 
 
 kiss_obj* kiss_make_ilos_obj(const kiss_obj* const class) {
