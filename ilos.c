@@ -210,6 +210,64 @@ kiss_ilos_obj_t KISS_ILOS_CLASS_standard_object = {
      (kiss_obj*)&KISS_ILOS_cpl01, // cpl
 };
 
+// <stream>
+kiss_ilos_obj_t KISS_ILOS_CLASS_stream = {
+     KISS_ILOS_CLASS, // type
+     NULL,          // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL, // slots
+     (kiss_obj*)&KISS_Sc_stream, // name
+     KISS_NIL, // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01, // cpl
+};
+
+// <function>
+kiss_ilos_obj_t KISS_ILOS_CLASS_function = {
+     KISS_ILOS_CLASS, // type
+     NULL,          // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL, // slots
+     (kiss_obj*)&KISS_Sc_function, // name
+     KISS_NIL, // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01, // cpl
+};
+
+// <generic-function>
+kiss_cons_t KISS_ILOS_cpl04 = {
+     KISS_CONS,
+     NULL,        // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_function,
+     (kiss_obj*)&KISS_ILOS_cpl02,
+};
+
+kiss_ilos_obj_t KISS_ILOS_CLASS_generic_function = {
+     KISS_ILOS_CLASS, // type
+     NULL,          // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL, // slots
+     (kiss_obj*)&KISS_Sc_generic_function, // name
+     KISS_T, // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl04, // cpl
+};
+
+// <standard-generic-function>
+kiss_cons_t KISS_ILOS_cpl05 = {
+     KISS_CONS,
+     NULL,        // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_generic_function,
+     (kiss_obj*)&KISS_ILOS_cpl04,
+};
+
+kiss_ilos_obj_t KISS_ILOS_CLASS_standard_generic_function = {
+     KISS_ILOS_CLASS, // type
+     NULL,          // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL, // slots
+     (kiss_obj*)&KISS_Sc_standard_generic_function, // name
+     KISS_NIL, // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl05, // cpl
+};
+
 
 
 kiss_obj* kiss_make_ilos_obj(const kiss_obj* const class) {
