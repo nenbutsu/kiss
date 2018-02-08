@@ -268,6 +268,17 @@ kiss_ilos_obj_t KISS_ILOS_CLASS_standard_generic_function = {
      (kiss_obj*)&KISS_ILOS_cpl05, // cpl
 };
 
+// <standard-method>
+kiss_ilos_obj_t KISS_ILOS_CLASS_standard_method = {
+     KISS_ILOS_CLASS, // type
+     NULL,          // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL, // slots
+     (kiss_obj*)&KISS_Sc_standard_method, // name
+     KISS_NIL, // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01, // cpl
+};
+
 // <number>
 kiss_ilos_obj_t KISS_ILOS_CLASS_number = {
      KISS_ILOS_CLASS, // type

@@ -4348,6 +4348,33 @@ kiss_symbol_t KISS_Sc_function = {
     NULL,         /* fun */
     KISS_NIL,     /* plist */
 };
+kiss_symbol_t KISS_Sc_generic_function = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<generic-function>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_standard_generic_function = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<standard-generic-function>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
+kiss_symbol_t KISS_Sc_standard_method = {
+    KISS_SYMBOL,
+    NULL,         /* gc_ptr */
+    L"<standard-method>",
+    0,
+    NULL,         /* var */
+    NULL,         /* fun */
+    KISS_NIL,     /* plist */
+};
 kiss_symbol_t KISS_Sc_hash_table = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4529,7 +4556,9 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sc_integer, &KISS_Sc_float,
     &KISS_Sc_basic_array, &KISS_Sc_basic_array_s, &KISS_Sc_general_array_s,
     &KISS_Sc_basic_vector, &KISS_Sc_general_vector, &KISS_Sc_string, 
-    &KISS_Sc_stream, &KISS_Sc_function,
+    &KISS_Sc_stream,
+    &KISS_Sc_function, &KISS_Sc_generic_function, &KISS_Sc_standard_generic_function,
+    &KISS_Sc_standard_method,
 
     /* gf_invoke.c */
     &KISS_Smethod_invoke,

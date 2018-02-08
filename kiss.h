@@ -72,6 +72,9 @@ typedef enum {
 
      KISS_ILOS_OBJ,
      KISS_ILOS_CLASS,
+
+     KISS_GENERIC_FUNCTION,
+     KISS_METHOD,
 } kiss_type;
 
 typedef struct {
