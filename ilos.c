@@ -1,7 +1,7 @@
 /*  -*- coding: utf-8 -*-
   ilos.c --- defines ILOS mechanism of ISLisp processor KISS.
 
-  Copyright (C) 2017, 2018 Yuji Minejima.
+  Copyright (C) 2017, 2018 Yuji Minejima (yuji@minejima.jp).
 
   This file is part of ISLisp processor KISS.
 
@@ -395,12 +395,23 @@ kiss_ilos_obj_t KISS_ILOS_CLASS_string = {
      (kiss_obj*)&KISS_ILOS_cpl09, // cpl
 };
 
-
+/// --------------------------------------
 kiss_obj* kiss_make_ilos_obj(const kiss_obj* const class) {
     kiss_ilos_obj_t* p = Kiss_GC_Malloc(sizeof(kiss_ilos_obj_t));
     p->type = KISS_ILOS_OBJ;
     p->class = (kiss_obj*)class;
     p->slots = KISS_NIL;
+    return (kiss_obj*)p;
+}
+
+kiss_obj* kiss_make_ilos_class(const kiss_obj* const name) {
+    kiss_ilos_obj_t* p = Kiss_GC_Malloc(sizeof(kiss_ilos_class_t));
+    p->type      = KISS_ILOS_CLASS;
+    p->class     = KISS_NIL;
+    p->slots     = KISS_NIL;
+    p->name      = name;
+    p->abstractp = KISS_NIL;
+    p->cpl       = KISS_NIL;
     return (kiss_obj*)p;
 }
 
@@ -418,6 +429,14 @@ kiss_obj* kiss_class(const kiss_obj* const name) {
      Kiss_Err(L"Undefined Class: ~S", name);
 }
 
+kiss_obj* kiss_intern_class(const kiss_obj* const name) {
+     kiss_obj* class = kiss_c_gethash(name, KISS_Skiss_classes.var, KISS_NIL);
+     if (class == KISS_NIL) {
+          class = kiss_make_ilos_class(name);
+          kiss_c_puthash(name, class, KISS_Skiss_classes.var);
+     }
+     return class;
+}
 
 /* function: (class-of obj) -> <class>
    Returns the class of which the given OBJ is a direct instance.
