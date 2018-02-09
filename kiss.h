@@ -278,6 +278,26 @@ typedef struct {
 typedef struct {
      kiss_type type;
      void* gc_ptr;
+     kiss_symbol_t* name;
+     kiss_obj* signature;
+     kiss_obj* method_combination;
+     kiss_obj* methods;
+} kiss_generic_function_t;
+
+typedef struct {
+     kiss_type type;
+     void* gc_ptr;
+     kiss_obj* gf;
+     kiss_obj* lambda;
+     kiss_obj* specializers;
+     kiss_obj* qualifier;
+} kiss_method_t;
+
+
+
+typedef struct {
+     kiss_type type;
+     void* gc_ptr;
      kiss_obj* tag;
      void*     jmp;
      kiss_dynamic_environment_t dynamic_env;
@@ -414,6 +434,8 @@ kiss_symbol_t KISS_Ueos, KISS_Udummy;
 #define KISS_IS_LMACRO(x)            (KISS_OBJ_TYPE(x) == KISS_LMACRO)
 #define KISS_IS_CFUNCTION(x)         (KISS_OBJ_TYPE(x) == KISS_CFUNCTION)
 #define KISS_IS_CMACRO(x)            (KISS_OBJ_TYPE(x) == KISS_CMACRO)
+#define KISS_IS_GENERIC_FUNCTION(x)  (KISS_OBJ_TYPE(x) == KISS_GENERIC_FUNCTION)
+#define KISS_IS_METHOD(x)            (KISS_OBJ_TYPE(x) == KISS_METHOD)
 #define KISS_IS_CATCHER(x)           (KISS_OBJ_TYPE(x) == KISS_CATCHER)
 #define KISS_IS_CLEANUP(x)           (KISS_OBJ_TYPE(x) == KISS_CLEANUP)
 #define KISS_IS_BLOCK(x)             (KISS_OBJ_TYPE(x) == KISS_BLOCK)
@@ -741,6 +763,8 @@ kiss_obj* kiss_subclassp(const kiss_obj* const sub, const kiss_obj* const super)
 kiss_obj* kiss_slotref(const kiss_obj* const obj, const kiss_obj* const name);
 kiss_obj* kiss_set_slotref(const kiss_obj* const value, kiss_obj* const obj, kiss_obj* const name);
 kiss_obj* kiss_slot_bound_p(const kiss_obj* const obj, const kiss_obj* const name);
+kiss_obj* kiss_instancp(const kiss_obj* const obj, const kiss_obj* const class);
+kiss_obj* kiss_generic_function_p(const kiss_obj* const obj);
 // predefined class names
 kiss_symbol_t KISS_Sc_object;
 kiss_symbol_t KISS_Sc_built_in_class;
