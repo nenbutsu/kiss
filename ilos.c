@@ -584,3 +584,9 @@ kiss_obj* kiss_instancp(const kiss_obj* const obj, const kiss_obj* const class) 
      return c == class || kiss_subclassp(c, class) ? KISS_T : KISS_NIL;
 }
 
+/* function: (generic-function-p obj ) -> boolean
+   Returns t if OBJ is a generic function; otherwise, returns nil.
+   OBJ may be any ISLISP object. */
+kiss_obj* kiss_generic_function_p(const kiss_obj* const obj) {
+     return KISS_IS_GENERIC_FUNCTION(obj) ? KISS_T : KISS_NIL;
+}
