@@ -4175,6 +4175,44 @@ kiss_symbol_t KISS_Sset_slotref = {
     KISS_NIL,                 /* plist */
 };
 
+kiss_symbol_t KISS_Sinstancep;
+kiss_cfunction_t KISS_CFinstancep = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Sinstancep,   /* name */
+    (kiss_cf_t*)kiss_instancep,    /* C function name */
+    2,         /* minimum argument number */
+    2,        /* maximum argument number */
+};
+kiss_symbol_t KISS_Sinstancep = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"instancep",
+    KISS_CONSTANT_FSLOT,
+    NULL,                /* var */
+    (kiss_obj*)&KISS_CFinstancep, /* fun */
+    KISS_NIL,                 /* plist */
+};
+
+kiss_symbol_t KISS_Sgeneric_function_p;
+kiss_cfunction_t KISS_CFgeneric_function_p = {
+    KISS_CFUNCTION, /* type */
+    &KISS_Sgeneric_function_p,   /* name */
+    (kiss_cf_t*)kiss_generic_function_p,    /* C function name */
+    1,         /* minimum argument number */
+    1,        /* maximum argument number */
+};
+kiss_symbol_t KISS_Sgeneric_function_p = {
+    KISS_SYMBOL,
+    NULL,              /* gc_ptr */
+    L"generic-function-p",
+    KISS_CONSTANT_FSLOT,
+    NULL,                /* var */
+    (kiss_obj*)&KISS_CFgeneric_function_p, /* fun */
+    KISS_NIL,                 /* plist */
+};
+
+
+
 /*** gf_invoke.c ***/
 kiss_symbol_t KISS_Smethod_invoke;
 kiss_cfunction_t KISS_CFmethod_invoke = {
@@ -4548,7 +4586,8 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Skiss_classes, &KISS_Sclass,
     &KISS_Sclass_of,
     &KISS_Smake_ilos_obj, &KISS_Silos_obj_p,
-    &KISS_Sslotref, &KISS_Sset_slotref, &KISS_Sslot_bound_p, 
+    &KISS_Sslotref, &KISS_Sset_slotref, &KISS_Sslot_bound_p,
+    &KISS_Sinstancep, &KISS_Sgeneric_function_p,
     
     /* ilos.c predefined class names */
     &KISS_Sc_object, &KISS_Sc_built_in_class, &KISS_Sc_standard_class,
