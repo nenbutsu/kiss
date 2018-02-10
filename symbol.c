@@ -266,6 +266,28 @@ kiss_symbol_t KISS_Skw_rehash_threshold = {
     KISS_NIL,                  /* plist */
 };
 
+kiss_symbol_t KISS_Skw_abstractp;
+kiss_symbol_t KISS_Skw_abstractp = {
+    KISS_SYMBOL,               /* type */
+    NULL,              /* gc_ptr */
+    L":abstractp",             /* name */
+    KISS_SYSTEM_CONSTANT_VAR, /*  flags */
+    (kiss_obj*)&KISS_Skw_abstractp, /* var */
+    NULL,                 /* fun */
+    KISS_NIL,                  /* plist */
+};
+
+kiss_symbol_t KISS_Skw_metaclass;
+kiss_symbol_t KISS_Skw_metaclass = {
+    KISS_SYMBOL,               /* type */
+    NULL,              /* gc_ptr */
+    L":metaclass",             /* name */
+    KISS_SYSTEM_CONSTANT_VAR, /*  flags */
+    (kiss_obj*)&KISS_Skw_metaclass, /* var */
+    NULL,                 /* fun */
+    KISS_NIL,                  /* plist */
+};
+
 /*** condition.lisp ***/
 kiss_symbol_t KISS_Ssignal_condition = {
     KISS_SYMBOL,
@@ -4211,6 +4233,24 @@ kiss_symbol_t KISS_Sgeneric_function_p = {
     KISS_NIL,                 /* plist */
 };
 
+kiss_symbol_t KISS_Sdefclass;
+kiss_cfunction_t KISS_CFdefclass = {
+    KISS_CFMACRO,              /* type */
+    &KISS_Sdefclass,           /* name */
+    (kiss_cf_t*)kiss_defclass, /* C function name */
+    3,                         /* minimum argument number */
+    -1,                        /* maximum argument number */
+};
+kiss_symbol_t KISS_Sdefclass = {
+    KISS_SYMBOL,
+    NULL,                        /* gc_ptr */
+    L"defclass",
+    KISS_CONSTANT_FSLOT,
+    NULL,                        /* var */
+    (kiss_obj*)&KISS_CFdefclass, /* fun */
+    KISS_NIL,                    /* plist */
+};
+
 
 
 /*** gf_invoke.c ***/
@@ -4469,6 +4509,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Skw_rest, &KISS_Samp_rest,
     &KISS_Skw_size, &KISS_Skw_test, &KISS_Skw_weakness,
     &KISS_Skw_rehash_size, &KISS_Skw_rehash_threshold,
+    &KISS_Skw_abstractp, &KISS_Skw_metaclass,
 
     /* condition.lisp */
     &KISS_Ssignal_condition,
@@ -4588,6 +4629,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Smake_ilos_obj, &KISS_Silos_obj_p,
     &KISS_Sslotref, &KISS_Sset_slotref, &KISS_Sslot_bound_p,
     &KISS_Sinstancep, &KISS_Sgeneric_function_p,
+    &KISS_Sdefclass,
     
     /* ilos.c predefined class names */
     &KISS_Sc_object, &KISS_Sc_built_in_class, &KISS_Sc_standard_class,

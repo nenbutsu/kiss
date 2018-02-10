@@ -415,14 +415,17 @@ kiss_obj* kiss_make_ilos_obj(const kiss_obj* const class) {
     return (kiss_obj*)p;
 }
 
-kiss_obj* kiss_make_ilos_class(const kiss_obj* const name) {
-    kiss_ilos_obj_t* p = Kiss_GC_Malloc(sizeof(kiss_ilos_class_t));
-    p->type      = KISS_ILOS_CLASS;
-    p->class     = KISS_NIL;
-    p->slots     = KISS_NIL;
-    p->name      = name;
-    p->abstractp = KISS_NIL;
-    p->cpl       = KISS_NIL;
+kiss_obj* kiss_compute_cpl(const kiss_obj* const class, const kiss_obj* const supers);
+
+kiss_obj* kiss_make_ilos_class(const kiss_obj* const name, const kiss_obj* const supers) {
+    kiss_ilos_class_t* class = Kiss_GC_Malloc(sizeof(kiss_ilos_class_t));
+    class->type      = KISS_ILOS_CLASS;
+    class->class     = KISS_NIL;
+    class->slots     = KISS_NIL;
+    class->name      = name;
+    class->abstractp = KISS_NIL;
+    class->cpl       = kiss_cons(class, kiss_compute_cpl(supers));
+
     return (kiss_obj*)p;
 }
 
@@ -438,15 +441,6 @@ kiss_obj* kiss_class(const kiss_obj* const name) {
      kiss_obj* class = kiss_gethash(name, KISS_Skiss_classes.var, KISS_NIL);
      if (class != KISS_NIL) return class;
      Kiss_Err(L"Undefined Class: ~S", name);
-}
-
-kiss_obj* kiss_intern_class(const kiss_obj* const name) {
-     kiss_obj* class = kiss_c_gethash(name, KISS_Skiss_classes.var, KISS_NIL);
-     if (class == KISS_NIL) {
-          class = kiss_make_ilos_class(name);
-          kiss_c_puthash(name, class, KISS_Skiss_classes.var);
-     }
-     return class;
 }
 
 /* function: (class-of obj) -> <class>
@@ -532,6 +526,51 @@ kiss_obj* kiss_set_slotref(const kiss_obj* const value, kiss_obj* const obj, kis
      return (kiss_obj*)value;
 }
 
+kiss_symbol_t KISS_Skw_abstractp;
+kiss_symbol_t KISS_Skw_metaclass;
+
+/* defining operator: (defclass class-name (sc-name*) (slot-spec*) class-opt*) -> <symbol>
+     class-name ::= identifier
+     sc-name    ::= identifier
+     slot-spec  ::= slot-name | (slot-name slot-opt *)
+     slot-name  ::= identifier
+     slot-opt   ::= :reader reader-function-name |
+                    :writer writer-function-name |
+                    :accessor reader-function-name |
+                    :boundp boundp-function-name |
+                    :initform form |
+                    :initarg initarg-name
+     initarg-name         ::= identifier
+     reader-function-name ::= identifier
+     writer-function-name ::= identifier
+     boundp-function-name ::= identifier
+     class-opt ::= (:metaclass class-name) | (:abstractp abstract-flag)
+     abstractp ::= t | nil */
+kiss_obj* kiss_defclass(const kiss_obj* const name, const kiss_obj* const supers,
+                        const kiss_obj* const slot_specs, const kiss_obj* const class_opts)
+{
+     Kiss_Symbol(name);
+     Kiss_List(supers);
+     Kiss_List(slot_specs);
+     kiss_ilos_class_t* class = kiss_make_ilos_class(name, supers);
+
+     kiss_obj* abstractp = kiss_assoc((kiss_obj*)&KISS_Skw_abstractp, class_opts);
+     if (KISS_IS_CONS(abstractp)) {
+          abstractp = KISS_CADR(abstractp);
+     }
+     class->abstractp = abstractp;
+
+     kiss_obj* metaclass = kiss_assoc((kiss_obj*)&KISS_Skw_metaclass, class_opts);
+     if (KISS_IS_CONS(metaclass)) {
+          metaclass = KISS_CADR(metaclass);
+          Kiss_Class(metaclass);
+     } else {
+          metaclass = (kiss_obj*)&KISS_ILOS_CLASS_standard_class;
+     }
+     class->metaclass = metaclass;
+     kiss_c_puthash(name, class, KISS_Skiss_classes.var);
+     return name;
+}
 
 
 /* function: (subclassp subclass superclass) -> boolean
@@ -553,7 +592,7 @@ kiss_obj* kiss_subclassp(const kiss_obj* const sub, const kiss_obj* const super)
    list for C is C . P1 . . . . Pn with duplicate classes removed by
    repeated application of the following rule: If a class appears twice in
    the resulting class precedence list, the leftmost occurrence is removed. */
-kiss_obj* kiss_compute_cpl(const kiss_obj* const class, const kiss_obj* const supers) {
+kiss_obj* kiss_compute_cpl(const kiss_obj* const supers) {
      kiss_obj* head = kiss_cons(KISS_NIL, KISS_NIL);
      kiss_obj* tail = head;
      for (const kiss_obj* p = supers; KISS_IS_CONS(p); p = KISS_CDR(p)) {
