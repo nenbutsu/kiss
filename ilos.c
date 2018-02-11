@@ -16,6 +16,43 @@
   GNU General Public License for more details. */
 #include "kiss.h"
 
+kiss_ilos_obj_t* kiss_make_ilos_obj(const kiss_obj* const class) {
+    kiss_ilos_obj_t* obj = Kiss_GC_Malloc(sizeof(kiss_ilos_obj_t));
+    obj->type  = KISS_ILOS_OBJ;
+    obj->class = (kiss_obj*)class;
+    obj->slots = KISS_NIL;
+    return obj;
+}
+
+kiss_obj* kiss_compute_cpl(const kiss_obj* const class, const kiss_obj* const supers);
+
+kiss_ilos_class_t* kiss_make_ilos_class(const kiss_obj* const name, const kiss_obj* const supers)
+{
+    kiss_ilos_class_t* class = Kiss_GC_Malloc(sizeof(kiss_ilos_class_t));
+    class->type      = KISS_ILOS_CLASS;
+    class->class     = KISS_NIL;
+    class->slots     = KISS_NIL;
+    class->name      = name;
+    class->abstractp = KISS_NIL;
+    class->cpl       = kiss_cons(class, kiss_compute_cpl(supers));
+
+    return class;
+}
+
+kiss_generic_function_t* kiss_make_generic_function(const kiss_obj* const name) {
+    kiss_generic_function_t* gf = Kiss_GC_Malloc(sizeof(kiss_generic_function_t));
+    gf->type               = KISS_GENERIC_FUNCTION;
+    gf->name               = name;
+    gf->lambda_list        = KISS_NIL;
+    gf->method_combination = KISS_NIL;
+    gf->methods            = KISS_NIL;
+    return gf;
+}
+
+kiss_method_t* kiss_make_method() {
+
+}
+
 /* Spec. p.14 Figure 1. Class Inheritance  
    https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#figure_1
 
@@ -407,27 +444,6 @@ kiss_ilos_obj_t KISS_ILOS_CLASS_string = {
 };
 
 /// --------------------------------------
-kiss_obj* kiss_make_ilos_obj(const kiss_obj* const class) {
-    kiss_ilos_obj_t* p = Kiss_GC_Malloc(sizeof(kiss_ilos_obj_t));
-    p->type = KISS_ILOS_OBJ;
-    p->class = (kiss_obj*)class;
-    p->slots = KISS_NIL;
-    return (kiss_obj*)p;
-}
-
-kiss_obj* kiss_compute_cpl(const kiss_obj* const class, const kiss_obj* const supers);
-
-kiss_obj* kiss_make_ilos_class(const kiss_obj* const name, const kiss_obj* const supers) {
-    kiss_ilos_class_t* class = Kiss_GC_Malloc(sizeof(kiss_ilos_class_t));
-    class->type      = KISS_ILOS_CLASS;
-    class->class     = KISS_NIL;
-    class->slots     = KISS_NIL;
-    class->name      = name;
-    class->abstractp = KISS_NIL;
-    class->cpl       = kiss_cons(class, kiss_compute_cpl(supers));
-
-    return (kiss_obj*)p;
-}
 
 kiss_obj* kiss_ilos_obj_p(const kiss_obj* const obj) {
     if (KISS_IS_ILOS_OBJ(obj)) { return KISS_T; }
@@ -628,4 +644,46 @@ kiss_obj* kiss_instancp(const kiss_obj* const obj, const kiss_obj* const class) 
    OBJ may be any ISLISP object. */
 kiss_obj* kiss_generic_function_p(const kiss_obj* const obj) {
      return KISS_IS_GENERIC_FUNCTION(obj) ? KISS_T : KISS_NIL;
+}
+
+int kiss_is_more_specific(const kiss_obj* const class1, const kiss_obj* const class2) {
+     const kiss_ilos_class_t* const c1 = Kiss_Class(class1);
+     const kiss_ilos_class_t* const c2 = Kiss_Class(class2);
+     kiss_obj* cpl = kiss_cdr(c1->cpl);
+     return kiss_member(c2, cpl) != KISS_NIL ? KISS_T : KISS_NIL;
+}
+
+/* defining operator: (defgeneric func-spec lambda-list {option | method-desc}*) -> <symbol>
+   func-spec   ::= identifier | (setf identifier)
+   lambda-list ::= (var* [&rest var]) | (var* [:rest var])
+   option      ::= (:method-combination {identifier | keyword}) |
+                   (:generic-function-class class-name)
+   method-desc ::= (:method method-qualifier* parameter-profile form*)
+   method-qualifier  ::= identifier | keyword
+   parameter-profile ::= ({var | (var parameter-specializer-name)}*
+                          [{&rest | :rest} var])
+   parameter-specializer-name ::= class-name
+   class-name ::= identifier
+   var ::= identifier                                                              */
+kiss_obj* kiss_defgeneric(const kiss_obj* const func_spec,
+                          const kiss_obj* const lambda_list, const kiss_obj* const rest)
+{
+     kiss_symbol_t* name = Kiss_Symbol(func_spec);
+     kiss_generic_function_t* gf = kiss_make_generic_function(func_spec);
+     gf->lambda_list = Kiss_Lambda_List(lambda_list);
+     
+     name->fun = (kiss_obj*)gf;
+     return (kiss_obj*)name;
+}
+
+
+/* defining operator: (defmethod func-spec method-qualifier* parameter-profile form*) -> <symbol>
+   func-spec ::= identifier | (setf identifier)
+   method-qualifier ::= identifier | keyword
+   parameter-profile ::= ({var | (var parameter-specializer-name)}* [{&rest | :rest} var])
+   parameter-specializer-name ::= class-name
+   class-name ::= identifier
+   var ::= identifier                                                          */
+kiss_obj* kiss_defmethod(const kiss_obj* const func_spec, const kiss_obj* const rest) {
+     
 }

@@ -279,7 +279,7 @@ typedef struct {
      kiss_type type;
      void* gc_ptr;
      kiss_symbol_t* name;
-     kiss_obj* signature;
+     kiss_obj* lambda_list;
      kiss_obj* method_combination;
      kiss_obj* methods;
 } kiss_generic_function_t;
