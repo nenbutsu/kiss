@@ -45,7 +45,10 @@ kiss_generic_function_t* kiss_make_generic_function(const kiss_obj* const name) 
     gf->name               = name;
     gf->lambda_list        = KISS_NIL;
     gf->method_combination = KISS_NIL;
-    gf->methods            = KISS_NIL;
+    gf->around_methods     = KISS_NIL;
+    gf->before_methods     = KISS_NIL;
+    gf->primary_methods    = KISS_NIL;
+    gf->after_methods      = KISS_NIL;
     return gf;
 }
 

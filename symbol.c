@@ -4071,6 +4071,16 @@ kiss_symbol_t KISS_Skiss_classes = {
     KISS_NIL,                 /* plist */
 };
 
+kiss_symbol_t KISS_Sstandard = {
+    KISS_SYMBOL,
+    NULL,                /* gc_ptr */
+    L"standard",
+    0,
+    NULL,                /* var */
+    NULL,                /* fun */
+    KISS_NIL,            /* plist */
+};
+
 kiss_symbol_t KISS_Smake_ilos_obj;
 kiss_cfunction_t KISS_CFmake_ilos_obj = {
     KISS_CFUNCTION, /* type */
@@ -4249,6 +4259,42 @@ kiss_symbol_t KISS_Sdefclass = {
     NULL,                        /* var */
     (kiss_obj*)&KISS_CFdefclass, /* fun */
     KISS_NIL,                    /* plist */
+};
+
+kiss_symbol_t KISS_Sdefgeneric;
+kiss_cfunction_t KISS_CFdefgeneric = {
+    KISS_CFMACRO,                /* type */
+    &KISS_Sdefgeneric,           /* name */
+    (kiss_cf_t*)kiss_defgeneric, /* C function name */
+    2,                           /* minimum argument number */
+    -1,                          /* maximum argument number */
+};
+kiss_symbol_t KISS_Sdefgeneric = {
+    KISS_SYMBOL,
+    NULL,                          /* gc_ptr */
+    L"defgeneric",
+    KISS_CONSTANT_FSLOT,
+    NULL,                          /* var */
+    (kiss_obj*)&KISS_CFdefgeneric, /* fun */
+    KISS_NIL,                      /* plist */
+};
+
+kiss_symbol_t KISS_Sdefmethod;
+kiss_cfunction_t KISS_CFdefmethod = {
+    KISS_CFMACRO,               /* type */
+    &KISS_Sdefmethod,           /* name */
+    (kiss_cf_t*)kiss_defmethod, /* C function name */
+    1,                          /* minimum argument number */
+    -1,                         /* maximum argument number */
+};
+kiss_symbol_t KISS_Sdefmethod = {
+    KISS_SYMBOL,
+    NULL,                          /* gc_ptr */
+    L"defmethod",
+    KISS_CONSTANT_FSLOT,
+    NULL,                          /* var */
+    (kiss_obj*)&KISS_CFdefmethod,  /* fun */
+    KISS_NIL,                      /* plist */
 };
 
 
@@ -4624,12 +4670,12 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sread, 
 
     /* ilos.c */
-    &KISS_Skiss_classes, &KISS_Sclass,
+    &KISS_Skiss_classes, &KISS_Sstandard, &KISS_Sclass,
     &KISS_Sclass_of,
     &KISS_Smake_ilos_obj, &KISS_Silos_obj_p,
     &KISS_Sslotref, &KISS_Sset_slotref, &KISS_Sslot_bound_p,
     &KISS_Sinstancep, &KISS_Sgeneric_function_p,
-    &KISS_Sdefclass,
+    &KISS_Sdefclass, &KISS_Sdefgeneric, &KISS_Sdefmethod,
     
     /* ilos.c predefined class names */
     &KISS_Sc_object, &KISS_Sc_built_in_class, &KISS_Sc_standard_class,

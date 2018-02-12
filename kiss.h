@@ -281,7 +281,10 @@ typedef struct {
      kiss_symbol_t* name;
      kiss_obj* lambda_list;
      kiss_obj* method_combination;
-     kiss_obj* methods;
+     kiss_obj* around_methods;
+     kiss_obj* before_methods;
+     kiss_obj* primary_methods;
+     kiss_obj* after_methods;
 } kiss_generic_function_t;
 
 typedef struct {
