@@ -688,5 +688,22 @@ kiss_obj* kiss_defgeneric(const kiss_obj* const func_spec,
    class-name ::= identifier
    var ::= identifier                                                          */
 kiss_obj* kiss_defmethod(const kiss_obj* const func_spec, const kiss_obj* const rest) {
+     const kiss_obj* p = rest;
+     const kiss_obj* qualifier = kiss_car(rest);
+     if (KISS_IS_CONS(qualifier)) {
+          qualifier = KISS_NIL;
+     } else {
+          Kiss_Symbol(qualifier);
+          if (qualifier != (kiss_obj*)KISS_Skw_around &&
+              qualifier != (kiss_obj*)KISS_Skw_before &&
+              qualifier != (kiss_obj*)KISS_Skw_after &&
+              qualifier != KISS_NIL)
+          {
+               Kiss_Err(L"Invalid method qualifier: ~S", qualifier);
+          }
+          p = kiss_cdr(rest);
+     }
+     const kiss_obj* parameter_profile = kiss_car(p);
+     p = kiss_cdr(p);
      
 }

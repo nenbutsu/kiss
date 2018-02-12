@@ -288,6 +288,39 @@ kiss_symbol_t KISS_Skw_metaclass = {
     KISS_NIL,                  /* plist */
 };
 
+kiss_symbol_t KISS_Skw_around;
+kiss_symbol_t KISS_Skw_around = {
+    KISS_SYMBOL,               /* type */
+    NULL,              /* gc_ptr */
+    L":around",             /* name */
+    KISS_SYSTEM_CONSTANT_VAR, /*  flags */
+    (kiss_obj*)&KISS_Skw_around, /* var */
+    NULL,                 /* fun */
+    KISS_NIL,                  /* plist */
+};
+
+kiss_symbol_t KISS_Skw_before;
+kiss_symbol_t KISS_Skw_before = {
+    KISS_SYMBOL,               /* type */
+    NULL,              /* gc_ptr */
+    L":before",             /* name */
+    KISS_SYSTEM_CONSTANT_VAR, /*  flags */
+    (kiss_obj*)&KISS_Skw_before, /* var */
+    NULL,                 /* fun */
+    KISS_NIL,                  /* plist */
+};
+
+kiss_symbol_t KISS_Skw_after;
+kiss_symbol_t KISS_Skw_after = {
+    KISS_SYMBOL,               /* type */
+    NULL,              /* gc_ptr */
+    L":after",             /* name */
+    KISS_SYSTEM_CONSTANT_VAR, /*  flags */
+    (kiss_obj*)&KISS_Skw_after, /* var */
+    NULL,                 /* fun */
+    KISS_NIL,                  /* plist */
+};
+
 /*** condition.lisp ***/
 kiss_symbol_t KISS_Ssignal_condition = {
     KISS_SYMBOL,
@@ -4284,7 +4317,7 @@ kiss_cfunction_t KISS_CFdefmethod = {
     KISS_CFMACRO,               /* type */
     &KISS_Sdefmethod,           /* name */
     (kiss_cf_t*)kiss_defmethod, /* C function name */
-    1,                          /* minimum argument number */
+    2,                          /* minimum argument number */
     -1,                         /* maximum argument number */
 };
 kiss_symbol_t KISS_Sdefmethod = {
@@ -4556,6 +4589,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Skw_size, &KISS_Skw_test, &KISS_Skw_weakness,
     &KISS_Skw_rehash_size, &KISS_Skw_rehash_threshold,
     &KISS_Skw_abstractp, &KISS_Skw_metaclass,
+    &KISS_Skw_around, &KISS_Skw_before, &KISS_Skw_after,
 
     /* condition.lisp */
     &KISS_Ssignal_condition,
