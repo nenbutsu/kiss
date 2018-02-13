@@ -679,6 +679,30 @@ kiss_obj* kiss_defgeneric(const kiss_obj* const func_spec,
      return (kiss_obj*)name;
 }
 
+kiss_obj* kiss_collect_specilizers(const kiss_obj* const parameter_profile) {
+     kiss_obj* head = (kiss_obj*)kiss_cons(KISS_NIL, KISS_NIL);
+     kiss_obj* tail = head;
+     for (const kiss_obj* p = parameter_profile; KISS_IS_CONS(p); p = KISS_CDR(p)) {
+          kiss_obj* class = (kiss_obj*)&KISS_ILOS_CLASS_object;
+          if (KISS_IS_CONS(KISS_CAR(p))) {
+               kiss_obj* pair = KISS_CAR(p);
+               class = Kiss_Class(Kiss_Symbol(kiss_cadr(pair)));
+          }
+          kiss_set_cdr(kiss_cons(class, KISS_NIL), &tail);
+     }
+     return (kiss_obj*)KISS_CDR(head);
+}
+
+kiss_obj* kiss_collect_lambda_list(const kiss_obj* const parameter_profile) {
+     kiss_obj* head = (kiss_obj*)kiss_cons(KISS_NIL, KISS_NIL);
+     kiss_obj* tail = head;
+     for (const kiss_obj* p = parameter_profile; KISS_IS_CONS(p); p = KISS_CDR(p)) {
+          kiss_obj* var = KISS_IS_CONS(KISS_CAR(p)) ? KISS_CAAR(p) : KISS_CAR(p);
+          Kiss_Symbol(var);
+          kiss_set_cdr(kiss_cons(var, KISS_NIL), &tail);
+     }
+     return (kiss_obj*)KISS_CDR(head);
+}
 
 /* defining operator: (defmethod func-spec method-qualifier* parameter-profile form*) -> <symbol>
    func-spec ::= identifier | (setf identifier)
@@ -707,7 +731,8 @@ kiss_obj* kiss_defmethod(const kiss_obj* const func_spec, const kiss_obj* const 
      // skip other qualifiers
      for (; KISS_IS_CONSP(p) && KISS_IS_SYMBOL(KISS_CAR(p)); p = KISS_CDR(p)) {}
      
-     const kiss_obj* parameter_profile = kiss_car(p);
+     const kiss_obj* parameter_profile = Kiss_List(kiss_car(p));
      p = kiss_cdr(p);
-     
+     const kiss_obj* specializers = kiss_collect_specilizers(parameter_profile);
+     const kiss_obj* lambda_list  = kiss_collect_lambda_list(parameter_profile);
 }
