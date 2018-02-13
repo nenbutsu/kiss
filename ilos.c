@@ -703,6 +703,10 @@ kiss_obj* kiss_defmethod(const kiss_obj* const func_spec, const kiss_obj* const 
           }
           p = kiss_cdr(rest);
      }
+
+     // skip other qualifiers
+     for (; KISS_IS_CONSP(p) && KISS_IS_SYMBOL(KISS_CAR(p)); p = KISS_CDR(p)) {}
+     
      const kiss_obj* parameter_profile = kiss_car(p);
      p = kiss_cdr(p);
      
