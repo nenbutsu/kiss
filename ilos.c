@@ -706,15 +706,23 @@ kiss_obj* kiss_collect_lambda_list(const kiss_obj* const parameter_profile) {
      return (kiss_obj*)KISS_CDR(head);
 }
 
-int kiss_is_class_more_specific(const kiss_obj* const class1, const kiss_obj* const class2) {
-     const kiss_ilos_class_t* const c1 = Kiss_Class(class1);
-     const kiss_ilos_class_t* const c2 = Kiss_Class(class2);
-     kiss_obj* cpl = kiss_cdr(c1->cpl);
-     return kiss_member(c2, cpl) != KISS_NIL ? KISS_T : KISS_NIL;
-}
-
-int kiss_is_qualifiers_more_specific(const kiss_obj* const q1, const kiss_obj* const q2) {
-     
+int kiss_cmp_qualifiers(const kiss_obj* q1, const kiss_obj* const q2) {
+     const kiss_obj* p2 = q2;
+     for (const kiss_obj* p1 = q1; KISS_IS_CONS(p1); p1 = KISS_CDR(p1)) {
+          kiss_obj* c1 = KISS_CAR(p1);
+          if (!KISS_IS_CONS(p2)) {
+               Kiss_Err(L"kiss_cmp_qualifiers: two qualifiers of different length: ~S, ~S",
+                        q1, q2);
+          }
+          kiss_obj* c2 = KISS_CAR(p2);
+          if (kiss_subclassp(c1, c2) == KISS_T) {
+               return -1;
+          } else if (c1 != c2) {
+               return 1;
+          }
+          p2 = KISS_CDR(p2);
+     }
+     return 0;
 }
 
 kiss_obj* kiss_add_method(kiss_generic_function_t* const gf, const kiss_method_t* const m) {
@@ -731,6 +739,9 @@ kiss_obj* kiss_add_method(kiss_generic_function_t* const gf, const kiss_method_t
      } else {
           Kiss_Err(L"unknown method qualifier: ~S", q);
      }
+
+     kiss_obj* head = kiss_cons(KISS_NIL, KISS_NIL);
+     kiss_obj* tail = head;
      
 }
 
