@@ -725,16 +725,16 @@ int kiss_cmp_qualifiers(const kiss_obj* q1, const kiss_obj* const q2) {
      return 0;
 }
 
-kiss_obj* kiss_add_method(kiss_generic_function_t* const gf, const kiss_method_t* const m) {
-     kiss_obj* q = m->qualifier;
+void kiss_add_method(kiss_generic_function_t* const gf, const kiss_method_t* const method) {
+     kiss_obj* qualifier = method->qualifier;
      kiss_obj* list = KISS_NIL;
-     if (q == KISS_NIL) {
+     if (qualifier == KISS_NIL) {
           list = gf->primary_methods;
-     } else if (q == (kiss_obj*)KISS_Skw_around) {
+     } else if (qualifier == (kiss_obj*)&KISS_Skw_around) {
           list = gf->around_methods;
-     } else if (q == (kiss_obj*)KISS_Skw_before) {
+     } else if (qualifier == (kiss_obj*)&KISS_Skw_before) {
           list = gf->before_methods;
-     } else if (q == (kiss_obj*)KISS_Skw_after) {
+     } else if (qualifier == (kiss_obj*)&KISS_Skw_after) {
           list = gf->after_methods;
      } else {
           Kiss_Err(L"unknown method qualifier: ~S", q);
@@ -742,7 +742,37 @@ kiss_obj* kiss_add_method(kiss_generic_function_t* const gf, const kiss_method_t
 
      kiss_obj* head = kiss_cons(KISS_NIL, KISS_NIL);
      kiss_obj* tail = head;
-     
+     for (const kiss_obj* p = list; KISS_IS_CONS(p); p = KISS_CDR(p)) {
+          kiss_method_t* m = Kiss_Method(KISS_CAR(p));
+          int result = kiss_cmp_qualifiers(method->qualifiers, m->qualifiers);
+          if (result < 0) {
+               kiss_set_cdr(kiss_cons((kiss_obj*)method, p), tail);
+               break;
+          } else if (result == 0) {
+               kiss_set_cdr(kiss_cons((kiss_obj*)method, KISS_CDR(p)), tail);
+               break;
+          } else {
+               if (KISS_CDR(p) == KISS_NIL) {
+                    kiss_set_cdr(kiss_cons((kiss_obj*)method, KISS_NIL), tail);
+                    break;
+               } else {
+                    kiss_set_cdr(kiss_cons(KISS_CAR(p), KISS_NIL), tail);
+                    tail = KISS_CDR(tail);
+               }
+          }
+     }
+
+     head = KISS_CDR(head);
+     if (q == KISS_NIL) {
+          gf->primary_methods = head;
+     } else if (q == (kiss_obj*)KISS_Skw_around) {
+          gf->around_methods = head;
+     } else if (q == (kiss_obj*)KISS_Skw_before) {
+          gf->before_methods = head;
+     } else {
+          gf->after_methods = head;
+     }
+     return;
 }
 
 /* defining operator: (defmethod func-spec method-qualifier* parameter-profile form*) -> <symbol>
