@@ -805,6 +805,18 @@ kiss_obj* kiss_make_integer(kiss_ptr_int i) {
 }
 
 inline
+kiss_generic_function_t* Kiss_Generic_Function(const kiss_obj* const obj) {
+     if (KISS_IS_GENERIC_FUNCTION(obj)) { return (kiss_generic_function_t*)obj; }
+     Kiss_Domain_Error(obj, L"<generic-function>");
+}
+
+inline
+kiss_metho_t* Kiss_Method(const kiss_obj* const obj) {
+     if (KISS_IS_METHOD(obj)) { return (kiss_method_t*)obj; }
+     Kiss_Domain_Error(obj, L"method");
+}
+
+inline
 kiss_cons_t* Kiss_Cons(const kiss_obj* const obj) {
      if (KISS_IS_CONS(obj)) { return (kiss_cons_t*)obj; }
      Kiss_Domain_Error(obj, L"<cons>");

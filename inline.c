@@ -67,6 +67,12 @@ extern inline
 kiss_obj* Kiss_General_Array(const kiss_obj* const obj);
 
 extern inline
+kiss_generic_function_t* Kiss_Generic_Function(const kiss_obj* const obj);
+
+extern inline
+kiss_metho_t* Kiss_Method(const kiss_obj* const obj);
+
+extern inline
 kiss_hash_table_t* Kiss_Hash_Table(const kiss_obj* const obj);
      
 extern inline

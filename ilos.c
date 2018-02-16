@@ -52,8 +52,14 @@ kiss_generic_function_t* kiss_make_generic_function(const kiss_obj* const name) 
     return gf;
 }
 
-kiss_method_t* kiss_make_method() {
-
+kiss_method_t* kiss_make_method(const kiss_obj* const name) {
+     kiss_method_t* m = Kiss_GC_Malloc(sizeof(kiss_method_t));
+     m->type         = KISS_METHOD;
+     m->name         = (kiss_obj*)name;
+     m->lambda       = KISS_NIL;
+     m->specializers = KISS_NIL;
+     m->qualifier    = KISS_NIL;
+     return m;
 }
 
 /* Spec. p.14 Figure 1. Class Inheritance  
@@ -715,6 +721,7 @@ kiss_obj* kiss_collect_lambda_list(const kiss_obj* const parameter_profile) {
    class-name ::= identifier
    var ::= identifier                                                          */
 kiss_obj* kiss_defmethod(const kiss_obj* const func_spec, const kiss_obj* const rest) {
+     kiss_symbol_t* name = Kiss_Symbol(func_spec);
      const kiss_obj* p = rest;
      const kiss_obj* qualifier = kiss_car(rest);
      if (KISS_IS_CONS(qualifier)) {
@@ -738,6 +745,13 @@ kiss_obj* kiss_defmethod(const kiss_obj* const func_spec, const kiss_obj* const 
      const kiss_obj* specializers = kiss_collect_specilizers(parameter_profile);
      const kiss_obj* lambda_list  = kiss_collect_lambda_list(parameter_profile);
      const kiss_obj* const forms = kiss_cdr(p);
+     Kiss_Lambda_List(lambda_list);
+     kiss_generic_function_t* gf = Kiss_Generic_Function(name->fun);
+     kiss_obj* lambda = kiss_cons((kiss_obj*)&KISS_Slambda, kiss_cons(lambda_list, forms));
+     kiss_method_t* method = kiss_make_method((kiss_obj*)name);
+     method->lambda = lambda;
+     method->specializers = specializers;
+     method->qualifier = qualifier;
 
-     
+     return func_spec;
 }
