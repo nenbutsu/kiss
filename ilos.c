@@ -655,13 +655,6 @@ kiss_obj* kiss_generic_function_p(const kiss_obj* const obj) {
      return KISS_IS_GENERIC_FUNCTION(obj) ? KISS_T : KISS_NIL;
 }
 
-int kiss_is_more_specific(const kiss_obj* const class1, const kiss_obj* const class2) {
-     const kiss_ilos_class_t* const c1 = Kiss_Class(class1);
-     const kiss_ilos_class_t* const c2 = Kiss_Class(class2);
-     kiss_obj* cpl = kiss_cdr(c1->cpl);
-     return kiss_member(c2, cpl) != KISS_NIL ? KISS_T : KISS_NIL;
-}
-
 /* defining operator: (defgeneric func-spec lambda-list {option | method-desc}*) -> <symbol>
    func-spec   ::= identifier | (setf identifier)
    lambda-list ::= (var* [&rest var]) | (var* [:rest var])
@@ -711,6 +704,34 @@ kiss_obj* kiss_collect_lambda_list(const kiss_obj* const parameter_profile) {
           kiss_set_cdr(kiss_cons(var, KISS_NIL), &tail);
      }
      return (kiss_obj*)KISS_CDR(head);
+}
+
+int kiss_is_class_more_specific(const kiss_obj* const class1, const kiss_obj* const class2) {
+     const kiss_ilos_class_t* const c1 = Kiss_Class(class1);
+     const kiss_ilos_class_t* const c2 = Kiss_Class(class2);
+     kiss_obj* cpl = kiss_cdr(c1->cpl);
+     return kiss_member(c2, cpl) != KISS_NIL ? KISS_T : KISS_NIL;
+}
+
+int kiss_is_qualifiers_more_specific(const kiss_obj* const q1, const kiss_obj* const q2) {
+     
+}
+
+kiss_obj* kiss_add_method(kiss_generic_function_t* const gf, const kiss_method_t* const m) {
+     kiss_obj* q = m->qualifier;
+     kiss_obj* list = KISS_NIL;
+     if (q == KISS_NIL) {
+          list = gf->primary_methods;
+     } else if (q == (kiss_obj*)KISS_Skw_around) {
+          list = gf->around_methods;
+     } else if (q == (kiss_obj*)KISS_Skw_before) {
+          list = gf->before_methods;
+     } else if (q == (kiss_obj*)KISS_Skw_after) {
+          list = gf->after_methods;
+     } else {
+          Kiss_Err(L"unknown method qualifier: ~S", q);
+     }
+     
 }
 
 /* defining operator: (defmethod func-spec method-qualifier* parameter-profile form*) -> <symbol>
