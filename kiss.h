@@ -295,7 +295,11 @@ typedef struct {
      kiss_obj* qualifier;
 } kiss_method_t;
 
-
+typedef struct {
+     kiss_obj* before_methods;
+     kiss_obj* after_methods;
+     kiss_obj* next_methods;
+} kiss_gf_invocation_t;
 
 typedef struct {
      kiss_type type;
