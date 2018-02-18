@@ -811,9 +811,8 @@ kiss_obj* kiss_defmethod(const kiss_obj* const func_spec, const kiss_obj* const 
      kiss_generic_function_t* gf = Kiss_Generic_Function(name->fun);
      kiss_obj* lambda = kiss_cons((kiss_obj*)&KISS_Slambda, kiss_cons(lambda_list, forms));
      kiss_method_t* method = kiss_make_method((kiss_obj*)name);
-     method->lambda = lambda;
      method->specializers = specializers;
      method->qualifier = qualifier;
-
+     method->fun = kiss_lambda(lambda_list, forms);
      return func_spec;
 }

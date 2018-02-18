@@ -290,9 +290,9 @@ typedef struct {
 typedef struct {
      kiss_type type;
      void* gc_ptr;
-     kiss_obj* lambda;
      kiss_obj* specializers;
      kiss_obj* qualifier;
+     kiss_obj* fun;
 } kiss_method_t;
 
 typedef struct {
