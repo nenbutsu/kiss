@@ -18,6 +18,16 @@
  */
 #include "kiss.h"
 
+kiss_obj* kiss_next_method_p(void) {
+     kiss_environment_t* env = Kiss_Get_Environment();
+     return KISS_IS_CONS(env->gf_invocation.next_methods) ? KISS_T : KISS_NIL;
+}
+
+kiss_obj* kiss_call_next_method(void) {
+     
+}
+
+
 kiss_lexical_environment_t Kiss_Null_Lexical_Env = {
     KISS_NIL, /* vars */
     KISS_NIL, /* funcs */

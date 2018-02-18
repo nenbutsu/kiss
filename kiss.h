@@ -296,6 +296,7 @@ typedef struct {
 } kiss_method_t;
 
 typedef struct {
+     kiss_obj* args;
      kiss_obj* before_methods;
      kiss_obj* after_methods;
      kiss_obj* next_methods;
@@ -397,6 +398,7 @@ typedef struct {
      kiss_obj* global_dynamic_vars;
      kiss_obj* call_stack;
      kiss_obj* error_call_stack;
+     kiss_gf_invocation_t gf_invocation;
 } kiss_environment_t;
 
 extern kiss_obj* Kiss_Features;
@@ -773,6 +775,8 @@ kiss_obj* kiss_instancp(const kiss_obj* const obj, const kiss_obj* const class);
 kiss_obj* kiss_generic_function_p(const kiss_obj* const obj);
 kiss_obj* kiss_defclass(const kiss_obj* const name, const kiss_obj* const supers,
                         const kiss_obj* const slot_specs, const kiss_obj* const class_opts);
+kiss_obj* kiss_next_method_p(void);
+
 // predefined class names
 kiss_symbol_t KISS_Sc_object;
 kiss_symbol_t KISS_Sc_built_in_class;

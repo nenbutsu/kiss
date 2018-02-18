@@ -44,4 +44,9 @@ void kiss_init_environment(void) {
     env->global_dynamic_vars        = KISS_NIL;
     env->call_stack                 = KISS_NIL;
     env->error_call_stack           = KISS_NIL;
+
+    env->gf_invocation.args           = KISS_NIL;
+    env->gf_invocation.before_methods = KISS_NIL;
+    env->gf_invocation.after_methods  = KISS_NIL;
+    env->gf_invocation.next_methods   = KISS_NIL;
 }

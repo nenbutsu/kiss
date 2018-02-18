@@ -4278,7 +4278,7 @@ kiss_symbol_t KISS_Sgeneric_function_p = {
 
 kiss_symbol_t KISS_Sdefclass;
 kiss_cfunction_t KISS_CFdefclass = {
-    KISS_CFMACRO,              /* type */
+    KISS_CMACRO,              /* type */
     &KISS_Sdefclass,           /* name */
     (kiss_cf_t*)kiss_defclass, /* C function name */
     3,                         /* minimum argument number */
@@ -4296,7 +4296,7 @@ kiss_symbol_t KISS_Sdefclass = {
 
 kiss_symbol_t KISS_Sdefgeneric;
 kiss_cfunction_t KISS_CFdefgeneric = {
-    KISS_CFMACRO,                /* type */
+    KISS_CMACRO,                 /* type */
     &KISS_Sdefgeneric,           /* name */
     (kiss_cf_t*)kiss_defgeneric, /* C function name */
     2,                           /* minimum argument number */
@@ -4314,7 +4314,7 @@ kiss_symbol_t KISS_Sdefgeneric = {
 
 kiss_symbol_t KISS_Sdefmethod;
 kiss_cfunction_t KISS_CFdefmethod = {
-    KISS_CFMACRO,               /* type */
+    KISS_CMACRO,                /* type */
     &KISS_Sdefmethod,           /* name */
     (kiss_cf_t*)kiss_defmethod, /* C function name */
     2,                          /* minimum argument number */
@@ -4328,6 +4328,42 @@ kiss_symbol_t KISS_Sdefmethod = {
     NULL,                          /* var */
     (kiss_obj*)&KISS_CFdefmethod,  /* fun */
     KISS_NIL,                      /* plist */
+};
+
+kiss_symbol_t KISS_Snext_method_p;
+kiss_cfunction_t KISS_CFnext_method_p = {
+     KISS_CFUNCTION,                 /* type */
+     &KISS_Snext_method_p,           /* name */
+     (kiss_cf_t*)kiss_next_method_p, /* C function name */
+     0,                              /* minimum argument number */
+     0,                              /* maximum argument number */
+};
+kiss_symbol_t KISS_Snext_method_p = {
+     KISS_SYMBOL,         /* type */
+     NULL,                /* gc_ptr */
+     L"next-method-p",    /* name */
+     KISS_CONSTANT_FSLOT, /* flags */
+     NULL,                /* var */
+     NULL,                /* fun */
+     KISS_NIL,            /* plist */
+};
+
+kiss_symbol_t KISS_Scall_next_method;
+kiss_cfunction_t KISS_CFcall_next_method = {
+     KISS_CFUNCTION,                    /* type */
+     &KISS_Scall_next_method,           /* name */
+     (kiss_cf_t*)kiss_call_next_method, /* C function name */
+     0,                                 /* minimum argument number */
+     0,                                 /* maximum argument number */
+};
+kiss_symbol_t KISS_Scall_next_method = {
+     KISS_SYMBOL,         /* type */
+     NULL,                /* gc_ptr */
+     L"call-next-method", /* name */
+     KISS_CONSTANT_FSLOT, /* flags */
+     NULL,                /* var */
+     NULL,                /* fun */
+     KISS_NIL,            /* plist */
 };
 
 
@@ -4710,6 +4746,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sslotref, &KISS_Sset_slotref, &KISS_Sslot_bound_p,
     &KISS_Sinstancep, &KISS_Sgeneric_function_p,
     &KISS_Sdefclass, &KISS_Sdefgeneric, &KISS_Sdefmethod,
+    &KISS_Scall_next_method, &KISS_Snext_method_p,
     
     /* ilos.c predefined class names */
     &KISS_Sc_object, &KISS_Sc_built_in_class, &KISS_Sc_standard_class,
