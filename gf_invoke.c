@@ -18,53 +18,6 @@
  */
 #include "kiss.h"
 
-kiss_obj* kiss_next_method_p(void) {
-     kiss_environment_t* env = Kiss_Get_Environment();
-     return KISS_IS_CONS(env->gf_invocation.next_methods) ? KISS_T : KISS_NIL;
-}
-
-kiss_obj* kiss_call_next_method(void) {
-     
-}
-
-
-kiss_lexical_environment_t Kiss_Null_Lexical_Env = {
-    KISS_NIL, /* vars */
-    KISS_NIL, /* funcs */
-    KISS_NIL, /* jumpers */
-};
-
-/* local function: (call-next-method) -> <object> */
-/* local function: (next-method-p) -> boolean */
-static kiss_obj* kiss_true(void) { return KISS_T; }
-kiss_cfunction_t KISS_CFtrue = {
-    KISS_CFUNCTION,        /* type */
-    NULL,                  /* name */
-    (kiss_cf_t*)kiss_true, /* C function name */
-    0,                     /* minimum argument number */
-    0,                     /* maximum argument number */
-};
-
-static kiss_obj* kiss_false(void) { return KISS_NIL; }
-kiss_cfunction_t KISS_CFfalse = {
-    KISS_CFUNCTION,         /* type */
-    NULL,                   /* name */
-    (kiss_cf_t*)kiss_false, /* C function name */
-    0,                      /* minimum argument number */
-    0,                      /* maximum argument number */
-};
-
-kiss_obj* kiss_next_method_error(void) {
-    Kiss_Err(L"Next method doesn't exist");
-}
-kiss_cfunction_t KISS_CFnext_method_error = {
-    KISS_CFUNCTION,                     /* type */
-    NULL,                               /* name */
-    (kiss_cf_t*)kiss_next_method_error, /* C function name */
-    0,                                  /* minimum argument number */
-    0,                                  /* maximum argument number */
-};
-
 static void kiss_bind_methodargs(const kiss_obj* const m) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_obj *binding, *next;

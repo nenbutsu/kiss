@@ -36,17 +36,6 @@
 
 #include <gmp.h>
 
-typedef long int kiss_ptr_int;
-#define KISS_PTR_INT_MAX (LONG_MAX>>2)
-#define KISS_PTR_INT_MIN (LONG_MIN>>2)
-_Static_assert (sizeof(kiss_ptr_int) == sizeof(void*), "We need a C int with the same width as void*");
-
-#define kiss_ptr_int(x)        (((kiss_ptr_int)x)>>2)
-#define kiss_wchar(x)          kiss_ptr_int(x)
-
-#define kiss_make_char(x)      (kiss_obj*)((((kiss_ptr_int)x)<<2) | 2)
-#define kiss_make_fixnum(x)    (kiss_obj*)((((kiss_ptr_int)x)<<2) | 1)
-
 typedef enum {
      KISS_FIXNUM = 1,
      KISS_CHARACTER = 2,
@@ -65,19 +54,21 @@ typedef enum {
      KISS_CFUNCTION,
      KISS_CMACRO,
 
+     KISS_GENERIC_FUNCTION,
+     KISS_METHOD,
+
      KISS_CATCHER,
      KISS_CLEANUP,
      KISS_BLOCK,
      KISS_TAGBODY,
+     KISS_GF_INVOCATION,
 
      KISS_ILOS_OBJ,
      KISS_ILOS_CLASS,
 
-     KISS_GENERIC_FUNCTION,
-     KISS_METHOD,
 } kiss_type;
 
-typedef struct {
+typedef struct kiss_obj {
      kiss_type type;
      void* pointer1;
      void* pointer2;
@@ -86,59 +77,18 @@ typedef struct {
      void* pointer5;
 } kiss_obj;
 
-struct kiss_gc_obj {
+typedef struct kiss_gc_obj {
      kiss_type type;
      void* gc_ptr;
      void* pointer2;
      void* pointer3;
      void* pointer4;
      void* pointer5;
-};
-typedef struct kiss_gc_obj kiss_gc_obj;
+} kiss_gc_obj;
 
-
-#define KISS_HEAP_STACK_SIZE (1024 * 1024 * 2)
-extern size_t Kiss_Heap_Top;
-extern kiss_gc_obj* Kiss_Heap_Stack[];
-
-extern kiss_ptr_int Kiss_GC_Flag;
-extern size_t Kiss_GC_Amount;
-extern void* Kiss_GC_Objects;
-
-/* gc.c */
-kiss_obj* kiss_gc_info(void);
-kiss_obj* kiss_gc(void);
-
-_Noreturn
-void Kiss_System_Error (void);
+typedef long int kiss_ptr_int;
 
 #define kiss_gc_ptr(x)   ((void*)((kiss_ptr_int)x & (~0<<1)))
-/* An error shall be signaled if the requested memory cannot be allocated
-   (error-id. <storage-exhausted>). */
-inline
-void* Kiss_Malloc(size_t const size) {
-    void* p = malloc(size);
-    if (p == NULL) { Kiss_System_Error(); }
-    return p;
-}
-
-inline
-void* Kiss_GC_Malloc(size_t const size) {
-    void* p = Kiss_Malloc(size);
-
-    Kiss_GC_Amount += size;
-    if (Kiss_GC_Amount > 1024 * 1024 * 4) {
-         //fwprintf(stderr, L"\ngc...\n");
-	 kiss_gc();
-	 Kiss_GC_Amount = 0;
-    }
-
-    Kiss_Heap_Stack[Kiss_Heap_Top++] = p;
-    assert(Kiss_Heap_Top < KISS_HEAP_STACK_SIZE);
-    ((kiss_gc_obj*)p)->gc_ptr = (void*)((kiss_ptr_int)kiss_gc_ptr(Kiss_GC_Objects) | Kiss_GC_Flag);
-    Kiss_GC_Objects = p;
-    return p;
-}
 
 typedef struct {
      kiss_type type;
@@ -209,10 +159,6 @@ typedef struct {
      kiss_obj* rehash_threshold;
 } kiss_hash_table_t;
 
-extern kiss_hash_table_t* Kiss_Symbol_Hash_Table;
-
-
-
 typedef kiss_obj* (*kiss_cf0_t)(void);
 typedef kiss_obj* (*kiss_cf1_t)(kiss_obj*);
 typedef kiss_obj* (*kiss_cf2_t)(kiss_obj*, kiss_obj*);
@@ -262,9 +208,19 @@ typedef struct {
 } kiss_lexical_environment_t;
 
 typedef struct {
+     kiss_type type;
+     void* gc_ptr;
+     kiss_obj* args;
+     kiss_obj* before_methods;
+     kiss_obj* after_methods;
+     kiss_obj* next_methods;
+} kiss_gf_invocation_t;
+
+typedef struct {
      kiss_obj* vars;
      kiss_obj* jumpers;
      size_t backquote_nest;
+     kiss_obj* gf_invocations;
 } kiss_dynamic_environment_t;
 
 typedef struct {
@@ -294,13 +250,6 @@ typedef struct {
      kiss_obj* qualifier;
      kiss_obj* fun;
 } kiss_method_t;
-
-typedef struct {
-     kiss_obj* args;
-     kiss_obj* before_methods;
-     kiss_obj* after_methods;
-     kiss_obj* next_methods;
-} kiss_gf_invocation_t;
 
 typedef struct {
      kiss_type type;
@@ -335,7 +284,6 @@ typedef struct {
      kiss_obj* body;
 } kiss_tagbody_t;
 
-
 typedef enum {
     KISS_INPUT_STREAM     =  1,
     KISS_OUTPUT_STREAM    =  2,
@@ -369,23 +317,23 @@ typedef struct {
      size_t pos;
 } kiss_file_stream_t;
 
-typedef struct {
-     kiss_type type;
-     void* gc_ptr;
-     kiss_obj* class;
-     kiss_obj* slots;
-} kiss_ilos_obj_t;
 
-typedef struct {
+typedef struct kiss_ilos_class_t {
      kiss_type type;
      void* gc_ptr;
-     kiss_obj* class;
+     struct kiss_ilos_class_t* class;
      kiss_obj* slots;
-     kiss_obj* name;
+     kiss_symbol_t* name;
      kiss_obj* abstractp;
      kiss_obj* cpl;
 } kiss_ilos_class_t;
 
+typedef struct {
+     kiss_type type;
+     void* gc_ptr;
+     kiss_ilos_class_t* class;
+     kiss_obj* slots;
+} kiss_ilos_obj_t;
 
 typedef struct {
      kiss_lexical_environment_t lexical_env;
@@ -398,22 +346,30 @@ typedef struct {
      kiss_obj* global_dynamic_vars;
      kiss_obj* call_stack;
      kiss_obj* error_call_stack;
-     kiss_gf_invocation_t gf_invocation;
 } kiss_environment_t;
 
-extern kiss_obj* Kiss_Features;
-
-kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda;
+kiss_symbol_t KISS_St, KISS_Snil;
 #define KISS_T        ((kiss_obj*)(&KISS_St))
 #define KISS_NIL      ((kiss_obj*)(&KISS_Snil))
 
-kiss_symbol_t KISS_Skw_rest, KISS_Samp_rest, KISS_Skw_size, KISS_Skw_test, KISS_Skw_weakness, KISS_Skw_rehash_size, KISS_Skw_rehash_threshold, KISS_Skw_name, KISS_Skw_class;
-
+kiss_symbol_t KISS_Squote, KISS_Slambda;
+kiss_symbol_t KISS_Skw_rest, KISS_Samp_rest;
+kiss_symbol_t KISS_Skw_size, KISS_Skw_test, KISS_Skw_weakness, KISS_Skw_rehash_size, KISS_Skw_rehash_threshold, KISS_Skw_name, KISS_Skw_class;
 kiss_symbol_t KISS_Seql;
 
 kiss_symbol_t KISS_Ueos, KISS_Udummy;
 #define KISS_DUMMY    ((kiss_obj*)(&KISS_Udummy))
 #define KISS_EOS      ((kiss_obj*)(&KISS_Ueos))
+
+#define KISS_PTR_INT_MAX (LONG_MAX>>2)
+#define KISS_PTR_INT_MIN (LONG_MIN>>2)
+_Static_assert (sizeof(kiss_ptr_int) == sizeof(void*), "We need a C int with the same width as void*");
+
+#define kiss_ptr_int(x)        (((kiss_ptr_int)x)>>2)
+#define kiss_wchar(x)          kiss_ptr_int(x)
+
+#define kiss_make_char(x)      (kiss_obj*)((((kiss_ptr_int)x)<<2) | 2)
+#define kiss_make_fixnum(x)    (kiss_obj*)((((kiss_ptr_int)x)<<2) | 1)
 
 
 #define KISS_CAR(x) ((void*)(((kiss_cons_t*)x)->car))
@@ -470,7 +426,6 @@ kiss_obj* kiss_char_lessthan(const kiss_obj* const character1, const kiss_obj* c
 kiss_obj* kiss_cf_invoke(const kiss_cfunction_t* const cfun, kiss_obj* args);
 
 /* cons.c */
-
 
 /* control.c */
 kiss_obj* kiss_quote(kiss_obj* obj);
@@ -725,6 +680,49 @@ kiss_obj* kiss_intern(const kiss_obj* const name);
 kiss_obj* kiss_property(const kiss_obj* const symbol, const kiss_obj* const property, const kiss_obj* const rest);
 kiss_obj* kiss_set_property(const kiss_obj* const obj, kiss_obj* const symbol, const kiss_obj* const property);
 kiss_obj* kiss_remove_property(kiss_obj* const symbol, const kiss_obj* const property);
+
+
+#define KISS_HEAP_STACK_SIZE (1024 * 1024 * 2)
+extern size_t Kiss_Heap_Top;
+extern kiss_gc_obj* Kiss_Heap_Stack[];
+
+extern kiss_ptr_int Kiss_GC_Flag;
+extern size_t Kiss_GC_Amount;
+extern void* Kiss_GC_Objects;
+
+/* gc.c */
+_Noreturn
+void Kiss_System_Error (void);
+
+
+kiss_obj* kiss_gc_info(void);
+kiss_obj* kiss_gc(void);
+
+inline
+void* Kiss_Malloc(size_t const size) {
+    void* p = malloc(size);
+    if (p == NULL) { Kiss_System_Error(); }
+    return p;
+}
+
+inline
+void* Kiss_GC_Malloc(size_t const size) {
+    void* p = Kiss_Malloc(size);
+
+    Kiss_GC_Amount += size;
+    if (Kiss_GC_Amount > 1024 * 1024 * 4) {
+         //fwprintf(stderr, L"\ngc...\n");
+	 kiss_gc();
+	 Kiss_GC_Amount = 0;
+    }
+
+    Kiss_Heap_Stack[Kiss_Heap_Top++] = p;
+    assert(Kiss_Heap_Top < KISS_HEAP_STACK_SIZE);
+    ((kiss_gc_obj*)p)->gc_ptr = (void*)((kiss_ptr_int)kiss_gc_ptr(Kiss_GC_Objects) | Kiss_GC_Flag);
+    Kiss_GC_Objects = p;
+    return p;
+}
+
 inline
 void kiss_init_string(kiss_string_t* str, wchar_t* name, size_t n) {
      str->type = KISS_STRING;
@@ -742,6 +740,7 @@ kiss_string_t* kiss_make_string(const wchar_t* const s) {
      kiss_init_string(p, wcs, n);
      return p;
 }
+
 inline
 kiss_obj* kiss_symbol(const wchar_t* const name) {
      return kiss_intern((kiss_obj*)kiss_make_string(name));
@@ -762,9 +761,12 @@ kiss_obj* kiss_dynamic_let(kiss_obj* vspecs, kiss_obj* body);
 kiss_obj* kiss_set_dynamic(kiss_obj* form, kiss_obj* var);
 
 /* ilos.c */
+kiss_symbol_t KISS_Skiss_classes;
 void kiss_init_ilos(void);
 kiss_obj* kiss_ilos_obj_p(const kiss_obj* const obj);
-kiss_obj* kiss_make_ilos_obj(const kiss_obj* const class);
+kiss_ilos_obj_t* kiss_make_ilos_obj(const kiss_ilos_class_t* const class);
+kiss_ilos_class_t* kiss_make_ilos_class(const kiss_symbol_t* const name,
+                                        const kiss_obj* const supers);
 kiss_obj* kiss_class(const kiss_obj* const name);
 kiss_obj* kiss_class_of(const kiss_obj* const obj);
 kiss_obj* kiss_subclassp(const kiss_obj* const sub, const kiss_obj* const super);
@@ -781,13 +783,22 @@ kiss_obj* kiss_next_method_p(void);
 kiss_symbol_t KISS_Sc_object;
 kiss_symbol_t KISS_Sc_built_in_class;
 kiss_symbol_t KISS_Sc_standard_class;
+kiss_symbol_t KISS_Sc_standard_object;
+kiss_symbol_t KISS_Sc_generic_function;
+kiss_symbol_t KISS_Sc_standard_generic_function;
+kiss_symbol_t KISS_Sc_standard_method;
 kiss_symbol_t KISS_Sc_null;
 kiss_symbol_t KISS_Sc_cons;
+kiss_symbol_t KISS_Sc_list;
 kiss_symbol_t KISS_Sc_symbol;
 kiss_symbol_t KISS_Sc_character;
+kiss_symbol_t KISS_Sc_number;
 kiss_symbol_t KISS_Sc_integer;
 kiss_symbol_t KISS_Sc_float;
 kiss_symbol_t KISS_Sc_string;
+kiss_symbol_t KISS_Sc_basic_array;
+kiss_symbol_t KISS_Sc_basic_array_s;
+kiss_symbol_t KISS_Sc_basic_vector;
 kiss_symbol_t KISS_Sc_general_vector;
 kiss_symbol_t KISS_Sc_general_array_s;
 kiss_symbol_t KISS_Sc_stream;
@@ -819,7 +830,7 @@ kiss_generic_function_t* Kiss_Generic_Function(const kiss_obj* const obj) {
 }
 
 inline
-kiss_metho_t* Kiss_Method(const kiss_obj* const obj) {
+kiss_method_t* Kiss_Method(const kiss_obj* const obj) {
      if (KISS_IS_METHOD(obj)) { return (kiss_method_t*)obj; }
      Kiss_Domain_Error(obj, L"method");
 }
@@ -937,7 +948,7 @@ kiss_obj* Kiss_Sequence(const kiss_obj* const obj) {
 
 inline
 kiss_ilos_obj_t* Kiss_ILOS_Obj(const kiss_obj* const obj) {
-     if (KISS_IS_ILOS_OBJ(obj) || KISS_IS_ILOS_CLASS) { return (kiss_ilos_obj_t*)obj; }
+     if (KISS_IS_ILOS_OBJ(obj) || KISS_IS_ILOS_CLASS(obj)) { return (kiss_ilos_obj_t*)obj; }
      Kiss_Domain_Error(obj, L"ILOS object");
 }
 
@@ -1214,7 +1225,7 @@ kiss_obj* kiss_nreverse(kiss_obj* p) {
    Example:
    (assoc 'a '((a . 1) (b . 2))) => (a . 1) */
 inline
-kiss_obj* kiss_assoc(const kiss_obj* const obj, kiss_obj* const alist) {
+kiss_obj* kiss_assoc(const kiss_obj* const obj, const kiss_obj* const alist) {
     for (const kiss_obj* p = Kiss_List(alist); KISS_IS_CONS(p); p = KISS_CDR(p)) {
         kiss_cons_t* x = Kiss_Cons(KISS_CAR(p));
         if (kiss_eql(obj, x->car) == KISS_T) { return (kiss_obj*)x; }

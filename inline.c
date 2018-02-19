@@ -181,7 +181,7 @@ extern inline
 kiss_obj* kiss_nreverse(kiss_obj* p);
 
 extern inline
-kiss_obj* kiss_assoc(const kiss_obj* const obj, kiss_obj* const alist);
+kiss_obj* kiss_assoc(const kiss_obj* const obj, const kiss_obj* const alist);
 
 extern inline
 kiss_obj* kiss_assoc_using(const kiss_obj* test, const kiss_obj* const obj, kiss_obj* const alist);
