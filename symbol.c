@@ -219,133 +219,133 @@ kiss_symbol_t KISS_Samp_rest = {
 kiss_symbol_t KISS_Skw_size;
 kiss_symbol_t KISS_Skw_size = {
     KISS_SYMBOL,               /* type */
-    NULL,              /* gc_ptr */
-    L":size",             /* name */
-    KISS_SYSTEM_CONSTANT_VAR, /*  flags */
+    NULL,                      /* gc_ptr */
+    L":size",                  /* name */
+    KISS_SYSTEM_CONSTANT_VAR,  /* flags */
     (kiss_obj*)&KISS_Skw_size, /* var */
-    NULL,                 /* fun */
-    NULL,                       /* class */
+    NULL,                      /* fun */
+    NULL,                      /* class */
     KISS_NIL,                  /* plist */
 };
 
 kiss_symbol_t KISS_Skw_test;
 kiss_symbol_t KISS_Skw_test = {
     KISS_SYMBOL,               /* type */
-    NULL,              /* gc_ptr */
-    L":test",             /* name */
-    KISS_SYSTEM_CONSTANT_VAR, /*  flags */
+    NULL,                      /* gc_ptr */
+    L":test",                  /* name */
+    KISS_SYSTEM_CONSTANT_VAR,  /* flags */
     (kiss_obj*)&KISS_Skw_test, /* var */
-    NULL,                 /* fun */
-    NULL,                       /* class */
+    NULL,                      /* fun */
+    NULL,                      /* class */
     KISS_NIL,                  /* plist */
 };
 
 kiss_symbol_t KISS_Skw_weakness;
 kiss_symbol_t KISS_Skw_weakness = {
-    KISS_SYMBOL,               /* type */
-    NULL,              /* gc_ptr */
-    L":weakness",             /* name */
-    KISS_SYSTEM_CONSTANT_VAR, /*  flags */
+    KISS_SYMBOL,                   /* type */
+    NULL,                          /* gc_ptr */
+    L":weakness",                  /* name */
+    KISS_SYSTEM_CONSTANT_VAR,      /* flags */
     (kiss_obj*)&KISS_Skw_weakness, /* var */
-    NULL,                 /* fun */
-    NULL,                       /* class */
-    KISS_NIL,                  /* plist */
+    NULL,                          /* fun */
+    NULL,                          /* class */
+    KISS_NIL,                      /* plist */
 };
 
 kiss_symbol_t KISS_Skw_rehash_size;
 kiss_symbol_t KISS_Skw_rehash_size = {
-    KISS_SYMBOL,               /* type */
-    NULL,              /* gc_ptr */
-    L":rehash-size",             /* name */
-    KISS_SYSTEM_CONSTANT_VAR, /*  flags */
+    KISS_SYMBOL,                      /* type */
+    NULL,                             /* gc_ptr */
+    L":rehash-size",                  /* name */
+    KISS_SYSTEM_CONSTANT_VAR,         /* flags */
     (kiss_obj*)&KISS_Skw_rehash_size, /* var */
-    NULL,                 /* fun */
-    NULL,                       /* class */
-    KISS_NIL,                  /* plist */
+    NULL,                             /* fun */
+    NULL,                             /* class */
+    KISS_NIL,                         /* plist */
 };
 
 kiss_symbol_t KISS_Skw_rehash_threshold;
 kiss_symbol_t KISS_Skw_rehash_threshold = {
-    KISS_SYMBOL,               /* type */
-    NULL,              /* gc_ptr */
-    L":rehash-threshold",             /* name */
-    KISS_SYSTEM_CONSTANT_VAR, /*  flags */
+    KISS_SYMBOL,                           /* type */
+    NULL,                                  /* gc_ptr */
+    L":rehash-threshold",                  /* name */
+    KISS_SYSTEM_CONSTANT_VAR,              /* flags */
     (kiss_obj*)&KISS_Skw_rehash_threshold, /* var */
-    NULL,                 /* fun */
-    NULL,                       /* class */
-    KISS_NIL,                  /* plist */
+    NULL,                                  /* fun */
+    NULL,                                  /* class */
+    KISS_NIL,                              /* plist */
 };
 
 kiss_symbol_t KISS_Skw_abstractp;
 kiss_symbol_t KISS_Skw_abstractp = {
-    KISS_SYMBOL,               /* type */
-    NULL,              /* gc_ptr */
-    L":abstractp",             /* name */
-    KISS_SYSTEM_CONSTANT_VAR, /*  flags */
+    KISS_SYMBOL,                    /* type */
+    NULL,                           /* gc_ptr */
+    L":abstractp",                  /* name */
+    KISS_SYSTEM_CONSTANT_VAR,       /* flags */
     (kiss_obj*)&KISS_Skw_abstractp, /* var */
-    NULL,                 /* fun */
-    NULL,                       /* class */
-    KISS_NIL,                  /* plist */
+    NULL,                           /* fun */
+    NULL,                           /* class */
+    KISS_NIL,                       /* plist */
 };
 
 kiss_symbol_t KISS_Skw_metaclass;
 kiss_symbol_t KISS_Skw_metaclass = {
-    KISS_SYMBOL,               /* type */
-    NULL,              /* gc_ptr */
-    L":metaclass",             /* name */
-    KISS_SYSTEM_CONSTANT_VAR, /*  flags */
+    KISS_SYMBOL,                    /* type */
+    NULL,                           /* gc_ptr */
+    L":metaclass",                  /* name */
+    KISS_SYSTEM_CONSTANT_VAR,       /* flags */
     (kiss_obj*)&KISS_Skw_metaclass, /* var */
-    NULL,                 /* fun */
-    NULL,                       /* class */
-    KISS_NIL,                  /* plist */
+    NULL,                           /* fun */
+    NULL,                           /* class */
+    KISS_NIL,                       /* plist */
 };
 
 kiss_symbol_t KISS_Skw_around;
 kiss_symbol_t KISS_Skw_around = {
-    KISS_SYMBOL,               /* type */
-    NULL,              /* gc_ptr */
-    L":around",             /* name */
-    KISS_SYSTEM_CONSTANT_VAR, /*  flags */
+    KISS_SYMBOL,                 /* type */
+    NULL,                        /* gc_ptr */
+    L":around",                  /* name */
+    KISS_SYSTEM_CONSTANT_VAR,    /* flags */
     (kiss_obj*)&KISS_Skw_around, /* var */
-    NULL,                 /* fun */
-    NULL,                       /* class */
-    KISS_NIL,                  /* plist */
+    NULL,                        /* fun */
+    NULL,                        /* class */
+    KISS_NIL,                    /* plist */
 };
 
 kiss_symbol_t KISS_Skw_before;
 kiss_symbol_t KISS_Skw_before = {
-    KISS_SYMBOL,               /* type */
-    NULL,              /* gc_ptr */
-    L":before",             /* name */
-    KISS_SYSTEM_CONSTANT_VAR, /*  flags */
+    KISS_SYMBOL,                 /* type */
+    NULL,                        /* gc_ptr */
+    L":before",                  /* name */
+    KISS_SYSTEM_CONSTANT_VAR,    /* flags */
     (kiss_obj*)&KISS_Skw_before, /* var */
-    NULL,                 /* fun */
-    NULL,                       /* class */
-    KISS_NIL,                  /* plist */
+    NULL,                        /* fun */
+    NULL,                        /* class */
+    KISS_NIL,                    /* plist */
 };
 
 kiss_symbol_t KISS_Skw_after;
 kiss_symbol_t KISS_Skw_after = {
-    KISS_SYMBOL,               /* type */
-    NULL,              /* gc_ptr */
-    L":after",             /* name */
-    KISS_SYSTEM_CONSTANT_VAR, /*  flags */
+    KISS_SYMBOL,                /* type */
+    NULL,                       /* gc_ptr */
+    L":after",                  /* name */
+    KISS_SYSTEM_CONSTANT_VAR,   /* flags */
     (kiss_obj*)&KISS_Skw_after, /* var */
-    NULL,                 /* fun */
+    NULL,                       /* fun */
     NULL,                       /* class */
-    KISS_NIL,                  /* plist */
+    KISS_NIL,                   /* plist */
 };
 
 /*** condition.lisp ***/
 kiss_symbol_t KISS_Ssignal_condition = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"signal-condition",
-    KISS_CONSTANT_FSLOT,
-    NULL,               /* var */
-    NULL, /* fun */
-    NULL,                       /* class */
-    KISS_NIL,                /* plist */
+     KISS_SYMBOL,         /* type */
+     NULL,                /* gc_ptr */
+     L"signal-condition", /* name */
+     KISS_CONSTANT_FSLOT, /* flags */
+     NULL,                /* var */
+     NULL,                /* fun */
+     NULL,                /* class */
+     KISS_NIL,            /* plist */
 };
 
 /*** cons.c ***/
@@ -3751,7 +3751,7 @@ kiss_symbol_t KISS_Ss_standard_input_s = {
      KISS_SYMBOL,                       /* type   */
      NULL,                              /* gc_ptr */
      L"*kiss::standard-input*",         /*  name  */
-     KISS_SYSTEM_CONSTANT_VAR,          /*  flags */
+     KISS_SYSTEM_CONSTANT_VAR,          /* flags */
      (kiss_obj*)(&Kiss_Standard_Input), /*  var   */
      NULL,                              /*  fun   */
      NULL,                              /* class */
@@ -3762,7 +3762,7 @@ kiss_symbol_t KISS_Ss_standard_output_s = {
      KISS_SYMBOL,                        /* type   */
      NULL,                               /* gc_ptr */
      L"*kiss::standard-output*",         /*  name  */
-     KISS_SYSTEM_CONSTANT_VAR,           /*  flags */
+     KISS_SYSTEM_CONSTANT_VAR,           /* flags */
      (kiss_obj*)(&Kiss_Standard_Output), /*  var   */
      NULL,                               /*  fun   */
      NULL,                              /* class */
@@ -3773,7 +3773,7 @@ kiss_symbol_t KISS_Ss_error_output_s = {
      KISS_SYMBOL,                     /* type   */
      NULL,                            /* gc_ptr */
      L"*kiss::error-output*",         /*  name  */
-     KISS_SYSTEM_CONSTANT_VAR,        /*  flags */
+     KISS_SYSTEM_CONSTANT_VAR,        /* flags */
      (kiss_obj*)(&Kiss_Error_Output), /*  var   */
      NULL,                            /*  fun   */
      NULL,                              /* class */
