@@ -63,18 +63,24 @@ kiss_method_t* kiss_make_method(void) {
 }
 
 
-kiss_obj* kiss_ilos_obj_p(const kiss_obj* const obj) {
-    if (KISS_IS_ILOS_OBJ(obj)) { return KISS_T; }
-    else                       { return KISS_NIL; }
+kiss_ilos_class_t* Kiss_Class(const kiss_obj* const obj) {
+     if (KISS_IS_ILOS_CLASS(obj)) {
+          return (kiss_ilos_class_t*)obj;
+     } else {
+          Kiss_Err(L"Not a class object: ~S", obj);
+     }
 }
 
 /* special operator: (class class-name) -> <class>
    Returns the class object that corresponds to the class named CLASS-NAME.
    On error, signal <undefined-entity> see spec. p.119 */
 kiss_obj* kiss_class(const kiss_obj* const name) {
-     kiss_obj* class = kiss_gethash(name, KISS_Skiss_classes.var, KISS_NIL);
-     if (class != KISS_NIL) return class;
-     Kiss_Err(L"Undefined Class: ~S", name);
+     kiss_ilos_class_t* class = Kiss_Symbol(name)->class;
+     if (class) {
+          return (kiss_obj*)Kiss_Class((kiss_obj*)class);
+     } else {
+          Kiss_Err(L"Undefined Class: ~S", name);
+     }
 }
 
 /* function: (class-of obj) -> <class>
@@ -127,14 +133,6 @@ kiss_obj* kiss_class_of(const kiss_obj* const obj) {
                         KISS_OBJ_TYPE(obj));
 	       exit(EXIT_FAILURE);
 	  }
-}
-
-kiss_ilos_class_t* Kiss_Class(const kiss_obj* const obj) {
-     if (KISS_IS_ILOS_CLASS(obj)) {
-          return (kiss_ilos_class_t*)obj;
-     } else {
-          Kiss_Err(L"Not a class object: ~S", obj);
-     }
 }
 
 kiss_obj* kiss_slotref(const kiss_obj* const obj, const kiss_obj* const name) {

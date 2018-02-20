@@ -4335,25 +4335,6 @@ kiss_symbol_t KISS_Sstandard = {
      KISS_NIL,            /* plist */
 };
 
-kiss_symbol_t KISS_Smake_ilos_obj;
-kiss_cfunction_t KISS_CFmake_ilos_obj = {
-     KISS_CFUNCTION, /* type */
-     &KISS_Smake_ilos_obj,   /* name */
-     (kiss_cf_t*)kiss_make_ilos_obj,    /* C function name */
-     1,         /* minimum argument number */
-     1,        /* maximum argument number */
-};
-kiss_symbol_t KISS_Smake_ilos_obj = {
-     KISS_SYMBOL,
-     NULL,              /* gc_ptr */
-     L"kiss::make-ilos-obj",
-     KISS_CONSTANT_FSLOT,
-     NULL,                /* var */
-     (kiss_obj*)&KISS_CFmake_ilos_obj, /* fun */
-     NULL,                              /* class */
-     KISS_NIL,                 /* plist */
-};
-
 kiss_symbol_t KISS_Sclass;
 kiss_cfunction_t KISS_CFclass = {
      KISS_CMACRO, /* type */
@@ -4369,25 +4350,6 @@ kiss_symbol_t KISS_Sclass = {
      KISS_CONSTANT_FSLOT,
      NULL,                /* var */
      (kiss_obj*)&KISS_CFclass, /* fun */
-     NULL,                              /* class */
-     KISS_NIL,                 /* plist */
-};
-
-kiss_symbol_t KISS_Silos_obj_p;
-kiss_cfunction_t KISS_CFilos_obj_p = {
-     KISS_CFUNCTION, /* type */
-     &KISS_Silos_obj_p,   /* name */
-     (kiss_cf_t*)kiss_ilos_obj_p,    /* C function name */
-     1,         /* minimum argument number */
-     1,        /* maximum argument number */
-};
-kiss_symbol_t KISS_Silos_obj_p = {
-     KISS_SYMBOL,
-     NULL,              /* gc_ptr */
-     L"ilos-obj-p",
-     KISS_CONSTANT_FSLOT,
-     NULL,                /* var */
-     (kiss_obj*)&KISS_CFilos_obj_p, /* fun */
      NULL,                              /* class */
      KISS_NIL,                 /* plist */
 };
@@ -5078,7 +5040,6 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     /* ilos.c */
     &KISS_Skiss_classes, &KISS_Sstandard, &KISS_Sclass,
     &KISS_Sclass_of,
-    &KISS_Smake_ilos_obj, &KISS_Silos_obj_p,
     &KISS_Sslotref, &KISS_Sset_slotref, &KISS_Sslot_bound_p,
     &KISS_Sinstancep, &KISS_Sgeneric_function_p,
     &KISS_Sdefclass, &KISS_Sdefgeneric, &KISS_Sdefmethod,

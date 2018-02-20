@@ -767,10 +767,6 @@ kiss_obj* kiss_set_dynamic(kiss_obj* form, kiss_obj* var);
 /* ilos.c */
 extern kiss_symbol_t KISS_Skiss_classes;
 void kiss_init_ilos(void);
-kiss_obj* kiss_ilos_obj_p(const kiss_obj* const obj);
-kiss_ilos_obj_t* kiss_make_ilos_obj(const kiss_ilos_class_t* const class);
-kiss_ilos_class_t* kiss_make_ilos_class(const kiss_symbol_t* const name,
-                                        const kiss_obj* const supers);
 kiss_obj* kiss_instancep(const kiss_obj* const obj, const kiss_obj* const class);
 kiss_obj* kiss_class(const kiss_obj* const name);
 kiss_obj* kiss_class_of(const kiss_obj* const obj);
