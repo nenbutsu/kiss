@@ -25,7 +25,7 @@ kiss_ilos_obj_t* kiss_make_ilos_obj(const kiss_ilos_class_t* const class) {
 }
 
 kiss_obj* kiss_compute_cpl(const kiss_obj* const supers);
-kiss_ilos_class_t KISS_ILOS_CLASS_standard_class;
+extern kiss_ilos_class_t KISS_ILOS_CLASS_standard_class;
 
 kiss_ilos_class_t* kiss_make_ilos_class(const kiss_symbol_t* const name,
                                         const kiss_obj* const supers)
@@ -54,12 +54,439 @@ kiss_generic_function_t* kiss_make_generic_function(const kiss_symbol_t* const n
 }
 
 kiss_method_t* kiss_make_method(void) {
-     kiss_method_t* m = Kiss_GC_Malloc(sizeof(kiss_method_t));
-     m->type         = KISS_METHOD;
-     m->specializers = KISS_NIL;
-     m->qualifier    = KISS_NIL;
-     m->fun          = KISS_NIL;
-     return m;
+     kiss_method_t* method = Kiss_GC_Malloc(sizeof(kiss_method_t));
+     method->type         = KISS_METHOD;
+     method->specializers = KISS_NIL;
+     method->qualifier    = KISS_NIL;
+     method->fun          = KISS_NIL;
+     return method;
+}
+
+
+kiss_obj* kiss_ilos_obj_p(const kiss_obj* const obj) {
+    if (KISS_IS_ILOS_OBJ(obj)) { return KISS_T; }
+    else                       { return KISS_NIL; }
+}
+
+/* special operator: (class class-name) -> <class>
+   Returns the class object that corresponds to the class named CLASS-NAME.
+   On error, signal <undefined-entity> see spec. p.119 */
+kiss_obj* kiss_class(const kiss_obj* const name) {
+     kiss_obj* class = kiss_gethash(name, KISS_Skiss_classes.var, KISS_NIL);
+     if (class != KISS_NIL) return class;
+     Kiss_Err(L"Undefined Class: ~S", name);
+}
+
+/* function: (class-of obj) -> <class>
+   Returns the class of which the given OBJ is a direct instance.
+   OBJ may be any ISLISP object. */
+kiss_obj* kiss_class_of(const kiss_obj* const obj) {
+	  switch (KISS_OBJ_TYPE(obj)) {
+	  case KISS_CONS:
+	       return kiss_class((kiss_obj*)&KISS_Sc_cons);
+	  case KISS_SYMBOL:
+               return kiss_class((kiss_obj*)(obj == KISS_NIL ? &KISS_Sc_null : &KISS_Sc_symbol));
+	  case KISS_CHARACTER:
+               return kiss_class((kiss_obj*)&KISS_Sc_character);
+	  case KISS_FIXNUM:
+          case KISS_BIGNUM:
+	       return kiss_class((kiss_obj*)&KISS_Sc_integer);
+	  case KISS_FLOAT:
+	       return kiss_class((kiss_obj*)&KISS_Sc_float);
+	  case KISS_STRING:
+	       return kiss_class((kiss_obj*)&KISS_Sc_string);
+	  case KISS_GENERAL_VECTOR:
+	       return kiss_class((kiss_obj*)&KISS_Sc_general_vector);
+	  case KISS_GENERAL_ARRAY_S:
+               return kiss_class((kiss_obj*)&KISS_Sc_general_array_s);
+	  case KISS_HASH_TABLE:
+               return kiss_class((kiss_obj*)&KISS_Sc_hash_table);
+	  case KISS_STREAM:
+               return kiss_class((kiss_obj*)&KISS_Sc_stream);
+	  case KISS_LFUNCTION:
+	  case KISS_LMACRO:
+	  case KISS_CFUNCTION:
+	  case KISS_CMACRO:
+               return kiss_class((kiss_obj*)&KISS_Sc_function);
+          case KISS_GENERIC_FUNCTION:
+               return kiss_class((kiss_obj*)&KISS_Sc_standard_generic_function);
+	  case KISS_ILOS_OBJ:
+          case KISS_ILOS_CLASS:
+               return ((kiss_ilos_obj_t*)obj)->class;
+	  case KISS_CATCHER:
+	  case KISS_BLOCK:
+	  case KISS_CLEANUP:
+	  case KISS_TAGBODY:
+          case KISS_METHOD:
+          case KISS_GF_INVOCATION:
+	       fwprintf(stderr, L"class-of: unexpected internal built-in primitive type = %d\n",
+                        KISS_OBJ_TYPE(obj));
+	       exit(EXIT_FAILURE);
+	  default:
+	       fwprintf(stderr, L"class-of: unknown primitive object type = %d\n",
+                        KISS_OBJ_TYPE(obj));
+	       exit(EXIT_FAILURE);
+	  }
+}
+
+kiss_ilos_class_t* Kiss_Class(const kiss_obj* const obj) {
+     if (KISS_IS_ILOS_CLASS(obj)) {
+          return (kiss_ilos_class_t*)obj;
+     } else {
+          Kiss_Err(L"Not a class object: ~S", obj);
+     }
+}
+
+kiss_obj* kiss_slotref(const kiss_obj* const obj, const kiss_obj* const name) {
+     const kiss_obj* const binding = kiss_assoc(name, Kiss_ILOS_Obj(obj)->slots);
+     if (binding == KISS_NIL) {
+          Kiss_Err(L"Unbound slot: ~S", name);
+     } else {
+          return kiss_cdr(binding);
+     }
+}
+
+kiss_obj* kiss_slot_bound_p(const kiss_obj* const obj, const kiss_obj* const name) {
+     const kiss_obj* const binding = kiss_assoc(name, Kiss_ILOS_Obj(obj)->slots);
+     return kiss_consp(binding);
+}
+
+kiss_obj* kiss_set_slotref(const kiss_obj* const value, kiss_obj* const obj, kiss_obj* const name)
+{
+     kiss_ilos_obj_t* const ilos_obj = Kiss_ILOS_Obj(obj);
+     kiss_obj* binding = kiss_assoc(name, ilos_obj->slots);
+     if (binding == KISS_NIL) {
+          binding = kiss_cons(name, value);
+          ilos_obj->slots = kiss_cons(binding, ilos_obj->slots);
+     } else {
+          kiss_set_cdr(value, binding);
+     }
+     return (kiss_obj*)value;
+}
+
+kiss_symbol_t KISS_Skw_abstractp;
+kiss_symbol_t KISS_Skw_metaclass;
+
+/* defining operator: (defclass class-name (sc-name*) (slot-spec*) class-opt*) -> <symbol>
+     class-name ::= identifier
+     sc-name    ::= identifier
+     slot-spec  ::= slot-name | (slot-name slot-opt *)
+     slot-name  ::= identifier
+     slot-opt   ::= :reader reader-function-name |
+                    :writer writer-function-name |
+                    :accessor reader-function-name |
+                    :boundp boundp-function-name |
+                    :initform form |
+                    :initarg initarg-name
+     initarg-name         ::= identifier
+     reader-function-name ::= identifier
+     writer-function-name ::= identifier
+     boundp-function-name ::= identifier
+     class-opt ::= (:metaclass class-name) | (:abstractp abstract-flag)
+     abstractp ::= t | nil */
+kiss_obj* kiss_defclass(const kiss_obj* const name, const kiss_obj* const supers,
+                        const kiss_obj* const slot_specs, const kiss_obj* const class_opts)
+{
+     Kiss_Symbol(name);
+     Kiss_List(supers);
+     Kiss_List(slot_specs);
+     kiss_ilos_class_t* class = kiss_make_ilos_class(name, supers);
+
+     kiss_obj* abstractp = kiss_assoc((kiss_obj*)&KISS_Skw_abstractp, (kiss_obj*)class_opts);
+     if (KISS_IS_CONS(abstractp)) {
+          abstractp = KISS_CADR(abstractp);
+     }
+     class->abstractp = abstractp;
+
+     kiss_obj* metaclass = kiss_assoc((kiss_obj*)&KISS_Skw_metaclass, class_opts);
+     if (KISS_IS_CONS(metaclass)) {
+          metaclass = KISS_CADR(metaclass);
+          Kiss_Class(metaclass);
+     } else {
+          metaclass = (kiss_obj*)&KISS_ILOS_CLASS_standard_class;
+     }
+     class->class = metaclass;
+     kiss_puthash(name, (kiss_obj*)class, KISS_Skiss_classes.var);
+     return (kiss_obj*)name;
+}
+
+
+/* function: (subclassp subclass superclass) -> boolean
+   Returns t if the class SUBCLASS is a subclass of the class SUPERCLASS;
+   otherwise, returns nil. An error shall be signaled if either SUBCLASS or
+   SUPERCLASS is not a class object (error-id. domain-error). */
+kiss_obj* kiss_subclassp(const kiss_obj* const sub, const kiss_obj* const super) {
+     kiss_ilos_class_t* a = Kiss_Class(sub);
+     Kiss_Class(super);
+     kiss_obj* cpl = a->cpl;
+     return kiss_member(super, cpl) != KISS_NIL ? KISS_T : KISS_NIL;
+}
+
+/* spec. p. 51
+   Let C1, . . . , Cn be the direct superclasses of C in the order defined in
+   the defclass defining form for C. Let P1, . . ., Pn be the class precedence
+   lists for C1, . . . , Cn, respectively. Define P . Q on class precedence
+   lists P and Q to be the two lists appended. Then the class precedence
+   list for C is C . P1 . . . . Pn with duplicate classes removed by
+   repeated application of the following rule: If a class appears twice in
+   the resulting class precedence list, the leftmost occurrence is removed. */
+kiss_obj* kiss_compute_cpl(const kiss_obj* const supers) {
+     kiss_obj* head = kiss_cons(KISS_NIL, KISS_NIL);
+     kiss_obj* tail = head;
+     for (const kiss_obj* p = supers; KISS_IS_CONS(p); p = KISS_CDR(p)) {
+          kiss_ilos_class_t* s = Kiss_Class(KISS_CAR(p));
+          kiss_obj* cpl = s->cpl;
+          kiss_set_cdr(kiss_cons(cpl, KISS_NIL), tail);
+          tail = KISS_CDR(tail);
+     }
+     kiss_obj* list = kiss_append(KISS_CDR(head));
+     tail = head;
+     for (const kiss_obj* p = list; KISS_IS_CONS(p); p = KISS_CDR(p)) {
+          kiss_obj* obj = KISS_CAR(p);
+          if (kiss_member(obj, KISS_CDR(p)) == KISS_NIL) {
+               kiss_set_cdr(kiss_cons(obj, KISS_NIL), tail);
+               tail = KISS_CDR(tail);
+          }
+     }
+     return KISS_CDR(head);
+}
+
+/* function: (instancep obj class) -> boolean
+   Returns t if OBJ is an instance (directly or otherwise) of the class CLASS; 
+   otherwise, returns nil. OBJ may be any ISLISP object. 
+   An error shall be signaled if CLASS is not a class object (error-id. domain-error ). */
+kiss_obj* kiss_instancep(const kiss_obj* const obj, const kiss_obj* const class) {
+     Kiss_Class(class);
+     kiss_obj* c = kiss_class_of(obj);
+     return c == class || kiss_subclassp(c, class) ? KISS_T : KISS_NIL;
+}
+
+/* function: (generic-function-p obj ) -> boolean
+   Returns t if OBJ is a generic function; otherwise, returns nil.
+   OBJ may be any ISLISP object. */
+kiss_obj* kiss_generic_function_p(const kiss_obj* const obj) {
+     return KISS_IS_GENERIC_FUNCTION(obj) ? KISS_T : KISS_NIL;
+}
+
+/* defining operator: (defgeneric func-spec lambda-list {option | method-desc}*) -> <symbol>
+   func-spec   ::= identifier | (setf identifier)
+   lambda-list ::= (var* [&rest var]) | (var* [:rest var])
+   option      ::= (:method-combination {identifier | keyword}) |
+                   (:generic-function-class class-name)
+   method-desc ::= (:method method-qualifier* parameter-profile form*)
+   method-qualifier  ::= identifier | keyword
+   parameter-profile ::= ({var | (var parameter-specializer-name)}*
+                          [{&rest | :rest} var])
+   parameter-specializer-name ::= class-name
+   class-name ::= identifier
+   var ::= identifier                                                              */
+kiss_obj* kiss_defgeneric(const kiss_obj* const func_spec,
+                          const kiss_obj* const lambda_list, const kiss_obj* const rest)
+{
+     kiss_symbol_t* name = Kiss_Symbol(func_spec);
+     kiss_generic_function_t* gf = kiss_make_generic_function(name);
+     gf->lambda_list = Kiss_Lambda_List(lambda_list);
+     
+     name->fun = (kiss_obj*)gf;
+     return (kiss_obj*)name;
+}
+
+kiss_obj* kiss_collect_specilizers(const kiss_obj* const parameter_profile) {
+     kiss_obj* head = (kiss_obj*)kiss_cons(KISS_NIL, KISS_NIL);
+     kiss_obj* tail = head;
+     for (const kiss_obj* p = parameter_profile; KISS_IS_CONS(p); p = KISS_CDR(p)) {
+          kiss_obj* obj = KISS_CAR(p);
+          kiss_ilos_class_t* class = &KISS_ILOS_CLASS_object;
+          if (KISS_IS_CONS(obj)) {
+               class = Kiss_Class((kiss_obj*)Kiss_Symbol(kiss_cadr(obj)));
+          } else if (obj == (kiss_obj*)&KISS_Skw_rest || obj == (kiss_obj*)&KISS_Samp_rest) {
+               break;
+          }
+          kiss_set_cdr(kiss_cons((kiss_obj*)class, KISS_NIL), tail);
+     }
+     return (kiss_obj*)KISS_CDR(head);
+}
+
+kiss_obj* kiss_collect_lambda_list(const kiss_obj* const parameter_profile) {
+     kiss_obj* head = (kiss_obj*)kiss_cons(KISS_NIL, KISS_NIL);
+     kiss_obj* tail = head;
+     for (const kiss_obj* p = parameter_profile; KISS_IS_CONS(p); p = KISS_CDR(p)) {
+          kiss_obj* obj = KISS_CAR(p);
+          kiss_obj* var = KISS_IS_CONS(obj) ? KISS_CAR(obj) : obj;
+          Kiss_Symbol(var);
+          kiss_set_cdr(kiss_cons(var, KISS_NIL), tail);
+     }
+     return Kiss_Lambda_List(KISS_CDR(head));
+}
+
+int kiss_cmp_specializers(const kiss_obj* q1, const kiss_obj* const q2) {
+     const kiss_obj* p2 = q2;
+     for (const kiss_obj* p1 = q1; KISS_IS_CONS(p1); p1 = KISS_CDR(p1)) {
+          kiss_obj* c1 = KISS_CAR(p1);
+          if (!KISS_IS_CONS(p2)) {
+               Kiss_Err(L"kiss_cmp_specializers: two specializers of different length: ~S, ~S",
+                        q1, q2);
+          }
+          kiss_obj* c2 = KISS_CAR(p2);
+          if (kiss_subclassp(c1, c2) == KISS_T) {
+               return -1;
+          } else if (c1 != c2) {
+               return 1;
+          }
+          p2 = KISS_CDR(p2);
+     }
+     return 0;
+}
+
+extern kiss_symbol_t KISS_Skw_around, KISS_Skw_before, KISS_Skw_after;
+
+void kiss_add_method(kiss_generic_function_t* const gf, const kiss_method_t* const method) {
+     kiss_obj* qualifier = method->qualifier;
+     kiss_obj* list = KISS_NIL;
+     if (qualifier == KISS_NIL) {
+          list = gf->primary_methods;
+     } else if (qualifier == (kiss_obj*)&KISS_Skw_around) {
+          list = gf->around_methods;
+     } else if (qualifier == (kiss_obj*)&KISS_Skw_before) {
+          list = gf->before_methods;
+     } else if (qualifier == (kiss_obj*)&KISS_Skw_after) {
+          list = gf->after_methods;
+     } else {
+          Kiss_Err(L"unknown method qualifier: ~S", qualifier);
+     }
+
+     kiss_obj* head = kiss_cons(KISS_NIL, KISS_NIL);
+     kiss_obj* tail = head;
+     for (const kiss_obj* p = list; KISS_IS_CONS(p); p = KISS_CDR(p)) {
+          kiss_method_t* m = Kiss_Method(KISS_CAR(p));
+          int result = kiss_cmp_specializers(method->specializers, m->specializers);
+          if (result < 0) {
+               kiss_set_cdr(kiss_cons((kiss_obj*)method, p), tail);
+               break;
+          } else if (result == 0) {
+               kiss_set_cdr(kiss_cons((kiss_obj*)method, KISS_CDR(p)), tail);
+               break;
+          } else {
+               if (KISS_CDR(p) == KISS_NIL) {
+                    kiss_set_cdr(kiss_cons((kiss_obj*)method, KISS_NIL), tail);
+                    break;
+               } else {
+                    kiss_set_cdr(kiss_cons(KISS_CAR(p), KISS_NIL), tail);
+                    tail = KISS_CDR(tail);
+               }
+          }
+     }
+
+     head = KISS_CDR(head);
+     if (qualifier == KISS_NIL) {
+          gf->primary_methods = head;
+     } else if (qualifier == (kiss_obj*)&KISS_Skw_around) {
+          gf->around_methods = head;
+     } else if (qualifier == (kiss_obj*)&KISS_Skw_before) {
+          gf->before_methods = head;
+     } else {
+          gf->after_methods = head;
+     }
+     return;
+}
+
+kiss_obj* kiss_next_method_p(void) {
+     kiss_environment_t* env = Kiss_Get_Environment();
+     kiss_obj* gf_invocations = env->dynamic_env.gf_invocations;
+     if (!KISS_IS_CONS(gf_invocations)) {
+          Kiss_Err(L"next-method-p: internal error");
+     }
+     kiss_gf_invocation_t* gf_inv = KISS_CAR(gf_invocations);
+     return KISS_IS_CONS(gf_inv->next_methods) ? KISS_T : KISS_NIL;
+}
+
+kiss_obj* kiss_call_next_method(void) {
+     kiss_environment_t* env = Kiss_Get_Environment();
+     kiss_obj* list = env->dynamic_env->gf_invocation.next_methods;
+     if (!KISS_IS_CONS(list)) {
+          Kiss_Err(L"Next method doesn't exist");
+     }
+     kiss_method_t* next_method = Kiss_Method(KISS_CAR(list));
+     env->dynamic_env->gf_invocation.next_methods = KISS_CDR(list);
+     return kiss_funcall(next_method->fun, env->dynamic_env->gf_invocation.args);
+}
+
+
+kiss_lexical_environment_t Kiss_Null_Lexical_Env = {
+    KISS_NIL, /* vars */
+    KISS_NIL, /* funcs */
+    KISS_NIL, /* jumpers */
+};
+
+/* local function: (call-next-method) -> <object> */
+/* local function: (next-method-p) -> boolean */
+static kiss_obj* kiss_true(void) { return KISS_T; }
+kiss_cfunction_t KISS_CFtrue = {
+    KISS_CFUNCTION,        /* type */
+    NULL,                  /* name */
+    (kiss_cf_t*)kiss_true, /* C function name */
+    0,                     /* minimum argument number */
+    0,                     /* maximum argument number */
+};
+
+static kiss_obj* kiss_false(void) { return KISS_NIL; }
+kiss_cfunction_t KISS_CFfalse = {
+    KISS_CFUNCTION,         /* type */
+    NULL,                   /* name */
+    (kiss_cf_t*)kiss_false, /* C function name */
+    0,                      /* minimum argument number */
+    0,                      /* maximum argument number */
+};
+
+kiss_obj* kiss_next_method_error(void) {
+    Kiss_Err(L"Next method doesn't exist");
+}
+kiss_cfunction_t KISS_CFnext_method_error = {
+    KISS_CFUNCTION,                     /* type */
+    NULL,                               /* name */
+    (kiss_cf_t*)kiss_next_method_error, /* C function name */
+    0,                                  /* minimum argument number */
+    0,                                  /* maximum argument number */
+};
+
+/* defining operator: (defmethod func-spec method-qualifier* parameter-profile form*) -> <symbol>
+   func-spec ::= identifier | (setf identifier)
+   method-qualifier ::= identifier | keyword
+   parameter-profile ::= ({var | (var parameter-specializer-name)}* [{&rest | :rest} var])
+   parameter-specializer-name ::= class-name
+   class-name ::= identifier
+   var ::= identifier                                                          */
+kiss_obj* kiss_defmethod(const kiss_obj* const func_spec, const kiss_obj* const rest) {
+     kiss_symbol_t* name = Kiss_Symbol(func_spec);
+     const kiss_obj* p = rest;
+     const kiss_obj* qualifier = kiss_car(rest);
+     if (KISS_IS_CONS(qualifier)) {
+          qualifier = KISS_NIL;
+     } else {
+          Kiss_Symbol(qualifier);
+          if (qualifier != (kiss_obj*)&KISS_Skw_around &&
+              qualifier != (kiss_obj*)&KISS_Skw_before &&
+              qualifier != (kiss_obj*)&KISS_Skw_after  &&
+              qualifier != KISS_NIL)
+          {
+               Kiss_Err(L"Invalid method qualifier: ~S", qualifier);
+          }
+          p = kiss_cdr(rest);
+     }
+
+     // skip other qualifiers
+     for (; KISS_IS_CONSP(p) && KISS_IS_SYMBOL(KISS_CAR(p)); p = KISS_CDR(p)) {}
+     
+     const kiss_obj* parameter_profile = Kiss_List(kiss_car(p));
+     const kiss_obj* specializers = kiss_collect_specilizers(parameter_profile);
+     const kiss_obj* lambda_list  = kiss_collect_lambda_list(parameter_profile);
+     const kiss_obj* const body = kiss_cdr(p);
+     kiss_generic_function_t* gf = Kiss_Generic_Function(name->fun);
+     kiss_method_t* method = kiss_make_method((kiss_obj*)name);
+     method->specializers = specializers;
+     method->qualifier = qualifier;
+     method->fun = kiss_lambda(lambda_list, body);
+     return (kiss_obj*)func_spec;
 }
 
 /* Spec. p.14 Figure 1. Class Inheritance  
@@ -452,426 +879,13 @@ kiss_ilos_class_t KISS_ILOS_CLASS_string = {
      (kiss_obj*)&KISS_ILOS_cpl09,                         // cpl
 };
 
-/// --------------------------------------
-kiss_symbol_t KISS_Skw_around, KISS_Skw_before, KISS_Skw_after;
-
-
-kiss_obj* kiss_ilos_obj_p(const kiss_obj* const obj) {
-    if (KISS_IS_ILOS_OBJ(obj)) { return KISS_T; }
-    else                       { return KISS_NIL; }
-}
-
-/* special operator: (class class-name) -> <class>
-   Returns the class object that corresponds to the class named CLASS-NAME.
-   On error, signal <undefined-entity> see spec. p.119 */
-kiss_obj* kiss_class(const kiss_obj* const name) {
-     kiss_obj* class = kiss_gethash(name, KISS_Skiss_classes.var, KISS_NIL);
-     if (class != KISS_NIL) return class;
-     Kiss_Err(L"Undefined Class: ~S", name);
-}
-
-/* function: (class-of obj) -> <class>
-   Returns the class of which the given OBJ is a direct instance.
-   OBJ may be any ISLISP object. */
-kiss_obj* kiss_class_of(const kiss_obj* const obj) {
-	  switch (KISS_OBJ_TYPE(obj)) {
-	  case KISS_CONS:
-	       return kiss_class((kiss_obj*)&KISS_Sc_cons);
-	  case KISS_SYMBOL:
-               return kiss_class((kiss_obj*)(obj == KISS_NIL ? &KISS_Sc_null : &KISS_Sc_symbol));
-	  case KISS_CHARACTER:
-               return kiss_class((kiss_obj*)&KISS_Sc_character);
-	  case KISS_FIXNUM:
-          case KISS_BIGNUM:
-	       return kiss_class((kiss_obj*)&KISS_Sc_integer);
-	  case KISS_FLOAT:
-	       return kiss_class((kiss_obj*)&KISS_Sc_float);
-	  case KISS_STRING:
-	       return kiss_class((kiss_obj*)&KISS_Sc_string);
-	  case KISS_GENERAL_VECTOR:
-	       return kiss_class((kiss_obj*)&KISS_Sc_general_vector);
-	  case KISS_GENERAL_ARRAY_S:
-               return kiss_class((kiss_obj*)&KISS_Sc_general_array_s);
-	  case KISS_HASH_TABLE:
-               return kiss_class((kiss_obj*)&KISS_Sc_hash_table);
-	  case KISS_STREAM:
-               return kiss_class((kiss_obj*)&KISS_Sc_stream);
-	  case KISS_LFUNCTION:
-	  case KISS_LMACRO:
-	  case KISS_CFUNCTION:
-	  case KISS_CMACRO:
-               return kiss_class((kiss_obj*)&KISS_Sc_function);
-	  case KISS_ILOS_OBJ:
-          case KISS_ILOS_CLASS:
-               return ((kiss_ilos_obj_t*)obj)->class;
-	  case KISS_CATCHER:
-	  case KISS_BLOCK:
-	  case KISS_CLEANUP:
-	  case KISS_TAGBODY:
-	       fwprintf(stderr, L"class-of: unexpected internal built-in primitive type = %d\n",
-                        KISS_OBJ_TYPE(obj));
-	       exit(EXIT_FAILURE);
-	  default:
-	       fwprintf(stderr, L"class-of: unknown primitive object type = %d\n",
-                        KISS_OBJ_TYPE(obj));
-	       exit(EXIT_FAILURE);
-	  }
-}
-
-kiss_ilos_class_t* Kiss_Class(const kiss_obj* const obj) {
-     if (KISS_IS_ILOS_CLASS(obj)) {
-          return (kiss_ilos_class_t*)obj;
-     } else {
-          Kiss_Err(L"Not a class object: ~S", obj);
-     }
-}
-
-kiss_obj* kiss_slotref(const kiss_obj* const obj, const kiss_obj* const name) {
-     const kiss_obj* const binding = kiss_assoc(name, Kiss_ILOS_Obj(obj)->slots);
-     if (binding == KISS_NIL) {
-          Kiss_Err(L"Unbound slot: ~S", name);
-     } else {
-          return kiss_cdr(binding);
-     }
-}
-
-kiss_obj* kiss_slot_bound_p(const kiss_obj* const obj, const kiss_obj* const name) {
-     const kiss_obj* const binding = kiss_assoc(name, Kiss_ILOS_Obj(obj)->slots);
-     return kiss_consp(binding);
-}
-
-kiss_obj* kiss_set_slotref(const kiss_obj* const value, kiss_obj* const obj, kiss_obj* const name)
-{
-     kiss_ilos_obj_t* const ilos_obj = Kiss_ILOS_Obj(obj);
-     kiss_obj* binding = kiss_assoc(name, ilos_obj->slots);
-     if (binding == KISS_NIL) {
-          binding = kiss_cons(name, value);
-          ilos_obj->slots = kiss_cons(binding, ilos_obj->slots);
-     } else {
-          kiss_set_cdr(value, binding);
-     }
-     return (kiss_obj*)value;
-}
-
-kiss_symbol_t KISS_Skw_abstractp;
-kiss_symbol_t KISS_Skw_metaclass;
-
-/* defining operator: (defclass class-name (sc-name*) (slot-spec*) class-opt*) -> <symbol>
-     class-name ::= identifier
-     sc-name    ::= identifier
-     slot-spec  ::= slot-name | (slot-name slot-opt *)
-     slot-name  ::= identifier
-     slot-opt   ::= :reader reader-function-name |
-                    :writer writer-function-name |
-                    :accessor reader-function-name |
-                    :boundp boundp-function-name |
-                    :initform form |
-                    :initarg initarg-name
-     initarg-name         ::= identifier
-     reader-function-name ::= identifier
-     writer-function-name ::= identifier
-     boundp-function-name ::= identifier
-     class-opt ::= (:metaclass class-name) | (:abstractp abstract-flag)
-     abstractp ::= t | nil */
-kiss_obj* kiss_defclass(const kiss_obj* const name, const kiss_obj* const supers,
-                        const kiss_obj* const slot_specs, const kiss_obj* const class_opts)
-{
-     Kiss_Symbol(name);
-     Kiss_List(supers);
-     Kiss_List(slot_specs);
-     kiss_ilos_class_t* class = kiss_make_ilos_class(name, supers);
-
-     kiss_obj* abstractp = kiss_assoc((kiss_obj*)&KISS_Skw_abstractp, (kiss_obj*)class_opts);
-     if (KISS_IS_CONS(abstractp)) {
-          abstractp = KISS_CADR(abstractp);
-     }
-     class->abstractp = abstractp;
-
-     kiss_obj* metaclass = kiss_assoc((kiss_obj*)&KISS_Skw_metaclass, class_opts);
-     if (KISS_IS_CONS(metaclass)) {
-          metaclass = KISS_CADR(metaclass);
-          Kiss_Class(metaclass);
-     } else {
-          metaclass = (kiss_obj*)&KISS_ILOS_CLASS_standard_class;
-     }
-     class->class = metaclass;
-     kiss_puthash(name, (kiss_obj*)class, KISS_Skiss_classes.var);
-     return (kiss_obj*)name;
-}
-
-
-/* function: (subclassp subclass superclass) -> boolean
-   Returns t if the class SUBCLASS is a subclass of the class SUPERCLASS;
-   otherwise, returns nil. An error shall be signaled if either SUBCLASS or
-   SUPERCLASS is not a class object (error-id. domain-error). */
-kiss_obj* kiss_subclassp(const kiss_obj* const sub, const kiss_obj* const super) {
-     kiss_ilos_class_t* a = Kiss_Class(sub);
-     Kiss_Class(super);
-     kiss_obj* cpl = a->cpl;
-     return kiss_member(super, cpl) != KISS_NIL ? KISS_T : KISS_NIL;
-}
-
-/* spec. p. 51
-   Let C1, . . . , Cn be the direct superclasses of C in the order defined in
-   the defclass defining form for C. Let P1, . . ., Pn be the class precedence
-   lists for C1, . . . , Cn, respectively. Define P . Q on class precedence
-   lists P and Q to be the two lists appended. Then the class precedence
-   list for C is C . P1 . . . . Pn with duplicate classes removed by
-   repeated application of the following rule: If a class appears twice in
-   the resulting class precedence list, the leftmost occurrence is removed. */
-kiss_obj* kiss_compute_cpl(const kiss_obj* const supers) {
-     kiss_obj* head = kiss_cons(KISS_NIL, KISS_NIL);
-     kiss_obj* tail = head;
-     for (const kiss_obj* p = supers; KISS_IS_CONS(p); p = KISS_CDR(p)) {
-          kiss_ilos_class_t* s = Kiss_Class(KISS_CAR(p));
-          kiss_obj* cpl = s->cpl;
-          kiss_set_cdr(kiss_cons(cpl, KISS_NIL), tail);
-          tail = KISS_CDR(tail);
-     }
-     kiss_obj* list = kiss_append(KISS_CDR(head));
-     tail = head;
-     for (const kiss_obj* p = list; KISS_IS_CONS(p); p = KISS_CDR(p)) {
-          kiss_obj* obj = KISS_CAR(p);
-          if (kiss_member(obj, KISS_CDR(p)) == KISS_NIL) {
-               kiss_set_cdr(kiss_cons(obj, KISS_NIL), tail);
-               tail = KISS_CDR(tail);
-          }
-     }
-     return KISS_CDR(head);
-}
-
-/* function: (instancep obj class) -> boolean
-   Returns t if OBJ is an instance (directly or otherwise) of the class CLASS; 
-   otherwise, returns nil. OBJ may be any ISLISP object. 
-   An error shall be signaled if CLASS is not a class object (error-id. domain-error ). */
-kiss_obj* kiss_instancp(const kiss_obj* const obj, const kiss_obj* const class) {
-     Kiss_Class(class);
-     kiss_obj* c = kiss_class_of(obj);
-     return c == class || kiss_subclassp(c, class) ? KISS_T : KISS_NIL;
-}
-
-/* function: (generic-function-p obj ) -> boolean
-   Returns t if OBJ is a generic function; otherwise, returns nil.
-   OBJ may be any ISLISP object. */
-kiss_obj* kiss_generic_function_p(const kiss_obj* const obj) {
-     return KISS_IS_GENERIC_FUNCTION(obj) ? KISS_T : KISS_NIL;
-}
-
-/* defining operator: (defgeneric func-spec lambda-list {option | method-desc}*) -> <symbol>
-   func-spec   ::= identifier | (setf identifier)
-   lambda-list ::= (var* [&rest var]) | (var* [:rest var])
-   option      ::= (:method-combination {identifier | keyword}) |
-                   (:generic-function-class class-name)
-   method-desc ::= (:method method-qualifier* parameter-profile form*)
-   method-qualifier  ::= identifier | keyword
-   parameter-profile ::= ({var | (var parameter-specializer-name)}*
-                          [{&rest | :rest} var])
-   parameter-specializer-name ::= class-name
-   class-name ::= identifier
-   var ::= identifier                                                              */
-kiss_obj* kiss_defgeneric(const kiss_obj* const func_spec,
-                          const kiss_obj* const lambda_list, const kiss_obj* const rest)
-{
-     kiss_symbol_t* name = Kiss_Symbol(func_spec);
-     kiss_generic_function_t* gf = kiss_make_generic_function(name);
-     gf->lambda_list = Kiss_Lambda_List(lambda_list);
-     
-     name->fun = (kiss_obj*)gf;
-     return (kiss_obj*)name;
-}
-
-kiss_obj* kiss_collect_specilizers(const kiss_obj* const parameter_profile) {
-     kiss_obj* head = (kiss_obj*)kiss_cons(KISS_NIL, KISS_NIL);
-     kiss_obj* tail = head;
-     for (const kiss_obj* p = parameter_profile; KISS_IS_CONS(p); p = KISS_CDR(p)) {
-          kiss_obj* obj = KISS_CAR(p);
-          kiss_ilos_class_t* class = &KISS_ILOS_CLASS_object;
-          if (KISS_IS_CONS(obj)) {
-               class = Kiss_Class((kiss_obj*)Kiss_Symbol(kiss_cadr(obj)));
-          } else if (obj == (kiss_obj*)&KISS_Skw_rest || obj == (kiss_obj*)&KISS_Samp_rest) {
-               break;
-          }
-          kiss_set_cdr(kiss_cons((kiss_obj*)class, KISS_NIL), tail);
-     }
-     return (kiss_obj*)KISS_CDR(head);
-}
-
-kiss_obj* kiss_collect_lambda_list(const kiss_obj* const parameter_profile) {
-     kiss_obj* head = (kiss_obj*)kiss_cons(KISS_NIL, KISS_NIL);
-     kiss_obj* tail = head;
-     for (const kiss_obj* p = parameter_profile; KISS_IS_CONS(p); p = KISS_CDR(p)) {
-          kiss_obj* obj = KISS_CAR(p);
-          kiss_obj* var = KISS_IS_CONS(obj) ? KISS_CAR(obj) : obj;
-          Kiss_Symbol(var);
-          kiss_set_cdr(kiss_cons(var, KISS_NIL), tail);
-     }
-     return Kiss_Lambda_List(KISS_CDR(head));
-}
-
-int kiss_cmp_specializers(const kiss_obj* q1, const kiss_obj* const q2) {
-     const kiss_obj* p2 = q2;
-     for (const kiss_obj* p1 = q1; KISS_IS_CONS(p1); p1 = KISS_CDR(p1)) {
-          kiss_obj* c1 = KISS_CAR(p1);
-          if (!KISS_IS_CONS(p2)) {
-               Kiss_Err(L"kiss_cmp_specializers: two specializers of different length: ~S, ~S",
-                        q1, q2);
-          }
-          kiss_obj* c2 = KISS_CAR(p2);
-          if (kiss_subclassp(c1, c2) == KISS_T) {
-               return -1;
-          } else if (c1 != c2) {
-               return 1;
-          }
-          p2 = KISS_CDR(p2);
-     }
-     return 0;
-}
-
-void kiss_add_method(kiss_generic_function_t* const gf, const kiss_method_t* const method) {
-     kiss_obj* qualifier = method->qualifier;
-     kiss_obj* list = KISS_NIL;
-     if (qualifier == KISS_NIL) {
-          list = gf->primary_methods;
-     } else if (qualifier == (kiss_obj*)&KISS_Skw_around) {
-          list = gf->around_methods;
-     } else if (qualifier == (kiss_obj*)&KISS_Skw_before) {
-          list = gf->before_methods;
-     } else if (qualifier == (kiss_obj*)&KISS_Skw_after) {
-          list = gf->after_methods;
-     } else {
-          Kiss_Err(L"unknown method qualifier: ~S", qualifier);
-     }
-
-     kiss_obj* head = kiss_cons(KISS_NIL, KISS_NIL);
-     kiss_obj* tail = head;
-     for (const kiss_obj* p = list; KISS_IS_CONS(p); p = KISS_CDR(p)) {
-          kiss_method_t* m = Kiss_Method(KISS_CAR(p));
-          int result = kiss_cmp_specializers(method->specializers, m->specializers);
-          if (result < 0) {
-               kiss_set_cdr(kiss_cons((kiss_obj*)method, p), tail);
-               break;
-          } else if (result == 0) {
-               kiss_set_cdr(kiss_cons((kiss_obj*)method, KISS_CDR(p)), tail);
-               break;
-          } else {
-               if (KISS_CDR(p) == KISS_NIL) {
-                    kiss_set_cdr(kiss_cons((kiss_obj*)method, KISS_NIL), tail);
-                    break;
-               } else {
-                    kiss_set_cdr(kiss_cons(KISS_CAR(p), KISS_NIL), tail);
-                    tail = KISS_CDR(tail);
-               }
-          }
-     }
-
-     head = KISS_CDR(head);
-     if (qualifier == KISS_NIL) {
-          gf->primary_methods = head;
-     } else if (qualifier == (kiss_obj*)&KISS_Skw_around) {
-          gf->around_methods = head;
-     } else if (qualifier == (kiss_obj*)&KISS_Skw_before) {
-          gf->before_methods = head;
-     } else {
-          gf->after_methods = head;
-     }
-     return;
-}
-
-kiss_obj* kiss_next_method_p(void) {
-     kiss_environment_t* env = Kiss_Get_Environment();
-     kiss_obj* gf_invocations = env->dynamic_env.gf_invocations;
-     if (!KISS_IS_CONS(gf_invocations)) {
-          Kiss_Err(L"next-method-p: internal error");
-     }
-     kiss_gf_invocation_t* gf_inv = KISS_CAR(gf_invocations);
-     return KISS_IS_CONS(gf_inv->next_methods) ? KISS_T : KISS_NIL;
-}
-
-kiss_obj* kiss_call_next_method(void) {
-     kiss_environment_t* env = Kiss_Get_Environment();
-     kiss_obj* list = env->dynamic_env->gf_invocation.next_methods;
-     if (!KISS_IS_CONS(list)) {
-          Kiss_Err(L"Next method doesn't exist");
-     }
-     kiss_method_t* next_method = Kiss_Method(KISS_CAR(list));
-     env->dynamic_env->gf_invocation.next_methods = KISS_CDR(list);
-     return kiss_funcall(next_method->fun, env->dynamic_env->gf_invocation.args);
-}
-
-
-kiss_lexical_environment_t Kiss_Null_Lexical_Env = {
-    KISS_NIL, /* vars */
-    KISS_NIL, /* funcs */
-    KISS_NIL, /* jumpers */
+// <hash-table>
+kiss_ilos_class_t KISS_ILOS_CLASS_hash_table = {
+     KISS_ILOS_CLASS,                                     // type
+     NULL,                                                // gc_ptr
+     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL,                                            // slots
+     (kiss_symbol_t*)&KISS_Sc_hash_table,                // name
+     KISS_T,                                              // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01,                         // cpl
 };
-
-/* local function: (call-next-method) -> <object> */
-/* local function: (next-method-p) -> boolean */
-static kiss_obj* kiss_true(void) { return KISS_T; }
-kiss_cfunction_t KISS_CFtrue = {
-    KISS_CFUNCTION,        /* type */
-    NULL,                  /* name */
-    (kiss_cf_t*)kiss_true, /* C function name */
-    0,                     /* minimum argument number */
-    0,                     /* maximum argument number */
-};
-
-static kiss_obj* kiss_false(void) { return KISS_NIL; }
-kiss_cfunction_t KISS_CFfalse = {
-    KISS_CFUNCTION,         /* type */
-    NULL,                   /* name */
-    (kiss_cf_t*)kiss_false, /* C function name */
-    0,                      /* minimum argument number */
-    0,                      /* maximum argument number */
-};
-
-kiss_obj* kiss_next_method_error(void) {
-    Kiss_Err(L"Next method doesn't exist");
-}
-kiss_cfunction_t KISS_CFnext_method_error = {
-    KISS_CFUNCTION,                     /* type */
-    NULL,                               /* name */
-    (kiss_cf_t*)kiss_next_method_error, /* C function name */
-    0,                                  /* minimum argument number */
-    0,                                  /* maximum argument number */
-};
-
-/* defining operator: (defmethod func-spec method-qualifier* parameter-profile form*) -> <symbol>
-   func-spec ::= identifier | (setf identifier)
-   method-qualifier ::= identifier | keyword
-   parameter-profile ::= ({var | (var parameter-specializer-name)}* [{&rest | :rest} var])
-   parameter-specializer-name ::= class-name
-   class-name ::= identifier
-   var ::= identifier                                                          */
-kiss_obj* kiss_defmethod(const kiss_obj* const func_spec, const kiss_obj* const rest) {
-     kiss_symbol_t* name = Kiss_Symbol(func_spec);
-     const kiss_obj* p = rest;
-     const kiss_obj* qualifier = kiss_car(rest);
-     if (KISS_IS_CONS(qualifier)) {
-          qualifier = KISS_NIL;
-     } else {
-          Kiss_Symbol(qualifier);
-          if (qualifier != (kiss_obj*)&KISS_Skw_around &&
-              qualifier != (kiss_obj*)&KISS_Skw_before &&
-              qualifier != (kiss_obj*)&KISS_Skw_after  &&
-              qualifier != KISS_NIL)
-          {
-               Kiss_Err(L"Invalid method qualifier: ~S", qualifier);
-          }
-          p = kiss_cdr(rest);
-     }
-
-     // skip other qualifiers
-     for (; KISS_IS_CONSP(p) && KISS_IS_SYMBOL(KISS_CAR(p)); p = KISS_CDR(p)) {}
-     
-     const kiss_obj* parameter_profile = Kiss_List(kiss_car(p));
-     const kiss_obj* specializers = kiss_collect_specilizers(parameter_profile);
-     const kiss_obj* lambda_list  = kiss_collect_lambda_list(parameter_profile);
-     const kiss_obj* const body = kiss_cdr(p);
-     kiss_generic_function_t* gf = Kiss_Generic_Function(name->fun);
-     kiss_method_t* method = kiss_make_method((kiss_obj*)name);
-     method->specializers = specializers;
-     method->qualifier = qualifier;
-     method->fun = kiss_lambda(lambda_list, body);
-     return (kiss_obj*)func_spec;
-}

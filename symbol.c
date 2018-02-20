@@ -30,28 +30,29 @@ kiss_symbol_t KISS_Ss_pi_s;
 
 
 void kiss_init_symbols(void) {
-    size_t i;
-    for (i = 0; i < KISS_SYMBOL_MAX; i++) { if (Kiss_Symbols[i] == NULL) break; }
-    assert(i < KISS_SYMBOL_MAX);
-    Kiss_Symbol_Number = i;
+     size_t i;
+     for (i = 0; i < KISS_SYMBOL_MAX; i++) { if (Kiss_Symbols[i] == NULL) break; }
+     assert(i < KISS_SYMBOL_MAX);
+     Kiss_Symbol_Number = i;
 
-    Kiss_Symbol_Hash_Table = (kiss_hash_table_t*)
-         kiss_make_hash_table(kiss_make_fixnum(2347),
-                              kiss_function((kiss_obj*)&KISS_Sstring_eq),
-                              KISS_NIL,
-                              (kiss_obj*)kiss_make_float(1.5),
-                              (kiss_obj*)kiss_make_float(0.8));
+     Kiss_Symbol_Hash_Table = (kiss_hash_table_t*)
+          kiss_make_hash_table(kiss_make_fixnum(2347),
+                               kiss_function((kiss_obj*)&KISS_Sstring_eq),
+                               KISS_NIL,
+                               (kiss_obj*)kiss_make_float(1.5),
+                               (kiss_obj*)kiss_make_float(0.8));
 }
 
 static kiss_symbol_t* kiss_make_symbol(const wchar_t* const name) {
-    kiss_symbol_t* p = Kiss_GC_Malloc(sizeof(kiss_symbol_t));
-    p->type  = KISS_SYMBOL;
-    p->name  = wcscpy(Kiss_Malloc(sizeof(wchar_t) * (wcslen(name) + 1)), name);
-    p->flags = 0;
-    p->var   = name[0] == L':' ? (kiss_obj*)p : NULL;
-    p->fun   = NULL;
-    p->plist = KISS_NIL;
-    return p;
+     kiss_symbol_t* p = Kiss_GC_Malloc(sizeof(kiss_symbol_t));
+     p->type  = KISS_SYMBOL;
+     p->name  = wcscpy(Kiss_Malloc(sizeof(wchar_t) * (wcslen(name) + 1)), name);
+     p->flags = name[0] == L':' ? KISS_SYSTEM_CONSTANT_VAR : 0;
+     p->var   = name[0] == L':' ? (kiss_obj*)p : NULL;
+     p->fun   = NULL;
+     p->class = NULL;
+     p->plist = KISS_NIL;
+     return p;
 }
 
 extern inline
@@ -75,11 +76,11 @@ kiss_obj* kiss_gensym(void) {
 
 /* kiss function: (symbol-function obj) => <function> */
 kiss_obj* kiss_symbol_function (const kiss_obj* const obj) {
-    kiss_symbol_t* symbol = Kiss_Symbol(obj);
-    if (symbol->fun == NULL) {
-	Kiss_Err(L"Unbound function ~S", obj);
-    }
-    return (kiss_obj*)symbol->fun;
+     kiss_symbol_t* symbol = Kiss_Symbol(obj);
+     if (symbol->fun == NULL) {
+          Kiss_Err(L"Unbound function ~S", obj);
+     }
+     return (kiss_obj*)symbol->fun;
 }
 
 /* kiss function: (fboundp obj) => t or nil */
@@ -89,8 +90,8 @@ kiss_obj* kiss_fboundp (const kiss_obj* const obj) {
 
 /* kiss function: (fmakunbound obj) => obj */
 kiss_obj* kiss_fmakunbound (kiss_obj* const obj) {
-    Kiss_Symbol(obj)->fun = NULL;
-    return obj;
+     Kiss_Symbol(obj)->fun = NULL;
+     return obj;
 }
 
 /* kiss function: (set-symbol-function definition symbol) => definition */
@@ -103,37 +104,37 @@ int kiss_is_interned(const kiss_symbol_t* const p) {
      kiss_obj* q = kiss_c_gethash((kiss_obj*)kiss_make_string(p->name),
                                   Kiss_Symbol_Hash_Table,
                                   KISS_DUMMY);
-    if (q != KISS_DUMMY)
-         return 1;
-    else {
-         for (size_t i = 0; i < Kiss_Symbol_Number; i++) {
-              if (p == Kiss_Symbols[i]) return 1;
-         }
-         return 0;
-    }
+     if (q != KISS_DUMMY)
+          return 1;
+     else {
+          for (size_t i = 0; i < Kiss_Symbol_Number; i++) {
+               if (p == Kiss_Symbols[i]) return 1;
+          }
+          return 0;
+     }
 }
 
 kiss_obj* kiss_intern(const kiss_obj* const name) {
-    kiss_string_t* str = Kiss_String(name);
-    kiss_obj* q = kiss_c_gethash(name, Kiss_Symbol_Hash_Table, KISS_DUMMY);
+     kiss_string_t* str = Kiss_String(name);
+     kiss_obj* q = kiss_c_gethash(name, Kiss_Symbol_Hash_Table, KISS_DUMMY);
 
-    if (q != KISS_DUMMY) {
-         return q;
-    }
-    size_t i;
-    kiss_symbol_t* p;
-    for (i = 0; i < Kiss_Symbol_Number; i++) {
-	if (wcscmp(Kiss_Symbols[i]->name, str->str) == 0) {
-	    return (kiss_obj*)Kiss_Symbols[i];
-	}
-    }
-    p = kiss_make_symbol(str->str);
-    kiss_puthash(name, (kiss_obj*)p, (kiss_obj*)Kiss_Symbol_Hash_Table);
-    //assert(Kiss_Symbol_Number < KISS_SYMBOL_MAX);
-    //p = kiss_make_symbol(str->str);
-    //Kiss_Symbols[Kiss_Symbol_Number] = p;
-    //++Kiss_Symbol_Number;
-    return (kiss_obj*)p;
+     if (q != KISS_DUMMY) {
+          return q;
+     }
+     size_t i;
+     kiss_symbol_t* p;
+     for (i = 0; i < Kiss_Symbol_Number; i++) {
+          if (wcscmp(Kiss_Symbols[i]->name, str->str) == 0) {
+               return (kiss_obj*)Kiss_Symbols[i];
+          }
+     }
+     p = kiss_make_symbol(str->str);
+     kiss_puthash(name, (kiss_obj*)p, (kiss_obj*)Kiss_Symbol_Hash_Table);
+     //assert(Kiss_Symbol_Number < KISS_SYMBOL_MAX);
+     //p = kiss_make_symbol(str->str);
+     //Kiss_Symbols[Kiss_Symbol_Number] = p;
+     //++Kiss_Symbol_Number;
+     return (kiss_obj*)p;
 }
 
 
@@ -176,6 +177,7 @@ kiss_symbol_t KISS_Snil = {
     KISS_SYSTEM_CONSTANT_VAR, /*  flags */
     KISS_NIL,                 /*  var   */
     NULL,                     /*  fun   */
+    NULL,                     /*  class */
     KISS_NIL,                 /*  plist */
 };
 
@@ -186,6 +188,7 @@ kiss_symbol_t KISS_St = {
     KISS_SYSTEM_CONSTANT_VAR, /*  flags */
     KISS_T,                   /*  var   */
     NULL,                     /*  fun   */
+    NULL,                     /*  class */
     KISS_NIL,                 /*  plist */
 };
 
@@ -197,6 +200,7 @@ kiss_symbol_t KISS_Skw_rest = {
     KISS_SYSTEM_CONSTANT_VAR,  /* flags */
     (kiss_obj*)&KISS_Skw_rest, /* var */
     NULL,                      /* fun */
+    NULL,                      /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -208,6 +212,7 @@ kiss_symbol_t KISS_Samp_rest = {
     KISS_SYSTEM_CONSTANT_VAR,   /* flags */
     (kiss_obj*)&KISS_Samp_rest, /* var */
     NULL,                       /* fun */
+    NULL,                       /* class */
     KISS_NIL,                   /* plist */
 };
 
@@ -219,6 +224,7 @@ kiss_symbol_t KISS_Skw_size = {
     KISS_SYSTEM_CONSTANT_VAR, /*  flags */
     (kiss_obj*)&KISS_Skw_size, /* var */
     NULL,                 /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -230,6 +236,7 @@ kiss_symbol_t KISS_Skw_test = {
     KISS_SYSTEM_CONSTANT_VAR, /*  flags */
     (kiss_obj*)&KISS_Skw_test, /* var */
     NULL,                 /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -241,6 +248,7 @@ kiss_symbol_t KISS_Skw_weakness = {
     KISS_SYSTEM_CONSTANT_VAR, /*  flags */
     (kiss_obj*)&KISS_Skw_weakness, /* var */
     NULL,                 /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -252,6 +260,7 @@ kiss_symbol_t KISS_Skw_rehash_size = {
     KISS_SYSTEM_CONSTANT_VAR, /*  flags */
     (kiss_obj*)&KISS_Skw_rehash_size, /* var */
     NULL,                 /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -263,6 +272,7 @@ kiss_symbol_t KISS_Skw_rehash_threshold = {
     KISS_SYSTEM_CONSTANT_VAR, /*  flags */
     (kiss_obj*)&KISS_Skw_rehash_threshold, /* var */
     NULL,                 /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -274,6 +284,7 @@ kiss_symbol_t KISS_Skw_abstractp = {
     KISS_SYSTEM_CONSTANT_VAR, /*  flags */
     (kiss_obj*)&KISS_Skw_abstractp, /* var */
     NULL,                 /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -285,6 +296,7 @@ kiss_symbol_t KISS_Skw_metaclass = {
     KISS_SYSTEM_CONSTANT_VAR, /*  flags */
     (kiss_obj*)&KISS_Skw_metaclass, /* var */
     NULL,                 /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -296,6 +308,7 @@ kiss_symbol_t KISS_Skw_around = {
     KISS_SYSTEM_CONSTANT_VAR, /*  flags */
     (kiss_obj*)&KISS_Skw_around, /* var */
     NULL,                 /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -307,6 +320,7 @@ kiss_symbol_t KISS_Skw_before = {
     KISS_SYSTEM_CONSTANT_VAR, /*  flags */
     (kiss_obj*)&KISS_Skw_before, /* var */
     NULL,                 /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -318,6 +332,7 @@ kiss_symbol_t KISS_Skw_after = {
     KISS_SYSTEM_CONSTANT_VAR, /*  flags */
     (kiss_obj*)&KISS_Skw_after, /* var */
     NULL,                 /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -329,6 +344,7 @@ kiss_symbol_t KISS_Ssignal_condition = {
     KISS_CONSTANT_FSLOT,
     NULL,               /* var */
     NULL, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -348,6 +364,7 @@ kiss_symbol_t KISS_Scons = {
     KISS_CONSTANT_FSLOT,
     NULL,               /* var */
     (kiss_obj*)&KISS_CFcons, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -367,6 +384,7 @@ kiss_symbol_t KISS_Scar = {
     KISS_CONSTANT_FSLOT,
     NULL,              /* var */
     (kiss_obj*)&KISS_CFcar, /* fun */
+    NULL,                       /* class */
     KISS_NIL,               /* plist */
 };
 
@@ -385,6 +403,7 @@ kiss_symbol_t KISS_Scdr = {
     KISS_CONSTANT_FSLOT,
     NULL,              /* var */
     (kiss_obj*)&KISS_CFcdr, /* fun */
+    NULL,                       /* class */
     KISS_NIL,               /* plist */
 };
 
@@ -403,6 +422,7 @@ kiss_symbol_t KISS_Scadr = {
     KISS_CONSTANT_FSLOT,
     NULL,               /* var */
     (kiss_obj*)&KISS_CFcadr, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -422,6 +442,7 @@ kiss_symbol_t KISS_Scddr = {
     KISS_CONSTANT_FSLOT,
     NULL,               /* var */
     (kiss_obj*)&KISS_CFcddr, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -441,6 +462,7 @@ kiss_symbol_t KISS_Scaddr = {
     KISS_CONSTANT_FSLOT,
     NULL,                /* var */
     (kiss_obj*)&KISS_CFcaddr, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -460,6 +482,7 @@ kiss_symbol_t KISS_Sconsp = {
     KISS_CONSTANT_FSLOT,
     NULL,                /* var */
     (kiss_obj*)&KISS_CFconsp, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -479,6 +502,7 @@ kiss_symbol_t KISS_Sset_car = {
     KISS_CONSTANT_FSLOT,
     NULL,                  /* var */
     (kiss_obj*)&KISS_CFset_car, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                   /* plist */
 };
 
@@ -498,6 +522,7 @@ kiss_symbol_t KISS_Sset_cdr = {
     KISS_CONSTANT_FSLOT,
     NULL,                  /* var */
     (kiss_obj*)&KISS_CFset_cdr, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                   /* plist */
 };
 
@@ -516,6 +541,7 @@ kiss_symbol_t KISS_Snull = {
     KISS_CONSTANT_FSLOT,
     NULL,                  /* var */
     (kiss_obj*)&KISS_CFnull, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                   /* plist */
 };
 
@@ -534,6 +560,7 @@ kiss_symbol_t KISS_Slistp = {
     KISS_CONSTANT_FSLOT,
     NULL,                  /* var */
     (kiss_obj*)&KISS_CFlistp, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                   /* plist */
 };
 
@@ -552,6 +579,7 @@ kiss_symbol_t KISS_Screate_list = {
     KISS_CONSTANT_FSLOT,
     NULL,                  /* var */
     (kiss_obj*)&KISS_CFcreate_list, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                   /* plist */
 };
 
@@ -571,6 +599,7 @@ kiss_symbol_t KISS_Slist = {
     KISS_CONSTANT_FSLOT,       /* flags */
     NULL,               /* var */
     (kiss_obj*)&KISS_CFlist, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -590,6 +619,7 @@ kiss_symbol_t KISS_Sappend = {
     KISS_CONSTANT_FSLOT,         /* flags */
     NULL,                 /* var */
     (kiss_obj*)&KISS_CFappend, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -608,6 +638,7 @@ kiss_symbol_t KISS_Sappend_s = {
     KISS_CONSTANT_FSLOT,         /* flags */
     NULL,                 /* var */
     (kiss_obj*)&KISS_CFappend_s, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -627,6 +658,7 @@ kiss_symbol_t KISS_Sreverse = {
     KISS_CONSTANT_FSLOT,          /* flags */
     NULL,                  /* var */
     (kiss_obj*)&KISS_CFreverse, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                   /* plist */
 };
 
@@ -646,6 +678,7 @@ kiss_symbol_t KISS_Snreverse = {
     KISS_CONSTANT_FSLOT,           /* flags */
     NULL,                   /* var */
     (kiss_obj*)&KISS_CFnreverse, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                    /* plist */
 };
 
@@ -665,6 +698,7 @@ kiss_symbol_t KISS_Smember = {
     KISS_CONSTANT_FSLOT,         /* flags */
     NULL,                 /* var */
     (kiss_obj*)&KISS_CFmember, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -683,6 +717,7 @@ kiss_symbol_t KISS_Smember_using = {
     KISS_CONSTANT_FSLOT,         /* flags */
     NULL,                 /* var */
     (kiss_obj*)&KISS_CFmember_using, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -701,6 +736,7 @@ kiss_symbol_t KISS_Smapcar = {
     KISS_CONSTANT_FSLOT,         /* flags */
     NULL,                 /* var */
     (kiss_obj*)&KISS_CFmapcar, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -719,6 +755,7 @@ kiss_symbol_t KISS_Smapcan = {
     KISS_CONSTANT_FSLOT,         /* flags */
     NULL,                 /* var */
     (kiss_obj*)&KISS_CFmapcan, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -737,6 +774,7 @@ kiss_symbol_t KISS_Smapc = {
     KISS_CONSTANT_FSLOT,         /* flags */
     NULL,                 /* var */
     (kiss_obj*)&KISS_CFmapc, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -756,6 +794,7 @@ kiss_symbol_t KISS_Smaplist = {
     KISS_CONSTANT_FSLOT,         /* flags */
     NULL,                 /* var */
     (kiss_obj*)&KISS_CFmaplist, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -774,6 +813,7 @@ kiss_symbol_t KISS_Smapcon = {
     KISS_CONSTANT_FSLOT,         /* flags */
     NULL,                 /* var */
     (kiss_obj*)&KISS_CFmapcon, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -792,6 +832,7 @@ kiss_symbol_t KISS_Smapl = {
     KISS_CONSTANT_FSLOT,         /* flags */
     NULL,                 /* var */
     (kiss_obj*)&KISS_CFmapl, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -810,6 +851,7 @@ kiss_symbol_t KISS_Sassoc = {
     KISS_CONSTANT_FSLOT,        /* flags */
     NULL,                /* var */
     (kiss_obj*)&KISS_CFassoc, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -828,6 +870,7 @@ kiss_symbol_t KISS_Sassoc_using = {
     KISS_CONSTANT_FSLOT,        /* flags */
     NULL,                /* var */
     (kiss_obj*)&KISS_CFassoc_using, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -846,6 +889,7 @@ kiss_symbol_t KISS_Slast = {
     KISS_CONSTANT_FSLOT,        /* flags */
     NULL,                /* var */
     (kiss_obj*)&KISS_CFlast, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -864,6 +908,7 @@ kiss_symbol_t KISS_Snconc = {
     KISS_CONSTANT_FSLOT,        /* flags */
     NULL,                /* var */
     (kiss_obj*)&KISS_CFnconc, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -883,6 +928,7 @@ kiss_symbol_t KISS_Scopy_list = {
     KISS_CONSTANT_FSLOT,        /* flags */
     NULL,                /* var */
     (kiss_obj*)&KISS_CFcopy_list, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -902,6 +948,7 @@ kiss_symbol_t KISS_Splist_member = {
     KISS_CONSTANT_FSLOT,        /* flags */
     NULL,                /* var */
     (kiss_obj*)&KISS_CFplist_member, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -920,6 +967,7 @@ kiss_symbol_t KISS_Splist_get = {
     KISS_CONSTANT_FSLOT,        /* flags */
     NULL,                /* var */
     (kiss_obj*)&KISS_CFplist_get, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -939,6 +987,7 @@ kiss_symbol_t KISS_Splist_put = {
     KISS_CONSTANT_FSLOT,        /* flags */
     NULL,                /* var */
     (kiss_obj*)&KISS_CFplist_put, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -957,6 +1006,7 @@ kiss_symbol_t KISS_Splist_mapc = {
     KISS_CONSTANT_FSLOT,        /* flags */
     NULL,                /* var */
     (kiss_obj*)&KISS_CFplist_mapc, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -977,6 +1027,7 @@ kiss_symbol_t KISS_Screate_array = {
     KISS_CONSTANT_FSLOT,                        /* flags */
     NULL,                                /* var */
     (kiss_obj*)&KISS_CFcreate_array, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                                 /* plist */
 };
 
@@ -995,6 +1046,7 @@ kiss_symbol_t KISS_Sgaref = {
     KISS_CONSTANT_FSLOT,                        /* flags */
     NULL,                                /* var */
     (kiss_obj*)&KISS_CFgaref, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                                 /* plist */
 };
 
@@ -1013,6 +1065,7 @@ kiss_symbol_t KISS_Saref = {
     KISS_CONSTANT_FSLOT,                        /* flags */
     NULL,                                /* var */
     (kiss_obj*)&KISS_CFaref, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                                 /* plist */
 };
 
@@ -1031,6 +1084,7 @@ kiss_symbol_t KISS_Sset_garef = {
     KISS_CONSTANT_FSLOT,                        /* flags */
     NULL,                                /* var */
     (kiss_obj*)&KISS_CFset_garef, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                                 /* plist */
 };
 
@@ -1049,6 +1103,7 @@ kiss_symbol_t KISS_Sset_aref = {
     KISS_CONSTANT_FSLOT,                        /* flags */
     NULL,                                /* var */
     (kiss_obj*)&KISS_CFset_aref, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                                 /* plist */
 };
 
@@ -1068,6 +1123,7 @@ kiss_symbol_t KISS_Sbasic_array_p = {
     KISS_CONSTANT_FSLOT,                        /* flags */
     NULL,                                /* var */
     (kiss_obj*)&KISS_CFbasic_array_p, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                                 /* plist */
 };
 
@@ -1086,6 +1142,7 @@ kiss_symbol_t KISS_Sbasic_array_s_p = {
     KISS_CONSTANT_FSLOT,                        /* flags */
     NULL,                                /* var */
     (kiss_obj*)&KISS_CFbasic_array_s_p, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                                 /* plist */
 };
 
@@ -1104,6 +1161,7 @@ kiss_symbol_t KISS_Sgeneral_array_s_p = {
     KISS_CONSTANT_FSLOT,                        /* flags */
     NULL,                                /* var */
     (kiss_obj*)&KISS_CFgeneral_array_s_p, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                                 /* plist */
 };
 
@@ -1122,6 +1180,7 @@ kiss_symbol_t KISS_Sarray_dimensions = {
     KISS_CONSTANT_FSLOT,                        /* flags */
     NULL,                                /* var */
     (kiss_obj*)&KISS_CFarray_dimensions, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                                 /* plist */
 };
 
@@ -1140,6 +1199,7 @@ kiss_symbol_t KISS_Sgeneral_array_s_to_list = {
     KISS_CONSTANT_FSLOT,                        /* flags */
     NULL,                                /* var */
     (kiss_obj*)&KISS_CFgeneral_array_s_to_list, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                                 /* plist */
 };
 
@@ -1160,6 +1220,7 @@ kiss_symbol_t KISS_Screate_general_vector = {
     KISS_CONSTANT_FSLOT,                        /* flags */
     NULL,                                /* var */
     (kiss_obj*)&KISS_CFcreate_general_vector, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                                 /* plist */
 };
 
@@ -1178,6 +1239,7 @@ kiss_symbol_t KISS_Svector = {
     KISS_CONSTANT_FSLOT,                 /* flags */
     NULL,                         /* var */
     (kiss_obj*)&KISS_CFvector, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                          /* plist */
 };
 
@@ -1196,6 +1258,7 @@ kiss_symbol_t KISS_Sgeneral_vector_p = {
     KISS_CONSTANT_FSLOT,                   /* flags */
     NULL,                           /* var */
     (kiss_obj*)&KISS_CFgeneral_vector_p, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                            /* plist */
 };
 
@@ -1214,6 +1277,7 @@ kiss_symbol_t KISS_Sbasic_vector_p = {
     KISS_CONSTANT_FSLOT,                   /* flags */
     NULL,                           /* var */
     (kiss_obj*)&KISS_CFbasic_vector_p, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                            /* plist */
 };
 
@@ -1232,6 +1296,7 @@ kiss_symbol_t KISS_Sgvref = {
     KISS_CONSTANT_FSLOT,        /* flags */
     NULL,                /* var */
     (kiss_obj*)&KISS_CFgvref, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -1250,6 +1315,7 @@ kiss_symbol_t KISS_Sset_gvref = {
     KISS_CONSTANT_FSLOT,            /* flags */
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFset_gvref, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                     /* plist */
 };
 
@@ -1269,6 +1335,7 @@ kiss_symbol_t KISS_Screate_hash_table = {
     KISS_CONSTANT_FSLOT,            /* flags */
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFcreate_hash_table, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                     /* plist */
 };
 
@@ -1287,6 +1354,7 @@ kiss_symbol_t KISS_Sgethash = {
     KISS_CONSTANT_FSLOT,            /* flags */
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFgethash, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                     /* plist */
 };
 
@@ -1305,6 +1373,7 @@ kiss_symbol_t KISS_Sputhash = {
     KISS_CONSTANT_FSLOT,            /* flags */
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFputhash, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                     /* plist */
 };
 
@@ -1325,6 +1394,7 @@ kiss_symbol_t KISS_Ssimple_function_p = {
     KISS_CONSTANT_FSLOT,           /* flags */
     NULL,                   /* var */
     (kiss_obj*)&KISS_CFsimple_function_p, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                    /* plist */
 };
 
@@ -1343,6 +1413,7 @@ kiss_symbol_t KISS_Sfunction = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,           /* flags */
     NULL,                   /* var */
     (kiss_obj*)&KISS_CFfunction, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                    /* plist */
 };
 
@@ -1362,6 +1433,7 @@ kiss_symbol_t KISS_Slambda = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,         /* flags */
     NULL,                 /* var */
     (kiss_obj*)&KISS_CFlambda, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -1381,6 +1453,7 @@ kiss_symbol_t KISS_Sflet = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,
     NULL,               /* var */
     (kiss_obj*)&KISS_CFflet, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -1400,6 +1473,7 @@ kiss_symbol_t KISS_Slabels = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,
     NULL,                 /* var */
     (kiss_obj*)&KISS_CFlabels, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -1419,6 +1493,7 @@ kiss_symbol_t KISS_Sdefun = {
     KISS_CONSTANT_FSLOT | KISS_DEFINING_OPERATOR,
     NULL,               /* var */
     (kiss_obj*)&KISS_Cdefun, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -1438,6 +1513,7 @@ kiss_symbol_t KISS_Sdefmacro = {
     KISS_CONSTANT_FSLOT | KISS_DEFINING_OPERATOR,
     NULL,                  /* var */
     (kiss_obj*)&KISS_Cdefmacro, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                   /* plist */
 };
 
@@ -1457,6 +1533,7 @@ kiss_symbol_t KISS_Sfuncall = {
     KISS_CONSTANT_FSLOT,
     NULL,                  /* var */
     (kiss_obj*)&KISS_CFfuncall, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                   /* plist */
 };
 
@@ -1476,6 +1553,7 @@ kiss_symbol_t KISS_Sapply = {
     KISS_CONSTANT_FSLOT,
     NULL,                /* var */
     (kiss_obj*)&KISS_CFapply, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -1495,6 +1573,7 @@ kiss_symbol_t KISS_Ssetq = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,
     NULL,               /* var */
     (kiss_obj*)&KISS_CFsetq, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -1514,6 +1593,7 @@ kiss_symbol_t KISS_Sdefglobal = {
     KISS_CONSTANT_FSLOT | KISS_DEFINING_OPERATOR,
     NULL,                         /* var */
     (kiss_obj*)&KISS_CFdefglobal, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                     /* plist */
 };
 
@@ -1532,6 +1612,7 @@ kiss_symbol_t KISS_Sdefconstant = {
     KISS_CONSTANT_FSLOT | KISS_DEFINING_OPERATOR,
     NULL,                           /* var */
     (kiss_obj*)&KISS_CFdefconstant, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                       /* plist */
 };
 
@@ -1551,6 +1632,7 @@ kiss_symbol_t KISS_Slet = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,
     NULL,              /* var */
     (kiss_obj*)&KISS_CFlet, /* fun */
+    NULL,                       /* class */
     KISS_NIL,               /* plist */
 };
 
@@ -1570,6 +1652,7 @@ kiss_symbol_t KISS_Slet_s = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,
     NULL,                /* var */
     (kiss_obj*)&KISS_CFlet_s, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -1589,6 +1672,7 @@ kiss_symbol_t KISS_Sdefdynamic = {
     KISS_CONSTANT_FSLOT | KISS_DEFINING_OPERATOR,
     NULL,                     /* var */
     (kiss_obj*)&KISS_CFdefdynamic, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                      /* plist */
 };
 
@@ -1607,6 +1691,7 @@ kiss_symbol_t KISS_Sdynamic = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,
     NULL,                  /* var */
     (kiss_obj*)&KISS_CFdynamic, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                   /* plist */
 };
 
@@ -1626,6 +1711,7 @@ kiss_symbol_t KISS_Sdynamic_let = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,
     NULL,                      /* var */
     (kiss_obj*)&KISS_CFdynamic_let, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                       /* plist */
 };
 
@@ -1644,6 +1730,7 @@ kiss_symbol_t KISS_Sset_dynamic = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,
     NULL,                      /* var */
     (kiss_obj*)&KISS_CFset_dynamic, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                       /* plist */
 };
 
@@ -1663,6 +1750,7 @@ kiss_symbol_t KISS_Squote = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,        /* flags */
     NULL,                /* var */
     (kiss_obj*)&KISS_CFquote, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -1681,6 +1769,7 @@ kiss_symbol_t KISS_Snot = {
     KISS_CONSTANT_FSLOT,        /* flags */
     NULL,                /* var */
     (kiss_obj*)&KISS_CFnot, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -1699,6 +1788,7 @@ kiss_symbol_t KISS_Sand = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR, /* flags */
     NULL,                /* var */
     (kiss_obj*)&KISS_CFand, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -1717,6 +1807,7 @@ kiss_symbol_t KISS_Sor = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,        /* flags */
     NULL,                /* var */
     (kiss_obj*)&KISS_CFor, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -1735,6 +1826,7 @@ kiss_symbol_t KISS_Sequal = {
     KISS_CONSTANT_FSLOT,        /* flags */
     NULL,                /* var */
     (kiss_obj*)&KISS_CFequal, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -1753,6 +1845,7 @@ kiss_symbol_t KISS_Scond = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,        /* flags */
     NULL,                /* var */
     (kiss_obj*)&KISS_CFcond, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -1772,6 +1865,7 @@ kiss_symbol_t KISS_Sif = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,
     NULL,             /* var */
     (kiss_obj*)&KISS_CFif, /* fun */
+    NULL,                       /* class */
     KISS_NIL,              /* plist */
 };
 
@@ -1790,6 +1884,7 @@ kiss_symbol_t KISS_Scase = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,
     NULL,             /* var */
     (kiss_obj*)&KISS_CFcase, /* fun */
+    NULL,                       /* class */
     KISS_NIL,              /* plist */
 };
 
@@ -1808,6 +1903,7 @@ kiss_symbol_t KISS_Scase_using = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,
     NULL,             /* var */
     (kiss_obj*)&KISS_CFcase_using, /* fun */
+    NULL,                       /* class */
     KISS_NIL,              /* plist */
 };
 
@@ -1826,6 +1922,7 @@ kiss_symbol_t KISS_Sprogn = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,
     NULL,             /* var */
     (kiss_obj*)&KISS_CFprogn, /* fun */
+    NULL,                       /* class */
     KISS_NIL,              /* plist */
 };
 
@@ -1844,6 +1941,7 @@ kiss_symbol_t KISS_Sprog1 = {
     KISS_CONSTANT_FSLOT,
     NULL,             /* var */
     (kiss_obj*)&KISS_CFprog1, /* fun */
+    NULL,                       /* class */
     KISS_NIL,              /* plist */
 };
 
@@ -1862,6 +1960,7 @@ kiss_symbol_t KISS_Swhile = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,
     NULL,             /* var */
     (kiss_obj*)&KISS_CFwhile, /* fun */
+    NULL,                       /* class */
     KISS_NIL,              /* plist */
 };
 
@@ -1881,6 +1980,7 @@ kiss_symbol_t KISS_Seq = {
     KISS_CONSTANT_FSLOT,
     NULL,             /* var */
     (kiss_obj*)&KISS_CFeq, /* fun */
+    NULL,                       /* class */
     KISS_NIL,              /* plist */
 };
 
@@ -1900,6 +2000,7 @@ kiss_symbol_t KISS_Seql = {
     KISS_CONSTANT_FSLOT,
     NULL,              /* var */
     (kiss_obj*)&KISS_CFeql, /* fun */
+    NULL,                       /* class */
     KISS_NIL,               /* plist */
 };
 
@@ -1918,6 +2019,7 @@ kiss_symbol_t KISS_Scatch = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,
     NULL,               /* var */
     (kiss_obj*)&KISS_Ccatch, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -1937,6 +2039,7 @@ kiss_symbol_t KISS_Sthrow = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,
     NULL,               /* var */
     (kiss_obj*)&KISS_Cthrow, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -1956,6 +2059,7 @@ kiss_symbol_t KISS_Sunwind_protect = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,
     NULL,                        /* var */
     (kiss_obj*)&KISS_Cunwind_protect, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                         /* plist */
 };
 
@@ -1975,6 +2079,7 @@ kiss_symbol_t KISS_Sblock = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,
     NULL,               /* var */
     (kiss_obj*)&KISS_Cblock, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -1994,6 +2099,7 @@ kiss_symbol_t KISS_Sreturn_from = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,
     NULL,                     /* var */
     (kiss_obj*)&KISS_Creturn_from, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                      /* plist */
 };
 
@@ -2013,6 +2119,7 @@ kiss_symbol_t KISS_Stagbody = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,
     NULL,                 /* var */
     (kiss_obj*)&KISS_Ctagbody, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -2032,6 +2139,7 @@ kiss_symbol_t KISS_Sgo = {
     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR,
     NULL,            /* var */
     (kiss_obj*)&KISS_Cgo, /* fun */
+    NULL,                       /* class */
     KISS_NIL,             /* plist */
 };
 
@@ -2049,6 +2157,7 @@ kiss_symbol_t KISS_Ss_pi_s = {
     KISS_SYSTEM_CONSTANT_VAR,    /* flags  */
     (kiss_obj*)&KISS_Fs_pi_s,    /*  var   */
     NULL,                        /*  fun   */
+    NULL,                       /* class */
     KISS_NIL,                    /*  plist */
 };
 
@@ -2064,6 +2173,7 @@ kiss_symbol_t KISS_Ss_most_positive_float_s = {
     KISS_SYSTEM_CONSTANT_VAR,    /* flags  */
     (kiss_obj*)&KISS_Fs_most_positive_float_s, /*  var   */
     NULL,                        /*  fun   */
+    NULL,                       /* class */
     KISS_NIL,                    /*  plist */
 };
 
@@ -2079,6 +2189,7 @@ kiss_symbol_t KISS_Ss_most_negative_float_s = {
     KISS_SYSTEM_CONSTANT_VAR,    /* flags  */
     (kiss_obj*)&KISS_Fs_most_negative_float_s, /*  var   */
     NULL,                        /*  fun   */
+    NULL,                       /* class */
     KISS_NIL,                    /*  plist */
 };
 
@@ -2089,6 +2200,7 @@ kiss_symbol_t KISS_Ss_most_positive_fixnum_s = {
     KISS_SYSTEM_CONSTANT_VAR,           /* flags  */
     kiss_make_fixnum(KISS_PTR_INT_MAX), /*  var   */
     NULL,                               /*  fun   */
+    NULL,                       /* class */
     KISS_NIL,                           /*  plist */
 };
 
@@ -2099,6 +2211,7 @@ kiss_symbol_t KISS_Ss_most_negative_fixnum_s = {
     KISS_SYSTEM_CONSTANT_VAR,           /* flags  */
     kiss_make_fixnum(KISS_PTR_INT_MIN), /*  var   */
     NULL,                               /*  fun   */
+    NULL,                       /* class */
     KISS_NIL,                           /*  plist */
 };
 
@@ -2117,6 +2230,7 @@ kiss_symbol_t KISS_Snumberp = {
     KISS_CONSTANT_FSLOT,
     NULL,               /* var */
     (kiss_obj*)&KISS_CFnumberp, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2135,6 +2249,7 @@ kiss_symbol_t KISS_Sintegerp = {
     KISS_CONSTANT_FSLOT,
     NULL,               /* var */
     (kiss_obj*)&KISS_CFintegerp, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2153,6 +2268,7 @@ kiss_symbol_t KISS_Sfixnump = {
     KISS_CONSTANT_FSLOT,
     NULL,               /* var */
     (kiss_obj*)&KISS_CFfixnump, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2171,6 +2287,7 @@ kiss_symbol_t KISS_Sbignump = {
     KISS_CONSTANT_FSLOT,
     NULL,               /* var */
     (kiss_obj*)&KISS_CFbignump, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2189,6 +2306,7 @@ kiss_symbol_t KISS_Sfloatp = {
     KISS_CONSTANT_FSLOT,
     NULL,                      /* var */
     (kiss_obj*)&KISS_CFfloatp, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -2207,6 +2325,7 @@ kiss_symbol_t KISS_Sfloat = {
     KISS_CONSTANT_FSLOT,
     NULL,                     /* var */
     (kiss_obj*)&KISS_CFfloat, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -2226,6 +2345,7 @@ kiss_symbol_t KISS_Splus = {
     KISS_CONSTANT_FSLOT,
     NULL,               /* var */
     (kiss_obj*)&KISS_CFplus, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2244,6 +2364,7 @@ kiss_symbol_t KISS_Smultiply = {
     KISS_CONSTANT_FSLOT,
     NULL,                        /* var */
     (kiss_obj*)&KISS_CFmultiply, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                    /* plist */
 };
 
@@ -2263,6 +2384,7 @@ kiss_symbol_t KISS_Sminus = {
     KISS_CONSTANT_FSLOT,
     NULL,                     /* var */
     (kiss_obj*)&KISS_CFminus, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -2282,6 +2404,7 @@ kiss_symbol_t KISS_Snum_eq = {
     KISS_CONSTANT_FSLOT,
     NULL,                 /* var */
     (kiss_obj*)&KISS_CFnum_eq, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -2300,6 +2423,7 @@ kiss_symbol_t KISS_Snum_neq = {
     KISS_CONSTANT_FSLOT,
     NULL,                 /* var */
     (kiss_obj*)&KISS_CFnum_neq, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -2319,6 +2443,7 @@ kiss_symbol_t KISS_Snum_lessthan = {
     KISS_CONSTANT_FSLOT,
     NULL,                       /* var */
     (kiss_obj*)&KISS_CFnum_lessthan, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                        /* plist */
 };
 
@@ -2337,6 +2462,7 @@ kiss_symbol_t KISS_Snum_lessthan_eq = {
     KISS_CONSTANT_FSLOT,
     NULL,                       /* var */
     (kiss_obj*)&KISS_CFnum_lessthan_eq, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                        /* plist */
 };
 
@@ -2356,6 +2482,7 @@ kiss_symbol_t KISS_Snum_greaterthan = {
     KISS_CONSTANT_FSLOT,
     NULL,                       /* var */
     (kiss_obj*)&KISS_CFnum_greaterthan, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                        /* plist */
 };
 
@@ -2374,6 +2501,7 @@ kiss_symbol_t KISS_Snum_greaterthan_eq = {
     KISS_CONSTANT_FSLOT,
     NULL,                       /* var */
     (kiss_obj*)&KISS_CFnum_greaterthan_eq, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                        /* plist */
 };
 
@@ -2392,6 +2520,7 @@ kiss_symbol_t KISS_Sdiv = {
     KISS_CONSTANT_FSLOT,
     NULL,                   /* var */
     (kiss_obj*)&KISS_CFdiv, /* fun */
+    NULL,                       /* class */
     KISS_NIL,               /* plist */
 };
 
@@ -2410,6 +2539,7 @@ kiss_symbol_t KISS_Smod = {
     KISS_CONSTANT_FSLOT,
     NULL,                   /* var */
     (kiss_obj*)&KISS_CFmod, /* fun */
+    NULL,                       /* class */
     KISS_NIL,               /* plist */
 };
 
@@ -2428,6 +2558,7 @@ kiss_symbol_t KISS_Sgcd = {
     KISS_CONSTANT_FSLOT,
     NULL,                   /* var */
     (kiss_obj*)&KISS_CFgcd, /* fun */
+    NULL,                       /* class */
     KISS_NIL,               /* plist */
 };
 
@@ -2446,6 +2577,7 @@ kiss_symbol_t KISS_Slcm = {
     KISS_CONSTANT_FSLOT,
     NULL,                   /* var */
     (kiss_obj*)&KISS_CFlcm, /* fun */
+    NULL,                       /* class */
     KISS_NIL,               /* plist */
 };
 
@@ -2464,6 +2596,7 @@ kiss_symbol_t KISS_Sparse_number = {
     KISS_CONSTANT_FSLOT,
     NULL,                            /* var */
     (kiss_obj*)&KISS_CFparse_number, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                        /* plist */
 };
 
@@ -2482,6 +2615,7 @@ kiss_symbol_t KISS_Sabs = {
     KISS_CONSTANT_FSLOT,
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFabs,  /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2500,6 +2634,7 @@ kiss_symbol_t KISS_Sreciprocal = {
     KISS_CONSTANT_FSLOT,
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFreciprocal,  /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2518,6 +2653,7 @@ kiss_symbol_t KISS_Squotient = {
     KISS_CONSTANT_FSLOT,
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFquotient,  /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2536,6 +2672,7 @@ kiss_symbol_t KISS_Sexp = {
     KISS_CONSTANT_FSLOT,
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFexp,  /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2554,6 +2691,7 @@ kiss_symbol_t KISS_Sexpt = {
     KISS_CONSTANT_FSLOT,
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFexpt,  /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2572,6 +2710,7 @@ kiss_symbol_t KISS_Ssqrt = {
     KISS_CONSTANT_FSLOT,
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFsqrt,  /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2590,6 +2729,7 @@ kiss_symbol_t KISS_Sisqrt = {
     KISS_CONSTANT_FSLOT,
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFisqrt,  /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2608,6 +2748,7 @@ kiss_symbol_t KISS_Slog = {
     KISS_CONSTANT_FSLOT,
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFlog,  /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2626,6 +2767,7 @@ kiss_symbol_t KISS_Sfloor = {
     KISS_CONSTANT_FSLOT,
     NULL,                     /* var */
     (kiss_obj*)&KISS_CFfloor, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -2644,6 +2786,7 @@ kiss_symbol_t KISS_Sceiling = {
     KISS_CONSTANT_FSLOT,
     NULL,                       /* var */
     (kiss_obj*)&KISS_CFceiling, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                   /* plist */
 };
 
@@ -2662,6 +2805,7 @@ kiss_symbol_t KISS_Struncate = {
     KISS_CONSTANT_FSLOT,
     NULL,                        /* var */
     (kiss_obj*)&KISS_CFtruncate, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                    /* plist */
 };
 
@@ -2680,6 +2824,7 @@ kiss_symbol_t KISS_Sround = {
     KISS_CONSTANT_FSLOT,
     NULL,                     /* var */
     (kiss_obj*)&KISS_CFround, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                 /* plist */
 };
 
@@ -2699,6 +2844,7 @@ kiss_symbol_t KISS_Ssin = {
     KISS_CONSTANT_FSLOT,
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFsin,  /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2717,6 +2863,7 @@ kiss_symbol_t KISS_Scos = {
     KISS_CONSTANT_FSLOT,
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFcos,  /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2735,6 +2882,7 @@ kiss_symbol_t KISS_Stan = {
     KISS_CONSTANT_FSLOT,
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFtan,  /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2753,6 +2901,7 @@ kiss_symbol_t KISS_Ssinh = {
     KISS_CONSTANT_FSLOT,
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFsinh,  /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2771,6 +2920,7 @@ kiss_symbol_t KISS_Scosh = {
     KISS_CONSTANT_FSLOT,
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFcosh,  /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2789,6 +2939,7 @@ kiss_symbol_t KISS_Stanh = {
     KISS_CONSTANT_FSLOT,
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFtanh,  /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2807,6 +2958,7 @@ kiss_symbol_t KISS_Satanh = {
     KISS_CONSTANT_FSLOT,
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFatanh,  /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2825,6 +2977,7 @@ kiss_symbol_t KISS_Satan = {
     KISS_CONSTANT_FSLOT,
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFatan, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2843,6 +2996,7 @@ kiss_symbol_t KISS_Satan2 = {
     KISS_CONSTANT_FSLOT,
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFatan2, /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2861,6 +3015,7 @@ kiss_symbol_t KISS_Smax = {
     KISS_CONSTANT_FSLOT,
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFmax,  /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2879,6 +3034,7 @@ kiss_symbol_t KISS_Smin = {
     KISS_CONSTANT_FSLOT,
     NULL,                    /* var */
     (kiss_obj*)&KISS_CFmin,  /* fun */
+    NULL,                       /* class */
     KISS_NIL,                /* plist */
 };
 
@@ -2899,6 +3055,7 @@ kiss_symbol_t KISS_Sidentity = {
      KISS_CONSTANT_FSLOT,            /* flags  */
      NULL,                        /*  var   */
      (kiss_obj*)&KISS_CFidentity, /*  fun   */
+    NULL,                       /* class */
      KISS_NIL,                    /* plist  */
 };
 
@@ -2917,6 +3074,7 @@ kiss_symbol_t KISS_Sget_universal_time = {
      KISS_CONSTANT_FSLOT,                      /* flags  */
      NULL,                                  /*  var   */
      (kiss_obj*)&KISS_CFget_universal_time, /*  fun   */
+    NULL,                       /* class */
      KISS_NIL,                              /* plist  */
 };
 
@@ -2935,6 +3093,7 @@ kiss_symbol_t KISS_Sget_internal_run_time = {
      KISS_CONSTANT_FSLOT,                         /* flags  */
      NULL,                                     /*  var   */
      (kiss_obj*)&KISS_CFget_internal_run_time, /*  fun   */
+    NULL,                       /* class */
      KISS_NIL,                                 /* plist  */
 };
 
@@ -2953,6 +3112,7 @@ kiss_symbol_t KISS_Sget_internal_real_time = {
      KISS_CONSTANT_FSLOT,                          /* flags  */
      NULL,                                      /*  var   */
      (kiss_obj*)&KISS_CFget_internal_real_time, /*  fun   */
+    NULL,                       /* class */
      KISS_NIL,                                  /* plist  */
 };
 
@@ -2971,6 +3131,7 @@ kiss_symbol_t KISS_Sinternal_time_units_per_second = {
      KISS_CONSTANT_FSLOT,                          /* flags  */
      NULL,                                      /*  var   */
      (kiss_obj*)&KISS_CFinternal_time_units_per_second, /*  fun   */
+     NULL,                       /* class */
      KISS_NIL,                                          /* plist  */
 };
 
@@ -2989,6 +3150,7 @@ kiss_symbol_t KISS_Stime = {
      KISS_CONSTANT_FSLOT,                          /* flags  */
      NULL,                                      /*  var   */
      (kiss_obj*)&KISS_CFtime, /*  fun   */
+     NULL,                       /* class */
      KISS_NIL,                                          /* plist  */
 };
 
@@ -3003,13 +3165,14 @@ kiss_cfunction_t KISS_CFsymbolp = {
     1,         /* maximum argument number */
 };
 kiss_symbol_t KISS_Ssymbolp = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"symbolp",
-    KISS_CONSTANT_FSLOT,
-    NULL,                 /* var */
-    (kiss_obj*)&KISS_CFsymbolp, /* fun */
-    KISS_NIL,                  /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"symbolp",
+     KISS_CONSTANT_FSLOT,
+     NULL,                 /* var */
+     (kiss_obj*)&KISS_CFsymbolp, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                  /* plist */
 };
 
 
@@ -3028,6 +3191,7 @@ kiss_symbol_t KISS_Sgensym = {
     KISS_CONSTANT_FSLOT,
     NULL,                 /* var */
     (kiss_obj*)&KISS_CFgensym, /* fun */
+     NULL,                       /* class */
     KISS_NIL,                  /* plist */
 };
 
@@ -3040,121 +3204,128 @@ kiss_cfunction_t KISS_CFsymbol_function = {
     1,         /* maximum argument number */
 };
 kiss_symbol_t KISS_Ssymbol_function = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"symbol-function",
-    KISS_CONSTANT_FSLOT,
-    NULL,                 /* var */
-    (kiss_obj*)&KISS_CFsymbol_function, /* fun */
-    KISS_NIL,                  /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"symbol-function",
+     KISS_CONSTANT_FSLOT,
+     NULL,                 /* var */
+     (kiss_obj*)&KISS_CFsymbol_function, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                  /* plist */
 };
 
 kiss_symbol_t KISS_Sset_symbol_function;
 kiss_cfunction_t KISS_CFset_symbol_function = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sset_symbol_function,  /* name */
-    (kiss_cf_t*)kiss_set_symbol_function,    /* C function name */
-    2,         /* minimum argument number */
-    2,         /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Sset_symbol_function,  /* name */
+     (kiss_cf_t*)kiss_set_symbol_function,    /* C function name */
+     2,         /* minimum argument number */
+     2,         /* maximum argument number */
 };
 kiss_symbol_t KISS_Sset_symbol_function = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"set-symbol-function",
-    KISS_CONSTANT_FSLOT,
-    NULL,                 /* var */
-    (kiss_obj*)&KISS_CFset_symbol_function, /* fun */
-    KISS_NIL,                  /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"set-symbol-function",
+     KISS_CONSTANT_FSLOT,
+     NULL,                 /* var */
+     (kiss_obj*)&KISS_CFset_symbol_function, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                  /* plist */
 };
 
 kiss_symbol_t KISS_Sfboundp;
 kiss_cfunction_t KISS_CFfboundp = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sfboundp,  /* name */
-    (kiss_cf_t*)kiss_fboundp,    /* C function name */
-    1,         /* minimum argument number */
-    1,         /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Sfboundp,  /* name */
+     (kiss_cf_t*)kiss_fboundp,    /* C function name */
+     1,         /* minimum argument number */
+     1,         /* maximum argument number */
 };
 kiss_symbol_t KISS_Sfboundp = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"fboundp",
-    KISS_CONSTANT_FSLOT,
-    NULL,                 /* var */
-    (kiss_obj*)&KISS_CFfboundp, /* fun */
-    KISS_NIL,                  /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"fboundp",
+     KISS_CONSTANT_FSLOT,
+     NULL,                 /* var */
+     (kiss_obj*)&KISS_CFfboundp, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                  /* plist */
 };
 
 kiss_symbol_t KISS_Sfmakunbound;
 kiss_cfunction_t KISS_CFfmakunbound = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sfmakunbound,  /* name */
-    (kiss_cf_t*)kiss_fmakunbound,    /* C function name */
-    1,         /* minimum argument number */
-    1,         /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Sfmakunbound,  /* name */
+     (kiss_cf_t*)kiss_fmakunbound,    /* C function name */
+     1,         /* minimum argument number */
+     1,         /* maximum argument number */
 };
 kiss_symbol_t KISS_Sfmakunbound = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"kiss::fmakunbound",
-    KISS_CONSTANT_FSLOT,
-    NULL,                 /* var */
-    (kiss_obj*)&KISS_CFfmakunbound, /* fun */
-    KISS_NIL,                  /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"kiss::fmakunbound",
+     KISS_CONSTANT_FSLOT,
+     NULL,                 /* var */
+     (kiss_obj*)&KISS_CFfmakunbound, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                  /* plist */
 };
 
 kiss_symbol_t KISS_Sproperty;
 kiss_cfunction_t KISS_CFproperty = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sproperty,  /* name */
-    (kiss_cf_t*)kiss_property,    /* C function name */
-    2,         /* minimum argument number */
-    3,         /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Sproperty,  /* name */
+     (kiss_cf_t*)kiss_property,    /* C function name */
+     2,         /* minimum argument number */
+     3,         /* maximum argument number */
 };
 kiss_symbol_t KISS_Sproperty = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"property",
-    KISS_CONSTANT_FSLOT,
-    NULL,                 /* var */
-    (kiss_obj*)&KISS_CFproperty, /* fun */
-    KISS_NIL,                  /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"property",
+     KISS_CONSTANT_FSLOT,
+     NULL,                 /* var */
+     (kiss_obj*)&KISS_CFproperty, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                  /* plist */
 };
 
 kiss_symbol_t KISS_Sset_property;
 kiss_cfunction_t KISS_CFset_property = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sset_property,  /* name */
-    (kiss_cf_t*)kiss_set_property,    /* C function name */
-    3,         /* minimum argument number */
-    3,         /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Sset_property,  /* name */
+     (kiss_cf_t*)kiss_set_property,    /* C function name */
+     3,         /* minimum argument number */
+     3,         /* maximum argument number */
 };
 kiss_symbol_t KISS_Sset_property = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"set-property",
-    KISS_CONSTANT_FSLOT,
-    NULL,                 /* var */
-    (kiss_obj*)&KISS_CFset_property, /* fun */
-    KISS_NIL,                  /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"set-property",
+     KISS_CONSTANT_FSLOT,
+     NULL,                 /* var */
+     (kiss_obj*)&KISS_CFset_property, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                  /* plist */
 };
 
 kiss_symbol_t KISS_Sremove_property;
 kiss_cfunction_t KISS_CFremove_property = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sremove_property,  /* name */
-    (kiss_cf_t*)kiss_remove_property,    /* C function name */
-    2,         /* minimum argument number */
-    2,         /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Sremove_property,  /* name */
+     (kiss_cf_t*)kiss_remove_property,    /* C function name */
+     2,         /* minimum argument number */
+     2,         /* maximum argument number */
 };
 kiss_symbol_t KISS_Sremove_property = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"remove-property",
-    KISS_CONSTANT_FSLOT,
-    NULL,                 /* var */
-    (kiss_obj*)&KISS_CFremove_property, /* fun */
-    KISS_NIL,                  /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"remove-property",
+     KISS_CONSTANT_FSLOT,
+     NULL,                 /* var */
+     (kiss_obj*)&KISS_CFremove_property, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                  /* plist */
 };
 
 
@@ -3162,393 +3333,414 @@ kiss_symbol_t KISS_Sremove_property = {
 /*** format.c ***/
 kiss_symbol_t KISS_Sformat;
 kiss_cfunction_t KISS_CFformat = {
-    KISS_CFUNCTION,       /* type */
-    &KISS_Sformat, /* name */
-    (kiss_cf_t*)kiss_format,   /* C function name */
-    2,               /* minimum argument number */
-    -1,               /* maximum argument number */
+     KISS_CFUNCTION,       /* type */
+     &KISS_Sformat, /* name */
+     (kiss_cf_t*)kiss_format,   /* C function name */
+     2,               /* minimum argument number */
+     -1,               /* maximum argument number */
 };
 kiss_symbol_t KISS_Sformat = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"format",
-    KISS_CONSTANT_FSLOT,
-    NULL,                        /* var */
-    (kiss_obj*)&KISS_CFformat, /* fun */
-    KISS_NIL,                         /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"format",
+     KISS_CONSTANT_FSLOT,
+     NULL,                        /* var */
+     (kiss_obj*)&KISS_CFformat, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                         /* plist */
 };
 
 kiss_symbol_t KISS_Sformat_object;
 kiss_cfunction_t KISS_CFformat_object = {
-    KISS_CFUNCTION,       /* type */
-    &KISS_Sformat_object, /* name */
-    (kiss_cf_t*)kiss_format_object,   /* C function name */
-    3,               /* minimum argument number */
-    3,               /* maximum argument number */
+     KISS_CFUNCTION,       /* type */
+     &KISS_Sformat_object, /* name */
+     (kiss_cf_t*)kiss_format_object,   /* C function name */
+     3,               /* minimum argument number */
+     3,               /* maximum argument number */
 };
 kiss_symbol_t KISS_Sformat_object = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"format-object",
-    KISS_CONSTANT_FSLOT,
-    NULL,                        /* var */
-    (kiss_obj*)&KISS_CFformat_object, /* fun */
-    KISS_NIL,                         /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"format-object",
+     KISS_CONSTANT_FSLOT,
+     NULL,                        /* var */
+     (kiss_obj*)&KISS_CFformat_object, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                         /* plist */
 };
 
 
 kiss_symbol_t KISS_Sformat_pointer;
 kiss_cfunction_t KISS_CFformat_pointer = {
-    KISS_CFUNCTION,       /* type */
-    &KISS_Sformat_pointer, /* name */
-    (kiss_cf_t*)kiss_format_pointer,   /* C function name */
-    2,               /* minimum argument number */
-    2,               /* maximum argument number */
+     KISS_CFUNCTION,       /* type */
+     &KISS_Sformat_pointer, /* name */
+     (kiss_cf_t*)kiss_format_pointer,   /* C function name */
+     2,               /* minimum argument number */
+     2,               /* maximum argument number */
 };
 kiss_symbol_t KISS_Sformat_pointer = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"kiss::format-pointer",
-    KISS_CONSTANT_FSLOT,
-    NULL,                        /* var */
-    (kiss_obj*)&KISS_CFformat_pointer, /* fun */
-    KISS_NIL,                         /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"kiss::format-pointer",
+     KISS_CONSTANT_FSLOT,
+     NULL,                        /* var */
+     (kiss_obj*)&KISS_CFformat_pointer, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                         /* plist */
 };
 
 kiss_symbol_t KISS_Sformat_fresh_line;
 kiss_cfunction_t KISS_CFformat_fresh_line = {
-    KISS_CFUNCTION,       /* type */
-    &KISS_Sformat_fresh_line, /* name */
-    (kiss_cf_t*)kiss_format_fresh_line,   /* C function name */
-    1,               /* minimum argument number */
-    1,               /* maximum argument number */
+     KISS_CFUNCTION,       /* type */
+     &KISS_Sformat_fresh_line, /* name */
+     (kiss_cf_t*)kiss_format_fresh_line,   /* C function name */
+     1,               /* minimum argument number */
+     1,               /* maximum argument number */
 };
 kiss_symbol_t KISS_Sformat_fresh_line = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"format-fresh-line",
-    KISS_CONSTANT_FSLOT,
-    NULL,                        /* var */
-    (kiss_obj*)&KISS_CFformat_fresh_line, /* fun */
-    KISS_NIL,                         /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"format-fresh-line",
+     KISS_CONSTANT_FSLOT,
+     NULL,                        /* var */
+     (kiss_obj*)&KISS_CFformat_fresh_line, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                         /* plist */
 };
 
 
 kiss_symbol_t KISS_Sprint;
 kiss_cfunction_t KISS_CFprint = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sprint,   /* name */
-    (kiss_cf_t*)kiss_print,     /* C function name */
-    1,         /* minimum argument number */
-    1,         /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Sprint,   /* name */
+     (kiss_cf_t*)kiss_print,     /* C function name */
+     1,         /* minimum argument number */
+     1,         /* maximum argument number */
 };
 kiss_symbol_t KISS_Sprint = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"print",
-    KISS_CONSTANT_FSLOT,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFprint, /* fun */
-    KISS_NIL,                 /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"print",
+     KISS_CONSTANT_FSLOT,
+     NULL,                /* var */
+     (kiss_obj*)&KISS_CFprint, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                 /* plist */
 };
 
 /*** read.c ***/
 kiss_symbol_t KISS_Sread;
 kiss_cfunction_t KISS_CFread = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sread,    /* name */
-    (kiss_cf_t*)kiss_read,     /* C function name */
-    0,         /* minimum argument number */
-    3,         /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Sread,    /* name */
+     (kiss_cf_t*)kiss_read,     /* C function name */
+     0,         /* minimum argument number */
+     3,         /* maximum argument number */
 };
 kiss_symbol_t KISS_Sread = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"read",
-    KISS_CONSTANT_FSLOT,
-    NULL,               /* var */
-    (kiss_obj*)&KISS_CFread, /* fun */
-    KISS_NIL,                /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"read",
+     KISS_CONSTANT_FSLOT,
+     NULL,               /* var */
+     (kiss_obj*)&KISS_CFread, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                /* plist */
 };
 
 /*** string.c ***/
 kiss_symbol_t KISS_Sstringp;
 kiss_cfunction_t KISS_CFstringp = {
-    KISS_CFUNCTION,    /* type */
-    &KISS_Sstringp,    /* name */
-    (kiss_cf_t*)kiss_stringp,      /* C function name */
-    1,                 /* minimum argument number */
-    1,                 /* maximum argument number */
+     KISS_CFUNCTION,    /* type */
+     &KISS_Sstringp,    /* name */
+     (kiss_cf_t*)kiss_stringp,      /* C function name */
+     1,                 /* minimum argument number */
+     1,                 /* maximum argument number */
 };
 kiss_symbol_t KISS_Sstringp = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"stringp",
-    KISS_CONSTANT_FSLOT,
-    NULL,               /* var */
-    (kiss_obj*)&KISS_CFstringp, /* fun */
-    KISS_NIL,                /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"stringp",
+     KISS_CONSTANT_FSLOT,
+     NULL,               /* var */
+     (kiss_obj*)&KISS_CFstringp, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                /* plist */
 };
 
 kiss_symbol_t KISS_Screate_string;
 kiss_cfunction_t KISS_CFcreate_string = {
-    KISS_CFUNCTION,       /* type */
-    &KISS_Screate_string, /* name */
-    (kiss_cf_t*)kiss_create_string,   /* C function name */
-    1,                    /* minimum argument number */
-    2,                    /* maximum argument number */
+     KISS_CFUNCTION,       /* type */
+     &KISS_Screate_string, /* name */
+     (kiss_cf_t*)kiss_create_string,   /* C function name */
+     1,                    /* minimum argument number */
+     2,                    /* maximum argument number */
 };
 kiss_symbol_t KISS_Screate_string = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"create-string",
-    KISS_CONSTANT_FSLOT,
-    NULL,                             /* var */
-    (kiss_obj*)&KISS_CFcreate_string, /* fun */
-    KISS_NIL,                         /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"create-string",
+     KISS_CONSTANT_FSLOT,
+     NULL,                             /* var */
+     (kiss_obj*)&KISS_CFcreate_string, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                         /* plist */
 };
 
 kiss_symbol_t KISS_Sstring_eq;
 kiss_cfunction_t KISS_CFstring_eq = {
-    KISS_CFUNCTION,       /* type */
-    &KISS_Sstring_eq, /* name */
-    (kiss_cf_t*)kiss_string_eq,   /* C function name */
-    2,                    /* minimum argument number */
-    2,                    /* maximum argument number */
+     KISS_CFUNCTION,       /* type */
+     &KISS_Sstring_eq, /* name */
+     (kiss_cf_t*)kiss_string_eq,   /* C function name */
+     2,                    /* minimum argument number */
+     2,                    /* maximum argument number */
 };
 kiss_symbol_t KISS_Sstring_eq = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"string=",
-    KISS_CONSTANT_FSLOT,
-    NULL,                             /* var */
-    (kiss_obj*)&KISS_CFstring_eq, /* fun */
-    KISS_NIL,                         /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"string=",
+     KISS_CONSTANT_FSLOT,
+     NULL,                             /* var */
+     (kiss_obj*)&KISS_CFstring_eq, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                         /* plist */
 };
 
 kiss_symbol_t KISS_Sstring_neq;
 kiss_cfunction_t KISS_CFstring_neq = {
-    KISS_CFUNCTION,       /* type */
-    &KISS_Sstring_neq, /* name */
-    (kiss_cf_t*)kiss_string_neq,   /* C function name */
-    2,                    /* minimum argument number */
-    2,                    /* maximum argument number */
+     KISS_CFUNCTION,       /* type */
+     &KISS_Sstring_neq, /* name */
+     (kiss_cf_t*)kiss_string_neq,   /* C function name */
+     2,                    /* minimum argument number */
+     2,                    /* maximum argument number */
 };
 kiss_symbol_t KISS_Sstring_neq = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"string/=",
-    KISS_CONSTANT_FSLOT,
-    NULL,                             /* var */
-    (kiss_obj*)&KISS_CFstring_neq, /* fun */
-    KISS_NIL,                         /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"string/=",
+     KISS_CONSTANT_FSLOT,
+     NULL,                             /* var */
+     (kiss_obj*)&KISS_CFstring_neq, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                         /* plist */
 };
 
 
 kiss_symbol_t KISS_Sstring_append;
 kiss_cfunction_t KISS_CFstring_append = {
-    KISS_CFUNCTION,       /* type */
-    &KISS_Sstring_append, /* name */
-    (kiss_cf_t*)kiss_string_append,   /* C function name */
-    0,                    /* minimum argument number */
-    -1,                   /* maximum argument number */
+     KISS_CFUNCTION,       /* type */
+     &KISS_Sstring_append, /* name */
+     (kiss_cf_t*)kiss_string_append,   /* C function name */
+     0,                    /* minimum argument number */
+     -1,                   /* maximum argument number */
 };
 kiss_symbol_t KISS_Sstring_append = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"string-append",
-    KISS_CONSTANT_FSLOT,
-    NULL,                             /* var */
-    (kiss_obj*)&KISS_CFstring_append, /* fun */
-    KISS_NIL,                         /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"string-append",
+     KISS_CONSTANT_FSLOT,
+     NULL,                             /* var */
+     (kiss_obj*)&KISS_CFstring_append, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                         /* plist */
 };
 
 
 /*** sequence.c ***/
 kiss_symbol_t KISS_Slength;
 kiss_cfunction_t KISS_CFlength = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Slength,    /* name */
-    (kiss_cf_t*)kiss_length,     /* C function name */
-    1,         /* minimum argument number */
-    1,         /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Slength,    /* name */
+     (kiss_cf_t*)kiss_length,     /* C function name */
+     1,         /* minimum argument number */
+     1,         /* maximum argument number */
 };
 kiss_symbol_t KISS_Slength = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"length",
-    KISS_CONSTANT_FSLOT,
-    NULL,               /* var */
-    (kiss_obj*)&KISS_CFlength, /* fun */
-    KISS_NIL,                /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"length",
+     KISS_CONSTANT_FSLOT,
+     NULL,               /* var */
+     (kiss_obj*)&KISS_CFlength, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                /* plist */
 };
 
 kiss_symbol_t KISS_Selt;
 kiss_cfunction_t KISS_CFelt = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Selt,    /* name */
-    (kiss_cf_t*)kiss_elt,     /* C function name */
-    2,         /* minimum argument number */
-    2,         /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Selt,    /* name */
+     (kiss_cf_t*)kiss_elt,     /* C function name */
+     2,         /* minimum argument number */
+     2,         /* maximum argument number */
 };
 kiss_symbol_t KISS_Selt = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"elt",
-    KISS_CONSTANT_FSLOT,
-    NULL,               /* var */
-    (kiss_obj*)&KISS_CFelt, /* fun */
-    KISS_NIL,                /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"elt",
+     KISS_CONSTANT_FSLOT,
+     NULL,               /* var */
+     (kiss_obj*)&KISS_CFelt, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                /* plist */
 };
 
 kiss_symbol_t KISS_Sset_elt;
 kiss_cfunction_t KISS_CFset_elt = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sset_elt,    /* name */
-    (kiss_cf_t*)kiss_set_elt,     /* C function name */
-    3,         /* minimum argument number */
-    3,         /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Sset_elt,    /* name */
+     (kiss_cf_t*)kiss_set_elt,     /* C function name */
+     3,         /* minimum argument number */
+     3,         /* maximum argument number */
 };
 kiss_symbol_t KISS_Sset_elt = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"set-elt",
-    KISS_CONSTANT_FSLOT,
-    NULL,               /* var */
-    (kiss_obj*)&KISS_CFset_elt, /* fun */
-    KISS_NIL,                /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"set-elt",
+     KISS_CONSTANT_FSLOT,
+     NULL,               /* var */
+     (kiss_obj*)&KISS_CFset_elt, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                /* plist */
 };
 
 kiss_symbol_t KISS_Ssubseq;
 kiss_cfunction_t KISS_CFsubseq = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Ssubseq,    /* name */
-    (kiss_cf_t*)kiss_subseq,     /* C function name */
-    3,         /* minimum argument number */
-    3,         /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Ssubseq,    /* name */
+     (kiss_cf_t*)kiss_subseq,     /* C function name */
+     3,         /* minimum argument number */
+     3,         /* maximum argument number */
 };
 kiss_symbol_t KISS_Ssubseq = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"subseq",
-    KISS_CONSTANT_FSLOT,
-    NULL,               /* var */
-    (kiss_obj*)&KISS_CFsubseq, /* fun */
-    KISS_NIL,                /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"subseq",
+     KISS_CONSTANT_FSLOT,
+     NULL,               /* var */
+     (kiss_obj*)&KISS_CFsubseq, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                /* plist */
 };
 
 kiss_symbol_t KISS_Smap_into;
 kiss_cfunction_t KISS_CFmap_into = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Smap_into,    /* name */
-    (kiss_cf_t*)kiss_map_into,     /* C function name */
-    2,         /* minimum argument number */
-    -1,         /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Smap_into,    /* name */
+     (kiss_cf_t*)kiss_map_into,     /* C function name */
+     2,         /* minimum argument number */
+     -1,         /* maximum argument number */
 };
 kiss_symbol_t KISS_Smap_into = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"map-into",
-    KISS_CONSTANT_FSLOT,
-    NULL,               /* var */
-    (kiss_obj*)&KISS_CFmap_into, /* fun */
-    KISS_NIL,                /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"map-into",
+     KISS_CONSTANT_FSLOT,
+     NULL,               /* var */
+     (kiss_obj*)&KISS_CFmap_into, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                /* plist */
 };
 
 /*** eval.c ***/
 kiss_symbol_t KISS_Seval;
 kiss_cfunction_t KISS_CFeval = {
-    KISS_CFUNCTION,        /* type */
-    &KISS_Seval, /* name */
-    (kiss_cf_t*)kiss_eval,   /* C function name */
-    1,                /* minimum argument number */
-    1,                /* maximum argument number */
+     KISS_CFUNCTION,        /* type */
+     &KISS_Seval, /* name */
+     (kiss_cf_t*)kiss_eval,   /* C function name */
+     1,                /* minimum argument number */
+     1,                /* maximum argument number */
 };
 kiss_symbol_t KISS_Seval = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"eval",
-    KISS_CONSTANT_FSLOT,
-    NULL,                         /* var */
-    (kiss_obj*)&KISS_CFeval, /* fun */
-    KISS_NIL,                          /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"eval",
+     KISS_CONSTANT_FSLOT,
+     NULL,                         /* var */
+     (kiss_obj*)&KISS_CFeval, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                          /* plist */
 };
 
 /*** load.c ***/
 kiss_symbol_t KISS_Sload;
 kiss_cfunction_t KISS_CFload = {
-    KISS_CFUNCTION,        /* type */
-    &KISS_Sload, /* name */
-    (kiss_cf_t*)kiss_load,   /* C function name */
-    1,                /* minimum argument number */
-    1,                /* maximum argument number */
+     KISS_CFUNCTION,        /* type */
+     &KISS_Sload, /* name */
+     (kiss_cf_t*)kiss_load,   /* C function name */
+     1,                /* minimum argument number */
+     1,                /* maximum argument number */
 };
 kiss_symbol_t KISS_Sload = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"load",
-    KISS_CONSTANT_FSLOT,
-    NULL,                         /* var */
-    (kiss_obj*)&KISS_CFload, /* fun */
-    KISS_NIL,                          /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"load",
+     KISS_CONSTANT_FSLOT,
+     NULL,                         /* var */
+     (kiss_obj*)&KISS_CFload, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                          /* plist */
 };
 
 
 /*** stream.c ***/
 kiss_symbol_t KISS_Sstandard_input;
 kiss_cfunction_t KISS_CFstandard_input = {
-    KISS_CFUNCTION,        /* type */
-    &KISS_Sstandard_input, /* name */
-    (kiss_cf_t*)kiss_standard_input,   /* C function name */
-    0,                /* minimum argument number */
-    0,                /* maximum argument number */
+     KISS_CFUNCTION,        /* type */
+     &KISS_Sstandard_input, /* name */
+     (kiss_cf_t*)kiss_standard_input,   /* C function name */
+     0,                /* minimum argument number */
+     0,                /* maximum argument number */
 };
 kiss_symbol_t KISS_Sstandard_input = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"standard-input",
-    KISS_CONSTANT_FSLOT,
-    NULL,                         /* var */
-    (kiss_obj*)&KISS_CFstandard_input, /* fun */
-    KISS_NIL,                          /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"standard-input",
+     KISS_CONSTANT_FSLOT,
+     NULL,                         /* var */
+     (kiss_obj*)&KISS_CFstandard_input, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                          /* plist */
 };
 
 
 kiss_symbol_t KISS_Sstandard_output;
 kiss_cfunction_t KISS_CFstandard_output = {
-    KISS_CFUNCTION,         /* type */
-    &KISS_Sstandard_output, /* name */
-    (kiss_cf_t*)kiss_standard_output,   /* C function name */
-    0,                 /* minimum argument number */
-    0,                 /* maximum argument number */
+     KISS_CFUNCTION,         /* type */
+     &KISS_Sstandard_output, /* name */
+     (kiss_cf_t*)kiss_standard_output,   /* C function name */
+     0,                 /* minimum argument number */
+     0,                 /* maximum argument number */
 };
 kiss_symbol_t KISS_Sstandard_output = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"standard-output",
-    KISS_CONSTANT_FSLOT,
-    NULL,                          /* var */
-    (kiss_obj*)&KISS_CFstandard_output, /* fun */
-    KISS_NIL,                           /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"standard-output",
+     KISS_CONSTANT_FSLOT,
+     NULL,                          /* var */
+     (kiss_obj*)&KISS_CFstandard_output, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                           /* plist */
 };
 
 
 kiss_symbol_t KISS_Serror_output;
 kiss_cfunction_t KISS_CFerror_output = {
-    KISS_CFUNCTION,      /* type */
-    &KISS_Serror_output, /* name */
-    (kiss_cf_t*)kiss_error_output,   /* C function name */
-    0,              /* minimum argument number */
-    0,              /* maximum argument number */
+     KISS_CFUNCTION,      /* type */
+     &KISS_Serror_output, /* name */
+     (kiss_cf_t*)kiss_error_output,   /* C function name */
+     0,              /* minimum argument number */
+     0,              /* maximum argument number */
 };
 kiss_symbol_t KISS_Serror_output = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"error-output",
-    KISS_CONSTANT_FSLOT,
-    NULL,                       /* var */
-    (kiss_obj*)&KISS_CFerror_output, /* fun */
-    KISS_NIL,                        /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"error-output",
+     KISS_CONSTANT_FSLOT,
+     NULL,                       /* var */
+     (kiss_obj*)&KISS_CFerror_output, /* fun */
+     NULL,                       /* class */
+     KISS_NIL,                        /* plist */
 };
 
 extern kiss_file_stream_t Kiss_Standard_Input;
@@ -3556,33 +3748,36 @@ extern kiss_file_stream_t Kiss_Standard_Output;
 extern kiss_file_stream_t Kiss_Error_Output;
 
 kiss_symbol_t KISS_Ss_standard_input_s = {
-    KISS_SYMBOL,                       /* type   */
-    NULL,                              /* gc_ptr */
-    L"*kiss::standard-input*",         /*  name  */
-    KISS_SYSTEM_CONSTANT_VAR,          /*  flags */
-    (kiss_obj*)(&Kiss_Standard_Input), /*  var   */
-    NULL,                              /*  fun   */
-    KISS_NIL,                          /*  plist */
+     KISS_SYMBOL,                       /* type   */
+     NULL,                              /* gc_ptr */
+     L"*kiss::standard-input*",         /*  name  */
+     KISS_SYSTEM_CONSTANT_VAR,          /*  flags */
+     (kiss_obj*)(&Kiss_Standard_Input), /*  var   */
+     NULL,                              /*  fun   */
+     NULL,                              /* class */
+     KISS_NIL,                          /*  plist */
 };
 
 kiss_symbol_t KISS_Ss_standard_output_s = {
-    KISS_SYMBOL,                        /* type   */
-    NULL,                               /* gc_ptr */
-    L"*kiss::standard-output*",         /*  name  */
-    KISS_SYSTEM_CONSTANT_VAR,           /*  flags */
-    (kiss_obj*)(&Kiss_Standard_Output), /*  var   */
-    NULL,                               /*  fun   */
-    KISS_NIL,                           /*  plist */
+     KISS_SYMBOL,                        /* type   */
+     NULL,                               /* gc_ptr */
+     L"*kiss::standard-output*",         /*  name  */
+     KISS_SYSTEM_CONSTANT_VAR,           /*  flags */
+     (kiss_obj*)(&Kiss_Standard_Output), /*  var   */
+     NULL,                               /*  fun   */
+     NULL,                              /* class */
+     KISS_NIL,                           /*  plist */
 };
 
 kiss_symbol_t KISS_Ss_error_output_s = {
-    KISS_SYMBOL,                     /* type   */
-    NULL,                            /* gc_ptr */
-    L"*kiss::error-output*",         /*  name  */
-    KISS_SYSTEM_CONSTANT_VAR,        /*  flags */
-    (kiss_obj*)(&Kiss_Error_Output), /*  var   */
-    NULL,                            /*  fun   */
-    KISS_NIL,                        /*  plist */
+     KISS_SYMBOL,                     /* type   */
+     NULL,                            /* gc_ptr */
+     L"*kiss::error-output*",         /*  name  */
+     KISS_SYSTEM_CONSTANT_VAR,        /*  flags */
+     (kiss_obj*)(&Kiss_Error_Output), /*  var   */
+     NULL,                            /*  fun   */
+     NULL,                              /* class */
+     KISS_NIL,                        /*  plist */
 };
 
 kiss_symbol_t KISS_Sstreamp;
@@ -3594,463 +3789,485 @@ kiss_cfunction_t KISS_CFstreamp = {
     1,              /* maximum argument number */
 };
 kiss_symbol_t KISS_Sstreamp = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"streamp",
-    KISS_CONSTANT_FSLOT,
-    NULL,                       /* var */
-    (kiss_obj*)&KISS_CFstreamp, /* fun */
-    KISS_NIL,                        /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"streamp",
+     KISS_CONSTANT_FSLOT,
+     NULL,                       /* var */
+     (kiss_obj*)&KISS_CFstreamp, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                        /* plist */
 };
 
 kiss_symbol_t KISS_Sopen_stream_p;
 kiss_cfunction_t KISS_CFopen_stream_p = {
-    KISS_CFUNCTION,      /* type */
-    &KISS_Sopen_stream_p, /* name */
-    (kiss_cf_t*)kiss_open_stream_p,   /* C function name */
-    1,              /* minimum argument number */
-    1,              /* maximum argument number */
+     KISS_CFUNCTION,      /* type */
+     &KISS_Sopen_stream_p, /* name */
+     (kiss_cf_t*)kiss_open_stream_p,   /* C function name */
+     1,              /* minimum argument number */
+     1,              /* maximum argument number */
 };
 kiss_symbol_t KISS_Sopen_stream_p = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"open-stream-p",
-    KISS_CONSTANT_FSLOT,
-    NULL,                       /* var */
-    (kiss_obj*)&KISS_CFopen_stream_p, /* fun */
-    KISS_NIL,                        /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"open-stream-p",
+     KISS_CONSTANT_FSLOT,
+     NULL,                       /* var */
+     (kiss_obj*)&KISS_CFopen_stream_p, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                        /* plist */
 };
 
 
 kiss_symbol_t KISS_Sinput_stream_p;
 kiss_cfunction_t KISS_CFinput_stream_p = {
-    KISS_CFUNCTION,      /* type */
-    &KISS_Sinput_stream_p, /* name */
-    (kiss_cf_t*)kiss_input_stream_p,   /* C function name */
-    1,              /* minimum argument number */
-    1,              /* maximum argument number */
+     KISS_CFUNCTION,      /* type */
+     &KISS_Sinput_stream_p, /* name */
+     (kiss_cf_t*)kiss_input_stream_p,   /* C function name */
+     1,              /* minimum argument number */
+     1,              /* maximum argument number */
 };
 kiss_symbol_t KISS_Sinput_stream_p = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"input-stream-p",
-    KISS_CONSTANT_FSLOT,
-    NULL,                       /* var */
-    (kiss_obj*)&KISS_CFinput_stream_p, /* fun */
-    KISS_NIL,                        /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"input-stream-p",
+     KISS_CONSTANT_FSLOT,
+     NULL,                       /* var */
+     (kiss_obj*)&KISS_CFinput_stream_p, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                        /* plist */
 };
 
 kiss_symbol_t KISS_Soutput_stream_p;
 kiss_cfunction_t KISS_CFoutput_stream_p = {
-    KISS_CFUNCTION,      /* type */
-    &KISS_Soutput_stream_p, /* name */
-    (kiss_cf_t*)kiss_output_stream_p,   /* C function name */
-    1,              /* minimum argument number */
-    1,              /* maximum argument number */
+     KISS_CFUNCTION,      /* type */
+     &KISS_Soutput_stream_p, /* name */
+     (kiss_cf_t*)kiss_output_stream_p,   /* C function name */
+     1,              /* minimum argument number */
+     1,              /* maximum argument number */
 };
 kiss_symbol_t KISS_Soutput_stream_p = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"output-stream-p",
-    KISS_CONSTANT_FSLOT,
-    NULL,                       /* var */
-    (kiss_obj*)&KISS_CFoutput_stream_p, /* fun */
-    KISS_NIL,                        /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"output-stream-p",
+     KISS_CONSTANT_FSLOT,
+     NULL,                       /* var */
+     (kiss_obj*)&KISS_CFoutput_stream_p, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                        /* plist */
 };
 
 kiss_symbol_t KISS_Sstream_ready_p;
 kiss_cfunction_t KISS_CFstream_ready_p = {
-    KISS_CFUNCTION,      /* type */
-    &KISS_Sstream_ready_p, /* name */
-    (kiss_cf_t*)kiss_stream_ready_p,   /* C function name */
-    1,              /* minimum argument number */
-    1,              /* maximum argument number */
+     KISS_CFUNCTION,      /* type */
+     &KISS_Sstream_ready_p, /* name */
+     (kiss_cf_t*)kiss_stream_ready_p,   /* C function name */
+     1,              /* minimum argument number */
+     1,              /* maximum argument number */
 };
 kiss_symbol_t KISS_Sstream_ready_p = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"stream-ready-p",
-    KISS_CONSTANT_FSLOT,
-    NULL,                       /* var */
-    (kiss_obj*)&KISS_CFstream_ready_p, /* fun */
-    KISS_NIL,                        /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"stream-ready-p",
+     KISS_CONSTANT_FSLOT,
+     NULL,                       /* var */
+     (kiss_obj*)&KISS_CFstream_ready_p, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                        /* plist */
 };
 
 
 kiss_symbol_t KISS_Screate_string_input_stream;
 kiss_cfunction_t KISS_CFcreate_string_input_stream = {
-    KISS_CFUNCTION,      /* type */
-    &KISS_Screate_string_input_stream, /* name */
-    (kiss_cf_t*)kiss_create_string_input_stream,   /* C function name */
-    1,              /* minimum argument number */
-    1,              /* maximum argument number */
+     KISS_CFUNCTION,      /* type */
+     &KISS_Screate_string_input_stream, /* name */
+     (kiss_cf_t*)kiss_create_string_input_stream,   /* C function name */
+     1,              /* minimum argument number */
+     1,              /* maximum argument number */
 };
 kiss_symbol_t KISS_Screate_string_input_stream = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"create-string-input-stream",
-    KISS_CONSTANT_FSLOT,
-    NULL,                       /* var */
-    (kiss_obj*)&KISS_CFcreate_string_input_stream, /* fun */
-    KISS_NIL,                        /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"create-string-input-stream",
+     KISS_CONSTANT_FSLOT,
+     NULL,                       /* var */
+     (kiss_obj*)&KISS_CFcreate_string_input_stream, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                        /* plist */
 };
 
 
 kiss_symbol_t KISS_Screate_string_output_stream;
 kiss_cfunction_t KISS_CFcreate_string_output_stream = {
-    KISS_CFUNCTION,      /* type */
-    &KISS_Screate_string_output_stream, /* name */
-    (kiss_cf_t*)kiss_create_string_output_stream,   /* C function name */
-    0,              /* minimum argument number */
-    0,              /* maximum argument number */
+     KISS_CFUNCTION,      /* type */
+     &KISS_Screate_string_output_stream, /* name */
+     (kiss_cf_t*)kiss_create_string_output_stream,   /* C function name */
+     0,              /* minimum argument number */
+     0,              /* maximum argument number */
 };
 kiss_symbol_t KISS_Screate_string_output_stream = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"create-string-output-stream",
-    KISS_CONSTANT_FSLOT,
-    NULL,                       /* var */
-    (kiss_obj*)&KISS_CFcreate_string_output_stream, /* fun */
-    KISS_NIL,                        /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"create-string-output-stream",
+     KISS_CONSTANT_FSLOT,
+     NULL,                       /* var */
+     (kiss_obj*)&KISS_CFcreate_string_output_stream, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                        /* plist */
 };
 
 
 kiss_symbol_t KISS_Sread_char;
 kiss_cfunction_t KISS_CFread_char = {
-    KISS_CFUNCTION,      /* type */
-    &KISS_Sread_char, /* name */
-    (kiss_cf_t*)kiss_read_char,   /* C function name */
-    0,              /* minimum argument number */
-    3,              /* maximum argument number */
+     KISS_CFUNCTION,      /* type */
+     &KISS_Sread_char, /* name */
+     (kiss_cf_t*)kiss_read_char,   /* C function name */
+     0,              /* minimum argument number */
+     3,              /* maximum argument number */
 };
 kiss_symbol_t KISS_Sread_char = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"read-char",
-    KISS_CONSTANT_FSLOT,
-    NULL,                       /* var */
-    (kiss_obj*)&KISS_CFread_char, /* fun */
-    KISS_NIL,                        /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"read-char",
+     KISS_CONSTANT_FSLOT,
+     NULL,                       /* var */
+     (kiss_obj*)&KISS_CFread_char, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                        /* plist */
 };
 
 kiss_symbol_t KISS_Spreview_char;
 kiss_cfunction_t KISS_CFpreview_char = {
-    KISS_CFUNCTION,      /* type */
-    &KISS_Spreview_char, /* name */
-    (kiss_cf_t*)kiss_preview_char,   /* C function name */
-    0,              /* minimum argument number */
-    3,              /* maximum argument number */
+     KISS_CFUNCTION,      /* type */
+     &KISS_Spreview_char, /* name */
+     (kiss_cf_t*)kiss_preview_char,   /* C function name */
+     0,              /* minimum argument number */
+     3,              /* maximum argument number */
 };
 kiss_symbol_t KISS_Spreview_char = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"preview-char",
-    KISS_CONSTANT_FSLOT,
-    NULL,                       /* var */
-    (kiss_obj*)&KISS_CFpreview_char, /* fun */
-    KISS_NIL,                        /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"preview-char",
+     KISS_CONSTANT_FSLOT,
+     NULL,                       /* var */
+     (kiss_obj*)&KISS_CFpreview_char, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                        /* plist */
 };
 
 kiss_symbol_t KISS_Sread_line;
 kiss_cfunction_t KISS_CFread_line = {
-    KISS_CFUNCTION,      /* type */
-    &KISS_Sread_line, /* name */
-    (kiss_cf_t*)kiss_read_line,   /* C function name */
-    0,              /* minimum argument number */
-    3,              /* maximum argument number */
+     KISS_CFUNCTION,      /* type */
+     &KISS_Sread_line, /* name */
+     (kiss_cf_t*)kiss_read_line,   /* C function name */
+     0,              /* minimum argument number */
+     3,              /* maximum argument number */
 };
 kiss_symbol_t KISS_Sread_line = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"read-line",
-    KISS_CONSTANT_FSLOT,
-    NULL,                       /* var */
-    (kiss_obj*)&KISS_CFread_line, /* fun */
-    KISS_NIL,                        /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"read-line",
+     KISS_CONSTANT_FSLOT,
+     NULL,                       /* var */
+     (kiss_obj*)&KISS_CFread_line, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                        /* plist */
 };
 
 kiss_symbol_t KISS_Sread_byte;
 kiss_cfunction_t KISS_CFread_byte = {
-    KISS_CFUNCTION,      /* type */
-    &KISS_Sread_byte, /* name */
-    (kiss_cf_t*)kiss_read_byte,   /* C function name */
-    1,              /* minimum argument number */
-    3,              /* maximum argument number */
+     KISS_CFUNCTION,      /* type */
+     &KISS_Sread_byte, /* name */
+     (kiss_cf_t*)kiss_read_byte,   /* C function name */
+     1,              /* minimum argument number */
+     3,              /* maximum argument number */
 };
 kiss_symbol_t KISS_Sread_byte = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"read-byte",
-    KISS_CONSTANT_FSLOT,
-    NULL,                       /* var */
-    (kiss_obj*)&KISS_CFread_byte, /* fun */
-    KISS_NIL,                        /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"read-byte",
+     KISS_CONSTANT_FSLOT,
+     NULL,                       /* var */
+     (kiss_obj*)&KISS_CFread_byte, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                        /* plist */
 };
 
 kiss_symbol_t KISS_Swrite_byte;
 kiss_cfunction_t KISS_CFwrite_byte = {
-    KISS_CFUNCTION,      /* type */
-    &KISS_Swrite_byte, /* name */
-    (kiss_cf_t*)kiss_write_byte,   /* C function name */
-    2,              /* minimum argument number */
-    2,              /* maximum argument number */
+     KISS_CFUNCTION,      /* type */
+     &KISS_Swrite_byte, /* name */
+     (kiss_cf_t*)kiss_write_byte,   /* C function name */
+     2,              /* minimum argument number */
+     2,              /* maximum argument number */
 };
 kiss_symbol_t KISS_Swrite_byte = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"write-byte",
-    KISS_CONSTANT_FSLOT,
-    NULL,                       /* var */
-    (kiss_obj*)&KISS_CFwrite_byte, /* fun */
-    KISS_NIL,                        /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"write-byte",
+     KISS_CONSTANT_FSLOT,
+     NULL,                       /* var */
+     (kiss_obj*)&KISS_CFwrite_byte, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                        /* plist */
 };
 
 
 kiss_symbol_t KISS_Sget_output_stream_string;
 kiss_cfunction_t KISS_CFget_output_stream_string = {
-    KISS_CFUNCTION,      /* type */
-    &KISS_Sget_output_stream_string, /* name */
-    (kiss_cf_t*)kiss_get_output_stream_string,   /* C function name */
-    1,              /* minimum argument number */
-    1,              /* maximum argument number */
+     KISS_CFUNCTION,      /* type */
+     &KISS_Sget_output_stream_string, /* name */
+     (kiss_cf_t*)kiss_get_output_stream_string,   /* C function name */
+     1,              /* minimum argument number */
+     1,              /* maximum argument number */
 };
 kiss_symbol_t KISS_Sget_output_stream_string = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"get-output-stream-string",
-    KISS_CONSTANT_FSLOT,
-    NULL,                       /* var */
-    (kiss_obj*)&KISS_CFget_output_stream_string, /* fun */
-    KISS_NIL,                        /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"get-output-stream-string",
+     KISS_CONSTANT_FSLOT,
+     NULL,                       /* var */
+     (kiss_obj*)&KISS_CFget_output_stream_string, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                        /* plist */
 };
 
 
 kiss_symbol_t KISS_Sformat_char;
 kiss_cfunction_t KISS_CFformat_char = {
-    KISS_CFUNCTION,      /* type */
-    &KISS_Sformat_char, /* name */
-    (kiss_cf_t*)kiss_format_char,   /* C function name */
-    2,              /* minimum argument number */
-    2,              /* maximum argument number */
+     KISS_CFUNCTION,      /* type */
+     &KISS_Sformat_char, /* name */
+     (kiss_cf_t*)kiss_format_char,   /* C function name */
+     2,              /* minimum argument number */
+     2,              /* maximum argument number */
 };
 kiss_symbol_t KISS_Sformat_char = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"format-char",
-    KISS_CONSTANT_FSLOT,
-    NULL,                       /* var */
-    (kiss_obj*)&KISS_CFformat_char, /* fun */
-    KISS_NIL,                        /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"format-char",
+     KISS_CONSTANT_FSLOT,
+     NULL,                       /* var */
+     (kiss_obj*)&KISS_CFformat_char, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                        /* plist */
 };
 
 
 kiss_symbol_t KISS_Sformat_integer;
 kiss_cfunction_t KISS_CFformat_integer = {
-    KISS_CFUNCTION,      /* type */
-    &KISS_Sformat_integer, /* name */
-    (kiss_cf_t*)kiss_format_integer,   /* C function name */
-    3,              /* minimum argument number */
-    3,              /* maximum argument number */
+     KISS_CFUNCTION,      /* type */
+     &KISS_Sformat_integer, /* name */
+     (kiss_cf_t*)kiss_format_integer,   /* C function name */
+     3,              /* minimum argument number */
+     3,              /* maximum argument number */
 };
 kiss_symbol_t KISS_Sformat_integer = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"format-integer",
-    KISS_CONSTANT_FSLOT,
-    NULL,                       /* var */
-    (kiss_obj*)&KISS_CFformat_integer, /* fun */
-    KISS_NIL,                        /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"format-integer",
+     KISS_CONSTANT_FSLOT,
+     NULL,                       /* var */
+     (kiss_obj*)&KISS_CFformat_integer, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                        /* plist */
 };
 
 
 kiss_symbol_t KISS_Sformat_float;
 kiss_cfunction_t KISS_CFformat_float = {
-    KISS_CFUNCTION,      /* type */
-    &KISS_Sformat_float, /* name */
-    (kiss_cf_t*)kiss_format_float,   /* C function name */
-    2,              /* minimum argument number */
-    2,              /* maximum argument number */
+     KISS_CFUNCTION,      /* type */
+     &KISS_Sformat_float, /* name */
+     (kiss_cf_t*)kiss_format_float,   /* C function name */
+     2,              /* minimum argument number */
+     2,              /* maximum argument number */
 };
 kiss_symbol_t KISS_Sformat_float = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"format-float",
-    KISS_CONSTANT_FSLOT,
-    NULL,                       /* var */
-    (kiss_obj*)&KISS_CFformat_float, /* fun */
-    KISS_NIL,                        /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"format-float",
+     KISS_CONSTANT_FSLOT,
+     NULL,                       /* var */
+     (kiss_obj*)&KISS_CFformat_float, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                        /* plist */
 };
 
 
 kiss_symbol_t KISS_Sopen_input_file;
 kiss_cfunction_t KISS_CFopen_input_file = {
-    KISS_CFUNCTION,      /* type */
-    &KISS_Sopen_input_file, /* name */
-    (kiss_cf_t*)kiss_open_input_file,   /* C function name */
-    1,              /* minimum argument number */
-    2,              /* maximum argument number */
+     KISS_CFUNCTION,      /* type */
+     &KISS_Sopen_input_file, /* name */
+     (kiss_cf_t*)kiss_open_input_file,   /* C function name */
+     1,              /* minimum argument number */
+     2,              /* maximum argument number */
 };
 kiss_symbol_t KISS_Sopen_input_file = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"open-input-file",
-    KISS_CONSTANT_FSLOT,
-    NULL,                       /* var */
-    (kiss_obj*)&KISS_CFopen_input_file, /* fun */
-    KISS_NIL,                        /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"open-input-file",
+     KISS_CONSTANT_FSLOT,
+     NULL,                       /* var */
+     (kiss_obj*)&KISS_CFopen_input_file, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                        /* plist */
 };
 
 kiss_symbol_t KISS_Sopen_output_file;
 kiss_cfunction_t KISS_CFopen_output_file = {
-    KISS_CFUNCTION,      /* type */
-    &KISS_Sopen_output_file, /* name */
-    (kiss_cf_t*)kiss_open_output_file,   /* C function name */
-    1,              /* minimum argument number */
-    2,              /* maximum argument number */
+     KISS_CFUNCTION,      /* type */
+     &KISS_Sopen_output_file, /* name */
+     (kiss_cf_t*)kiss_open_output_file,   /* C function name */
+     1,              /* minimum argument number */
+     2,              /* maximum argument number */
 };
 kiss_symbol_t KISS_Sopen_output_file = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"open-output-file",
-    KISS_CONSTANT_FSLOT,
-    NULL,                       /* var */
-    (kiss_obj*)&KISS_CFopen_output_file, /* fun */
-    KISS_NIL,                        /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"open-output-file",
+     KISS_CONSTANT_FSLOT,
+     NULL,                       /* var */
+     (kiss_obj*)&KISS_CFopen_output_file, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                        /* plist */
 };
 
 kiss_symbol_t KISS_Sopen_io_file;
 kiss_cfunction_t KISS_CFopen_io_file = {
-    KISS_CFUNCTION,      /* type */
-    &KISS_Sopen_io_file, /* name */
-    (kiss_cf_t*)kiss_open_io_file,   /* C function name */
-    1,              /* minimum argument number */
-    2,              /* maximum argument number */
+     KISS_CFUNCTION,      /* type */
+     &KISS_Sopen_io_file, /* name */
+     (kiss_cf_t*)kiss_open_io_file,   /* C function name */
+     1,              /* minimum argument number */
+     2,              /* maximum argument number */
 };
 kiss_symbol_t KISS_Sopen_io_file = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"open-io-file",
-    KISS_CONSTANT_FSLOT,
-    NULL,                       /* var */
-    (kiss_obj*)&KISS_CFopen_io_file, /* fun */
-    KISS_NIL,                        /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"open-io-file",
+     KISS_CONSTANT_FSLOT,
+     NULL,                       /* var */
+     (kiss_obj*)&KISS_CFopen_io_file, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                        /* plist */
 };
 
 kiss_symbol_t KISS_Sfinish_output;
 kiss_cfunction_t KISS_CFfinish_output = {
-    KISS_CFUNCTION,      /* type */
-    &KISS_Sfinish_output, /* name */
-    (kiss_cf_t*)kiss_finish_output,   /* C function name */
-    1,              /* minimum argument number */
-    1,              /* maximum argument number */
+     KISS_CFUNCTION,      /* type */
+     &KISS_Sfinish_output, /* name */
+     (kiss_cf_t*)kiss_finish_output,   /* C function name */
+     1,              /* minimum argument number */
+     1,              /* maximum argument number */
 };
 kiss_symbol_t KISS_Sfinish_output = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"finish-output",
-    KISS_CONSTANT_FSLOT,
-    NULL,                       /* var */
-    (kiss_obj*)&KISS_CFfinish_output, /* fun */
-    KISS_NIL,                        /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"finish-output",
+     KISS_CONSTANT_FSLOT,
+     NULL,                       /* var */
+     (kiss_obj*)&KISS_CFfinish_output, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                        /* plist */
 };
 
 
 kiss_symbol_t KISS_Sclose;
 kiss_cfunction_t KISS_CFclose = {
-    KISS_CFUNCTION,      /* type */
-    &KISS_Sclose, /* name */
-    (kiss_cf_t*)kiss_close,   /* C function name */
-    1,              /* minimum argument number */
-    1,              /* maximum argument number */
+     KISS_CFUNCTION,      /* type */
+     &KISS_Sclose, /* name */
+     (kiss_cf_t*)kiss_close,   /* C function name */
+     1,              /* minimum argument number */
+     1,              /* maximum argument number */
 };
 kiss_symbol_t KISS_Sclose = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"close",
-    KISS_CONSTANT_FSLOT,
-    NULL,                       /* var */
-    (kiss_obj*)&KISS_CFclose, /* fun */
-    KISS_NIL,                        /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"close",
+     KISS_CONSTANT_FSLOT,
+     NULL,                       /* var */
+     (kiss_obj*)&KISS_CFclose, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                        /* plist */
 };
 
 
 /*** error.c ***/
 kiss_symbol_t KISS_Sassure_list;
 kiss_cfunction_t KISS_CFassure_list = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sassure_list,   /* name */
-    (kiss_cf_t*)Kiss_List,    /* C function name */
-    1,         /* minimum argument number */
-    1,        /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Sassure_list,   /* name */
+     (kiss_cf_t*)Kiss_List,    /* C function name */
+     1,         /* minimum argument number */
+     1,        /* maximum argument number */
 };
 kiss_symbol_t KISS_Sassure_list = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"kiss::assure-list",
-    KISS_CONSTANT_FSLOT,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFassure_list, /* fun */
-    KISS_NIL,                 /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"kiss::assure-list",
+     KISS_CONSTANT_FSLOT,
+     NULL,                /* var */
+     (kiss_obj*)&KISS_CFassure_list, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                 /* plist */
 };
-
-
-/*** object.c ***/
 
 
 /*** character.c ***/
 kiss_symbol_t KISS_Scharacterp;
 kiss_cfunction_t KISS_CFcharacterp = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Scharacterp,   /* name */
-    (kiss_cf_t*)kiss_characterp,    /* C function name */
-    1,         /* minimum argument number */
-    1,        /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Scharacterp,   /* name */
+     (kiss_cf_t*)kiss_characterp,    /* C function name */
+     1,         /* minimum argument number */
+     1,        /* maximum argument number */
 };
 kiss_symbol_t KISS_Scharacterp = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"characterp",
-    KISS_CONSTANT_FSLOT,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFcharacterp, /* fun */
-    KISS_NIL,                 /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"characterp",
+     KISS_CONSTANT_FSLOT,
+     NULL,                /* var */
+     (kiss_obj*)&KISS_CFcharacterp, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                 /* plist */
 };
 
 kiss_symbol_t KISS_Schar_eq;
 kiss_cfunction_t KISS_CFchar_eq = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Schar_eq,   /* name */
-    (kiss_cf_t*)kiss_char_eq,    /* C function name */
-    2,         /* minimum argument number */
-    2,        /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Schar_eq,   /* name */
+     (kiss_cf_t*)kiss_char_eq,    /* C function name */
+     2,         /* minimum argument number */
+     2,        /* maximum argument number */
 };
 kiss_symbol_t KISS_Schar_eq = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"char=",
-    KISS_CONSTANT_FSLOT,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFchar_eq, /* fun */
-    KISS_NIL,                 /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"char=",
+     KISS_CONSTANT_FSLOT,
+     NULL,                /* var */
+     (kiss_obj*)&KISS_CFchar_eq, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                 /* plist */
 };
 
 
 kiss_symbol_t KISS_Schar_lessthan;
 kiss_cfunction_t KISS_CFchar_lessthan = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Schar_lessthan,   /* name */
-    (kiss_cf_t*)kiss_char_lessthan,    /* C function name */
-    2,         /* minimum argument number */
-    2,        /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Schar_lessthan,   /* name */
+     (kiss_cf_t*)kiss_char_lessthan,    /* C function name */
+     2,         /* minimum argument number */
+     2,        /* maximum argument number */
 };
 kiss_symbol_t KISS_Schar_lessthan = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"char<",
-    KISS_CONSTANT_FSLOT,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFchar_lessthan, /* fun */
-    KISS_NIL,                 /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"char<",
+     KISS_CONSTANT_FSLOT,
+     NULL,                /* var */
+     (kiss_obj*)&KISS_CFchar_lessthan, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                 /* plist */
 };
 
 
@@ -4058,276 +4275,292 @@ kiss_symbol_t KISS_Schar_lessthan = {
 /*** feature.c ***/
 kiss_symbol_t KISS_Sfeaturep;
 kiss_cfunction_t KISS_CFfeaturep = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sfeaturep,   /* name */
-    (kiss_cf_t*)kiss_featurep,    /* C function name */
-    1,         /* minimum argument number */
-    1,        /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Sfeaturep,   /* name */
+     (kiss_cf_t*)kiss_featurep,    /* C function name */
+     1,         /* minimum argument number */
+     1,        /* maximum argument number */
 };
 kiss_symbol_t KISS_Sfeaturep = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"featurep",
-    KISS_CONSTANT_FSLOT,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFfeaturep, /* fun */
-    KISS_NIL,                 /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"featurep",
+     KISS_CONSTANT_FSLOT,
+     NULL,                /* var */
+     (kiss_obj*)&KISS_CFfeaturep, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                 /* plist */
 };
 
 
 kiss_symbol_t KISS_Sprovide;
 kiss_cfunction_t KISS_CFprovide = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sprovide,   /* name */
-    (kiss_cf_t*)kiss_provide,    /* C function name */
-    1,         /* minimum argument number */
-    1,        /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Sprovide,   /* name */
+     (kiss_cf_t*)kiss_provide,    /* C function name */
+     1,         /* minimum argument number */
+     1,        /* maximum argument number */
 };
 kiss_symbol_t KISS_Sprovide = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"provide",
-    KISS_CONSTANT_FSLOT,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFprovide, /* fun */
-    KISS_NIL,                 /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"provide",
+     KISS_CONSTANT_FSLOT,
+     NULL,                /* var */
+     (kiss_obj*)&KISS_CFprovide, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                 /* plist */
 };
 
 /*** ilos.c ***/
 kiss_symbol_t KISS_Skiss_classes = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"kiss::classes",
-    0,
-    NULL,                /* var */
-    NULL,                /* fun */
-    KISS_NIL,                 /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"kiss::classes",
+     0,
+     NULL,                /* var */
+     NULL,                /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                 /* plist */
 };
 
 kiss_symbol_t KISS_Sstandard = {
-    KISS_SYMBOL,
-    NULL,                /* gc_ptr */
-    L"standard",
-    0,
-    NULL,                /* var */
-    NULL,                /* fun */
-    KISS_NIL,            /* plist */
+     KISS_SYMBOL,
+     NULL,                /* gc_ptr */
+     L"standard",
+     0,
+     NULL,                /* var */
+     NULL,                /* fun */
+     NULL,                              /* class */
+     KISS_NIL,            /* plist */
 };
 
 kiss_symbol_t KISS_Smake_ilos_obj;
 kiss_cfunction_t KISS_CFmake_ilos_obj = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Smake_ilos_obj,   /* name */
-    (kiss_cf_t*)kiss_make_ilos_obj,    /* C function name */
-    1,         /* minimum argument number */
-    1,        /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Smake_ilos_obj,   /* name */
+     (kiss_cf_t*)kiss_make_ilos_obj,    /* C function name */
+     1,         /* minimum argument number */
+     1,        /* maximum argument number */
 };
 kiss_symbol_t KISS_Smake_ilos_obj = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"kiss::make-ilos-obj",
-    KISS_CONSTANT_FSLOT,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFmake_ilos_obj, /* fun */
-    KISS_NIL,                 /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"kiss::make-ilos-obj",
+     KISS_CONSTANT_FSLOT,
+     NULL,                /* var */
+     (kiss_obj*)&KISS_CFmake_ilos_obj, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                 /* plist */
 };
 
 kiss_symbol_t KISS_Sclass;
 kiss_cfunction_t KISS_CFclass = {
-    KISS_CMACRO, /* type */
-    &KISS_Sclass,   /* name */
-    (kiss_cf_t*)kiss_class,    /* C function name */
-    1,         /* minimum argument number */
-    1,        /* maximum argument number */
+     KISS_CMACRO, /* type */
+     &KISS_Sclass,   /* name */
+     (kiss_cf_t*)kiss_class,    /* C function name */
+     1,         /* minimum argument number */
+     1,        /* maximum argument number */
 };
 kiss_symbol_t KISS_Sclass = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"class",
-    KISS_CONSTANT_FSLOT,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFclass, /* fun */
-    KISS_NIL,                 /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"class",
+     KISS_CONSTANT_FSLOT,
+     NULL,                /* var */
+     (kiss_obj*)&KISS_CFclass, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                 /* plist */
 };
 
 kiss_symbol_t KISS_Silos_obj_p;
 kiss_cfunction_t KISS_CFilos_obj_p = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Silos_obj_p,   /* name */
-    (kiss_cf_t*)kiss_ilos_obj_p,    /* C function name */
-    1,         /* minimum argument number */
-    1,        /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Silos_obj_p,   /* name */
+     (kiss_cf_t*)kiss_ilos_obj_p,    /* C function name */
+     1,         /* minimum argument number */
+     1,        /* maximum argument number */
 };
 kiss_symbol_t KISS_Silos_obj_p = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"ilos-obj-p",
-    KISS_CONSTANT_FSLOT,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFilos_obj_p, /* fun */
-    KISS_NIL,                 /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"ilos-obj-p",
+     KISS_CONSTANT_FSLOT,
+     NULL,                /* var */
+     (kiss_obj*)&KISS_CFilos_obj_p, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                 /* plist */
 };
 
 kiss_symbol_t KISS_Sclass_of;
 kiss_cfunction_t KISS_CFclass_of = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sclass_of,   /* name */
-    (kiss_cf_t*)kiss_class_of,    /* C function name */
-    1,         /* minimum argument number */
-    1,        /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Sclass_of,   /* name */
+     (kiss_cf_t*)kiss_class_of,    /* C function name */
+     1,         /* minimum argument number */
+     1,        /* maximum argument number */
 };
 kiss_symbol_t KISS_Sclass_of = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"class-of",
-    KISS_CONSTANT_FSLOT,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFclass_of, /* fun */
-    KISS_NIL,                 /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"class-of",
+     KISS_CONSTANT_FSLOT,
+     NULL,                /* var */
+     (kiss_obj*)&KISS_CFclass_of, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                 /* plist */
 };
 
 kiss_symbol_t KISS_Sslotref;
 kiss_cfunction_t KISS_CFslotref = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sslotref,   /* name */
-    (kiss_cf_t*)kiss_slotref,    /* C function name */
-    2,         /* minimum argument number */
-    2,        /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Sslotref,   /* name */
+     (kiss_cf_t*)kiss_slotref,    /* C function name */
+     2,         /* minimum argument number */
+     2,        /* maximum argument number */
 };
 kiss_symbol_t KISS_Sslotref = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"kiss::slotref",
-    KISS_CONSTANT_FSLOT,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFslotref, /* fun */
-    KISS_NIL,                 /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"kiss::slotref",
+     KISS_CONSTANT_FSLOT,
+     NULL,                /* var */
+     (kiss_obj*)&KISS_CFslotref, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                 /* plist */
 };
 
 kiss_symbol_t KISS_Sslot_bound_p;
 kiss_cfunction_t KISS_CFslot_bound_p = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sslot_bound_p,   /* name */
-    (kiss_cf_t*)kiss_slot_bound_p,    /* C function name */
-    2,         /* minimum argument number */
-    2,        /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Sslot_bound_p,   /* name */
+     (kiss_cf_t*)kiss_slot_bound_p,    /* C function name */
+     2,         /* minimum argument number */
+     2,        /* maximum argument number */
 };
 kiss_symbol_t KISS_Sslot_bound_p = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"kiss::slot-bound-p",
-    KISS_CONSTANT_FSLOT,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFslot_bound_p, /* fun */
-    KISS_NIL,                 /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"kiss::slot-bound-p",
+     KISS_CONSTANT_FSLOT,
+     NULL,                /* var */
+     (kiss_obj*)&KISS_CFslot_bound_p, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                 /* plist */
 };
 
 kiss_symbol_t KISS_Sset_slotref;
 kiss_cfunction_t KISS_CFset_slotref = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sset_slotref,   /* name */
-    (kiss_cf_t*)kiss_set_slotref,    /* C function name */
-    3,         /* minimum argument number */
-    3,        /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Sset_slotref,   /* name */
+     (kiss_cf_t*)kiss_set_slotref,    /* C function name */
+     3,         /* minimum argument number */
+     3,        /* maximum argument number */
 };
 kiss_symbol_t KISS_Sset_slotref = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"kiss::set-slotref",
-    KISS_CONSTANT_FSLOT,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFset_slotref, /* fun */
-    KISS_NIL,                 /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"kiss::set-slotref",
+     KISS_CONSTANT_FSLOT,
+     NULL,                /* var */
+     (kiss_obj*)&KISS_CFset_slotref, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                 /* plist */
 };
 
 kiss_symbol_t KISS_Sinstancep;
 kiss_cfunction_t KISS_CFinstancep = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sinstancep,   /* name */
-    (kiss_cf_t*)kiss_instancep,    /* C function name */
-    2,         /* minimum argument number */
-    2,        /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Sinstancep,   /* name */
+     (kiss_cf_t*)kiss_instancep,    /* C function name */
+     2,         /* minimum argument number */
+     2,        /* maximum argument number */
 };
 kiss_symbol_t KISS_Sinstancep = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"instancep",
-    KISS_CONSTANT_FSLOT,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFinstancep, /* fun */
-    KISS_NIL,                 /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"instancep",
+     KISS_CONSTANT_FSLOT,
+     NULL,                /* var */
+     (kiss_obj*)&KISS_CFinstancep, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                 /* plist */
 };
 
 kiss_symbol_t KISS_Sgeneric_function_p;
 kiss_cfunction_t KISS_CFgeneric_function_p = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sgeneric_function_p,   /* name */
-    (kiss_cf_t*)kiss_generic_function_p,    /* C function name */
-    1,         /* minimum argument number */
-    1,        /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Sgeneric_function_p,   /* name */
+     (kiss_cf_t*)kiss_generic_function_p,    /* C function name */
+     1,         /* minimum argument number */
+     1,        /* maximum argument number */
 };
 kiss_symbol_t KISS_Sgeneric_function_p = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"generic-function-p",
-    KISS_CONSTANT_FSLOT,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFgeneric_function_p, /* fun */
-    KISS_NIL,                 /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"generic-function-p",
+     KISS_CONSTANT_FSLOT,
+     NULL,                /* var */
+     (kiss_obj*)&KISS_CFgeneric_function_p, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                 /* plist */
 };
 
 kiss_symbol_t KISS_Sdefclass;
 kiss_cfunction_t KISS_CFdefclass = {
-    KISS_CMACRO,              /* type */
-    &KISS_Sdefclass,           /* name */
-    (kiss_cf_t*)kiss_defclass, /* C function name */
-    3,                         /* minimum argument number */
-    -1,                        /* maximum argument number */
+     KISS_CMACRO,              /* type */
+     &KISS_Sdefclass,           /* name */
+     (kiss_cf_t*)kiss_defclass, /* C function name */
+     3,                         /* minimum argument number */
+     -1,                        /* maximum argument number */
 };
 kiss_symbol_t KISS_Sdefclass = {
-    KISS_SYMBOL,
-    NULL,                        /* gc_ptr */
-    L"defclass",
-    KISS_CONSTANT_FSLOT,
-    NULL,                        /* var */
-    (kiss_obj*)&KISS_CFdefclass, /* fun */
-    KISS_NIL,                    /* plist */
+     KISS_SYMBOL,
+     NULL,                        /* gc_ptr */
+     L"defclass",
+     KISS_CONSTANT_FSLOT,
+     NULL,                        /* var */
+     (kiss_obj*)&KISS_CFdefclass, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                    /* plist */
 };
 
 kiss_symbol_t KISS_Sdefgeneric;
 kiss_cfunction_t KISS_CFdefgeneric = {
-    KISS_CMACRO,                 /* type */
-    &KISS_Sdefgeneric,           /* name */
-    (kiss_cf_t*)kiss_defgeneric, /* C function name */
-    2,                           /* minimum argument number */
-    -1,                          /* maximum argument number */
+     KISS_CMACRO,                 /* type */
+     &KISS_Sdefgeneric,           /* name */
+     (kiss_cf_t*)kiss_defgeneric, /* C function name */
+     2,                           /* minimum argument number */
+     -1,                          /* maximum argument number */
 };
 kiss_symbol_t KISS_Sdefgeneric = {
-    KISS_SYMBOL,
-    NULL,                          /* gc_ptr */
-    L"defgeneric",
-    KISS_CONSTANT_FSLOT,
-    NULL,                          /* var */
-    (kiss_obj*)&KISS_CFdefgeneric, /* fun */
-    KISS_NIL,                      /* plist */
+     KISS_SYMBOL,
+     NULL,                          /* gc_ptr */
+     L"defgeneric",
+     KISS_CONSTANT_FSLOT,
+     NULL,                          /* var */
+     (kiss_obj*)&KISS_CFdefgeneric, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                      /* plist */
 };
 
 kiss_symbol_t KISS_Sdefmethod;
 kiss_cfunction_t KISS_CFdefmethod = {
-    KISS_CMACRO,                /* type */
-    &KISS_Sdefmethod,           /* name */
-    (kiss_cf_t*)kiss_defmethod, /* C function name */
-    2,                          /* minimum argument number */
-    -1,                         /* maximum argument number */
+     KISS_CMACRO,                /* type */
+     &KISS_Sdefmethod,           /* name */
+     (kiss_cf_t*)kiss_defmethod, /* C function name */
+     2,                          /* minimum argument number */
+     -1,                         /* maximum argument number */
 };
 kiss_symbol_t KISS_Sdefmethod = {
-    KISS_SYMBOL,
-    NULL,                          /* gc_ptr */
-    L"defmethod",
-    KISS_CONSTANT_FSLOT,
-    NULL,                          /* var */
-    (kiss_obj*)&KISS_CFdefmethod,  /* fun */
-    KISS_NIL,                      /* plist */
+     KISS_SYMBOL,
+     NULL,                          /* gc_ptr */
+     L"defmethod",
+     KISS_CONSTANT_FSLOT,
+     NULL,                          /* var */
+     (kiss_obj*)&KISS_CFdefmethod,  /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                      /* plist */
 };
 
 kiss_symbol_t KISS_Snext_method_p;
@@ -4345,6 +4578,7 @@ kiss_symbol_t KISS_Snext_method_p = {
      KISS_CONSTANT_FSLOT, /* flags */
      NULL,                /* var */
      NULL,                /* fun */
+     NULL,                              /* class */
      KISS_NIL,            /* plist */
 };
 
@@ -4363,6 +4597,7 @@ kiss_symbol_t KISS_Scall_next_method = {
      KISS_CONSTANT_FSLOT, /* flags */
      NULL,                /* var */
      NULL,                /* fun */
+     NULL,                              /* class */
      KISS_NIL,            /* plist */
 };
 
@@ -4384,10 +4619,12 @@ kiss_symbol_t KISS_Smethod_invoke = {
     KISS_CONSTANT_FSLOT,
     NULL,                /* var */
     (kiss_obj*)&KISS_CFmethod_invoke, /* fun */
+     NULL,                              /* class */
     KISS_NIL,                 /* plist */
 };
 
 /**** -------------- Predefined class names --------------------- ****/
+extern kiss_ilos_class_t KISS_ILOS_CLASS_object;
 kiss_symbol_t KISS_Sc_object = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4395,8 +4632,11 @@ kiss_symbol_t KISS_Sc_object = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_object,         /* class */
     KISS_NIL,     /* plist */
 };
+
+extern kiss_ilos_class_t KISS_ILOS_CLASS_built_in_class;
 kiss_symbol_t KISS_Sc_built_in_class = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4404,8 +4644,11 @@ kiss_symbol_t KISS_Sc_built_in_class = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_built_in_class,         /* class */
     KISS_NIL,     /* plist */
 };
+
+extern kiss_ilos_class_t KISS_ILOS_CLASS_standard_class;
 kiss_symbol_t KISS_Sc_standard_class = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4413,8 +4656,11 @@ kiss_symbol_t KISS_Sc_standard_class = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_standard_class,         /* class */
     KISS_NIL,     /* plist */
 };
+
+extern kiss_ilos_class_t KISS_ILOS_CLASS_standard_object;
 kiss_symbol_t KISS_Sc_standard_object = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4422,8 +4668,11 @@ kiss_symbol_t KISS_Sc_standard_object = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_standard_object,         /* class */
     KISS_NIL,     /* plist */
 };
+
+extern kiss_ilos_class_t KISS_ILOS_CLASS_null;
 kiss_symbol_t KISS_Sc_null = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4431,8 +4680,11 @@ kiss_symbol_t KISS_Sc_null = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_null,         /* class */
     KISS_NIL,     /* plist */
 };
+
+extern kiss_ilos_class_t KISS_ILOS_CLASS_cons;
 kiss_symbol_t KISS_Sc_cons = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4440,8 +4692,11 @@ kiss_symbol_t KISS_Sc_cons = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_cons,         /* class */
     KISS_NIL,     /* plist */
 };
+
+extern kiss_ilos_class_t KISS_ILOS_CLASS_list;
 kiss_symbol_t KISS_Sc_list = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4449,8 +4704,11 @@ kiss_symbol_t KISS_Sc_list = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_list,         /* class */
     KISS_NIL,     /* plist */
 };
+
+extern kiss_ilos_class_t KISS_ILOS_CLASS_symbol;
 kiss_symbol_t KISS_Sc_symbol = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4458,8 +4716,11 @@ kiss_symbol_t KISS_Sc_symbol = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_symbol,         /* class */
     KISS_NIL,     /* plist */
 };
+
+extern kiss_ilos_class_t KISS_ILOS_CLASS_character;
 kiss_symbol_t KISS_Sc_character = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4467,8 +4728,11 @@ kiss_symbol_t KISS_Sc_character = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_character,         /* class */
     KISS_NIL,     /* plist */
 };
+
+extern kiss_ilos_class_t KISS_ILOS_CLASS_number;
 kiss_symbol_t KISS_Sc_number = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4476,8 +4740,11 @@ kiss_symbol_t KISS_Sc_number = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_number,         /* class */
     KISS_NIL,     /* plist */
 };
+
+extern kiss_ilos_class_t KISS_ILOS_CLASS_integer;
 kiss_symbol_t KISS_Sc_integer = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4485,8 +4752,11 @@ kiss_symbol_t KISS_Sc_integer = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_integer,         /* class */
     KISS_NIL,     /* plist */
 };
+
+extern kiss_ilos_class_t KISS_ILOS_CLASS_float;
 kiss_symbol_t KISS_Sc_float = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4494,8 +4764,11 @@ kiss_symbol_t KISS_Sc_float = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_float,         /* class */
     KISS_NIL,     /* plist */
 };
+
+extern kiss_ilos_class_t KISS_ILOS_CLASS_string;
 kiss_symbol_t KISS_Sc_string = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4503,8 +4776,11 @@ kiss_symbol_t KISS_Sc_string = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_string,         /* class */
     KISS_NIL,     /* plist */
 };
+
+extern kiss_ilos_class_t KISS_ILOS_CLASS_basic_array;
 kiss_symbol_t KISS_Sc_basic_array = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4512,8 +4788,11 @@ kiss_symbol_t KISS_Sc_basic_array = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_basic_array,         /* class */
     KISS_NIL,     /* plist */
 };
+
+extern kiss_ilos_class_t KISS_ILOS_CLASS_basic_array_s;
 kiss_symbol_t KISS_Sc_basic_array_s = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4521,8 +4800,11 @@ kiss_symbol_t KISS_Sc_basic_array_s = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_basic_array_s,         /* class */
     KISS_NIL,     /* plist */
 };
+
+extern kiss_ilos_class_t KISS_ILOS_CLASS_general_array_s;
 kiss_symbol_t KISS_Sc_general_array_s = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4530,8 +4812,11 @@ kiss_symbol_t KISS_Sc_general_array_s = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_general_array_s,         /* class */
     KISS_NIL,     /* plist */
 };
+
+extern kiss_ilos_class_t KISS_ILOS_CLASS_basic_vector;
 kiss_symbol_t KISS_Sc_basic_vector = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4539,8 +4824,11 @@ kiss_symbol_t KISS_Sc_basic_vector = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_basic_vector,         /* class */
     KISS_NIL,     /* plist */
 };
+
+extern kiss_ilos_class_t KISS_ILOS_CLASS_general_vector;
 kiss_symbol_t KISS_Sc_general_vector = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4548,8 +4836,11 @@ kiss_symbol_t KISS_Sc_general_vector = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_general_vector,         /* class */
     KISS_NIL,     /* plist */
 };
+
+extern kiss_ilos_class_t KISS_ILOS_CLASS_stream;
 kiss_symbol_t KISS_Sc_stream = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4557,8 +4848,11 @@ kiss_symbol_t KISS_Sc_stream = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_stream,         /* class */
     KISS_NIL,     /* plist */
 };
+
+extern kiss_ilos_class_t KISS_ILOS_CLASS_function;
 kiss_symbol_t KISS_Sc_function = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4566,8 +4860,11 @@ kiss_symbol_t KISS_Sc_function = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_function,         /* class */
     KISS_NIL,     /* plist */
 };
+
+extern kiss_ilos_class_t KISS_ILOS_CLASS_generic_function;
 kiss_symbol_t KISS_Sc_generic_function = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4575,8 +4872,11 @@ kiss_symbol_t KISS_Sc_generic_function = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_generic_function,         /* class */
     KISS_NIL,     /* plist */
 };
+
+extern kiss_ilos_class_t KISS_ILOS_CLASS_standard_generic_function;
 kiss_symbol_t KISS_Sc_standard_generic_function = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4584,8 +4884,11 @@ kiss_symbol_t KISS_Sc_standard_generic_function = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_standard_generic_function,         /* class */
     KISS_NIL,     /* plist */
 };
+
+extern kiss_ilos_class_t KISS_ILOS_CLASS_standard_method;
 kiss_symbol_t KISS_Sc_standard_method = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4593,8 +4896,11 @@ kiss_symbol_t KISS_Sc_standard_method = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_standard_method,         /* class */
     KISS_NIL,     /* plist */
 };
+
+extern kiss_ilos_class_t KISS_ILOS_CLASS_hash_table;
 kiss_symbol_t KISS_Sc_hash_table = {
     KISS_SYMBOL,
     NULL,         /* gc_ptr */
@@ -4602,44 +4908,47 @@ kiss_symbol_t KISS_Sc_hash_table = {
     0,
     NULL,         /* var */
     NULL,         /* fun */
+    &KISS_ILOS_CLASS_hash_table,         /* class */
     KISS_NIL,     /* plist */
 };
 
 /*** gc.c ***/
 kiss_symbol_t KISS_Sgc;
 kiss_cfunction_t KISS_CFgc = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sgc,   /* name */
-    (kiss_cf_t*)kiss_gc,    /* C function name */
-    0,         /* minimum argument number */
-    0,        /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Sgc,   /* name */
+     (kiss_cf_t*)kiss_gc,    /* C function name */
+     0,         /* minimum argument number */
+     0,        /* maximum argument number */
 };
 kiss_symbol_t KISS_Sgc = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"gc",
-    KISS_CONSTANT_FSLOT,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFgc, /* fun */
-    KISS_NIL,                 /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"gc",
+     KISS_CONSTANT_FSLOT,
+     NULL,                /* var */
+     (kiss_obj*)&KISS_CFgc, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                 /* plist */
 };
 
 kiss_symbol_t KISS_Sgc_info;
 kiss_cfunction_t KISS_CFgc_info = {
-    KISS_CFUNCTION, /* type */
-    &KISS_Sgc_info,   /* name */
-    (kiss_cf_t*)kiss_gc_info,    /* C function name */
-    0,         /* minimum argument number */
-    0,        /* maximum argument number */
+     KISS_CFUNCTION, /* type */
+     &KISS_Sgc_info,   /* name */
+     (kiss_cf_t*)kiss_gc_info,    /* C function name */
+     0,         /* minimum argument number */
+     0,        /* maximum argument number */
 };
 kiss_symbol_t KISS_Sgc_info = {
-    KISS_SYMBOL,
-    NULL,              /* gc_ptr */
-    L"gc-info",
-    KISS_CONSTANT_FSLOT,
-    NULL,                /* var */
-    (kiss_obj*)&KISS_CFgc_info, /* fun */
-    KISS_NIL,                 /* plist */
+     KISS_SYMBOL,
+     NULL,              /* gc_ptr */
+     L"gc-info",
+     KISS_CONSTANT_FSLOT,
+     NULL,                /* var */
+     (kiss_obj*)&KISS_CFgc_info, /* fun */
+     NULL,                              /* class */
+     KISS_NIL,                 /* plist */
 };
 
 
@@ -4804,62 +5113,68 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
 
 /* Uninterned symbols used in lisp reader */
 kiss_symbol_t KISS_Udot = {
-    KISS_SYMBOL, /* type */
-    NULL,              /* gc_ptr */
-    L".",   /* name */
-    0,      /* flags */
-    NULL,   /* fun */
-    NULL,   /* var */
-    KISS_NIL,    /* plist */
+     KISS_SYMBOL, /* type */
+     NULL,              /* gc_ptr */
+     L".",   /* name */
+     0,      /* flags */
+     NULL,   /* var */
+     NULL,   /* fun */
+     NULL,                              /* class */
+     KISS_NIL,    /* plist */
 };
 
 kiss_symbol_t KISS_Urparen = {
-    KISS_SYMBOL, /* type */
-    NULL,              /* gc_ptr */
-    L")",   /* name */
-    0,      /* flags */
-    NULL,   /* fun */
-    NULL,   /* var */
-    KISS_NIL,    /* plist */
+     KISS_SYMBOL, /* type */
+     NULL,              /* gc_ptr */
+     L")",   /* name */
+     0,      /* flags */
+     NULL,   /* var */
+     NULL,   /* fun */
+     NULL,                              /* class */
+     KISS_NIL,    /* plist */
 };
 
 kiss_symbol_t KISS_Ucomma = {
-    KISS_SYMBOL, /* type */
-    NULL,              /* gc_ptr */
-    L",",   /* name */
-    0,      /* flags */
-    NULL,   /* fun */
-    NULL,   /* var */
-    KISS_NIL,    /* plist */
+     KISS_SYMBOL, /* type */
+     NULL,              /* gc_ptr */
+     L",",   /* name */
+     0,      /* flags */
+     NULL,   /* var */
+     NULL,   /* fun */
+     NULL,                              /* class */
+     KISS_NIL,    /* plist */
 };
 
 kiss_symbol_t KISS_Ucomma_at = {
-    KISS_SYMBOL, /* type */
-    NULL,              /* gc_ptr */
-    L",@",  /* name */
-    0,      /* flags */
-    NULL,   /* fun */
-    NULL,   /* var */
-    KISS_NIL,    /* plist */
+     KISS_SYMBOL, /* type */
+     NULL,              /* gc_ptr */
+     L",@",  /* name */
+     0,      /* flags */
+     NULL,   /* var */
+     NULL,   /* fun */
+     NULL,                              /* class */
+     KISS_NIL,    /* plist */
 };
 
 kiss_symbol_t KISS_Ueos = {
-    KISS_SYMBOL, /* type */
-    NULL,              /* gc_ptr */
-    L"eos", /* name */
-    0,      /* flags */
-    NULL,   /* fun */
-    NULL,   /* var */
-    KISS_NIL,    /* plist */
+     KISS_SYMBOL, /* type */
+     NULL,              /* gc_ptr */
+     L"eos", /* name */
+     0,      /* flags */
+     NULL,   /* var */
+     NULL,   /* fun */
+     NULL,                              /* class */
+     KISS_NIL,    /* plist */
 };
 
 /* Uninterned symbols used in Kiss_Symbol_Hash_Table */
 kiss_symbol_t KISS_Udummy = {
-    KISS_SYMBOL, /* type */
-    NULL,              /* gc_ptr */
-    L"dummy", /* name */
-    0,      /* flags */
-    NULL,   /* fun */
-    NULL,   /* var */
-    KISS_NIL,    /* plist */
+     KISS_SYMBOL, /* type */
+     NULL,              /* gc_ptr */
+     L"dummy", /* name */
+     0,      /* flags */
+     NULL,   /* var */
+     NULL,   /* fun */
+     NULL,                              /* class */
+     KISS_NIL,    /* plist */
 };

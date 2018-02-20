@@ -105,6 +105,8 @@ typedef enum {
     KISS_DEFINING_OPERATOR   = 16,
 } kiss_symbol_flags;
 
+struct kiss_ilos_class_t;
+
 typedef struct {
      kiss_type type;
      void* gc_ptr;
@@ -112,6 +114,7 @@ typedef struct {
      kiss_symbol_flags flags;
      kiss_obj* var;
      kiss_obj* fun;
+     struct kiss_ilos_class_t* class;
      kiss_obj* plist;
 } kiss_symbol_t;
 
@@ -318,6 +321,13 @@ typedef struct {
 } kiss_file_stream_t;
 
 
+typedef struct {
+     kiss_type type;
+     void* gc_ptr;
+     struct kiss_ilos_class_t* class;
+     kiss_obj* slots;
+} kiss_ilos_obj_t;
+
 typedef struct kiss_ilos_class_t {
      kiss_type type;
      void* gc_ptr;
@@ -328,12 +338,6 @@ typedef struct kiss_ilos_class_t {
      kiss_obj* cpl;
 } kiss_ilos_class_t;
 
-typedef struct {
-     kiss_type type;
-     void* gc_ptr;
-     kiss_ilos_class_t* class;
-     kiss_obj* slots;
-} kiss_ilos_obj_t;
 
 typedef struct {
      kiss_lexical_environment_t lexical_env;
@@ -348,7 +352,7 @@ typedef struct {
      kiss_obj* error_call_stack;
 } kiss_environment_t;
 
-kiss_symbol_t KISS_St, KISS_Snil;
+extern kiss_symbol_t KISS_St, KISS_Snil;
 #define KISS_T        ((kiss_obj*)(&KISS_St))
 #define KISS_NIL      ((kiss_obj*)(&KISS_Snil))
 
@@ -761,23 +765,27 @@ kiss_obj* kiss_dynamic_let(kiss_obj* vspecs, kiss_obj* body);
 kiss_obj* kiss_set_dynamic(kiss_obj* form, kiss_obj* var);
 
 /* ilos.c */
-kiss_symbol_t KISS_Skiss_classes;
+extern kiss_symbol_t KISS_Skiss_classes;
 void kiss_init_ilos(void);
 kiss_obj* kiss_ilos_obj_p(const kiss_obj* const obj);
 kiss_ilos_obj_t* kiss_make_ilos_obj(const kiss_ilos_class_t* const class);
 kiss_ilos_class_t* kiss_make_ilos_class(const kiss_symbol_t* const name,
                                         const kiss_obj* const supers);
+kiss_obj* kiss_instancep(const kiss_obj* const obj, const kiss_obj* const class);
 kiss_obj* kiss_class(const kiss_obj* const name);
 kiss_obj* kiss_class_of(const kiss_obj* const obj);
 kiss_obj* kiss_subclassp(const kiss_obj* const sub, const kiss_obj* const super);
 kiss_obj* kiss_slotref(const kiss_obj* const obj, const kiss_obj* const name);
 kiss_obj* kiss_set_slotref(const kiss_obj* const value, kiss_obj* const obj, kiss_obj* const name);
 kiss_obj* kiss_slot_bound_p(const kiss_obj* const obj, const kiss_obj* const name);
-kiss_obj* kiss_instancp(const kiss_obj* const obj, const kiss_obj* const class);
 kiss_obj* kiss_generic_function_p(const kiss_obj* const obj);
 kiss_obj* kiss_defclass(const kiss_obj* const name, const kiss_obj* const supers,
                         const kiss_obj* const slot_specs, const kiss_obj* const class_opts);
+kiss_obj* kiss_defgeneric(const kiss_obj* const func_spec,
+                          const kiss_obj* const lambda_list, const kiss_obj* const rest);
+kiss_obj* kiss_defmethod(const kiss_obj* const func_spec, const kiss_obj* const rest);
 kiss_obj* kiss_next_method_p(void);
+kiss_obj* kiss_call_next_method(void);
 
 // predefined class names
 kiss_symbol_t KISS_Sc_object;
