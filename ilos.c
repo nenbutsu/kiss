@@ -62,15 +62,6 @@ kiss_method_t* kiss_make_method(void) {
      return method;
 }
 
-
-kiss_ilos_class_t* Kiss_Class(const kiss_obj* const obj) {
-     if (KISS_IS_ILOS_CLASS(obj)) {
-          return (kiss_ilos_class_t*)obj;
-     } else {
-          Kiss_Err(L"Not a class object: ~S", obj);
-     }
-}
-
 /* special operator: (class class-name) -> <class>
    Returns the class object that corresponds to the class named CLASS-NAME.
    On error, signal <undefined-entity> see spec. p.119 */
@@ -152,10 +143,11 @@ kiss_obj* kiss_slot_bound_p(const kiss_obj* const obj, const kiss_obj* const nam
 kiss_obj* kiss_set_slotref(const kiss_obj* const value, kiss_obj* const obj, kiss_obj* const name)
 {
      kiss_ilos_obj_t* const ilos_obj = Kiss_ILOS_Obj(obj);
-     kiss_obj* binding = kiss_assoc(name, ilos_obj->slots);
+     kiss_obj* slots = ilos_obj->slots;
+     kiss_obj* binding = kiss_assoc(name, slots);
      if (binding == KISS_NIL) {
           binding = kiss_cons(name, value);
-          ilos_obj->slots = kiss_cons(binding, ilos_obj->slots);
+          ilos_obj->slots = kiss_cons(binding, slots);
      } else {
           kiss_set_cdr(value, binding);
      }
@@ -166,26 +158,26 @@ kiss_symbol_t KISS_Skw_abstractp;
 kiss_symbol_t KISS_Skw_metaclass;
 
 /* defining operator: (defclass class-name (sc-name*) (slot-spec*) class-opt*) -> <symbol>
-     class-name ::= identifier
-     sc-name    ::= identifier
-     slot-spec  ::= slot-name | (slot-name slot-opt *)
-     slot-name  ::= identifier
-     slot-opt   ::= :reader reader-function-name |
-                    :writer writer-function-name |
-                    :accessor reader-function-name |
-                    :boundp boundp-function-name |
-                    :initform form |
-                    :initarg initarg-name
-     initarg-name         ::= identifier
-     reader-function-name ::= identifier
-     writer-function-name ::= identifier
-     boundp-function-name ::= identifier
-     class-opt ::= (:metaclass class-name) | (:abstractp abstract-flag)
-     abstractp ::= t | nil */
+   class-name ::= identifier
+   sc-name    ::= identifier
+   slot-spec  ::= slot-name | (slot-name slot-opt*)
+   slot-name  ::= identifier
+   slot-opt   ::= :reader reader-function-name |
+                  :writer writer-function-name |
+                  :accessor reader-function-name |
+                  :boundp boundp-function-name |
+                  :initform form |
+                  :initarg initarg-name
+   initarg-name         ::= identifier
+   reader-function-name ::= identifier
+   writer-function-name ::= identifier
+   boundp-function-name ::= identifier
+   class-opt ::= (:metaclass class-name) | (:abstractp abstract-flag)
+   abstractp ::= t | nil */
 kiss_obj* kiss_defclass(const kiss_obj* const name, const kiss_obj* const supers,
                         const kiss_obj* const slot_specs, const kiss_obj* const class_opts)
 {
-     Kiss_Symbol(name);
+     kiss_symbol_t* const symbol = Kiss_Symbol(name);
      Kiss_List(supers);
      Kiss_List(slot_specs);
      kiss_ilos_class_t* class = kiss_make_ilos_class(name, supers);
@@ -204,7 +196,8 @@ kiss_obj* kiss_defclass(const kiss_obj* const name, const kiss_obj* const supers
           metaclass = (kiss_obj*)&KISS_ILOS_CLASS_standard_class;
      }
      class->class = metaclass;
-     kiss_puthash(name, (kiss_obj*)class, KISS_Skiss_classes.var);
+
+     symbol->class = class;
      return (kiss_obj*)name;
 }
 

@@ -4313,17 +4313,6 @@ kiss_symbol_t KISS_Sprovide = {
 };
 
 /*** ilos.c ***/
-kiss_symbol_t KISS_Skiss_classes = {
-     KISS_SYMBOL,
-     NULL,              /* gc_ptr */
-     L"kiss::classes",
-     0,
-     NULL,                /* var */
-     NULL,                /* fun */
-     NULL,                              /* class */
-     KISS_NIL,                 /* plist */
-};
-
 kiss_symbol_t KISS_Sstandard = {
      KISS_SYMBOL,
      NULL,                /* gc_ptr */
@@ -5038,7 +5027,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     &KISS_Sread, 
 
     /* ilos.c */
-    &KISS_Skiss_classes, &KISS_Sstandard, &KISS_Sclass,
+    &KISS_Sstandard, &KISS_Sclass,
     &KISS_Sclass_of,
     &KISS_Sslotref, &KISS_Sset_slotref, &KISS_Sslot_bound_p,
     &KISS_Sinstancep, &KISS_Sgeneric_function_p,

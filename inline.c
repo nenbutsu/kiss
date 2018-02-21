@@ -88,6 +88,9 @@ extern inline
 kiss_obj* Kiss_List(const kiss_obj* const obj);
 
 extern inline
+kiss_ilos_class_t* Kiss_Class(const kiss_obj* const obj);
+
+extern inline
 kiss_obj* Kiss_Proper_List(const kiss_obj* const obj);
 
 extern inline

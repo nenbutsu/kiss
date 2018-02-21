@@ -332,7 +332,7 @@ typedef struct kiss_ilos_class_t {
      kiss_type type;
      void* gc_ptr;
      struct kiss_ilos_class_t* class;
-     kiss_obj* slots;
+     kiss_obj* slot_specs;
      kiss_symbol_t* name;
      kiss_obj* abstractp;
      kiss_obj* cpl;
@@ -970,6 +970,13 @@ kiss_obj* Kiss_List(const kiss_obj* const obj) {
      if (obj == KISS_NIL || KISS_IS_CONS(obj)) { return (kiss_obj*)obj; }
      Kiss_Domain_Error(obj, L"<list>");
 }
+
+inline
+kiss_ilos_class_t* Kiss_Class(const kiss_obj* const obj) {
+     if (KISS_IS_ILOS_CLASS(obj)) { return (kiss_ilos_class_t*)obj; }
+     Kiss_Domain_Error(obj, L"ILOS class object");
+}
+
 
 /* Proper list is a list terminated by the empty list. (The empty list is a proper list.) */
 inline
