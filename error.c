@@ -1,7 +1,7 @@
 /*  -*- coding: utf-8 -*-
   error.c --- defines the error mechanism of ISLisp processor KISS.
 
-  Copyright (C) 2017 Yuji Minejima.
+  Copyright (C) 2017, 2018 Yuji Minejima <yuji@minejima.jp>.
 
   This file is part of ISLisp processor KISS.
 
@@ -54,7 +54,7 @@ void Kiss_Err(const wchar_t* const str, ...) {
                if (KISS_IS_CONS(arg)) { 
                     arg = kiss_copy_list(arg); // arg might be on the C stack
                }
-               set_cdr(kiss_cons(arg, KISS_NIL), tail);
+               kiss_set_cdr(kiss_cons(arg, KISS_NIL), tail);
                tail = KISS_CDR(tail);
                break;
           }
