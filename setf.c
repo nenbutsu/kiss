@@ -18,15 +18,27 @@
  */
 #include "kiss.h"
 
-/* special operator: (setf place form) → <object>
-   
-*/
+/* special operator: (setf place form) → <object> 
+   https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#s_setf */
 kiss_obj* kiss_setf(const kiss_obj* const place, const kiss_obj* const form) {
-     if (KISS_IS_SYMBOL(place)) {
+     switch (KISS_OBJ_TYPE(place)) {
+     case KISS_SYMBOL:
           return kiss_setq(place, form);
+     case KISS_CONS: {
+          const kiss_symbol_t* const op = Kiss_Symbol(KISS_CAR(place));
+          const kiss_symbol_t* const setf_op = op->setf;
+          if (!setf_op) {
+               Kiss_Err(L"setf: invalid place form: ~S", place);
+          }
+          kiss_obj* head = kiss_cons(KISS_NIL, KISS_NIL);
+          kiss_obj* tail = (kiss_obj*)head;
+          for (const kiss_obj* p = KISS_CDR(place); KISS_IS_CONS(p); p = KISS_CDR(p)) {
+               set_cdr(kiss_cons(kiss_eval(KISS_CAR(p)), KISS_NIL), tail);
+          }
+          set_car(kiss_eval(form), head);
+          return kiss_funcall(kiss_function((kiss_obj*)f), head);
      }
-     if (!KISS_IS_CONS(place)) {
+     default:
           Kiss_Err(L"setf: invalid place form: ~S", place);
      }
-     const kiss_obj* const op = KISS_CAR(place);
 }
