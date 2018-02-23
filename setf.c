@@ -34,6 +34,7 @@ kiss_obj* kiss_setf(const kiss_obj* const place, const kiss_obj* const form) {
           kiss_obj* tail = (kiss_obj*)head;
           for (const kiss_obj* p = KISS_CDR(place); KISS_IS_CONS(p); p = KISS_CDR(p)) {
                set_cdr(kiss_cons(kiss_eval(KISS_CAR(p)), KISS_NIL), tail);
+               tail = KISS_CDR(tail);
           }
           set_car(kiss_eval(form), head);
           return kiss_funcall(kiss_function((kiss_obj*)f), head);
