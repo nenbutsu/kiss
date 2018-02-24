@@ -104,6 +104,7 @@ kiss_obj* kiss_class_of(const kiss_obj* const obj) {
 	  case KISS_LMACRO:
 	  case KISS_CFUNCTION:
 	  case KISS_CMACRO:
+	  case KISS_CSPECIAL:
                return kiss_class((kiss_obj*)&KISS_Sc_function);
           case KISS_GENERIC_FUNCTION:
                return kiss_class((kiss_obj*)&KISS_Sc_standard_generic_function);
