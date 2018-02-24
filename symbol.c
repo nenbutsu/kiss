@@ -1,7 +1,7 @@
 /*
   symbols.c --- defines the symbols of ISLisp processor KISS.
 
-  Copyright (C) 2017 Yuji Minejima.
+  Copyright (C) 2017, 2018 Yuji Minejima <yuji@minejima.jp>.
 
   This file is part of ISLisp processor KISS.
 
@@ -1081,7 +1081,7 @@ kiss_symbol_t KISS_Screate_array = {
      KISS_NIL,                        /* plist */
 };
 
-kiss_symbol_t KISS_Sgaref;
+kiss_symbol_t KISS_Sgaref, KISS_Sset_garef;
 kiss_cfunction_t KISS_CFgaref = {
      KISS_CFUNCTION,         /* type */
      &KISS_Sgaref,           /* name */
@@ -1090,35 +1090,35 @@ kiss_cfunction_t KISS_CFgaref = {
      -1,                     /* maximum argument number */
 };
 kiss_symbol_t KISS_Sgaref = {
-     KISS_SYMBOL,                              /* type */
-     NULL,              /* gc_ptr */
-     L"garef",            /* name */
-     KISS_CONSTANT_FSLOT,                        /* flags */
-     NULL,                                /* var */
+     KISS_SYMBOL,              /* type */
+     NULL,                     /* gc_ptr */
+     L"garef",                 /* name */
+     KISS_CONSTANT_FSLOT,      /* flags */
+     NULL,                     /* var */
      (kiss_obj*)&KISS_CFgaref, /* fun */
-     NULL,                       /* class */
-     NULL,                     /* setf */
-     KISS_NIL,                                 /* plist */
+     NULL,                     /* class */
+     &KISS_Sset_garef,         /* setf */
+     KISS_NIL,                 /* plist */
 };
 
-kiss_symbol_t KISS_Saref;
+kiss_symbol_t KISS_Saref, KISS_Sset_aref;
 kiss_cfunction_t KISS_CFaref = {
-     KISS_CFUNCTION,               /* type */
-     &KISS_Saref, /* name */
-     (kiss_cf_t*)kiss_aref,   /* C function name */
-     1,         /* minimum argument number */
-     -1,         /* maximum argument number */
+     KISS_CFUNCTION,        /* type */
+     &KISS_Saref,           /* name */
+     (kiss_cf_t*)kiss_aref, /* C function name */
+     1,                     /* minimum argument number */
+     -1,                    /* maximum argument number */
 };
 kiss_symbol_t KISS_Saref = {
-     KISS_SYMBOL,                              /* type */
-     NULL,              /* gc_ptr */
-     L"aref",            /* name */
-     KISS_CONSTANT_FSLOT,                        /* flags */
-     NULL,                                /* var */
+     KISS_SYMBOL,             /* type */
+     NULL,                    /* gc_ptr */
+     L"aref",                 /* name */
+     KISS_CONSTANT_FSLOT,     /* flags */
+     NULL,                    /* var */
      (kiss_obj*)&KISS_CFaref, /* fun */
-     NULL,                       /* class */
-     NULL,                     /* setf */
-     KISS_NIL,                                 /* plist */
+     NULL,                    /* class */
+     &KISS_Sset_aref,         /* setf */
+     KISS_NIL,                /* plist */
 };
 
 kiss_symbol_t KISS_Sset_garef;
@@ -1819,6 +1819,28 @@ kiss_symbol_t KISS_Sset_dynamic = {
      NULL,                     /* setf */
      KISS_NIL,                       /* plist */
 };
+
+/*** setf.c ***/
+kiss_symbol_t KISS_Ssetf;
+kiss_cfunction_t KISS_CFsetf = {
+     KISS_CSPECIAL,         /* type */
+     &KISS_Ssetf,           /* name */
+     (kiss_cf_t*)kiss_setf, /* C function name */
+     2,                     /* minimum argument number */
+     2,                     /* maximum argument number */
+};
+kiss_symbol_t KISS_Ssetf = {
+     KISS_SYMBOL,                                 /* type */
+     NULL,                                        /* gc_ptr */
+     L"setf",                                     /* name */
+     KISS_CONSTANT_FSLOT | KISS_SPECIAL_OPERATOR, /* flags */
+     NULL,                                        /* var */
+     (kiss_obj*)&KISS_CFsetf,                     /* fun */
+     NULL,                                        /* class */
+     NULL,                                        /* setf */
+     KISS_NIL,                                    /* plist */
+};
+
 
 /*** control.c ***/
 kiss_symbol_t KISS_Squote;
@@ -3438,24 +3460,24 @@ kiss_symbol_t KISS_Sfmakunbound = {
      KISS_NIL,                  /* plist */
 };
 
-kiss_symbol_t KISS_Sproperty;
+kiss_symbol_t KISS_Sproperty, KISS_Sset_property;
 kiss_cfunction_t KISS_CFproperty = {
-     KISS_CFUNCTION, /* type */
-     &KISS_Sproperty,  /* name */
-     (kiss_cf_t*)kiss_property,    /* C function name */
-     2,         /* minimum argument number */
-     3,         /* maximum argument number */
+     KISS_CFUNCTION,            /* type */
+     &KISS_Sproperty,           /* name */
+     (kiss_cf_t*)kiss_property, /* C function name */
+     2,                         /* minimum argument number */
+     3,                         /* maximum argument number */
 };
 kiss_symbol_t KISS_Sproperty = {
-     KISS_SYMBOL,
-     NULL,              /* gc_ptr */
-     L"property",
-     KISS_CONSTANT_FSLOT,
-     NULL,                 /* var */
+     KISS_SYMBOL,                 /* type */
+     NULL,                        /* gc_ptr */
+     L"property",                 /* name */
+     KISS_CONSTANT_FSLOT,         /* flags */
+     NULL,                        /* var */
      (kiss_obj*)&KISS_CFproperty, /* fun */
-     NULL,                       /* class */
-     NULL,                     /* setf */
-     KISS_NIL,                  /* plist */
+     NULL,                        /* class */
+     &KISS_Sset_property,         /* setf */
+     KISS_NIL,                    /* plist */
 };
 
 kiss_symbol_t KISS_Sset_property;
@@ -3748,24 +3770,24 @@ kiss_symbol_t KISS_Slength = {
      KISS_NIL,                /* plist */
 };
 
-kiss_symbol_t KISS_Selt;
+kiss_symbol_t KISS_Selt, KISS_Sset_elt;
 kiss_cfunction_t KISS_CFelt = {
-     KISS_CFUNCTION, /* type */
-     &KISS_Selt,    /* name */
-     (kiss_cf_t*)kiss_elt,     /* C function name */
-     2,         /* minimum argument number */
-     2,         /* maximum argument number */
+     KISS_CFUNCTION,       /* type */
+     &KISS_Selt,           /* name */
+     (kiss_cf_t*)kiss_elt, /* C function name */
+     2,                    /* minimum argument number */
+     2,                    /* maximum argument number */
 };
 kiss_symbol_t KISS_Selt = {
-     KISS_SYMBOL,
-     NULL,              /* gc_ptr */
-     L"elt",
-     KISS_CONSTANT_FSLOT,
-     NULL,               /* var */
+     KISS_SYMBOL,            /* type */
+     NULL,                   /* gc_ptr */
+     L"elt",                 /* name */
+     KISS_CONSTANT_FSLOT,    /* flags */
+     NULL,                   /* var */
      (kiss_obj*)&KISS_CFelt, /* fun */
-     NULL,                       /* class */
-     NULL,                     /* setf */
-     KISS_NIL,                /* plist */
+     NULL,                   /* class */
+     &KISS_Sset_elt,         /* setf */
+     KISS_NIL,               /* plist */
 };
 
 kiss_symbol_t KISS_Sset_elt;
@@ -5211,6 +5233,9 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
      /* variable.c */
      &KISS_Ssetq, &KISS_Sdefglobal, &KISS_Sdefconstant, &KISS_Slet, &KISS_Slet_s,
      &KISS_Sdefdynamic, &KISS_Sdynamic, &KISS_Sdynamic_let, &KISS_Sset_dynamic,
+
+     /* setf.c */
+     &KISS_Ssetf, 
 
      /* control.c */
      &KISS_Sunwind_protect, &KISS_Scatch, &KISS_Sthrow, &KISS_Sblock,

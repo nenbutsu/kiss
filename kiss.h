@@ -767,6 +767,9 @@ kiss_obj* kiss_dynamic(kiss_obj* name);
 kiss_obj* kiss_dynamic_let(kiss_obj* vspecs, kiss_obj* body);
 kiss_obj* kiss_set_dynamic(kiss_obj* form, kiss_obj* var);
 
+/* setf.c */
+kiss_obj* kiss_setf(const kiss_obj* const place, const kiss_obj* const form);
+
 /* ilos.c */
 extern kiss_symbol_t KISS_Skiss_classes;
 void kiss_init_ilos(void);

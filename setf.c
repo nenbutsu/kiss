@@ -29,7 +29,7 @@ kiss_obj* kiss_setf(const kiss_obj* const place, const kiss_obj* const form) {
           if (!op->setf) {
                Kiss_Err(L"setf: invalid place form: ~S", place);
           }
-          const kiss_obj* const setf_op = Kiss_Symbol(op->setf)->fun;
+          const kiss_obj* const setf_op = op->setf->fun;
           const int setf_op_is_special = KISS_IS_CSPECIAL(setf_op);
           kiss_obj* head = kiss_cons(KISS_NIL, KISS_NIL);
           kiss_obj* tail = (kiss_obj*)head;
@@ -39,10 +39,10 @@ kiss_obj* kiss_setf(const kiss_obj* const place, const kiss_obj* const form) {
                kiss_set_cdr(kiss_cons(obj, KISS_NIL), tail);
                tail = KISS_CDR(tail);
           }
-          obj = setf_op_is_macro ? form : kiss_eval(form);
+          obj = setf_op_is_special ? (kiss_obj*)form : kiss_eval(form);
           kiss_set_car(obj, head);
 
-          switch (KISS_OBJ_TYPE(setf_op->fun)) {
+          switch (KISS_OBJ_TYPE(setf_op)) {
           case KISS_CFUNCTION: case KISS_CSPECIAL:
                return kiss_cf_invoke((kiss_cfunction_t*)setf_op, head);
           case KISS_LFUNCTION:
@@ -57,7 +57,7 @@ kiss_obj* kiss_setf(const kiss_obj* const place, const kiss_obj* const form) {
                fwprintf(stderr, L"GF setf operator not implemented yet");
                break;
           default:
-               fwprintf(stderr, L"Invalid setf operator %p", f);
+               fwprintf(stderr, L"Invalid setf operator");
                exit(EXIT_FAILURE);
           }
           
