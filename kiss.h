@@ -52,6 +52,7 @@ typedef enum {
      KISS_LFUNCTION,
      KISS_LMACRO,
      KISS_CFUNCTION,
+     KISS_CSPECIAL,
      KISS_CMACRO,
 
      KISS_GENERIC_FUNCTION,
@@ -107,7 +108,7 @@ typedef enum {
 
 struct kiss_ilos_class_t;
 
-typedef struct {
+typedef struct kiss_symbol_t {
      kiss_type type;
      void* gc_ptr;
      wchar_t* name;
@@ -115,6 +116,7 @@ typedef struct {
      kiss_obj* var;
      kiss_obj* fun;
      struct kiss_ilos_class_t* class;
+     struct kiss_symbol_t* setf;
      kiss_obj* plist;
 } kiss_symbol_t;
 
@@ -402,6 +404,7 @@ _Static_assert (sizeof(kiss_ptr_int) == sizeof(void*), "We need a C int with the
 #define KISS_IS_LMACRO(x)            (KISS_OBJ_TYPE(x) == KISS_LMACRO)
 #define KISS_IS_CFUNCTION(x)         (KISS_OBJ_TYPE(x) == KISS_CFUNCTION)
 #define KISS_IS_CMACRO(x)            (KISS_OBJ_TYPE(x) == KISS_CMACRO)
+#define KISS_IS_CSPECIAL(x)          (KISS_OBJ_TYPE(x) == KISS_CSPECIAL)
 #define KISS_IS_GENERIC_FUNCTION(x)  (KISS_OBJ_TYPE(x) == KISS_GENERIC_FUNCTION)
 #define KISS_IS_METHOD(x)            (KISS_OBJ_TYPE(x) == KISS_METHOD)
 #define KISS_IS_CATCHER(x)           (KISS_OBJ_TYPE(x) == KISS_CATCHER)

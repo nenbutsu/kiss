@@ -383,7 +383,7 @@ kiss_obj* kiss_format_object(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
      case KISS_LFUNCTION: kiss_format_function(out, obj); break;
      case KISS_LMACRO: kiss_format_macro(out, obj); break;
      case KISS_CFUNCTION: kiss_format_cfunction(out, obj); break;
-     case KISS_CMACRO: kiss_format_cmacro(out, obj); break;
+     case KISS_CSPECIAL: case KISS_CMACRO: kiss_format_cmacro(out, obj); break;
      case KISS_ILOS_OBJ: kiss_format_ilos_obj(out, obj); break;
      case KISS_ILOS_CLASS: kiss_format_ilos_class(out, obj); break;
      default:
