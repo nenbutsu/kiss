@@ -260,6 +260,17 @@ kiss_obj* kiss_generic_function_p(const kiss_obj* const obj) {
      return KISS_IS_GENERIC_FUNCTION(obj) ? KISS_T : KISS_NIL;
 }
 
+static kiss_string_t setf_prefix = {
+     KISS_STRING,   /* type */
+     NULL,          /* gc_ptr */
+     L"kiss::set-", /* name */
+     10,            /* size */
+};
+kiss_symbol_t* kiss_make_setf_name(kiss_symbol_t* symbol) {
+     kiss_obj* name = kiss_string_append(kiss_c_list(2, (kiss_obj*)setf_prefix, symbol->name));
+     return (kiss_symbol_t*)kiss_intern(name);
+}
+
 /* defining operator: (defgeneric func-spec lambda-list {option | method-desc}*) -> <symbol>
    func-spec   ::= identifier | (setf identifier)
    lambda-list ::= (var* [&rest var]) | (var* [:rest var])
