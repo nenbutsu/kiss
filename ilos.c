@@ -1,7 +1,7 @@
 /*  -*- coding: utf-8 -*-
   ilos.c --- defines ILOS mechanism of ISLisp processor KISS.
 
-  Copyright (C) 2017, 2018 Yuji Minejima (yuji@minejima.jp).
+  Copyright (C) 2017, 2018 Yuji Minejima <yuji@minejima.jp>
 
   This file is part of ISLisp processor KISS.
 
@@ -271,6 +271,22 @@ kiss_symbol_t* kiss_make_setf_name(kiss_symbol_t* symbol) {
      return (kiss_symbol_t*)kiss_intern(name);
 }
 
+extern kiss_symbol_t KISS_Ssetf;
+kiss_symbol_t* Kiss_Func_Spec(const kiss_obj* const obj) {
+     if (KISS_IS_SYMBOL(obj)) { return (kiss_symbol_t*)obj; }
+     if (!KISS_IS_CONS(obj)) {
+          Kiss_Err(L"Invalid func-spec: ~S", obj);
+     }
+     if (KISS_CAR(obj) != (kiss_obj)&KISS_Ssetf ||
+         !KISS_IS_CONS(KISS_CDR(obj)) ||
+         !KISS_IS_SYMBOL(KISS_CAR(KISS_CDR(obj))) ||
+         KISS_CDDR(obj) != KISS_NIL)
+     {
+          Kiss_Err(L"Invalid func-spec: ~S", obj);
+     }
+     return kiss_make_setf_name((kiss_symbol_t*)KISS_CADR(obj));
+}
+
 /* defining operator: (defgeneric func-spec lambda-list {option | method-desc}*) -> <symbol>
    func-spec   ::= identifier | (setf identifier)
    lambda-list ::= (var* [&rest var]) | (var* [:rest var])
@@ -286,7 +302,7 @@ kiss_symbol_t* kiss_make_setf_name(kiss_symbol_t* symbol) {
 kiss_obj* kiss_defgeneric(const kiss_obj* const func_spec,
                           const kiss_obj* const lambda_list, const kiss_obj* const rest)
 {
-     kiss_symbol_t* name = Kiss_Symbol(func_spec);
+     kiss_symbol_t* name = Kiss_Func_Spec(func_spec);
      kiss_generic_function_t* gf = kiss_make_generic_function(name);
      gf->lambda_list = Kiss_Lambda_List(lambda_list);
      
