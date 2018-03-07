@@ -40,12 +40,14 @@ kiss_ilos_class_t* kiss_make_ilos_class(const kiss_symbol_t* const name,
     return class;
 }
 
+extern kiss_symbol_t KISS_Sstandard;
+
 kiss_generic_function_t* kiss_make_generic_function(const kiss_symbol_t* const name) {
     kiss_generic_function_t* gf = Kiss_GC_Malloc(sizeof(kiss_generic_function_t));
     gf->type               = KISS_GENERIC_FUNCTION;
     gf->name               = (kiss_symbol_t*)name;
     gf->lambda_list        = KISS_NIL;
-    gf->method_combination = KISS_NIL;
+    gf->method_combination = (kiss_obj*)&KISS_Sstandard;
     gf->around_methods     = KISS_NIL;
     gf->before_methods     = KISS_NIL;
     gf->primary_methods    = KISS_NIL;
@@ -58,7 +60,7 @@ kiss_method_t* kiss_make_method(void) {
      method->type         = KISS_METHOD;
      method->specializers = KISS_NIL;
      method->qualifier    = KISS_NIL;
-     method->fun          = KISS_NIL;
+     method->fun          = NULL;
      return method;
 }
 
@@ -476,7 +478,7 @@ kiss_cfunction_t KISS_CFnext_method_error = {
    class-name ::= identifier
    var ::= identifier                                                          */
 kiss_obj* kiss_defmethod(const kiss_obj* const func_spec, const kiss_obj* const rest) {
-     kiss_symbol_t* name = Kiss_Symbol(func_spec);
+     kiss_symbol_t* name = Kiss_Func_Spec(func_spec);
      const kiss_obj* p = rest;
      const kiss_obj* qualifier = kiss_car(rest);
      if (KISS_IS_CONS(qualifier)) {
