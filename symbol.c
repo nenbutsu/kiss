@@ -4768,41 +4768,25 @@ kiss_symbol_t KISS_Sdefmethod = {
      KISS_NIL,                      /* plist */
 };
 
-kiss_symbol_t KISS_Snext_method_p;
-kiss_cfunction_t KISS_CFnext_method_p = {
-     KISS_CFUNCTION,                 /* type */
-     &KISS_Snext_method_p,           /* name */
-     (kiss_cf_t*)kiss_next_method_p, /* C function name */
-     0,                              /* minimum argument number */
-     0,                              /* maximum argument number */
-};
 kiss_symbol_t KISS_Snext_method_p = {
      KISS_SYMBOL,          /* type */
      NULL,                 /* gc_ptr */
      L"next-method-p",     /* name */
      KISS_SYSTEM_FUNCTION, /* flags */
      NULL,                 /* var */
-     NULL,                 /* fun */
+     NULL,                 /* fun */ // local
      NULL,                 /* class */
      NULL,                 /* setf */
      KISS_NIL,             /* plist */
 };
 
-kiss_symbol_t KISS_Scall_next_method;
-kiss_cfunction_t KISS_CFcall_next_method = {
-     KISS_CFUNCTION,                    /* type */
-     &KISS_Scall_next_method,           /* name */
-     (kiss_cf_t*)kiss_call_next_method, /* C function name */
-     0,                                 /* minimum argument number */
-     0,                                 /* maximum argument number */
-};
 kiss_symbol_t KISS_Scall_next_method = {
      KISS_SYMBOL,          /* type */
      NULL,                 /* gc_ptr */
      L"call-next-method",  /* name */
      KISS_SYSTEM_FUNCTION, /* flags */
      NULL,                 /* var */
-     NULL,                 /* fun */
+     NULL,                 /* fun */ // local
      NULL,                 /* class */
      NULL,                 /* setf */
      KISS_NIL,             /* plist */

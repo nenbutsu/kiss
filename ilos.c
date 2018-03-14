@@ -312,40 +312,12 @@ kiss_obj* kiss_defgeneric(const kiss_obj* const func_spec,
      return (kiss_obj*)name;
 }
 
-kiss_obj* kiss_collect_specilizers(const kiss_obj* const parameter_profile) {
-     kiss_obj* head = (kiss_obj*)kiss_cons(KISS_NIL, KISS_NIL);
-     kiss_obj* tail = head;
-     for (const kiss_obj* p = parameter_profile; KISS_IS_CONS(p); p = KISS_CDR(p)) {
-          kiss_obj* obj = KISS_CAR(p);
-          kiss_ilos_class_t* class = &KISS_ILOS_CLASS_object;
-          if (KISS_IS_CONS(obj)) {
-               class = Kiss_Class((kiss_obj*)Kiss_Symbol(kiss_cadr(obj)));
-          } else if (obj == (kiss_obj*)&KISS_Skw_rest || obj == (kiss_obj*)&KISS_Samp_rest) {
-               break;
-          }
-          kiss_set_cdr(kiss_cons((kiss_obj*)class, KISS_NIL), tail);
-     }
-     return (kiss_obj*)KISS_CDR(head);
-}
-
-kiss_obj* kiss_collect_lambda_list(const kiss_obj* const parameter_profile) {
-     kiss_obj* head = (kiss_obj*)kiss_cons(KISS_NIL, KISS_NIL);
-     kiss_obj* tail = head;
-     for (const kiss_obj* p = parameter_profile; KISS_IS_CONS(p); p = KISS_CDR(p)) {
-          kiss_obj* obj = KISS_CAR(p);
-          kiss_obj* var = KISS_IS_CONS(obj) ? KISS_CAR(obj) : obj;
-          Kiss_Symbol(var);
-          kiss_set_cdr(kiss_cons(var, KISS_NIL), tail);
-     }
-     return Kiss_Lambda_List(KISS_CDR(head));
-}
-
-int kiss_cmp_specializers(const kiss_obj* q1, const kiss_obj* const q2) {
+int kiss_compare_specializers(const kiss_obj* q1, const kiss_obj* const q2) {
      const kiss_obj* p2 = q2;
      for (const kiss_obj* p1 = q1; KISS_IS_CONS(p1); p1 = KISS_CDR(p1)) {
           kiss_obj* c1 = KISS_CAR(p1);
           if (!KISS_IS_CONS(p2)) {
-               Kiss_Err(L"kiss_cmp_specializers: two specializers of different length: ~S, ~S",
+               Kiss_Err(L"kiss_compare_specializers: two specializers of different length: ~S, ~S",
                         q1, q2);
           }
           kiss_obj* c2 = KISS_CAR(p2);
@@ -380,7 +352,7 @@ void kiss_add_method(kiss_generic_function_t* const gf, const kiss_method_t* con
      kiss_obj* tail = head;
      for (const kiss_obj* p = list; KISS_IS_CONS(p); p = KISS_CDR(p)) {
           kiss_method_t* m = Kiss_Method(KISS_CAR(p));
-          int result = kiss_cmp_specializers(method->specializers, m->specializers);
+          int result = kiss_compare_specializers(method->specializers, m->specializers);
           if (result < 0) {
                kiss_set_cdr(kiss_cons((kiss_obj*)method, p), tail);
                break;
@@ -411,6 +383,16 @@ void kiss_add_method(kiss_generic_function_t* const gf, const kiss_method_t* con
      return;
 }
 
+/* local function: (call-next-method) -> <object> */
+/* local function: (next-method-p) -> boolean */
+extern kiss_symbol_t KISS_Scall_next_method;
+extern kiss_symbol_t KISS_Snext_method_p;
+kiss_lexical_environment_t Kiss_Null_Lexical_Env = {
+    KISS_NIL, /* vars */
+    KISS_NIL, /* funcs */
+    KISS_NIL, /* jumpers */
+};
+
 kiss_obj* kiss_next_method_p(void) {
      kiss_environment_t* env = Kiss_Get_Environment();
      kiss_obj* gf_invocations = env->dynamic_env.gf_invocations;
@@ -420,6 +402,13 @@ kiss_obj* kiss_next_method_p(void) {
      kiss_gf_invocation_t* gf_inv = KISS_CAR(gf_invocations);
      return KISS_IS_CONS(gf_inv->next_methods) ? KISS_T : KISS_NIL;
 }
+kiss_cfunction_t KISS_CFnext_method_p = {
+     KISS_CFUNCTION,                 /* type */
+     &KISS_Snext_method_p,           /* name */
+     (kiss_cf_t*)kiss_next_method_p, /* C function name */
+     0,                              /* minimum argument number */
+     0,                              /* maximum argument number */
+};
 
 kiss_obj* kiss_call_next_method(void) {
      kiss_environment_t* env = Kiss_Get_Environment();
@@ -432,22 +421,12 @@ kiss_obj* kiss_call_next_method(void) {
      return kiss_funcall(next_method->fun, env->dynamic_env->gf_invocation.args);
 }
 
-
-kiss_lexical_environment_t Kiss_Null_Lexical_Env = {
-    KISS_NIL, /* vars */
-    KISS_NIL, /* funcs */
-    KISS_NIL, /* jumpers */
-};
-
-/* local function: (call-next-method) -> <object> */
-/* local function: (next-method-p) -> boolean */
-static kiss_obj* kiss_true(void) { return KISS_T; }
-kiss_cfunction_t KISS_CFtrue = {
-    KISS_CFUNCTION,        /* type */
-    NULL,                  /* name */
-    (kiss_cf_t*)kiss_true, /* C function name */
-    0,                     /* minimum argument number */
-    0,                     /* maximum argument number */
+kiss_cfunction_t KISS_CFcall_next_method = {
+     KISS_CFUNCTION,                    /* type */
+     &KISS_Scall_next_method,           /* name */
+     (kiss_cf_t*)kiss_call_next_method, /* C function name */
+     0,                                 /* minimum argument number */
+     0,                                 /* maximum argument number */
 };
 
 static kiss_obj* kiss_false(void) { return KISS_NIL; }
@@ -459,6 +438,7 @@ kiss_cfunction_t KISS_CFfalse = {
     0,                      /* maximum argument number */
 };
 
+
 kiss_obj* kiss_next_method_error(void) {
     Kiss_Err(L"Next method doesn't exist");
 }
@@ -469,6 +449,34 @@ kiss_cfunction_t KISS_CFnext_method_error = {
     0,                                  /* minimum argument number */
     0,                                  /* maximum argument number */
 };
+
+kiss_obj* kiss_collect_specilizers(const kiss_obj* const parameter_profile) {
+     kiss_obj* head = (kiss_obj*)kiss_cons(KISS_NIL, KISS_NIL);
+     kiss_obj* tail = head;
+     for (const kiss_obj* p = parameter_profile; KISS_IS_CONS(p); p = KISS_CDR(p)) {
+          kiss_obj* obj = KISS_CAR(p);
+          kiss_ilos_class_t* class = &KISS_ILOS_CLASS_object;
+          if (KISS_IS_CONS(obj)) {
+               class = Kiss_Class((kiss_obj*)Kiss_Symbol(kiss_cadr(obj)));
+          } else if (obj == (kiss_obj*)&KISS_Skw_rest || obj == (kiss_obj*)&KISS_Samp_rest) {
+               break;
+          }
+          kiss_set_cdr(kiss_cons((kiss_obj*)class, KISS_NIL), tail);
+     }
+     return (kiss_obj*)KISS_CDR(head);
+}
+
+kiss_obj* kiss_collect_lambda_list(const kiss_obj* const parameter_profile) {
+     kiss_obj* head = (kiss_obj*)kiss_cons(KISS_NIL, KISS_NIL);
+     kiss_obj* tail = head;
+     for (const kiss_obj* p = parameter_profile; KISS_IS_CONS(p); p = KISS_CDR(p)) {
+          kiss_obj* obj = KISS_CAR(p);
+          kiss_obj* var = KISS_IS_CONS(obj) ? KISS_CAR(obj) : obj;
+          Kiss_Symbol(var);
+          kiss_set_cdr(kiss_cons(var, KISS_NIL), tail);
+     }
+     return Kiss_Lambda_List(KISS_CDR(head));
+}
 
 /* defining operator: (defmethod func-spec method-qualifier* parameter-profile form*) -> <symbol>
    func-spec ::= identifier | (setf identifier)
@@ -507,6 +515,10 @@ kiss_obj* kiss_defmethod(const kiss_obj* const func_spec, const kiss_obj* const 
      method->specializers = specializers;
      method->qualifier = qualifier;
      method->fun = kiss_lambda(lambda_list, body);
+     kiss_function_t* fun = (kiss_function_t*)method->fun;
+     fun->lexical_env = Kiss_Null_Lexical_Env;
+
+     kiss_add_method(gf, method);
      return (kiss_obj*)func_spec;
 }
 
