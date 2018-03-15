@@ -31,12 +31,12 @@ kiss_ilos_class_t* kiss_make_ilos_class(const kiss_symbol_t* const name,
                                         const kiss_obj* const supers)
 {
     kiss_ilos_class_t* class = Kiss_GC_Malloc(sizeof(kiss_ilos_class_t));
-    class->type      = KISS_ILOS_CLASS;
-    class->class     = &KISS_ILOS_CLASS_standard_class;
-    class->slots     = KISS_NIL;
-    class->name      = (kiss_symbol_t*)name;
-    class->abstractp = KISS_NIL;
-    class->cpl       = kiss_cons((kiss_obj*)class, kiss_compute_cpl(supers));
+    class->type       = KISS_ILOS_CLASS;
+    class->class      = &KISS_ILOS_CLASS_standard_class;
+    class->slot_specs = KISS_NIL;
+    class->name       = (kiss_symbol_t*)name;
+    class->abstractp  = KISS_NIL;
+    class->cpl        = kiss_cons((kiss_obj*)class, kiss_compute_cpl(supers));
     return class;
 }
 
@@ -82,37 +82,41 @@ kiss_obj* kiss_class(const kiss_obj* const name) {
 kiss_obj* kiss_class_of(const kiss_obj* const obj) {
 	  switch (KISS_OBJ_TYPE(obj)) {
 	  case KISS_CONS:
-	       return kiss_class((kiss_obj*)&KISS_Sc_cons);
+	       return (kiss_obj*)&KISS_ILOS_CLASS_cons;
 	  case KISS_SYMBOL:
-               return kiss_class((kiss_obj*)(obj == KISS_NIL ? &KISS_Sc_null : &KISS_Sc_symbol));
+               if (obj == KISS_NIL) {
+                    return (kiss_obj*)&KISS_ILOS_CLASS_null;
+               } else {
+                    return (kiss_obj*)&KISS_ILOS_CLASS_symbol;
+               }
 	  case KISS_CHARACTER:
-               return kiss_class((kiss_obj*)&KISS_Sc_character);
+               return (kiss_obj*)&KISS_ILOS_CLASS_character;
 	  case KISS_FIXNUM:
           case KISS_BIGNUM:
-	       return kiss_class((kiss_obj*)&KISS_Sc_integer);
+	       return (kiss_obj*)&KISS_ILOS_CLASS_integer;
 	  case KISS_FLOAT:
-	       return kiss_class((kiss_obj*)&KISS_Sc_float);
+	       return (kiss_obj*)&KISS_ILOS_CLASS_float;
 	  case KISS_STRING:
-	       return kiss_class((kiss_obj*)&KISS_Sc_string);
+	       return (kiss_obj*)&KISS_ILOS_CLASS_string;
 	  case KISS_GENERAL_VECTOR:
-	       return kiss_class((kiss_obj*)&KISS_Sc_general_vector);
+	       return (kiss_obj*)&KISS_ILOS_CLASS_general_vector;
 	  case KISS_GENERAL_ARRAY_S:
-               return kiss_class((kiss_obj*)&KISS_Sc_general_array_s);
+               return (kiss_obj*)&KISS_ILOS_CLASS_general_array_s;
 	  case KISS_HASH_TABLE:
-               return kiss_class((kiss_obj*)&KISS_Sc_hash_table);
+               return (kiss_obj*)&KISS_ILOS_CLASS_hash_table;
 	  case KISS_STREAM:
-               return kiss_class((kiss_obj*)&KISS_Sc_stream);
+               return (kiss_obj*)&KISS_ILOS_CLASS_stream;
 	  case KISS_LFUNCTION:
 	  case KISS_LMACRO:
 	  case KISS_CFUNCTION:
 	  case KISS_CMACRO:
 	  case KISS_CSPECIAL:
-               return kiss_class((kiss_obj*)&KISS_Sc_function);
+               return (kiss_obj*)&KISS_ILOS_CLASS_function;
           case KISS_GENERIC_FUNCTION:
-               return kiss_class((kiss_obj*)&KISS_Sc_standard_generic_function);
+               return (kiss_obj*)&KISS_ILOS_CLASS_standard_generic_function;
 	  case KISS_ILOS_OBJ:
           case KISS_ILOS_CLASS:
-               return ((kiss_ilos_obj_t*)obj)->class;
+               return (kiss_obj*)((kiss_ilos_obj_t*)obj)->class;
 	  case KISS_CATCHER:
 	  case KISS_BLOCK:
 	  case KISS_CLEANUP:
@@ -183,7 +187,7 @@ kiss_obj* kiss_defclass(const kiss_obj* const name, const kiss_obj* const supers
      kiss_symbol_t* const symbol = Kiss_Symbol(name);
      Kiss_List(supers);
      Kiss_List(slot_specs);
-     kiss_ilos_class_t* class = kiss_make_ilos_class(name, supers);
+     kiss_ilos_class_t* class = kiss_make_ilos_class(symbol, supers);
 
      kiss_obj* abstractp = kiss_assoc((kiss_obj*)&KISS_Skw_abstractp, (kiss_obj*)class_opts);
      if (KISS_IS_CONS(abstractp)) {
@@ -198,7 +202,7 @@ kiss_obj* kiss_defclass(const kiss_obj* const name, const kiss_obj* const supers
      } else {
           metaclass = (kiss_obj*)&KISS_ILOS_CLASS_standard_class;
      }
-     class->class = metaclass;
+     class->class = (kiss_ilos_class_t*)metaclass;
 
      symbol->class = class;
      return (kiss_obj*)name;
@@ -268,8 +272,10 @@ static kiss_string_t setf_prefix = {
      L"kiss::set-", /* name */
      10,            /* size */
 };
+
 kiss_symbol_t* kiss_make_setf_name(kiss_symbol_t* symbol) {
-     kiss_obj* name = kiss_string_append(kiss_c_list(2, (kiss_obj*)setf_prefix, symbol->name));
+     kiss_obj* args = kiss_c_list(2, &setf_prefix, kiss_make_string(symbol->name));
+     kiss_obj* name = kiss_string_append(args);
      return (kiss_symbol_t*)kiss_intern(name);
 }
 
@@ -279,7 +285,7 @@ kiss_symbol_t* Kiss_Func_Spec(const kiss_obj* const obj) {
      if (!KISS_IS_CONS(obj)) {
           Kiss_Err(L"Invalid func-spec: ~S", obj);
      }
-     if (KISS_CAR(obj) != (kiss_obj)&KISS_Ssetf ||
+     if (KISS_CAR(obj) != (kiss_obj*)&KISS_Ssetf ||
          !KISS_IS_CONS(KISS_CDR(obj)) ||
          !KISS_IS_SYMBOL(KISS_CAR(KISS_CDR(obj))) ||
          KISS_CDDR(obj) != KISS_NIL)
@@ -397,7 +403,7 @@ kiss_obj* kiss_next_method_p(void) {
      kiss_environment_t* env = Kiss_Get_Environment();
      kiss_obj* gf_invocations = env->dynamic_env.gf_invocations;
      if (!KISS_IS_CONS(gf_invocations)) {
-          Kiss_Err(L"next-method-p: internal error");
+          Kiss_Err(L"next-method-p: internal error: gf_invocations are empty");
      }
      kiss_gf_invocation_t* gf_inv = KISS_CAR(gf_invocations);
      return KISS_IS_CONS(gf_inv->next_methods) ? KISS_T : KISS_NIL;
@@ -412,13 +418,18 @@ kiss_cfunction_t KISS_CFnext_method_p = {
 
 kiss_obj* kiss_call_next_method(void) {
      kiss_environment_t* env = Kiss_Get_Environment();
-     kiss_obj* list = env->dynamic_env->gf_invocation.next_methods;
+     kiss_obj* gf_invocations = env->dynamic_env.gf_invocations;
+     if (!KISS_IS_CONS(gf_invocations)) {
+          Kiss_Err(L"call-next-method: internal error: gf_invocations are empty");
+     }
+     kiss_gf_invocation_t* gf_inv = KISS_CAR(gf_invocations);
+     kiss_obj* list = gf_inv->next_methods;
      if (!KISS_IS_CONS(list)) {
           Kiss_Err(L"Next method doesn't exist");
      }
      kiss_method_t* next_method = Kiss_Method(KISS_CAR(list));
-     env->dynamic_env->gf_invocation.next_methods = KISS_CDR(list);
-     return kiss_funcall(next_method->fun, env->dynamic_env->gf_invocation.args);
+     gf_inv->next_methods = KISS_CDR(list);
+     return kiss_funcall(next_method->fun, gf_inv->args);
 }
 
 kiss_cfunction_t KISS_CFcall_next_method = {
@@ -449,6 +460,64 @@ kiss_cfunction_t KISS_CFnext_method_error = {
     0,                                  /* minimum argument number */
     0,                                  /* maximum argument number */
 };
+
+kiss_cons_t KISS_LEX_ENV_call_next_method_error = {
+     KISS_CONS,                            // type
+     NULL,                                 // gc_ptr
+     (kiss_obj*)&KISS_Scall_next_method,   // car
+     (kiss_obj*)&KISS_CFnext_method_error, // cdr
+};
+
+kiss_cons_t KISS_LEX_ENV_next_method_p_false = {
+     KISS_CONS,                       // type
+     NULL,                            // gc_ptr
+     (kiss_obj*)&KISS_Snext_method_p, // car
+     (kiss_obj*)&KISS_CFfalse,        // cdr
+};
+
+kiss_cons_t KISS_LEX_ENV_call_next_method = {
+     KISS_CONS,                           // type
+     NULL,                                // gc_ptr
+     (kiss_obj*)&KISS_Scall_next_method,  // car
+     (kiss_obj*)&KISS_CFcall_next_method, // cdr
+};
+
+kiss_cons_t KISS_LEX_ENV_next_method_p = {
+     KISS_CONS,                        // type
+     NULL,                             // gc_ptr
+     (kiss_obj*)&KISS_Snext_method_p,  // car
+     (kiss_obj*)&KISS_CFnext_method_p, // cdr
+};
+
+kiss_cons_t KISS_LEX_ENV_funcs02 = {
+     KISS_CONS,                                     // type
+     NULL,                                          // gc_ptr
+     (kiss_obj*)&KISS_LEX_ENV_next_method_p_false,  // car
+     KISS_NIL,                                      // cdr
+};
+
+kiss_cons_t KISS_LEX_ENV_funcs01 = {
+     KISS_CONS,                                        // type
+     NULL,                                             // gc_ptr
+     (kiss_obj*)&KISS_LEX_ENV_call_next_method_error,  // car
+     (kiss_obj*)&KISS_LEX_ENV_funcs02,                 // cdr
+};
+
+kiss_cons_t KISS_LEX_ENV_funcs12 = {
+     KISS_CONS,                               // type
+     NULL,                                    // gc_ptr
+     (kiss_obj*)&KISS_LEX_ENV_next_method_p,  // car
+     KISS_NIL,                                // cdr
+};
+
+kiss_cons_t KISS_LEX_ENV_funcs11 = {
+     KISS_CONS,                                 // type
+     NULL,                                      // gc_ptr
+     (kiss_obj*)&KISS_LEX_ENV_call_next_method, // car
+     (kiss_obj*)&KISS_LEX_ENV_funcs12,          // cdr
+};
+
+kiss_ilos_class_t KISS_ILOS_CLASS_object;
 
 kiss_obj* kiss_collect_specilizers(const kiss_obj* const parameter_profile) {
      kiss_obj* head = (kiss_obj*)kiss_cons(KISS_NIL, KISS_NIL);
@@ -504,19 +573,24 @@ kiss_obj* kiss_defmethod(const kiss_obj* const func_spec, const kiss_obj* const 
      }
 
      // skip other qualifiers
-     for (; KISS_IS_CONSP(p) && KISS_IS_SYMBOL(KISS_CAR(p)); p = KISS_CDR(p)) {}
+     for (; KISS_IS_CONS(p) && KISS_IS_SYMBOL(KISS_CAR(p)); p = KISS_CDR(p)) {}
      
      const kiss_obj* parameter_profile = Kiss_List(kiss_car(p));
      const kiss_obj* specializers = kiss_collect_specilizers(parameter_profile);
      const kiss_obj* lambda_list  = kiss_collect_lambda_list(parameter_profile);
      const kiss_obj* const body = kiss_cdr(p);
      kiss_generic_function_t* gf = Kiss_Generic_Function(name->fun);
-     kiss_method_t* method = kiss_make_method((kiss_obj*)name);
-     method->specializers = specializers;
-     method->qualifier = qualifier;
-     method->fun = kiss_lambda(lambda_list, body);
+     kiss_method_t* method = kiss_make_method();
+     method->specializers = (kiss_obj*)specializers;
+     method->qualifier = (kiss_obj*)qualifier;
+     method->fun = kiss_lambda((kiss_obj*)lambda_list, (kiss_obj*)body);
      kiss_function_t* fun = (kiss_function_t*)method->fun;
      fun->lexical_env = Kiss_Null_Lexical_Env;
+     if (qualifier == (kiss_obj*)&KISS_Skw_before || qualifier == (kiss_obj*)&KISS_Skw_after) {
+          fun->lexical_env.funs = (kiss_obj*)&KISS_LEX_ENV_funcs01;
+     } else {
+          fun->lexical_env.funs = (kiss_obj*)&KISS_LEX_ENV_funcs11;
+     }
 
      kiss_add_method(gf, method);
      return (kiss_obj*)func_spec;
