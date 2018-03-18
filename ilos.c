@@ -88,112 +88,112 @@
 kiss_ilos_class_t KISS_ILOS_CLASS_built_in_class;
 
 kiss_ilos_class_t KISS_ILOS_CLASS_object = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_object,                     // name
-     KISS_T,                                              // abstractp
-     KISS_NIL,                                            // cpl
+     KISS_ILOS_CLASS,                 // type
+     NULL,                            // gc_ptr
+     &KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL,                        // slot_specs
+     &KISS_Sc_object,                 // name
+     KISS_T,                          // abstractp
+     KISS_NIL,                        // cpl
 };
 
 
 // <built-in-class>
 kiss_cons_t KISS_ILOS_cpl01 = {
-     KISS_CONS,
-     NULL, // gc_ptr
-     (kiss_obj*)&KISS_ILOS_CLASS_object,
-     KISS_NIL,
+     KISS_CONS,                          // type
+     NULL,                               // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_object, // car
+     KISS_NIL,                           // cdr
 };
 
 kiss_ilos_class_t KISS_ILOS_CLASS_built_in_class = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_built_in_class,             // name
-     KISS_T,                                              // abstractp
-     (kiss_obj*)&KISS_ILOS_cpl01,                         // cpl
+     KISS_ILOS_CLASS,                 // type
+     NULL,                            // gc_ptr
+     &KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL,                        // slot_specs
+     &KISS_Sc_built_in_class,         // name
+     KISS_T,                          // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01,     // cpl
 };
 
 // <character>
 kiss_ilos_class_t KISS_ILOS_CLASS_character = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_character,                  // name
-     KISS_NIL,                                            // abstractp
-     (kiss_obj*)&KISS_ILOS_cpl01,                         // cpl
+     KISS_ILOS_CLASS,                 // type
+     NULL,                            // gc_ptr
+     &KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL,                        // slot_specs
+     &KISS_Sc_character,              // name
+     KISS_NIL,                        // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01,     // cpl
 };
 
 // <symbol>
 kiss_ilos_class_t KISS_ILOS_CLASS_symbol = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_symbol,                     // name
-     KISS_NIL,                                            // abstractp
-     (kiss_obj*)&KISS_ILOS_cpl01,                         // cpl
+     KISS_ILOS_CLASS,                 // type
+     NULL,                            // gc_ptr
+     &KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL,                        // slot_specs
+     &KISS_Sc_symbol,                 // name
+     KISS_NIL,                        // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01,     // cpl
 };
 
 // <list>
 kiss_ilos_class_t KISS_ILOS_CLASS_list = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_list,                       // name
-     KISS_T,                                              // abstractp
-     (kiss_obj*)&KISS_ILOS_cpl01,                         // cpl
+     KISS_ILOS_CLASS,                 // type
+     NULL,                            // gc_ptr
+     &KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL,                        // slot_specs
+     &KISS_Sc_list,                   // name
+     KISS_T,                          // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01,     // cpl
 };
 
 // <cons>
 kiss_cons_t KISS_ILOS_cpl02 = {
-     KISS_CONS,
-     NULL, // gc_ptr
-     (kiss_obj*)&KISS_ILOS_CLASS_list,
-     (kiss_obj*)&KISS_ILOS_cpl01,
+     KISS_CONS,                        // type
+     NULL,                             // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_list, // car
+     (kiss_obj*)&KISS_ILOS_cpl01,      // cdr
 };
 
 kiss_ilos_class_t KISS_ILOS_CLASS_cons = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_cons,                       // name
-     KISS_NIL,                                            // abstractp
-     (kiss_obj*)&KISS_ILOS_cpl02,                         // cpl
+     KISS_ILOS_CLASS,                 // type
+     NULL,                            // gc_ptr
+     &KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL,                        // slot_specs
+     &KISS_Sc_cons,                   // name
+     KISS_NIL,                        // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl02,     // cpl
 };
 
 // <null>
 kiss_cons_t KISS_ILOS_cpl03 = {
-     KISS_CONS,
-     NULL, // gc_ptr
-     (kiss_obj*)&KISS_ILOS_CLASS_symbol,
-     (kiss_obj*)&KISS_ILOS_cpl02,
+     KISS_CONS,                          // type
+     NULL,                               // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_symbol, // car
+     (kiss_obj*)&KISS_ILOS_cpl02,        // cdr
 };
 
 kiss_ilos_class_t KISS_ILOS_CLASS_null = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_null,                       // name
-     KISS_T,                                              // abstractp
-     (kiss_obj*)&KISS_ILOS_cpl03,                         // cpl
+     KISS_ILOS_CLASS,                 // type
+     NULL,                            // gc_ptr
+     &KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL,                        // slot_specs
+     &KISS_Sc_null,                   // name
+     KISS_T,                          // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl03,     // cpl
 };
 
 // <standard-class>
 kiss_ilos_class_t KISS_ILOS_CLASS_standard_class = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_standard_class,             // name
-     KISS_T,                                              // abstractp
-     (kiss_obj*)&KISS_ILOS_cpl01,                         // cpl
+     KISS_ILOS_CLASS,                 // type
+     NULL,                            // gc_ptr
+     &KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL,                        // slot_specs
+     &KISS_Sc_standard_class,         // name
+     KISS_T,                          // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01,     // cpl
 };
 
 // <standard-object> spec. p.13
@@ -201,220 +201,220 @@ kiss_ilos_class_t KISS_ILOS_CLASS_standard_class = {
 // <standard-class> and is a superclass of every class that is an
 // instance of <standard-class> except itself. 
 kiss_ilos_class_t KISS_ILOS_CLASS_standard_object = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_standard_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_standard_object,            // name
-     KISS_T,                                              // abstractp
-     (kiss_obj*)&KISS_ILOS_cpl01,                         // cpl
+     KISS_ILOS_CLASS,                 // type
+     NULL,                            // gc_ptr
+     &KISS_ILOS_CLASS_standard_class, // class
+     KISS_NIL,                        // slot_specs
+     &KISS_Sc_standard_object,        // name
+     KISS_T,                          // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01,     // cpl
 };
 
 // <stream>
 kiss_ilos_class_t KISS_ILOS_CLASS_stream = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_stream,                     // name
-     KISS_NIL,                                            // abstractp
-     (kiss_obj*)&KISS_ILOS_cpl01,                         // cpl
+     KISS_ILOS_CLASS,                 // type
+     NULL,                            // gc_ptr
+     &KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL,                        // slot_specs
+     &KISS_Sc_stream,                 // name
+     KISS_NIL,                        // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01,     // cpl
 };
 
 // <function>
 kiss_ilos_class_t KISS_ILOS_CLASS_function = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_function,                   // name
-     KISS_NIL,                                            // abstractp
-     (kiss_obj*)&KISS_ILOS_cpl01,                         // cpl
+     KISS_ILOS_CLASS,                 // type
+     NULL,                            // gc_ptr
+     &KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL,                        // slot_specs
+     &KISS_Sc_function,               // name
+     KISS_NIL,                        // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01,     // cpl
 };
 
 // <generic-function>
 kiss_cons_t KISS_ILOS_cpl04 = {
-     KISS_CONS,
-     NULL, // gc_ptr
-     (kiss_obj*)&KISS_ILOS_CLASS_function,
-     (kiss_obj*)&KISS_ILOS_cpl02,
+     KISS_CONS,                            // type
+     NULL,                                 // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_function, // car
+     (kiss_obj*)&KISS_ILOS_cpl02,          // cdr
 };
 
 kiss_ilos_class_t KISS_ILOS_CLASS_generic_function = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_generic_function,           // name
-     KISS_T,                                              // abstractp
-     (kiss_obj*)&KISS_ILOS_cpl04,                         // cpl
+     KISS_ILOS_CLASS,                 // type
+     NULL,                            // gc_ptr
+     &KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL,                        // slot_specs
+     &KISS_Sc_generic_function,       // name
+     KISS_T,                          // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl04,     // cpl
 };
 
 // <standard-generic-function>
 kiss_cons_t KISS_ILOS_cpl05 = {
-     KISS_CONS,
-     NULL, // gc_ptr
-     (kiss_obj*)&KISS_ILOS_CLASS_generic_function,
-     (kiss_obj*)&KISS_ILOS_cpl04,
+     KISS_CONS,                                    // type
+     NULL,                                         // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_generic_function, // car
+     (kiss_obj*)&KISS_ILOS_cpl04,                  // cdr
 };
 
 kiss_ilos_class_t KISS_ILOS_CLASS_standard_generic_function = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_standard_generic_function,  // name
-     KISS_NIL,                                            // abstractp
-     (kiss_obj*)&KISS_ILOS_cpl05,                         // cpl
+     KISS_ILOS_CLASS,                     // type
+     NULL,                                // gc_ptr
+     &KISS_ILOS_CLASS_built_in_class,     // class
+     KISS_NIL,                            // slot_specs
+     &KISS_Sc_standard_generic_function,  // name
+     KISS_NIL,                            // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl05,         // cpl
 };
 
 // <standard-method>
 kiss_ilos_class_t KISS_ILOS_CLASS_standard_method = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_standard_method,            // name
-     KISS_NIL,                                            // abstractp
-     (kiss_obj*)&KISS_ILOS_cpl01,                         // cpl
+     KISS_ILOS_CLASS,                 // type
+     NULL,                            // gc_ptr
+     &KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL,                        // slot_specs
+     &KISS_Sc_standard_method,        // name
+     KISS_NIL,                        // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01,     // cpl
 };
 
 // <number>
 kiss_ilos_class_t KISS_ILOS_CLASS_number = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_number,                     // name
-     KISS_T,                                              // abstractp
-     (kiss_obj*)&KISS_ILOS_cpl01,                         // cpl
+     KISS_ILOS_CLASS,                 // type
+     NULL,                            // gc_ptr
+     &KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL,                        // slot_specs
+     &KISS_Sc_number,                 // name
+     KISS_T,                          // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01,     // cpl
 };
 
 // <integer>
 kiss_cons_t KISS_ILOS_cpl06 = {
-     KISS_CONS,
-     NULL, // gc_ptr
-     (kiss_obj*)&KISS_ILOS_CLASS_number,
-     (kiss_obj*)&KISS_ILOS_cpl01,
+     KISS_CONS,                          // type
+     NULL,                               // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_number, // car
+     (kiss_obj*)&KISS_ILOS_cpl01,        // cdr
 };
 
 kiss_ilos_class_t KISS_ILOS_CLASS_integer = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_integer,                    // name
-     KISS_NIL,                                            // abstractp
-     (kiss_obj*)&KISS_ILOS_cpl06,                         // cpl
+     KISS_ILOS_CLASS,                 // type
+     NULL,                            // gc_ptr
+     &KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL,                        // slot_specs
+     &KISS_Sc_integer,                // name
+     KISS_NIL,                        // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl06,     // cpl
 };
 
 // <float>
 kiss_ilos_class_t KISS_ILOS_CLASS_float = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_float,                      // name
-     KISS_NIL,                                            // abstractp
-     (kiss_obj*)&KISS_ILOS_cpl06,                         // cpl
+     KISS_ILOS_CLASS,                 // type
+     NULL,                            // gc_ptr
+     &KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL,                        // slot_specs
+     &KISS_Sc_float,                  // name
+     KISS_NIL,                        // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl06,     // cpl
 };
 
 // <basic-array>
 kiss_ilos_class_t KISS_ILOS_CLASS_basic_array = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_basic_array,                // name
-     KISS_T,                                              // abstractp
-     (kiss_obj*)&KISS_ILOS_cpl01,                         // cpl
+     KISS_ILOS_CLASS,                 // type
+     NULL,                            // gc_ptr
+     &KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL,                        // slot_specs
+     &KISS_Sc_basic_array,            // name
+     KISS_T,                          // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01,     // cpl
 };
 
 // <basic-array*>
 kiss_cons_t KISS_ILOS_cpl07 = {
-     KISS_CONS,
-     NULL, // gc_ptr
-     (kiss_obj*)&KISS_ILOS_CLASS_basic_array,
-     (kiss_obj*)&KISS_ILOS_cpl01,
+     KISS_CONS,                               // type
+     NULL,                                    // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_basic_array, // car
+     (kiss_obj*)&KISS_ILOS_cpl01,             // cdr
 };
 
 kiss_ilos_class_t KISS_ILOS_CLASS_basic_array_s = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_basic_array_s,              // name
-     KISS_T,                                              // abstractp
-     (kiss_obj*)&KISS_ILOS_cpl07,                         // cpl
+     KISS_ILOS_CLASS,                 // type
+     NULL,                            // gc_ptr
+     &KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL,                        // slot_specs
+     &KISS_Sc_basic_array_s,          // name
+     KISS_T,                          // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl07,     // cpl
 };
 
 // <general-array*>
 kiss_cons_t KISS_ILOS_cpl08 = {
-     KISS_CONS,
-     NULL, // gc_ptr
-     (kiss_obj*)&KISS_ILOS_CLASS_basic_array_s,
-     (kiss_obj*)&KISS_ILOS_cpl07,
+     KISS_CONS,                                 // type
+     NULL,                                      // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_basic_array_s, // car
+     (kiss_obj*)&KISS_ILOS_cpl07,               // cdr
 };
 
 kiss_ilos_class_t KISS_ILOS_CLASS_general_array_s = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_general_array_s,            // name
-     KISS_NIL,                                            // abstractp
-     (kiss_obj*)&KISS_ILOS_cpl08,                         // cpl
+     KISS_ILOS_CLASS,                 // type
+     NULL,                            // gc_ptr
+     &KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL,                        // slot_specs
+     &KISS_Sc_general_array_s,        // name
+     KISS_NIL,                        // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl08,     // cpl
 };
 
 // <basic-vector>
 kiss_ilos_class_t KISS_ILOS_CLASS_basic_vector = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_basic_vector,               // name
-     KISS_T,                                              // abstractp
-     (kiss_obj*)&KISS_ILOS_cpl07,                         // cpl
+     KISS_ILOS_CLASS,                 // type
+     NULL,                            // gc_ptr
+     &KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL,                        // slot_specs
+     &KISS_Sc_basic_vector,           // name
+     KISS_T,                          // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl07,     // cpl
 };
 
 // <general-vector>
 kiss_cons_t KISS_ILOS_cpl09 = {
-     KISS_CONS,
-     NULL, // gc_ptr
-     (kiss_obj*)&KISS_ILOS_CLASS_basic_vector,
-     (kiss_obj*)&KISS_ILOS_cpl07,
+     KISS_CONS,                                // type
+     NULL,                                     // gc_ptr
+     (kiss_obj*)&KISS_ILOS_CLASS_basic_vector, // car
+     (kiss_obj*)&KISS_ILOS_cpl07,              // cdr
 };
 
 kiss_ilos_class_t KISS_ILOS_CLASS_general_vector = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_general_vector,             // name
-     KISS_NIL,                                            // abstractp
-     (kiss_obj*)&KISS_ILOS_cpl09,                         // cpl
+     KISS_ILOS_CLASS,                 // type
+     NULL,                            // gc_ptr
+     &KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL,                        // slot_specs
+     &KISS_Sc_general_vector,         // name
+     KISS_NIL,                        // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl09,     // cpl
 };
 
 // <string>
 kiss_ilos_class_t KISS_ILOS_CLASS_string = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_string,                     // name
-     KISS_NIL,                                            // abstractp
-     (kiss_obj*)&KISS_ILOS_cpl09,                         // cpl
+     KISS_ILOS_CLASS,                 // type
+     NULL,                            // gc_ptr
+     &KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL,                        // slot_specs
+     &KISS_Sc_string,                 // name
+     KISS_NIL,                        // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl09,     // cpl
 };
 
 // <hash-table>
 kiss_ilos_class_t KISS_ILOS_CLASS_hash_table = {
-     KISS_ILOS_CLASS,                                     // type
-     NULL,                                                // gc_ptr
-     (kiss_ilos_class_t*)&KISS_ILOS_CLASS_built_in_class, // class
-     KISS_NIL,                                            // slots
-     (kiss_symbol_t*)&KISS_Sc_hash_table,                // name
-     KISS_T,                                              // abstractp
-     (kiss_obj*)&KISS_ILOS_cpl01,                         // cpl
+     KISS_ILOS_CLASS,                 // type
+     NULL,                            // gc_ptr
+     &KISS_ILOS_CLASS_built_in_class, // class
+     KISS_NIL,                        // slot_specs
+     &KISS_Sc_hash_table,             // name
+     KISS_T,                          // abstractp
+     (kiss_obj*)&KISS_ILOS_cpl01,     // cpl
 };
 
 // ---------------------------------
