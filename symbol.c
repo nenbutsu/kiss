@@ -4608,15 +4608,15 @@ kiss_symbol_t KISS_Sclass_of = {
      KISS_NIL,                    /* plist */
 };
 
-kiss_symbol_t KISS_Sslotref;
-kiss_cfunction_t KISS_CFslotref = {
+kiss_symbol_t KISS_Sk_slotref;
+kiss_cfunction_t KISS_CFk_slotref = {
      KISS_CFUNCTION,           /* type */
-     &KISS_Sslotref,           /* name */
+     &KISS_Sk_slotref,         /* name */
      (kiss_cf_t*)kiss_slotref, /* C function name */
      2,                        /* minimum argument number */
      2,                        /* maximum argument number */
 };
-kiss_symbol_t KISS_Sslotref = {
+kiss_symbol_t KISS_Sk_slotref = {
      KISS_SYMBOL,                /* type */
      NULL,                       /* gc_ptr */
      L"kiss::slotref",           /* name */
@@ -4648,15 +4648,15 @@ kiss_symbol_t KISS_Sslot_bound_p = {
      KISS_NIL,                        /* plist */
 };
 
-kiss_symbol_t KISS_Sset_slotref;
+kiss_symbol_t KISS_Sk_set_slotref;
 kiss_cfunction_t KISS_CFset_slotref = {
      KISS_CFUNCTION,               /* type */
-     &KISS_Sset_slotref,           /* name */
+     &KISS_Sk_set_slotref,           /* name */
      (kiss_cf_t*)kiss_set_slotref, /* C function name */
      3,                            /* minimum argument number */
      3,                            /* maximum argument number */
 };
-kiss_symbol_t KISS_Sset_slotref = {
+kiss_symbol_t KISS_Sk_set_slotref = {
      KISS_SYMBOL,                    /* type */
      NULL,                           /* gc_ptr */
      L"kiss::set-slotref",           /* name */
@@ -5299,7 +5299,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
      /* ilos.c */
      &KISS_Sstandard, &KISS_Sclass,
      &KISS_Sclass_of,
-     &KISS_Sslotref, &KISS_Sset_slotref, &KISS_Sslot_bound_p,
+     &KISS_Sk_slotref, &KISS_Sk_set_slotref, &KISS_Sslot_bound_p,
      &KISS_Sinstancep, &KISS_Sgeneric_function_p,
      &KISS_Sdefclass, &KISS_Sdefgeneric, &KISS_Sdefmethod,
      &KISS_Scall_next_method, &KISS_Snext_method_p,

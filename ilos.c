@@ -563,6 +563,89 @@ kiss_obj* kiss_set_slotref(const kiss_obj* const value, kiss_obj* const obj, kis
      return (kiss_obj*)value;
 }
 
+kiss_obj* kiss_defgeneric(const kiss_obj* const func_spec,
+                          const kiss_obj* const lambda_list,
+                          const kiss_obj* const rest);
+kiss_obj* kiss_defmethod(const kiss_obj* const func_spec, const kiss_obj* const rest);
+
+
+static kiss_symbol_t object = {
+     KISS_SYMBOL, /* type */
+     NULL,        /* gc_ptr */
+     L"object",   /* name */
+     0,           /* flags */
+     NULL,        /* var */
+     NULL,        /* fun */
+     NULL,        /* class */
+     NULL,        /* setf */
+     KISS_NIL,    /* plist */
+};
+
+static kiss_cons_t reader_lambda_list = {
+     KISS_CONS,          // type
+     NULL,               // gc_ptr
+     (kiss_obj*)&object, // car
+     KISS_NIL,           // cdr
+};
+
+extern kiss_symbol_t KISS_Sk_slotref;
+
+static void define_reader_function(const kiss_symbol_t* const class,
+                                   const kiss_symbol_t* const slot,
+                                   const kiss_symbol_t* const reader)
+{
+     const kiss_obj* const f = reader->fun;
+     if(f == NULL || !KISS_IS_GENERIC_FUNCTION(f)) {
+          kiss_defgeneric((kiss_obj*)reader, (kiss_obj*)&reader_lambda_list, KISS_NIL);
+     }
+     kiss_defmethod((kiss_obj*)reader,
+                    kiss_c_list(2,
+                                kiss_c_list(1,
+                                            kiss_c_list(2, (kiss_obj*)&object, (kiss_obj*)class)),
+                                kiss_c_list(2,
+                                            (kiss_obj*)&KISS_Sk_slotref,
+                                            (kiss_obj*)&object,
+                                            (kiss_obj*)slot)));
+}
+
+static kiss_symbol_t value = {
+     KISS_SYMBOL, /* type */
+     NULL,        /* gc_ptr */
+     L"value",    /* name */
+     0,           /* flags */
+     NULL,        /* var */
+     NULL,        /* fun */
+     NULL,        /* class */
+     NULL,        /* setf */
+     KISS_NIL,    /* plist */
+};
+
+static kiss_cons_t writer_lambda_list = {
+     KISS_CONS,                      // type
+     NULL,                           // gc_ptr
+     (kiss_obj*)&value,              // car
+     (kiss_obj*)&reader_lambda_list, // cdr
+};
+
+static void define_writer_function(const kiss_symbol_t* const class,
+                                   const kiss_symbol_t* const slot,
+                                   const kiss_symbol_t* const writer)
+{
+     const kiss_obj* const f = writer->fun;
+     if(f == NULL || !KISS_IS_GENERIC_FUNCTION(f)) {
+          kiss_defgeneric((kiss_obj*)writer, (kiss_obj*)&writer_lambda_list, KISS_NIL);
+     }
+     kiss_defmethod((kiss_obj*)writer,
+                    kiss_c_list(2,
+                                kiss_c_list(2,
+                                            (kiss_obj*)&value,
+                                            kiss_c_list(2, (kiss_obj*)&object, (kiss_obj*)class)),
+                                kiss_c_list(2,
+                                            (kiss_obj*)&KISS_Sk_slotref,
+                                            (kiss_obj*)&object,
+                                            (kiss_obj*)slot)));
+}
+
 kiss_symbol_t KISS_Skw_abstractp;
 kiss_symbol_t KISS_Skw_metaclass;
 
