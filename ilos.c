@@ -627,6 +627,8 @@ static kiss_cons_t writer_lambda_list = {
      (kiss_obj*)&reader_lambda_list, // cdr
 };
 
+extern kiss_symbol_t KISS_Sk_set_slotref;
+
 static void define_writer_function(const kiss_symbol_t* const class,
                                    const kiss_symbol_t* const slot,
                                    const kiss_symbol_t* const writer)
@@ -640,8 +642,41 @@ static void define_writer_function(const kiss_symbol_t* const class,
                                 kiss_c_list(2,
                                             (kiss_obj*)&value,
                                             kiss_c_list(2, (kiss_obj*)&object, (kiss_obj*)class)),
+                                kiss_c_list(4,
+                                            (kiss_obj*)&KISS_Sk_set_slotref,
+                                            (kiss_obj*)&value,
+                                            (kiss_obj*)&object,
+                                            (kiss_obj*)slot)));
+}
+
+extern kiss_symbol_t KISS_Ssetf;
+
+static void define_accessor_function(const kiss_symbol_t* const class,
+                                     const kiss_symbol_t* const slot,
+                                     const kiss_symbol_t* const accessor)
+{
+     kiss_obj* setf_spec = kiss_c_list(2, (kiss_obj*)&KISS_Ssetf, (kiss_obj*)accessor);
+     const kiss_obj* const f = accessor->fun;
+     if(f == NULL || !KISS_IS_GENERIC_FUNCTION(f)) {
+          kiss_defgeneric((kiss_obj*)accessor, (kiss_obj*)&reader_lambda_list, KISS_NIL);
+          kiss_defgeneric(setf_spec, (kiss_obj*)&writer_lambda_list, KISS_NIL);
+     }
+     kiss_defmethod((kiss_obj*)accessor,
+                    kiss_c_list(2,
+                                kiss_c_list(1,
+                                            kiss_c_list(2, (kiss_obj*)&object, (kiss_obj*)class)),
                                 kiss_c_list(2,
                                             (kiss_obj*)&KISS_Sk_slotref,
+                                            (kiss_obj*)&object,
+                                            (kiss_obj*)slot)));
+     kiss_defmethod((kiss_obj*)setf_spec,
+                    kiss_c_list(2,
+                                kiss_c_list(2,
+                                            (kiss_obj*)&value,
+                                            kiss_c_list(2, (kiss_obj*)&object, (kiss_obj*)class)),
+                                kiss_c_list(4,
+                                            (kiss_obj*)&KISS_Sk_set_slotref,
+                                            (kiss_obj*)&value,
                                             (kiss_obj*)&object,
                                             (kiss_obj*)slot)));
 }
@@ -764,7 +799,6 @@ kiss_symbol_t* kiss_make_setf_name(kiss_symbol_t* symbol) {
      return (kiss_symbol_t*)kiss_intern(name);
 }
 
-extern kiss_symbol_t KISS_Ssetf;
 kiss_symbol_t* Kiss_Func_Spec(const kiss_obj* const obj) {
      if (KISS_IS_SYMBOL(obj)) { return (kiss_symbol_t*)obj; }
      if (!KISS_IS_CONS(obj)) {
