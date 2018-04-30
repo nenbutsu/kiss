@@ -1,7 +1,7 @@
 /*  -*- coding: utf-8 -*-
   inline.c --- defines the inline functions of ISLisp processor KISS.
 
-  Copyright (C) 2017 Yuji Minejima.
+  Copyright (C) 2017, 2018 Yuji Minejima <yuji@minejima.jp>
 
   This file is part of ISLisp processor KISS.
 
@@ -67,6 +67,12 @@ extern inline
 kiss_obj* Kiss_General_Array(const kiss_obj* const obj);
 
 extern inline
+kiss_generic_function_t* Kiss_Generic_Function(const kiss_obj* const obj);
+
+extern inline
+kiss_metho_t* Kiss_Method(const kiss_obj* const obj);
+
+extern inline
 kiss_hash_table_t* Kiss_Hash_Table(const kiss_obj* const obj);
      
 extern inline
@@ -80,6 +86,9 @@ kiss_obj* Kiss_Basic_Array(const kiss_obj* const obj);
 
 extern inline
 kiss_obj* Kiss_List(const kiss_obj* const obj);
+
+extern inline
+kiss_ilos_class_t* Kiss_Class(const kiss_obj* const obj);
 
 extern inline
 kiss_obj* Kiss_Proper_List(const kiss_obj* const obj);
@@ -175,7 +184,7 @@ extern inline
 kiss_obj* kiss_nreverse(kiss_obj* p);
 
 extern inline
-kiss_obj* kiss_assoc(const kiss_obj* const obj, kiss_obj* const alist);
+kiss_obj* kiss_assoc(const kiss_obj* const obj, const kiss_obj* const alist);
 
 extern inline
 kiss_obj* kiss_assoc_using(const kiss_obj* test, const kiss_obj* const obj, kiss_obj* const alist);
@@ -269,7 +278,7 @@ extern inline
 kiss_obj* kiss_reverse(kiss_obj* p);
 
 extern inline
-kiss_obj* kiss_member(kiss_obj* const obj, kiss_obj* const list);
+kiss_obj* kiss_member(const kiss_obj* const obj, kiss_obj* const list);
 
 extern inline
 kiss_obj* kiss_member_using(const kiss_obj* const predicate, kiss_obj* const obj, kiss_obj* const list);

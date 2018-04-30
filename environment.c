@@ -1,7 +1,7 @@
 /*  -*- coding: utf-8 -*-
   environment.c --- defines the environment mechanism of ISLisp processor KISS.
 
-  Copyright (C) 2017 Yuji Minejima.
+  Copyright (C) 2017, 2018 Yuji Minejima <yuji@minejima.jp>
 
   This file is part of ISLisp processor KISS.
 
@@ -33,6 +33,7 @@ void kiss_init_environment(void) {
     env->dynamic_env.vars           = KISS_NIL;
     env->dynamic_env.jumpers        = KISS_NIL;
     env->dynamic_env.backquote_nest = 0;
+    env->dynamic_env.gf_invocations = KISS_NIL;
 
     env->lexeme_chars               = KISS_NIL;
 

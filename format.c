@@ -1,7 +1,7 @@
 /*  -*- coding: utf-8 -*-
   format_object.c --- defines the formatting mechanism of ISLisp processor KISS.
 
-  Copyright (C) 2017 Yuji Minejima.
+  Copyright (C) 2017, 2018 Yuji Minejima <yuji@minejima.jp>
 
   This file is part of ISLisp processor KISS.
 
@@ -329,17 +329,18 @@ static kiss_obj* kiss_format_cmacro(kiss_obj* out, kiss_obj* obj) {
      return KISS_NIL;
 }
 
-kiss_obj* kiss_format_ilos_obj(kiss_obj* out, kiss_obj* object) {
-     kiss_ilos_obj_t* obj = Kiss_ILOS_Obj(object);
-     kiss_obj* plist = obj->plist;
-     kiss_obj* name = kiss_plist_get(plist, (kiss_obj*)&KISS_Skw_name);
-     kiss_obj* class = kiss_plist_get(plist, (kiss_obj*)&KISS_Skw_class);
-     kiss_obj* class_name = kiss_plist_get(((kiss_ilos_obj_t*)class)->plist, (kiss_obj*)&KISS_Skw_name);
-     if (name == KISS_NIL) {
-          name = (kiss_obj*)kiss_make_string(L"an instance");
-     }
-     kiss_format(out, (kiss_obj*)kiss_make_string(L"#{ILOS: ~A of ~S}"),
-                 kiss_c_list(2, name, class_name));
+kiss_obj* kiss_format_ilos_obj(kiss_obj* out, kiss_obj* obj) {
+     kiss_obj* name = Kiss_Class(Kiss_ILOS_Obj(obj)->class)->name;
+     kiss_format(out, (kiss_obj*)kiss_make_string(L"#{ILOS OBJECT: an instance of ~S}"),
+                 kiss_c_list(1, name));
+     return KISS_NIL;
+}
+
+kiss_obj* kiss_format_ilos_class(kiss_obj* out, kiss_obj* obj) {
+     kiss_ilos_class_t* class = Kiss_Class(obj);
+     kiss_ilos_class_t* meta = Kiss_Class(class->class);
+     kiss_format(out, (kiss_obj*)kiss_make_string(L"#{ILOS CLASS: ~A of ~S}"),
+                 kiss_c_list(2, class->name, meta->name));
      return KISS_NIL;
 }
 
@@ -382,8 +383,9 @@ kiss_obj* kiss_format_object(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
      case KISS_LFUNCTION: kiss_format_function(out, obj); break;
      case KISS_LMACRO: kiss_format_macro(out, obj); break;
      case KISS_CFUNCTION: kiss_format_cfunction(out, obj); break;
-     case KISS_CMACRO: kiss_format_cmacro(out, obj); break;
+     case KISS_CSPECIAL: case KISS_CMACRO: kiss_format_cmacro(out, obj); break;
      case KISS_ILOS_OBJ: kiss_format_ilos_obj(out, obj); break;
+     case KISS_ILOS_CLASS: kiss_format_ilos_class(out, obj); break;
      default:
 	  kiss_format_string(out, (kiss_obj*)kiss_make_string(L"unprintable object"), escapep);
 	  break;

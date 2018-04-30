@@ -1,7 +1,7 @@
 /*  -*- coding: utf-8 -*-
   control.c --- defines the control mechanism of ISLisp processor KISS.
 
-  Copyright (C) 2017 Yuji Minejima.
+  Copyright (C) 2017, 2018 Yuji Minejima <yuji@minejima.jp>
 
   This file is part of ISLisp processor KISS.
 
@@ -396,6 +396,7 @@ kiss_obj* kiss_equal(const kiss_obj* const obj1, const kiss_obj* const obj2) {
      case KISS_LMACRO:
      case KISS_CFUNCTION:
      case KISS_CMACRO:
+     case KISS_CSPECIAL:
      case KISS_CATCHER:
      case KISS_BLOCK:
      case KISS_CLEANUP:

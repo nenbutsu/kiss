@@ -1,7 +1,7 @@
 /*  -*- coding: utf-8 -*-
   gf_invoke.c --- defines the generic function invocation mechanism of ISLisp processor KISS.
 
-  Copyright (C) 2017 Yuji Minejima.
+  Copyright (C) 2017, 2018 Yuji Minejima <yuji@minejima.jp>.
 
   This file is part of ISLisp processor KISS.
 
@@ -17,43 +17,6 @@
 
  */
 #include "kiss.h"
-
-kiss_lexical_environment_t Kiss_Null_Lexical_Env = {
-    KISS_NIL, /* vars */
-    KISS_NIL, /* funcs */
-    KISS_NIL, /* jumpers */
-};
-
-/* local function: (call-next-method) -> <object> */
-/* local function: (next-method-p) -> boolean */
-static kiss_obj* kiss_true(void) { return KISS_T; }
-kiss_cfunction_t KISS_CFtrue = {
-    KISS_CFUNCTION, /* type */
-    NULL,      /* name */
-        (kiss_cf_t*)kiss_true,      /* C function name */
-    0,         /* minimum argument number */
-    0,         /* maximum argument number */
-};
-
-static kiss_obj* kiss_false(void) { return KISS_NIL; }
-kiss_cfunction_t KISS_CFfalse = {
-    KISS_CFUNCTION, /* type */
-    NULL,      /* name */
-        (kiss_cf_t*)kiss_false,    /* C function name */
-    0,         /* minimum argument number */
-    0,         /* maximum argument number */
-};
-
-kiss_obj* kiss_next_method_error(void) {
-    Kiss_Err(L"Next method doesn't exist");
-}
-kiss_cfunction_t KISS_CFnext_method_error = {
-    KISS_CFUNCTION,          /* type */
-    NULL,               /* name */
-        (kiss_cf_t*)kiss_next_method_error, /* C function name */
-    0,                  /* minimum argument number */
-    0,                  /* maximum argument number */
-};
 
 static void kiss_bind_methodargs(const kiss_obj* const m) {
     kiss_environment_t* env = Kiss_Get_Environment();
@@ -81,7 +44,13 @@ static void kiss_bind_methodargs(const kiss_obj* const m) {
     }
 }
 
-void kiss_call_methods(kiss_obj* methods);
+void kiss_call_methods(kiss_obj* methods) {
+     Kiss_List(methods);
+     for (; KISS_IS_CONS(methods); methods = KISS_CDR(methods)) {
+          kiss_method_invoke(KISS_CAR(methods));
+     }
+}
+
 kiss_obj* kiss_method_invoke(const kiss_obj* const m) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_lexical_environment_t saved_lexical_env = env->lexical_env;
@@ -92,15 +61,10 @@ kiss_obj* kiss_method_invoke(const kiss_obj* const m) {
     kiss_bind_methodargs(m);
     result = kiss_eval_body(kiss_oref(m, kiss_symbol(L":body")));
     kiss_call_methods(kiss_oref(m, kiss_symbol(L":after")));
+
     env->lexical_env = saved_lexical_env;
     return result;
 }
 
-void kiss_call_methods(kiss_obj* methods) {
-    for (methods = Kiss_List(methods); KISS_IS_CONS(methods); methods = KISS_CDR(methods))
-    {
-	kiss_method_invoke(KISS_CAR(methods));
-    }
-}
 
 

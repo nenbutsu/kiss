@@ -1,7 +1,7 @@
 /*  -*- coding: utf-8 -*-
   error.c --- defines the error mechanism of ISLisp processor KISS.
 
-  Copyright (C) 2017 Yuji Minejima.
+  Copyright (C) 2017, 2018 Yuji Minejima <yuji@minejima.jp>.
 
   This file is part of ISLisp processor KISS.
 
@@ -37,34 +37,49 @@ void Kiss_System_Error (void) {
 _Noreturn
 void Kiss_Err(const wchar_t* const str, ...) {
      va_list args;
-     const wchar_t* p;
-     kiss_obj* const out = kiss_create_string_output_stream();
-     kiss_obj* string;
-     kiss_obj* rest = KISS_NIL;
+     kiss_cons_t head;
+     kiss_init_cons(&head, KISS_NIL, KISS_NIL);
+     kiss_obj* tail = (kiss_obj*)&head;
 
      va_start(args, str);
-     for (p = str; *p != L'\0'; p++) {
-	  if (*p == L'~' && *(p+1) == L'S') {
-	       if (is_condition_working()) {
-		    kiss_push(va_arg(args, kiss_obj*), &rest);
-		    kiss_format_object(out, (kiss_obj*)kiss_make_string(L"~S"), KISS_NIL);
-	       } else {
-		    kiss_format_object(out, va_arg(args, kiss_obj*), KISS_NIL);
-	       }
-	       p++;
-	  } else {
-	       kiss_format_char(out, kiss_make_char(*p));
-	  }
+     for (const wchar_t* p = str; *p != L'\0'; p++) {
+	  if (*p != L'~') { continue; }
+          p++;
+          wchar_t c = towupper(*p);
+          switch (c) {
+          case L'A': case L'B': case L'C': case L'D': case L'G': case L'O':
+          case L'S': case L'X': 
+          {
+               kiss_obj* arg = va_arg(args, kiss_obj*);
+               if (KISS_IS_CONS(arg)) { 
+                    arg = kiss_copy_list(arg); // arg might be on the C stack
+               }
+               kiss_set_cdr(kiss_cons(arg, KISS_NIL), tail);
+               tail = KISS_CDR(tail);
+               break;
+          }
+          case L'%': case L'~': case L'&':
+               break;
+          case L'0': case L'1': case L'2': case L'3': case L'4':
+          case L'5': case L'6': case L'7': case L'8': case L'9': {
+               fwprintf(stderr, L"Kiss_Error: directive ~nR and ~nT are not supported");
+               exit(EXIT_FAILURE);
+          }
+          default:
+               fwprintf(stderr, L"Kiss_Error: Invalid directive: ~%lc", c);
+               exit(EXIT_FAILURE);
+          }
      }
      va_end(args);
-
-     string = kiss_get_output_stream_string(out);
+     kiss_obj* string = (kiss_obj*)kiss_make_string(str);
      if (is_condition_working()) {
-	  rest = kiss_nreverse(rest);
 	  kiss_c_funcall(L"kiss::signal-simple-error",
-			kiss_c_list(3, (kiss_obj*)string, rest, KISS_NIL));
+                         kiss_c_list(3, string, KISS_CDR(&head), KISS_NIL));
      } else {
-	  kiss_throw(kiss_c_list(2, kiss_symbol(L"quote"), kiss_symbol(L"kiss::error")), string);
+          kiss_obj* out = kiss_create_string_output_stream();
+          kiss_format(out, string, KISS_CDR(&head));
+	  kiss_throw(kiss_c_list(2, kiss_symbol(L"quote"), kiss_symbol(L"kiss::error")),
+                     kiss_get_output_stream_string(out));
      }
      exit(EXIT_FAILURE); // not reach here
 }

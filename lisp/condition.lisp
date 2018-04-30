@@ -1,6 +1,6 @@
 ;;; condition.lisp --- defines the condition handling mechanism of ISLisp processor KISS.
 
-;; Copyright (C) 2017 Yuji Minejima.
+;; Copyright (C) 2017, 2018 Yuji Minejima <yuji@minejima.jp>
 
 ;; This file is part of ISLisp processor KISS.
 

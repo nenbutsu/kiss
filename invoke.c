@@ -1,7 +1,7 @@
 /*  -*- coding: utf-8 -*-
   eval.c --- defines the evaluation mechanism of ISLisp processor KISS.
 
-  Copyright (C) 2017 Yuji Minejima.
+  Copyright (C) 2017, 2018 Yuji Minejima <yuji@minejima.jp>
 
   This file is part of ISLisp processor KISS.
 
@@ -43,6 +43,9 @@ kiss_obj* kiss_invoke(const kiss_obj* const f, kiss_obj* const args) {
 	  result = kiss_cf_invoke((kiss_cfunction_t*)f, kiss_eval_args(args));
 	  break;
      case KISS_CMACRO:
+	  result = kiss_eval(kiss_cf_invoke((kiss_cfunction_t*)f, args));
+	  break;
+     case KISS_CSPECIAL:
 	  result = kiss_cf_invoke((kiss_cfunction_t*)f, args);
 	  break;
      case KISS_LFUNCTION:

@@ -1,7 +1,7 @@
 ;;; -*- mode: lisp; coding: utf-8 -*- 
 ;;; ilos.lisp --- defines class handling mechanism of ISLisp processor KISS.
 
-;; Copyright (C) 2017 Yuji Minejima.
+;; Copyright (C) 2017, 2018 Yuji Minejima <yuji@minejima.jp>
 
 ;; This file is part of ISLisp processor KISS.
 
@@ -17,12 +17,6 @@
 
 (defglobal kiss::classes (create-hash-table))
 (puthash '<built-in-class>  (kiss::make-ilos-obj 'nil) kiss::classes) ;; dummy. replaced below
-
-;; special operator: (class class-name) -> <class>
-;; Returns the class object that corresponds to the class named class-name.
-;; On error, signal <undefined-entity> see spec. p.119
-(defmacro class (class-name)
-  `(kiss::class ',class-name))
 
 (defun class-supers (c)
   (kiss::assure-class c)
@@ -181,25 +175,6 @@
           slot-specs))
 
 
-;; function: (class-of obj) -> <class>
-;; Returns the class of which the  given obj is a direct instance.
-;; obj may be any ISLISP object.
-;;(defun class-of (obj)
-;;  (cond
-;;   ((null obj)              (class <null>))
-;;   ((consp obj)             (class <cons>))
-;;   ((symbolp obj)           (class <symbol>))
-;;   ((characterp obj)        (class <character>))
-;;   ((integerp obj)          (class <integer>))
-;;   ((floatp obj)            (class <float>))
-;;   ((stringp obj)           (class <string>))
-;;   ((general-vector-p obj)  (class <general-vector>))
-;;   ((general-array*-p obj)  (class <general-array*>))
-;;   ((streamp obj)           (class <stream>))
-;;   ((simple-function-p obj) (class <function>))
-;;   ((object-p obj)          (kiss::oref obj :class))
-;;   (t (error "class-of: not-yet-implemented-class of ~S" obj))))
-
 (defun kiss::assure-class (class)
   (let ((metaclass (class-of class)))
     (if (or (eq (class <built-in-class>) metaclass)
@@ -207,17 +182,6 @@
         class
       (error "Not a class ~S" class))))
 
-;; function: (subclassp subclass superclass) -> boolean
-;; Returns t if the class subclass is a subclass of the class superclass;
-;; otherwise, returns nil. An error shall be signaled if either subclass or
-;; superclass is not a class object (error-id. domain-error). */
-(defun subclassp (sub super)
-  (kiss::assure-class sub)
-  (kiss::assure-class super)
-  (let ((class-precedence-list (class-cpl sub)))
-    (if (member super class-precedence-list)
-        t
-      nil)))
 
 ;; function: (instancep obj class) -> boolean
 ;; Returns t if obj is an instance (directly or otherwise) of the class
@@ -231,69 +195,6 @@
         t
       nil)))
 
-;;  <object>
-;;     |
-;;     +--> <basic-array>
-;;     |        |
-;;     |        +--> <basic-array*>
-;;     |        |        |
-;;     |        |        +--> <general-array*>
-;;     |        |
-;;     |        +--> <basic-vector>
-;;     |                 |
-;;     |                 +--> <general-vector>
-;;     |                 +--> <string>
-;;     |
-;;     +--> <built-in-class>
-;;     +--> <character>
-;;     +--> <function>
-;;     |        |
-;;     |        +--> <generic-function>
-;;     |                 |
-;;     |                 +--> <standard-generic-function>
-;;     +--> <list>
-;;     |        |
-;;     |        +--> <cons>
-;;     |        +--> <null> cpl = (<null> <symbol> <list> <object>)
-;;     |                 ^
-;;     |                 |
-;;     |        +--------+
-;;     |        |
-;;     +--> <symbol>
-;;     |
-;;     +--> <number>
-;;     |        |
-;;     |        +--> <float>
-;;     |        +--> <integer>
-;;     |
-;;     +--> <serious-condition>
-;;     |        |
-;;     |        +--> <error>
-;;     |        |       |
-;;     |        |       +--> <arithmetic-error>
-;;     |        |       |           |
-;;     |        |       |           +--> <division-by-zero>
-;;     |        |       |           +--> <floating-point-overflow>
-;;     |        |       |           +--> <floating-point-underflow>
-;;     |        |       |
-;;     |        |       +--> <control-error>
-;;     |        |       +--> <parse-error>
-;;     |        |       +--> <program-error>
-;;     |        |       |           |
-;;     |        |       |           +--> <domain-error>
-;;     |        |       |           +--> <undefined-entity>
-;;     |        |       |                     |
-;;     |        |       |                     +--> <unbound-variable>
-;;     |        |       |                     +--> <undefined-function>
-;;     |        |       +--> <simple-error>
-;;     |        |       +--> <stream-error>
-;;     |        |                   |
-;;     |        |                   +--> <end-of-stream>
-;;     |        +--> <storage-exhausted>
-;;     |
-;;     +--> <standard-class>
-;;     +--> <standard-object>
-;;     +--> <stream>
 
 
 

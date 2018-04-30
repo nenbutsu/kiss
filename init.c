@@ -1,7 +1,7 @@
 /*  -*- coding: utf-8 -*-
   init.c --- defines the initialization mechanism of ISLisp processor KISS.
 
-  Copyright (C) 2017 Yuji Minejima.
+  Copyright (C) 2017, 2018 Yuji Minejima <yuji@minejima.jp>
 
   This file is part of ISLisp processor KISS.
 
@@ -33,7 +33,7 @@ static wchar_t* libraries[] = {
      L"lisp/sequence.lisp",
      L"lisp/control.lisp",
      L"lisp/string.lisp",
-     L"lisp/ilos.lisp",
+//     L"lisp/ilos.lisp",
      L"lisp/condition.lisp",
      L"lisp/init.lisp",
      NULL,
@@ -75,6 +75,7 @@ void kiss_initialize(void) {
      kiss_init_environment();
      kiss_init_symbols();
      kiss_init_streams();
+     kiss_init_ilos();
      kiss_init_error_catcher();
 
      for (size_t i = 0; libraries[i] != NULL; i++) {
