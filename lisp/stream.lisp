@@ -1,7 +1,7 @@
 ;;; -*- mode: lisp; coding: utf-8 -*- 
 ;;; stream_l.lisp --- defines the stream handling mechanism of ISLisp processor KISS.
 
-;; Copyright (C) 2017, 2018 Yuji Minejima <yuji@minejima.jp>
+;; Copyright (C) 2017 Yuji Minejima.
 
 ;; This file is part of ISLisp processor KISS.
 

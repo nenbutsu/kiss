@@ -1,7 +1,7 @@
 /*  -*- coding: utf-8 -*-
   function.c --- defines the function mechanism of ISLisp processor KISS.
 
-  Copyright (C) 2017, 2018 Yuji Minejima <yuji@minejima.jp>
+  Copyright (C) 2017 Yuji Minejima.
 
   This file is part of ISLisp processor KISS.
 
@@ -90,7 +90,7 @@ kiss_obj* kiss_lambda(kiss_obj* params, kiss_obj* body) {
     return (kiss_obj*)kiss_make_function(NULL, lambda);
 }
 
-/* defining operator: (defun function-name lambda-list form*) -> <symbol> */
+/* special operator: (defun function-name lambda-list form*) -> <symbol> */
 kiss_obj* kiss_defun(kiss_obj* name, kiss_obj* params, kiss_obj* body) {
     kiss_symbol_t* fname = Kiss_Symbol(name);
     kiss_obj* lambda = kiss_c_list(3, &KISS_Slambda, params,
@@ -100,7 +100,7 @@ kiss_obj* kiss_defun(kiss_obj* name, kiss_obj* params, kiss_obj* body) {
     return name;
 }
 
-/* defining operator: (defmacro macro-name lambda-list form*) -> <symbol> */
+/* special operator: (defmacro macro-name lambda-list form*) -> <symbol> */
 kiss_obj* kiss_defmacro(kiss_obj* name, kiss_obj* params, kiss_obj* body) {
     kiss_symbol_t* fname = Kiss_Symbol(name);
     kiss_obj* lambda = kiss_c_list(3, &KISS_Slambda, params,

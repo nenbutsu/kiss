@@ -1,7 +1,7 @@
 /*  -*- coding: utf-8 -*-
   gc.c --- defines the garbage collection mechanism of ISLisp processor KISS.
 
-  Copyright (C) 2017, 2018 Yuji Minejima <yuji@minejima.jp>
+  Copyright (C) 2017 Yuji Minejima.
 
   This file is part of ISLisp processor KISS.
 
@@ -163,8 +163,7 @@ static inline
 void kiss_gc_mark_oo_obj(kiss_ilos_obj_t* const obj) {
      if (is_marked((kiss_gc_obj*)obj)) { return; }
      mark_flag((kiss_gc_obj*)obj);
-     kiss_gc_mark_obj(obj->class);
-     kiss_gc_mark_obj(obj->slots);
+     kiss_gc_mark_obj(obj->plist);
 }
 
 void kiss_gc_mark_obj(kiss_obj* obj) {
@@ -206,7 +205,6 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
 	       break;
 	  case KISS_CFUNCTION:
 	  case KISS_CMACRO:
-	  case KISS_CSPECIAL:
 	       kiss_gc_mark_cfunction((kiss_cfunction_t*)obj);
 	       break;
 	  case KISS_CATCHER:
@@ -317,7 +315,6 @@ void kiss_gc_free_obj(kiss_gc_obj* obj) {
 	  case KISS_LMACRO:
 	  case KISS_CFUNCTION:
 	  case KISS_CMACRO:
-	  case KISS_CSPECIAL:
 	  case KISS_CATCHER:
 	  case KISS_BLOCK:
 	  case KISS_CLEANUP:

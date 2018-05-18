@@ -1,7 +1,7 @@
 ;;; -*- mode: lisp; coding: utf-8 -*- 
 ;;; sequence_l.lisp --- defines the sequence handling mechanism of ISLisp processor KISS.
 
-;; Copyright (C) 2017, 2018 Yuji Minejima <yuji@minejima.jp>
+;; Copyright (C) 2017 Yuji Minejima.
 
 ;; This file is part of ISLisp processor KISS.
 
