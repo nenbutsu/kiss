@@ -316,7 +316,7 @@ static kiss_obj* kiss_format_cfunction(kiss_obj* out, kiss_obj* obj) {
 }
 
 static kiss_obj* kiss_format_cmacro(kiss_obj* out, kiss_obj* obj) {
-     kiss_cfunction_t* f = Kiss_CMacro(obj);
+     kiss_cfunction_t* f = Kiss_CSpecial(obj);
      if (f->name->flags & KISS_SPECIAL_OPERATOR) {
           kiss_format_string(out, (kiss_obj*)kiss_make_string(L"#<special operator "), KISS_NIL);
      } else if (f->name->flags & KISS_DEFINING_OPERATOR) {
@@ -382,7 +382,7 @@ kiss_obj* kiss_format_object(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep) {
      case KISS_LFUNCTION: kiss_format_function(out, obj); break;
      case KISS_LMACRO: kiss_format_macro(out, obj); break;
      case KISS_CFUNCTION: kiss_format_cfunction(out, obj); break;
-     case KISS_CMACRO: kiss_format_cmacro(out, obj); break;
+     case KISS_CSPECIAL: kiss_format_cmacro(out, obj); break;
      case KISS_ILOS_OBJ: kiss_format_ilos_obj(out, obj); break;
      default:
 	  kiss_format_string(out, (kiss_obj*)kiss_make_string(L"unprintable object"), escapep);

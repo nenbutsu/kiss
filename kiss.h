@@ -63,7 +63,7 @@ typedef enum {
      KISS_LFUNCTION,
      KISS_LMACRO,
      KISS_CFUNCTION,
-     KISS_CMACRO,
+     KISS_CSPECIAL,
 
      KISS_CATCHER,
      KISS_CLEANUP,
@@ -398,7 +398,7 @@ kiss_symbol_t KISS_Ueos, KISS_Udummy;
 #define KISS_IS_LFUNCTION(x)         (KISS_OBJ_TYPE(x) == KISS_LFUNCTION)
 #define KISS_IS_LMACRO(x)            (KISS_OBJ_TYPE(x) == KISS_LMACRO)
 #define KISS_IS_CFUNCTION(x)         (KISS_OBJ_TYPE(x) == KISS_CFUNCTION)
-#define KISS_IS_CMACRO(x)            (KISS_OBJ_TYPE(x) == KISS_CMACRO)
+#define KISS_IS_CSPECIAL(x)            (KISS_OBJ_TYPE(x) == KISS_CSPECIAL)
 #define KISS_IS_CATCHER(x)           (KISS_OBJ_TYPE(x) == KISS_CATCHER)
 #define KISS_IS_CLEANUP(x)           (KISS_OBJ_TYPE(x) == KISS_CLEANUP)
 #define KISS_IS_BLOCK(x)             (KISS_OBJ_TYPE(x) == KISS_BLOCK)
@@ -412,7 +412,7 @@ kiss_symbol_t KISS_Ueos, KISS_Udummy;
 #define KISS_IS_FILE_STREAM(x)       (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_FILE_STREAM))
 #define KISS_IS_STRING_STREAM(x)     (KISS_IS_STREAM(x) && ((((kiss_stream_t*)x)->flags) & KISS_STRING_STREAM))
 
-#define KISS_IS_GC_OBJ(x)            !(KISS_IS_FIXNUM(x) || KISS_IS_FIXCHAR(x) || KISS_IS_CFUNCTION(x) || KISS_IS_CMACRO(x))
+#define KISS_IS_GC_OBJ(x)            !(KISS_IS_FIXNUM(x) || KISS_IS_FIXCHAR(x) || KISS_IS_CFUNCTION(x) || KISS_IS_CSPECIAL(x))
 
 
 /* character.c */
@@ -970,8 +970,8 @@ kiss_cfunction_t* Kiss_CFunction(const kiss_obj* const obj) {
 }
 
 inline
-kiss_cfunction_t* Kiss_CMacro(const kiss_obj* const obj) {
-     if (KISS_IS_CMACRO(obj)) { return (kiss_cfunction_t*)obj; }
+kiss_cfunction_t* Kiss_CSpecial(const kiss_obj* const obj) {
+     if (KISS_IS_CSPECIAL(obj)) { return (kiss_cfunction_t*)obj; }
      Kiss_Domain_Error(obj, L"c macro");
 }
 

@@ -42,7 +42,7 @@ kiss_obj* kiss_invoke(const kiss_obj* const f, kiss_obj* const args) {
      case KISS_CFUNCTION:
 	  result = kiss_cf_invoke((kiss_cfunction_t*)f, kiss_eval_args(args));
 	  break;
-     case KISS_CMACRO:
+     case KISS_CSPECIAL:
 	  result = kiss_cf_invoke((kiss_cfunction_t*)f, args);
 	  break;
      case KISS_LFUNCTION:

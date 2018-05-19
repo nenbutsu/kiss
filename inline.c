@@ -118,7 +118,7 @@ extern inline
 kiss_cfunction_t* Kiss_CFunction(const kiss_obj* const obj);
 
 extern inline
-kiss_cfunction_t* Kiss_CMacro(const kiss_obj* const obj);
+kiss_cfunction_t* Kiss_CSpecial(const kiss_obj* const obj);
 
 extern inline
 kiss_obj* kiss_not(const kiss_obj* const obj);

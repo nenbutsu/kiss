@@ -277,7 +277,7 @@ kiss_obj* kiss_basic_array_p (const kiss_obj* const obj) {
      case KISS_LFUNCTION:
      case KISS_LMACRO:
      case KISS_CFUNCTION:
-     case KISS_CMACRO:
+     case KISS_CSPECIAL:
      case KISS_CATCHER:
      case KISS_CLEANUP:
      case KISS_BLOCK:
@@ -310,7 +310,7 @@ kiss_obj* kiss_basic_array_s_p (const kiss_obj* const obj) {
      case KISS_LFUNCTION:
      case KISS_LMACRO:
      case KISS_CFUNCTION:
-     case KISS_CMACRO:
+     case KISS_CSPECIAL:
      case KISS_CATCHER:
      case KISS_CLEANUP:
      case KISS_BLOCK:
@@ -343,7 +343,7 @@ kiss_obj* kiss_general_array_s_p (const kiss_obj* const obj) {
      case KISS_LFUNCTION:
      case KISS_LMACRO:
      case KISS_CFUNCTION:
-     case KISS_CMACRO:
+     case KISS_CSPECIAL:
      case KISS_CATCHER:
      case KISS_CLEANUP:
      case KISS_BLOCK:

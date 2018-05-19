@@ -204,7 +204,7 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
 	       kiss_gc_mark_function((kiss_function_t*)obj);
 	       break;
 	  case KISS_CFUNCTION:
-	  case KISS_CMACRO:
+	  case KISS_CSPECIAL:
 	       kiss_gc_mark_cfunction((kiss_cfunction_t*)obj);
 	       break;
 	  case KISS_CATCHER:
@@ -314,7 +314,7 @@ void kiss_gc_free_obj(kiss_gc_obj* obj) {
 	  case KISS_LFUNCTION:
 	  case KISS_LMACRO:
 	  case KISS_CFUNCTION:
-	  case KISS_CMACRO:
+	  case KISS_CSPECIAL:
 	  case KISS_CATCHER:
 	  case KISS_BLOCK:
 	  case KISS_CLEANUP:

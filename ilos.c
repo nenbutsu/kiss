@@ -86,7 +86,7 @@ kiss_obj* kiss_class_of(const kiss_obj* const obj) {
 	  case KISS_LFUNCTION:
 	  case KISS_LMACRO:
 	  case KISS_CFUNCTION:
-	  case KISS_CMACRO:
+	  case KISS_CSPECIAL:
                return kiss_k_class((kiss_obj*)&KISS_Sc_function);
 	  case KISS_ILOS_OBJ:
                return kiss_oref(obj, (kiss_obj*)&KISS_Skw_class);
