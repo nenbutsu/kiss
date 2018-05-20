@@ -1,7 +1,7 @@
 /*
   kiss.h --- declarations of ISLisp processor KISS.
 
-  Copyright (C) 2017, 2018 Yuji Minejima (yuji@minejima.jp).
+  Copyright (C) 2017, 2018 Yuji Minejima <yuji@minejima.jp>
 
   This file is part of ISLisp processor KISS.
 
