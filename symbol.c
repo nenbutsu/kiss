@@ -2183,28 +2183,28 @@ kiss_cfunction_t KISS_CFplus = {
      -1,                    /* maximum argument number */
 };
 kiss_symbol_t KISS_Splus = {
-     KISS_SYMBOL,
-     NULL,              /* gc_ptr */
-     L"+",
-     KISS_SYSTEM_FUNCTION,
-     NULL,               /* var */
+     KISS_SYMBOL,             /* type */
+     NULL,                    /* gc_ptr */
+     L"+",                    /* name */
+     KISS_SYSTEM_FUNCTION,    /* flags */
+     NULL,                    /* var */
      (kiss_obj*)&KISS_CFplus, /* fun */
      KISS_NIL,                /* plist */
 };
 
 kiss_symbol_t KISS_Smultiply;
 kiss_cfunction_t KISS_CFmultiply = {
-     KISS_CFUNCTION,  /* type */
-     &KISS_Smultiply, /* name */
-     (kiss_cf_t*)kiss_multiply,  /* C function name */
-     0,               /* minimum argument number */
-     -1,              /* maximum argument number */
+     KISS_CFUNCTION,            /* type */
+     &KISS_Smultiply,           /* name */
+     (kiss_cf_t*)kiss_multiply, /* C function name */
+     0,                         /* minimum argument number */
+     -1,                        /* maximum argument number */
 };
 kiss_symbol_t KISS_Smultiply = {
-     KISS_SYMBOL,
-     NULL,              /* gc_ptr */
-     L"*",
-     KISS_SYSTEM_FUNCTION,
+     KISS_SYMBOL,                 /* type */
+     NULL,                        /* gc_ptr */
+     L"*",                        /* name */
+     KISS_SYSTEM_FUNCTION,        /* flags */
      NULL,                        /* var */
      (kiss_obj*)&KISS_CFmultiply, /* fun */
      KISS_NIL,                    /* plist */
@@ -2213,17 +2213,17 @@ kiss_symbol_t KISS_Smultiply = {
 
 kiss_symbol_t KISS_Sminus;
 kiss_cfunction_t KISS_CFminus = {
-     KISS_CFUNCTION, /* type */
-     &KISS_Sminus,   /* name */
-     (kiss_cf_t*)kiss_minus,    /* C function name */
-     1,              /* minimum argument number */
-     -1,             /* maximum argument number */
+     KISS_CFUNCTION,         /* type */
+     &KISS_Sminus,           /* name */
+     (kiss_cf_t*)kiss_minus, /* C function name */
+     1,                      /* minimum argument number */
+     -1,                     /* maximum argument number */
 };
 kiss_symbol_t KISS_Sminus = {
-     KISS_SYMBOL,
-     NULL,              /* gc_ptr */
-     L"-",
-     KISS_SYSTEM_FUNCTION,
+     KISS_SYMBOL,              /* type */
+     NULL,                     /* gc_ptr */
+     L"-",                     /* name */
+     KISS_SYSTEM_FUNCTION,     /* flags */
      NULL,                     /* var */
      (kiss_obj*)&KISS_CFminus, /* fun */
      KISS_NIL,                 /* plist */
@@ -2232,127 +2232,127 @@ kiss_symbol_t KISS_Sminus = {
 
 kiss_symbol_t KISS_Snum_eq;
 kiss_cfunction_t KISS_CFnum_eq = {
-     KISS_CFUNCTION, /* type */
-     &KISS_Snum_eq,  /* name */
-     (kiss_cf_t*)kiss_num_eq,   /* C function name */
-     2,         /* minimum argument number */
-     2,         /* maximum argument number */
+     KISS_CFUNCTION,          /* type */
+     &KISS_Snum_eq,           /* name */
+     (kiss_cf_t*)kiss_num_eq, /* C function name */
+     2,                       /* minimum argument number */
+     2,                       /* maximum argument number */
 };
 kiss_symbol_t KISS_Snum_eq = {
-     KISS_SYMBOL,
-     NULL,              /* gc_ptr */
-     L"=",
-     KISS_SYSTEM_FUNCTION,
-     NULL,                 /* var */
+     KISS_SYMBOL,               /* type */
+     NULL,                      /* gc_ptr */
+     L"=",                      /* name */
+     KISS_SYSTEM_FUNCTION,      /* flags */
+     NULL,                      /* var */
      (kiss_obj*)&KISS_CFnum_eq, /* fun */
      KISS_NIL,                  /* plist */
 };
 
 kiss_symbol_t KISS_Snum_neq;
 kiss_cfunction_t KISS_CFnum_neq = {
-     KISS_CFUNCTION, /* type */
-     &KISS_Snum_neq,  /* name */
-     (kiss_cf_t*)kiss_num_neq,   /* C function name */
-     2,         /* minimum argument number */
-     2,         /* maximum argument number */
+     KISS_CFUNCTION,           /* type */
+     &KISS_Snum_neq,           /* name */
+     (kiss_cf_t*)kiss_num_neq, /* C function name */
+     2,                        /* minimum argument number */
+     2,                        /* maximum argument number */
 };
 kiss_symbol_t KISS_Snum_neq = {
-     KISS_SYMBOL,
-     NULL,              /* gc_ptr */
-     L"/=",
-     KISS_SYSTEM_FUNCTION,
-     NULL,                 /* var */
+     KISS_SYMBOL,                /* type */
+     NULL,                       /* gc_ptr */
+     L"/=",                      /* name */
+     KISS_SYSTEM_FUNCTION,       /* flags */
+     NULL,                       /* var */
      (kiss_obj*)&KISS_CFnum_neq, /* fun */
-     KISS_NIL,                  /* plist */
+     KISS_NIL,                   /* plist */
 };
 
 
 kiss_symbol_t KISS_Snum_lessthan;
 kiss_cfunction_t KISS_CFnum_lessthan = {
-     KISS_CFUNCTION,       /* type */
-     &KISS_Snum_lessthan,  /* name */
-     (kiss_cf_t*)kiss_num_lessthan,   /* C function name */
-     2,               /* minimum argument number */
-     2,               /* maximum argument number */
+     KISS_CFUNCTION,                /* type */
+     &KISS_Snum_lessthan,           /* name */
+     (kiss_cf_t*)kiss_num_lessthan, /* C function name */
+     2,                             /* minimum argument number */
+     2,                             /* maximum argument number */
 };
 kiss_symbol_t KISS_Snum_lessthan = {
-     KISS_SYMBOL,
-     NULL,              /* gc_ptr */
-     L"<",
-     KISS_SYSTEM_FUNCTION,
-     NULL,                       /* var */
+     KISS_SYMBOL,                     /* type */
+     NULL,                            /* gc_ptr */
+     L"<",                            /* name */
+     KISS_SYSTEM_FUNCTION,            /* flags */
+     NULL,                            /* var */
      (kiss_obj*)&KISS_CFnum_lessthan, /* fun */
      KISS_NIL,                        /* plist */
 };
 
 kiss_symbol_t KISS_Snum_lessthan_eq;
 kiss_cfunction_t KISS_CFnum_lessthan_eq = {
-     KISS_CFUNCTION,       /* type */
-     &KISS_Snum_lessthan_eq,  /* name */
-     (kiss_cf_t*)kiss_num_lessthan_eq,   /* C function name */
-     2,               /* minimum argument number */
-     2,               /* maximum argument number */
+     KISS_CFUNCTION,                   /* type */
+     &KISS_Snum_lessthan_eq,           /* name */
+     (kiss_cf_t*)kiss_num_lessthan_eq, /* C function name */
+     2,                                /* minimum argument number */
+     2,                                /* maximum argument number */
 };
 kiss_symbol_t KISS_Snum_lessthan_eq = {
-     KISS_SYMBOL,
-     NULL,              /* gc_ptr */
-     L"<=",
-     KISS_SYSTEM_FUNCTION,
-     NULL,                       /* var */
+     KISS_SYMBOL,                        /* type */
+     NULL,                               /* gc_ptr */
+     L"<=",                              /* name */
+     KISS_SYSTEM_FUNCTION,               /* flags */
+     NULL,                               /* var */
      (kiss_obj*)&KISS_CFnum_lessthan_eq, /* fun */
-     KISS_NIL,                        /* plist */
+     KISS_NIL,                           /* plist */
 };
 
 
 kiss_symbol_t KISS_Snum_greaterthan;
 kiss_cfunction_t KISS_CFnum_greaterthan = {
-     KISS_CFUNCTION,       /* type */
-     &KISS_Snum_greaterthan,  /* name */
-     (kiss_cf_t*)kiss_num_greaterthan,   /* C function name */
-     2,               /* minimum argument number */
-     2,               /* maximum argument number */
+     KISS_CFUNCTION,                   /* type */
+     &KISS_Snum_greaterthan,           /* name */
+     (kiss_cf_t*)kiss_num_greaterthan, /* C function name */
+     2,                                /* minimum argument number */
+     2,                                /* maximum argument number */
 };
 kiss_symbol_t KISS_Snum_greaterthan = {
-     KISS_SYMBOL,
-     NULL,              /* gc_ptr */
-     L">",
-     KISS_SYSTEM_FUNCTION,
-     NULL,                       /* var */
+     KISS_SYMBOL,                        /* type */
+     NULL,                               /* gc_ptr */
+     L">",                               /* name */
+     KISS_SYSTEM_FUNCTION,               /* flags */
+     NULL,                               /* var */
      (kiss_obj*)&KISS_CFnum_greaterthan, /* fun */
-     KISS_NIL,                        /* plist */
+     KISS_NIL,                           /* plist */
 };
 
 kiss_symbol_t KISS_Snum_greaterthan_eq;
 kiss_cfunction_t KISS_CFnum_greaterthan_eq = {
-     KISS_CFUNCTION,       /* type */
-     &KISS_Snum_greaterthan_eq,  /* name */
-     (kiss_cf_t*)kiss_num_greaterthan_eq,   /* C function name */
-     2,               /* minimum argument number */
-     2,               /* maximum argument number */
+     KISS_CFUNCTION,                      /* type */
+     &KISS_Snum_greaterthan_eq,           /* name */
+     (kiss_cf_t*)kiss_num_greaterthan_eq, /* C function name */
+     2,                                   /* minimum argument number */
+     2,                                   /* maximum argument number */
 };
 kiss_symbol_t KISS_Snum_greaterthan_eq = {
-     KISS_SYMBOL,
-     NULL,              /* gc_ptr */
-     L">=",
-     KISS_SYSTEM_FUNCTION,
-     NULL,                       /* var */
+     KISS_SYMBOL,                           /* type */
+     NULL,                                  /* gc_ptr */
+     L">=",                                 /* name */
+     KISS_SYSTEM_FUNCTION,                  /* flags */
+     NULL,                                  /* var */
      (kiss_obj*)&KISS_CFnum_greaterthan_eq, /* fun */
-     KISS_NIL,                        /* plist */
+     KISS_NIL,                              /* plist */
 };
 
 kiss_symbol_t KISS_Sdiv;
 kiss_cfunction_t KISS_CFdiv = {
      KISS_CFUNCTION,       /* type */
-     &KISS_Sdiv,  /* name */
-     (kiss_cf_t*)kiss_div,   /* C function name */
-     2,               /* minimum argument number */
-     2,               /* maximum argument number */
+     &KISS_Sdiv,           /* name */
+     (kiss_cf_t*)kiss_div, /* C function name */
+     2,                    /* minimum argument number */
+     2,                    /* maximum argument number */
 };
 kiss_symbol_t KISS_Sdiv = {
-     KISS_SYMBOL,
-     NULL,              /* gc_ptr */
-     L"div",
-     KISS_SYSTEM_FUNCTION,
+     KISS_SYMBOL,            /* type */
+     NULL,                   /* gc_ptr */
+     L"div",                 /* name */
+     KISS_SYSTEM_FUNCTION,   /* flags */
      NULL,                   /* var */
      (kiss_obj*)&KISS_CFdiv, /* fun */
      KISS_NIL,               /* plist */
@@ -2361,16 +2361,16 @@ kiss_symbol_t KISS_Sdiv = {
 kiss_symbol_t KISS_Smod;
 kiss_cfunction_t KISS_CFmod = {
      KISS_CFUNCTION,       /* type */
-     &KISS_Smod,  /* name */
-     (kiss_cf_t*)kiss_mod,   /* C function name */
-     2,               /* minimum argument number */
-     2,               /* maximum argument number */
+     &KISS_Smod,           /* name */
+     (kiss_cf_t*)kiss_mod, /* C function name */
+     2,                    /* minimum argument number */
+     2,                    /* maximum argument number */
 };
 kiss_symbol_t KISS_Smod = {
-     KISS_SYMBOL,
-     NULL,              /* gc_ptr */
-     L"mod",
-     KISS_SYSTEM_FUNCTION,
+     KISS_SYMBOL,            /* type */
+     NULL,                   /* gc_ptr */
+     L"mod",                 /* name */
+     KISS_SYSTEM_FUNCTION,   /* flags */
      NULL,                   /* var */
      (kiss_obj*)&KISS_CFmod, /* fun */
      KISS_NIL,               /* plist */
@@ -2379,16 +2379,16 @@ kiss_symbol_t KISS_Smod = {
 kiss_symbol_t KISS_Sgcd;
 kiss_cfunction_t KISS_CFgcd = {
      KISS_CFUNCTION,       /* type */
-     &KISS_Sgcd,  /* name */
-     (kiss_cf_t*)kiss_gcd,   /* C function name */
-     2,               /* minimum argument number */
-     2,               /* maximum argument number */
+     &KISS_Sgcd,           /* name */
+     (kiss_cf_t*)kiss_gcd, /* C function name */
+     2,                    /* minimum argument number */
+     2,                    /* maximum argument number */
 };
 kiss_symbol_t KISS_Sgcd = {
-     KISS_SYMBOL,
-     NULL,              /* gc_ptr */
-     L"gcd",
-     KISS_SYSTEM_FUNCTION,
+     KISS_SYMBOL,            /* type */
+     NULL,                   /* gc_ptr */
+     L"gcd",                 /* name */
+     KISS_SYSTEM_FUNCTION,   /* flags */
      NULL,                   /* var */
      (kiss_obj*)&KISS_CFgcd, /* fun */
      KISS_NIL,               /* plist */
