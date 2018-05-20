@@ -39,7 +39,7 @@
 typedef long int kiss_ptr_int;
 #define KISS_PTR_INT_MAX (LONG_MAX>>2)
 #define KISS_PTR_INT_MIN (LONG_MIN>>2)
-_Static_assert (sizeof(kiss_ptr_int) == sizeof(void*), "We need a C int with the same width as void*");
+_Static_assert (sizeof(kiss_ptr_int) == sizeof(void*), "We need a C int type with the same width as void*");
 
 #define kiss_ptr_int(x)        (((kiss_ptr_int)x)>>2)
 #define kiss_wchar(x)          kiss_ptr_int(x)
@@ -48,8 +48,8 @@ _Static_assert (sizeof(kiss_ptr_int) == sizeof(void*), "We need a C int with the
 #define kiss_make_fixnum(x)    (kiss_obj*)((((kiss_ptr_int)x)<<2) | 1)
 
 typedef enum {
-     KISS_FIXNUM = 1,
-     KISS_CHARACTER = 2,
+     KISS_FIXNUM = 1,       // used as a flag for FIXNUM
+     KISS_CHARACTER = 2,    // used as a flag for FIXCHAR
      KISS_CONS,
      KISS_SYMBOL,
      KISS_BIGNUM,
@@ -92,49 +92,6 @@ struct kiss_gc_obj {
 };
 typedef struct kiss_gc_obj kiss_gc_obj;
 
-
-#define KISS_HEAP_STACK_SIZE (1024 * 1024 * 2)
-extern size_t Kiss_Heap_Top;
-extern kiss_gc_obj* Kiss_Heap_Stack[];
-
-extern kiss_ptr_int Kiss_GC_Flag;
-extern size_t Kiss_GC_Amount;
-extern void* Kiss_GC_Objects;
-
-/* gc.c */
-kiss_obj* kiss_gc_info(void);
-kiss_obj* kiss_gc(void);
-
-_Noreturn
-void Kiss_System_Error (void);
-
-#define kiss_gc_ptr(x)   ((void*)((kiss_ptr_int)x & (~0<<1)))
-/* An error shall be signaled if the requested memory cannot be allocated
-   (error-id. <storage-exhausted>). */
-inline
-void* Kiss_Malloc(size_t const size) {
-    void* p = malloc(size);
-    if (p == NULL) { Kiss_System_Error(); }
-    return p;
-}
-
-inline
-void* Kiss_GC_Malloc(size_t const size) {
-    void* p = Kiss_Malloc(size);
-
-    Kiss_GC_Amount += size;
-    if (Kiss_GC_Amount > 1024 * 1024 * 4) {
-         //fwprintf(stderr, L"\ngc...\n");
-	 kiss_gc();
-	 Kiss_GC_Amount = 0;
-    }
-
-    Kiss_Heap_Stack[Kiss_Heap_Top++] = p;
-    assert(Kiss_Heap_Top < KISS_HEAP_STACK_SIZE);
-    ((kiss_gc_obj*)p)->gc_ptr = (void*)((kiss_ptr_int)kiss_gc_ptr(Kiss_GC_Objects) | Kiss_GC_Flag);
-    Kiss_GC_Objects = p;
-    return p;
-}
 
 typedef struct {
      kiss_type type;
@@ -371,6 +328,49 @@ kiss_symbol_t KISS_Seql;
 kiss_symbol_t KISS_Ueos, KISS_Udummy;
 #define KISS_DUMMY    ((kiss_obj*)(&KISS_Udummy))
 #define KISS_EOS      ((kiss_obj*)(&KISS_Ueos))
+
+#define KISS_HEAP_STACK_SIZE (1024 * 1024 * 2)
+extern size_t Kiss_Heap_Top;
+extern kiss_gc_obj* Kiss_Heap_Stack[];
+
+extern kiss_ptr_int Kiss_GC_Flag;
+extern size_t Kiss_GC_Amount;
+extern void* Kiss_GC_Objects;
+
+/* gc.c */
+kiss_obj* kiss_gc_info(void);
+kiss_obj* kiss_gc(void);
+
+_Noreturn
+void Kiss_System_Error (void);
+
+#define kiss_gc_ptr(x)   ((void*)((kiss_ptr_int)x & (~0<<1)))
+/* An error shall be signaled if the requested memory cannot be allocated
+   (error-id. <storage-exhausted>). */
+inline
+void* Kiss_Malloc(size_t const size) {
+    void* p = malloc(size);
+    if (p == NULL) { Kiss_System_Error(); }
+    return p;
+}
+
+inline
+void* Kiss_GC_Malloc(size_t const size) {
+    void* p = Kiss_Malloc(size);
+
+    Kiss_GC_Amount += size;
+    if (Kiss_GC_Amount > 1024 * 1024 * 4) {
+         //fwprintf(stderr, L"\ngc...\n");
+	 kiss_gc();
+	 Kiss_GC_Amount = 0;
+    }
+
+    Kiss_Heap_Stack[Kiss_Heap_Top++] = p;
+    assert(Kiss_Heap_Top < KISS_HEAP_STACK_SIZE);
+    ((kiss_gc_obj*)p)->gc_ptr = (void*)((kiss_ptr_int)kiss_gc_ptr(Kiss_GC_Objects) | Kiss_GC_Flag);
+    Kiss_GC_Objects = p;
+    return p;
+}
 
 
 #define KISS_CAR(x) ((void*)(((kiss_cons_t*)x)->car))
