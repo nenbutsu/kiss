@@ -1,7 +1,7 @@
 ;;; -*- mode: lisp; coding: utf-8 -*- 
 ;;; test_cons.lisp --- forms with which a conforming ISLisp processor must return true.
 
-;; Copyright (C) 2017 Yuji Minejima (yuji@minejima.jp).
+;; Copyright (C) 2017, 2018 Yuji Minejima <yuji@minejima.jp>
 
 ;; This file is part of ISLisp processor KISS.
 

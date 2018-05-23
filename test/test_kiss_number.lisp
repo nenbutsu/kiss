@@ -1,7 +1,7 @@
 ;;; -*- mode: lisp; coding: utf-8 -*- 
 ;;; test_kiss_number.lisp --- a bunch of KISS specific forms with which it must return true.
 
-;; Copyright (C) 2017 Yuji Minejima.
+;; Copyright (C) 2017, 2018 Yuji Minejima <yuji@minejima.jp>
 
 ;; This file is part of ISLisp processor KISS.
 
