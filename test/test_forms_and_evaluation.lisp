@@ -15,6 +15,9 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
+;;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#functions
+
+
 ;;; functionp
 (functionp (function car))
 (functionp (function create))
