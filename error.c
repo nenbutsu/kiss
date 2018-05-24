@@ -260,3 +260,13 @@ void Kiss_Arity_Error(const kiss_obj* const name, const kiss_obj* const message)
      exit(EXIT_FAILURE);
 }
 
+_Noreturn
+void Kiss_Undefined_Function_Error(const kiss_obj* const name) {
+     if (is_condition_working()) {
+	  kiss_c_funcall(L"kiss::signal-undefined-function", kiss_c_list(2, name, KISS_NIL));
+     } else {
+	  Kiss_Err(L"Undefined function error. ~S", name);
+     }
+     exit(EXIT_FAILURE);
+}
+

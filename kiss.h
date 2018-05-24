@@ -479,6 +479,8 @@ _Noreturn
 void Kiss_Tagbody_Not_Found_Error(const kiss_obj* const name);
 _Noreturn
 void Kiss_Arity_Error(const kiss_obj* const name, const kiss_obj* const message);
+_Noreturn
+void Kiss_Undefined_Function_Error(const kiss_obj* const name);
 
 /* eval.c */
 kiss_obj* kiss_invoke(const kiss_obj* const f, kiss_obj* const args);

@@ -114,7 +114,7 @@ kiss_obj* kiss_fun_ref(kiss_symbol_t* name) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_obj* binding = kiss_assoc((kiss_obj*)name, env->lexical_env.funs);
     if (KISS_IS_CONS(binding)) { return KISS_CDR(binding); }
-    if (name->fun == NULL) { Kiss_Err(L"Unbound function ~S", name); }
+    if (name->fun == NULL) { Kiss_Undefined_Function_Error((kiss_obj*)name); }
     return name->fun;
 }
 

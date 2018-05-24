@@ -107,15 +107,14 @@
    (expected-class :reader domain-error-expected-class :initarg expected-class))
   (:metaclass <built-in-class>))
 
+(defclass <arity-error> (<program-error>) ;; kiss specific, not in the spec.
+  ((form :reader arity-error-form :initarg form)
+   (message :reader arity-error-message :initarg message))
+  (:metaclass <built-in-class>))
+
 (defclass <undefined-entity> (<program-error>)
   ((name :reader undefined-entity-name :initarg name)
    (namespace :reader undefined-entity-namespace :initarg namespace))
-  (:metaclass <built-in-class>))
-
-;;; kiss specific, not in the spec.
-(defclass <arity-error> (<program-error>)
-  ((form :reader arity-error-form :initarg form)
-   (message :reader arity-error-message :initarg message))
   (:metaclass <built-in-class>))
 
 (defclass <unbound-variable> (<undefined-entity>) ()
@@ -369,6 +368,10 @@
                             'operation operation
                             'operands operands)
 		    continuable))
+(defun kiss::signal-undefined-function (name continuable)
+  (signal-condition (create (class <undefined-function>)
+                            'name name 'namespace 'function)
+                    continuable))
 
 
 
