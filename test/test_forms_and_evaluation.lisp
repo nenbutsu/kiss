@@ -60,6 +60,20 @@
                     (signal-condition condition nil)))
                 (function no-such-function))
   nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (function (love me do)))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (function "car"))
+  nil)
 
 
 ;;; lambda
