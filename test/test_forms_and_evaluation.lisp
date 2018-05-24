@@ -20,11 +20,46 @@
 (functionp (function create))
 (functionp (lambda () t))
 (not (functionp 'car))
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (functionp))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (functionp 'car 'cdr))
+  nil)
 
 
 ;;; function
 (= (funcall (function -) 3) -3)
 (= (apply #'- '(4 3)) 1)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (function))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (function a b))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <undefined-function>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (function no-such-function))
+  nil)
 
 
 ;;; lambda
