@@ -153,6 +153,21 @@ t
 (eq (not 3) nil)
 (eq (not (list)) t)
 (eq (not (list 3)) 'nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (not))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (not 'a 'b 'c))
+  nil)
+
 
 ;; and
 (eq (and) t)
