@@ -81,6 +81,35 @@
 (equal ((lambda (x y &rest z) z) 3 4 5 6) '(5 6))
 (equal ((lambda (x y :rest z) z) 3 4 5 6) '(5 6))
 (= (funcall (lambda (x y) (- y (* x y))) 7 3) -18)
+(let ((fun (let* ((a 10)
+                  (f (lambda (x) (+ x a))))
+             f)))
+  (= (funcall fun 1) 11))
+(null (funcall (lambda ())))
+(= 10 (funcall (lambda () 1 2 3 4 5 6 7 8 9 10)))
+(= (funcall (lambda (x y &rest z) (apply #'+ x y z)) 1 2 3 4 5) 15)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (funcall (lambda (x) x)))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (funcall (lambda (x y) (+ x y)) 1))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (funcall (lambda (x y) (+ x y)) 1 2 3))
+  nil)
+
 
 
 ;;; labels
