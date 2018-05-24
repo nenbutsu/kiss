@@ -205,3 +205,109 @@
                 (funcall "+" 1 2 3))
   nil)
 
+
+;;; defconstant
+(eq (defconstant constant-a 10) 'constant-a)
+(= constant-a 10)
+(= (let ((constant-a 2))
+     constant-a)
+   2)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (defconstant))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (defconstant constant-b))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (defconstant constant-b 1 2 3))
+  nil)
+
+
+;;; defglobal
+(eq (defglobal global-a 10) 'global-a)
+(= global-a 10)
+(eq (defglobal today 'wednesday) 'today)
+(eq today 'wednesday)
+(defun what-is-today () today)
+(eq (what-is-today) 'wednesday)
+(eq (let ((what-is-today 'thursday))
+      (what-is-today))
+    'wednesday)
+(eq (let ((today 'thursday))
+      (what-is-today))
+    'wednesday)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (defglobal))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (defglobal global-b))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (defglobal global-b 1 2 3))
+  nil)
+
+
+;;; defdynamic
+(eq (defdynamic *color* 'red) '*color*)
+(eq (dynamic *color*) 'red)
+(defun what-color ()
+  (dynamic *color*))
+(eq (what-color) 'red)
+(eq (dynamic-let ((*color* 'green))
+                 (what-color))
+    'green)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (defdynamic))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (defdynamic dynamic-b))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (defdynamic dynamic-b 1 2 3))
+  nil)
+
+
+;;; defun
+(eq (defun car-car (x) (car (car x))) 'car-car)
+(eq (car-car '((a) b c)) 'a)
+(defun fact (n) (if (= n 0) 1 (* n (fact (- n 1)))))
+(= (fact 3) 6)
+(defun f ())
+(null (f))
+
