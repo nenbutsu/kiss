@@ -123,6 +123,12 @@
                       (evenp (- n 1)))))
       (evenp 88))
     t)
+(null (labels ((f (x) x))
+        ))
+(= (labels ((f (x) x))
+     (f 10)
+     1)
+   1)
 
 
 ;;; flet
@@ -130,6 +136,12 @@
      (flet ((f (x) (+ x (f x))))
        (f 7)))
    17)
+(null (flet ((f (x)))
+        ))
+(= (flet ((f (x) x))
+     (f 10)
+     1)
+   1)
 
 
 ;;; apply
@@ -138,6 +150,37 @@
   (lambda (:rest args)
     (funcall f (apply g args))))
 (= (funcall (compose (function sqrt) (function *)) 12 75) 30)
+(= (apply #'+ '(1 2 3 4 5)) 15)
+(= (apply #'+ '()) 0)
+(= (apply #'+ 1 2 3 4 5 '()) 15)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (apply '+ '(1 2 3)))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (apply "+" '(1 2 3)))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (apply #'+ 1 2 #(3 4)))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (apply #'+ 1 2))
+  nil)
 
 
 ;;; funcall
@@ -146,4 +189,19 @@
                     (t (lambda (x) (cons x 1))))
               x))
    1)
+(= (funcall #'+) 0)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (funcall '+ 1 2 3))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+                    (signal-condition condition nil)))
+                (funcall "+" 1 2 3))
+  nil)
 
