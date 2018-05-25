@@ -109,7 +109,7 @@ t
   nil)
 
 
-;; equal
+;;; equal
 (eq (equal 'a 'a) t)
 (eq (equal 2 2) t)
 (not (equal 2 2.0))
@@ -120,6 +120,8 @@ t
 (eq (equal "abc" "abc") t)
 (eq (equal (vector 'a) (vector 'a)) t)
 (eq (equal #(a b) #(a b)) t)
+(eq (equal #2a((1 2 3) (4 5 6)) #2a((1 2 3) (4 5 6))) t)
+(not (equal #2a((1 2 3) (4 5 6)) #2a((1 2 3) (7 8 9))))
 (not (equal #(a b) #(a c)))
 (not (equal "a" "A"))
 (block a
@@ -145,7 +147,7 @@ t
   nil)
 
 
-;; not
+;;; not
 (eq (not t) nil)
 (eq (not '()) t)
 (eq (not 'nil) t)
@@ -169,7 +171,7 @@ t
   nil)
 
 
-;; and
+;;; and
 (eq (and) t)
 (eq (and (= 2 2) (> 2 1)) t)
 (eq (and (= 2 2) (< 2 1)) nil)
@@ -185,7 +187,10 @@ t
 	   (- time 12) time))
      6)
 
-;; or
+
+;;; or
+(eq (or) 'nil)
+(eq (or 'a) 'a)
 (eq (or (= 2 2) (> 2 1)) t)
 (eq (or (= 2 2) (< 2 1)) t)
 (eq (let ((x 'a)) (or x (setq x 'b))) 'a)
