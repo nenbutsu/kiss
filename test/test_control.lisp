@@ -173,6 +173,41 @@
     'equal)
 (eql (cond (10)) 10)
 (eq (cond) 'nil)
+(let ((i 5))
+  (eq (cond
+       ((< i 5) 'less)
+       ((= i 5) 'equal)
+       ((> i 5) 'greater))
+      'equal))
+(let ((i -1))
+  (eq (cond
+       ((< i 5) 'less)
+       ((= i 5) 'equal)
+       ((> i 5) 'greater))
+      'less))
+(let ((i 1000))
+  (eq (cond
+       ((< i 5) 'less)
+       ((= i 5) 'equal)
+       ((> i 5) 'greater))
+      'greater))
+(let ((a 'foo))
+  (eq (cond
+       ((numberp a) 'number)
+       ((general-vector-p a) 'general-vector)
+       ((stringp a) 'string)
+       ((symbolp a) 'symbol)
+       (t 'other))
+      'symbol))
+
+(let ((a #2A((a) (b))))
+  (eq (cond
+       ((numberp a) 'number)
+       ((general-vector-p a) 'general-vector)
+       ((stringp a) 'string)
+       ((symbolp a) 'symbol)
+       (t 'other))
+      'other))
 
 
 ;;; case case-using
