@@ -107,6 +107,31 @@
 
 
 ;;; dynamic
+(defdynamic dynamic-foo 10)
+(= (dynamic dynamic-foo) 10)
+(dynamic-let ((dynamic-foo (- (dynamic dynamic-foo) 5)))
+   (= (dynamic dynamic-foo) 5))
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (dynamic))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (dynamic foo bar))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <unbound-variable>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (dynamic foo-bar-baz))
+  nil)
 
 
 ;;; dynamic-let
