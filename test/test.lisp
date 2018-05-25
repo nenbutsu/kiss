@@ -28,6 +28,7 @@
     "test/test_array.lisp"
     "test/test_number.lisp"
     "test/test_stream.lisp"
+    "test/test_setf.lisp"
     "test/test_kiss_number.lisp"
     ))
 

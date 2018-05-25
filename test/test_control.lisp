@@ -27,6 +27,7 @@
 (= 5.0 '5.0)
 (= 123.0e10 '123.0E10)
 
+
 ;;; quote
 (eq (quote a) 'a)
 (equal (quote #(a b c)) '#(a b c))
@@ -37,16 +38,6 @@
 (equal '(quote a) (quote (quote a)))
 (eq (car ''a) 'quote)
 
-;;; defglobal
-(and (eq (defglobal x 0) 'x)
-     (eql (let ((x 1)) x) 1)
-     (eql x 0))
-(and (eq (defglobal x 2) 'x)
-     (eql (+ x 1) 3)
-     (eql (setq x 4) 4)
-     (eql (+ x 1) 5)
-     (eql (let ((x 1)) (setq x 2) x) 2)
-     (eql (+ x 1) 5))
 
 ;;; setq
 (eq (defglobal x 2) 'x)
@@ -58,6 +49,28 @@
      x)
    2)
 (= (+ x 1) 5)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (setq))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (setq x))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (setq x 1 2 3))
+  nil)
+
 
 ;;; let 
 (= (let ((x 2) (y 3)) (* x y)) 6)
