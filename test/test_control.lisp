@@ -143,6 +143,8 @@
       (+ x (dynamic y)))
     'bar)
 (eql (foo 2) 3)
+(null (dynamic-let ()))
+(= 10 (dynamic-let () 10))
 
 
 ;;; if
@@ -157,6 +159,7 @@
        (if (< x 0) x (- x)))
      -7)
 
+
 ;;; cond
 (eq (cond ((> 3 2) 'greater)
 	  ((< 3 2) 'less))
@@ -170,6 +173,7 @@
     'equal)
 (eql (cond (10)) 10)
 (eq (cond) 'nil)
+
 
 ;;; case case-using
 (eq (case (* 2 3)
