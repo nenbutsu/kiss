@@ -72,7 +72,9 @@
   nil)
 
 
-;;; let 
+;;; let
+(= (let () 1) 1)
+(null (let ()))
 (= (let ((x 2) (y 3)) (* x y)) 6)
 
 (= (let ((x 2) (y 3))
@@ -87,6 +89,8 @@
        '(2 1))
 
 ;;; let*
+(= (let* () 1) 1)
+(null (let* ()))
 (eql (let ((x 2)
 	   (y 3))
        (let* ((x 7)
@@ -100,6 +104,10 @@
 		(y x))
 	   (list x y)))
        '(2 2))
+
+
+;;; dynamic
+
 
 ;;; dynamic-let
 (eq (defun foo (x)
