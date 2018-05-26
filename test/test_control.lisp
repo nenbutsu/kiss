@@ -260,12 +260,14 @@
            (string= (get-output-stream-string out) "4 plus 1 equals 5")))
     t)
 
+
 ;;; while
 (equal (let ((x '())
 	     (i 5))
 	 (while (> i 0) (setq x (cons i x)) (setq i (- i 1)))
 	 x)
        '(1 2 3 4 5))
+
 
 ;;; for
 (eql (let ((x '(1 3 5 7 9)))
@@ -274,11 +276,12 @@
 	    ((null x) sum)))
      25)
 
-;;(equal (for ((vec (vector 0 0 0 0 0))
-;;	     (i 0 (+ i 1)))
-;;	    ((= i 5) vec)
-;;	    (setf (elt vec i) i))
-;;       #(0 1 2 3 4))
+(equal (for ((vec (vector 0 0 0 0 0))
+	     (i 0 (+ i 1)))
+	    ((= i 5) vec)
+	    (setf (elt vec i) i))
+       #(0 1 2 3 4))
+
 
 ;;; block
 (eql 6 (block x 
@@ -339,8 +342,6 @@
 		(bar t t))
   nil)
 
-
-
 		
 ;;; catch throw
 (defun foo (x)
@@ -356,7 +357,20 @@
 (eql (foo '(1 2 3 4)) 10)
 (eql (foo '(1 2 a 4)) 0)
 
+
 ;;; tagbody go
+(= (block loop
+     (let ((i 0))
+       (tagbody
+        top
+        (setq i (+ i 1))
+        (if (> i 10)
+            (go end))
+        (go top)
+        end
+        (return-from loop i))))
+   11)
+
 
 ;;; unwind-protect
 (defun foo (x)
