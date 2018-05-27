@@ -16,3 +16,12 @@
 ;; GNU General Public License for more details.
 
 ;;; defmacro
+(eq (defmacro car-car(x) (list 'car (list 'car x))) 'car-car)
+(eq (car-car '((x) y z)) 'x)
+
+;;; quasiquote
+(equal (let ((foo 'a)
+             (bar '(x y z)))
+         `(,foo ,@bar))
+       '(a x y z))
+

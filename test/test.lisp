@@ -23,6 +23,7 @@
     "test/test_cons.lisp"
     "test/test_control.lisp"
     "test/test_predicate.lisp"
+    "test/test_macro.lisp"
     "test/test_string.lisp"
     "test/test_sequence.lisp"
     "test/test_array.lisp"
