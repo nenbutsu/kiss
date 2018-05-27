@@ -228,6 +228,10 @@
 				'expected-class class)
 			nil))))
 
+(defmacro the (class-name form)
+  form)
+
+
 ;; generic function (report-condition condition stream) -> <condition>
 ;;   Presents a natural language description of condition to stream. This
 ;;   generic function may be specialized for user-defined condition
