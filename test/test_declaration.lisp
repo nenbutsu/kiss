@@ -16,4 +16,34 @@
 ;; GNU General Public License for more details.
 
 ;; the
+(equal (the <cons> '(a b c))
+       '(a b c))
 
+(= (the <integer> 1)
+   1)
+
+;; assure
+(equal (assure <cons> '(a b c))
+       '(a b c))
+
+(= (assure <integer> 1)
+   1)
+
+(string= (assure <string> "love")
+         "love")
+
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (assure <cons> 'nil))
+  nil)
+
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (assure <string> 'love))
+  nil)
