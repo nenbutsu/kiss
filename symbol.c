@@ -1270,6 +1270,26 @@ kiss_symbol_t KISS_Sputhash = {
 };
 
 
+/*** convert.c ***/
+kiss_symbol_t KISS_Sconvert;
+kiss_cfunction_t KISS_CFconvert = {
+     KISS_CSPECIAL,            /* type */
+     &KISS_Sconvert,           /* name */
+     (kiss_cf_t*)kiss_convert, /* C function name */
+     2,                        /* minimum argument number */
+     2,                        /* maximum argument number */
+};
+kiss_symbol_t KISS_Sconvert = {
+     KISS_SYMBOL,                /* type */
+     NULL,                       /* gc_ptr */
+     L"convert",                 /* name */
+     KISS_SPECIAL_OPERATOR,      /* flags */
+     NULL,                       /* var */
+     (kiss_obj*)&KISS_CFconvert, /* fun */
+     KISS_NIL,                   /* plist */
+};
+
+
 /*** function.c ***/
 kiss_symbol_t KISS_Ssimple_function_p;
 kiss_cfunction_t KISS_CFsimple_function_p = {
@@ -4462,7 +4482,10 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
 
      /* hash_table */
      &KISS_Screate_hash_table, &KISS_Sgethash, &KISS_Sputhash,
-    
+
+     /* convert.c */
+     &KISS_Sconvert,
+     
      /* function.c */
      &KISS_Ssimple_function_p, &KISS_Sfunction, &KISS_Slambda,
      &KISS_Sflet, &KISS_Slabels, &KISS_Sdefun, &KISS_Sdefmacro, &KISS_Sfuncall,
