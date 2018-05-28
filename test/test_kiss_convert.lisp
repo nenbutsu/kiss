@@ -29,3 +29,15 @@
 
 (eq (convert #\a <symbol>) 'a)
 
+(= (convert 12 <integer>) 12)
+(char= (convert 32 <character>) #\space)
+(string= (convert 12 <string>) "12")
+(string= (convert 120000000000 <string>) "120000000000")
+(= (convert 12 <float>) 12.0)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (convert 12 <symbol>))
+  nil)
