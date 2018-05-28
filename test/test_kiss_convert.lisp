@@ -18,6 +18,14 @@
 ;;; convert
 (= (convert #\space <integer>) 32)
 (char= (convert #\space <character>) #\space)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (convert #\a <string>))
+  nil)
+
 
 (eq (convert #\a <symbol>) 'a)
 
