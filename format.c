@@ -168,7 +168,9 @@ static kiss_obj* kiss_format_escaped_char(kiss_obj* out, kiss_obj* obj) {
 }
 
 /* function: (format-integer output-stream integer radix) -> <null> */
-kiss_obj* kiss_format_fixnum(kiss_obj* out, kiss_obj* obj, kiss_obj* radix) {
+kiss_obj* kiss_format_fixnum(kiss_obj* const out, const kiss_obj* const obj,
+                             const kiss_obj* const radix)
+{
      long int i = Kiss_Fixnum(obj);
      long int r = Kiss_Fixnum(radix);
      int is_minus = i < 0 ? 1 : 0;
@@ -196,7 +198,9 @@ kiss_obj* kiss_format_fixnum(kiss_obj* out, kiss_obj* obj, kiss_obj* radix) {
      return KISS_NIL;
 }
 
-kiss_obj* kiss_format_bignum(kiss_obj* out, kiss_obj* obj, kiss_obj* radix) {
+kiss_obj* kiss_format_bignum(kiss_obj* const out, const kiss_obj* const obj,
+                             const kiss_obj* const radix)
+{
      char* str = mpz_get_str(NULL, Kiss_Fixnum(radix), Kiss_Bignum(obj)->mpz);
      wchar_t* wcs = kiss_mbstowcs(str);
      free(str);

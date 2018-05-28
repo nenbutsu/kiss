@@ -19,6 +19,7 @@
 #include "kiss.h"
 
 kiss_obj* kiss_convert(const kiss_obj* const obj, const kiss_obj* const class_name) {
+     kiss_k_class(class_name);
      switch (KISS_OBJ_TYPE(obj)) {
      case KISS_CHARACTER:
           if (class_name == (kiss_obj*)&KISS_Sc_character) {
@@ -30,6 +31,34 @@ kiss_obj* kiss_convert(const kiss_obj* const obj, const kiss_obj* const class_na
                return kiss_intern((kiss_obj*)str);
           } else if (class_name == (kiss_obj*)&KISS_Sc_string) {
                Kiss_Err(L"Cannot convert character to string, use (create-string 1 ~S)", obj);
+          } else {
+               goto error;
+          }
+     case KISS_FIXNUM:
+          if (class_name == (kiss_obj*)&KISS_Sc_character) {
+               return kiss_make_char(kiss_ptr_int(obj));
+          } else if (class_name == (kiss_obj*)&KISS_Sc_integer) {
+               return (kiss_obj*)obj;
+          } else if (class_name == (kiss_obj*)&KISS_Sc_float) {
+               return kiss_float(obj);
+          } else if (class_name == (kiss_obj*)&KISS_Sc_string) {
+               kiss_obj* out = kiss_create_string_output_stream();
+               kiss_format_fixnum(out, obj, kiss_make_fixnum(10));
+               return kiss_get_output_stream_string(out);
+          } else {
+               goto error;
+          }
+     case KISS_BIGNUM:
+          if (class_name == (kiss_obj*)&KISS_Sc_character) {
+               return kiss_make_char(mpz_get_si(((kiss_bignum_t*)obj)->mpz));
+          } else if (class_name == (kiss_obj*)&KISS_Sc_integer) {
+               return (kiss_obj*)obj;
+          } else if (class_name == (kiss_obj*)&KISS_Sc_float) {
+               return kiss_float(obj);
+          } else if (class_name == (kiss_obj*)&KISS_Sc_string) {
+               kiss_obj* out = kiss_create_string_output_stream();
+               kiss_format_bignum(out, obj, kiss_make_fixnum(10));
+               return kiss_get_output_stream_string(out);
           } else {
                goto error;
           }

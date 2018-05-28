@@ -489,8 +489,10 @@ kiss_obj* kiss_invoke(const kiss_obj* const f, kiss_obj* const args);
 kiss_obj* kiss_format(kiss_obj* out, kiss_obj* format, kiss_obj* args);
 kiss_obj* kiss_format_fresh_line(kiss_obj* output);
 kiss_obj* kiss_format_integer(kiss_obj* out, kiss_obj* obj, kiss_obj* radix);
-kiss_obj* kiss_format_fixnum(kiss_obj* out, kiss_obj* obj, kiss_obj* radix);
-kiss_obj* kiss_format_bignum(kiss_obj* out, kiss_obj* obj, kiss_obj* radix);
+kiss_obj* kiss_format_fixnum(kiss_obj* const out, const kiss_obj* const obj,
+                             const kiss_obj* const radix);
+kiss_obj* kiss_format_bignum(kiss_obj* const out, const kiss_obj* const obj,
+                             const kiss_obj* const radix);
 kiss_obj* kiss_format_float(kiss_obj* out, kiss_obj* obj) ;
 kiss_obj* kiss_format_pointer(kiss_obj* out, kiss_obj* obj);
 kiss_obj* kiss_format_object(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep);
