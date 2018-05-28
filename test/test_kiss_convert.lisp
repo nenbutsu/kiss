@@ -16,3 +16,6 @@
 ;; GNU General Public License for more details.
 
 ;;; convert
+(= (convert #\space <integer>) 32)
+(char= (convert #\space <character>) #\space)
+
