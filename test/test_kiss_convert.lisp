@@ -19,3 +19,5 @@
 (= (convert #\space <integer>) 32)
 (char= (convert #\space <character>) #\space)
 
+(eq (convert #\a <symbol>) 'a)
+
