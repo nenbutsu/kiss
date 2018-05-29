@@ -493,7 +493,7 @@ kiss_obj* kiss_format_fixnum(kiss_obj* const out, const kiss_obj* const obj,
                              const kiss_obj* const radix);
 kiss_obj* kiss_format_bignum(kiss_obj* const out, const kiss_obj* const obj,
                              const kiss_obj* const radix);
-kiss_obj* kiss_format_float(kiss_obj* out, kiss_obj* obj) ;
+kiss_obj* kiss_format_float(kiss_obj* const out, const kiss_obj* const obj);
 kiss_obj* kiss_format_pointer(kiss_obj* out, kiss_obj* obj);
 kiss_obj* kiss_format_object(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep);
 kiss_obj* kiss_print(kiss_obj* obj);

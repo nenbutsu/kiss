@@ -62,6 +62,18 @@ kiss_obj* kiss_convert(const kiss_obj* const obj, const kiss_obj* const class_na
           } else {
                goto error;
           }
+     case KISS_FLOAT:
+          if (class_name == (kiss_obj*)&KISS_Sc_integer) {
+               Kiss_Err(L"Cannot convert float to <integer>, consider using floor, ceiling, round, or truncate", obj, class_name);
+          } else if (class_name == (kiss_obj*)&KISS_Sc_float) {
+               return (kiss_obj*)obj;
+          } else if (class_name == (kiss_obj*)&KISS_Sc_string) {
+               kiss_obj* out = kiss_create_string_output_stream();
+               kiss_format_float(out, obj);
+               return kiss_get_output_stream_string(out);
+          } else {
+               goto error;
+          }
      default:
 	  goto error;
      }

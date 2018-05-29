@@ -16,6 +16,8 @@
 ;; GNU General Public License for more details.
 
 ;;; convert
+
+;; character
 (= (convert #\space <integer>) 32)
 (char= (convert #\space <character>) #\space)
 (block a
@@ -26,14 +28,15 @@
     (convert #\a <string>))
   nil)
 
-
 (eq (convert #\a <symbol>) 'a)
 
+;; integer
 (= (convert 12 <integer>) 12)
 (char= (convert 32 <character>) #\space)
 (string= (convert 12 <string>) "12")
 (string= (convert 120000000000 <string>) "120000000000")
 (= (convert 12 <float>) 12.0)
+(= (convert 120000000000 <float>) 1.2e11)
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
@@ -41,3 +44,15 @@
                       (signal-condition condition nil)))
     (convert 12 <symbol>))
   nil)
+
+;; float
+(= (convert 1.0 <float>) 1.0)
+(= (convert 1.5 <float>) 1.5)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (convert 12.5 <integer>))
+  nil)
+

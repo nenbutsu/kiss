@@ -220,7 +220,7 @@ kiss_obj* kiss_format_integer(kiss_obj* out, kiss_obj* obj, kiss_obj* radix) {
 }
 
 /* function: (format-float output-stream float) -> <null> */
-kiss_obj* kiss_format_float(kiss_obj* out, kiss_obj* obj) {
+kiss_obj* kiss_format_float(kiss_obj* const out, const kiss_obj* const obj) {
      kiss_float_t* f = Kiss_Float(obj);
      wchar_t wcs[100];
      if (swprintf(wcs, 100, L"%#g", f->f) < 0) {
