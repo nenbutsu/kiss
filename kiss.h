@@ -525,6 +525,7 @@ kiss_obj* kiss_basic_vector_p(const kiss_obj* const obj);
 kiss_obj* kiss_general_vector_p(const kiss_obj* const obj);
 kiss_obj* kiss_gvref(const kiss_obj* const general_vector, const kiss_obj* const index);
 kiss_obj* kiss_set_gvref(const kiss_obj* const obj, kiss_obj* general_vector, const kiss_obj* const index);
+kiss_obj* kiss_str_to_vec(const kiss_obj* const obj);
 
 /* array.c */
 kiss_obj* kiss_create_array(const kiss_obj* const dimensions, const kiss_obj* const rest);
@@ -573,7 +574,7 @@ kiss_obj* kiss_quotient(const kiss_obj* x, const kiss_obj* y, const kiss_obj* co
 kiss_obj* kiss_reciprocal(const kiss_obj* const x);
 
 kiss_float_t* kiss_make_float(double d);
-kiss_obj* kiss_c_parse_number(kiss_obj* obj);
+kiss_obj* kiss_c_parse_number(const kiss_obj* const obj);
 kiss_obj* kiss_parse_number(kiss_obj* str);
 kiss_obj* kiss_float(const kiss_obj* const x);
 
@@ -737,6 +738,7 @@ kiss_symbol_t KISS_Sc_built_in_class;
 kiss_symbol_t KISS_Sc_standard_class;
 kiss_symbol_t KISS_Sc_null;
 kiss_symbol_t KISS_Sc_cons;
+kiss_symbol_t KISS_Sc_list;
 kiss_symbol_t KISS_Sc_symbol;
 kiss_symbol_t KISS_Sc_character;
 kiss_symbol_t KISS_Sc_integer;

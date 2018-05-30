@@ -111,7 +111,7 @@ static int is_valid_float_textual_representation(wchar_t* p) {
      return 0;
 }
 
-kiss_obj* kiss_c_parse_number(kiss_obj* obj) {
+kiss_obj* kiss_c_parse_number(const kiss_obj* const obj) {
      kiss_string_t* str = Kiss_String(obj);
      wchar_t* p = str->str;
      if (*p == L'+') { p++; }

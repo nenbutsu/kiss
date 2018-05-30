@@ -118,3 +118,12 @@ kiss_obj* kiss_set_gvref(const kiss_obj* const obj, kiss_obj* general_vector, co
     gv->v[i] = (kiss_obj*)obj;
     return (kiss_obj*)obj;
 }
+
+kiss_obj* kiss_str_to_vec(const kiss_obj* const obj) {
+     kiss_string_t* str = Kiss_String(obj);
+     kiss_general_vector_t* vec = (kiss_general_vector_t*)kiss_create_general_vector(kiss_make_fixnum(str->n), KISS_NIL);
+     for (size_t n = 0; n < str->n; n++) {
+          vec->v[n] = kiss_make_char(str->str[n]);
+     }
+     return (kiss_obj*)vec;
+}

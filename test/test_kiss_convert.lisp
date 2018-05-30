@@ -60,3 +60,23 @@
 (eq (convert 'love <symbol>) 'love)
 (string= (convert 'love <string>) "love")
 
+;; string
+(string= (convert "love" <string>) "love")
+(= (convert "10" <integer>) 10)
+(= (convert "1234567890" <integer>) 1234567890)
+(= (convert "12.3" <integer>) 12.3)
+(= (convert "3.5e10" <integer>) 3.5e10)
+(equal (convert "123" <general-vector>) #(#\1 #\2 #\3))
+(equal (convert "" <general-vector>) #())
+(equal (convert "123" <list>) '(#\1 #\2 #\3))
+(equal (convert "" <list>) '())
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (convert "love" <character>))
+  nil)
+
+
+

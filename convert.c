@@ -36,10 +36,10 @@ kiss_obj* kiss_convert(const kiss_obj* obj, const kiss_obj* const class_name) {
                goto error;
           }
      case KISS_FIXNUM:
-          if (class_name == (kiss_obj*)&KISS_Sc_character) {
-               return kiss_make_char(kiss_ptr_int(obj));
-          } else if (class_name == (kiss_obj*)&KISS_Sc_integer) {
+          if (class_name == (kiss_obj*)&KISS_Sc_integer) {
                return (kiss_obj*)obj;
+          } else if (class_name == (kiss_obj*)&KISS_Sc_character) {
+               return kiss_make_char(kiss_ptr_int(obj));
           } else if (class_name == (kiss_obj*)&KISS_Sc_float) {
                return kiss_float(obj);
           } else if (class_name == (kiss_obj*)&KISS_Sc_string) {
@@ -50,10 +50,10 @@ kiss_obj* kiss_convert(const kiss_obj* obj, const kiss_obj* const class_name) {
                goto error;
           }
      case KISS_BIGNUM:
-          if (class_name == (kiss_obj*)&KISS_Sc_character) {
-               return kiss_make_char(mpz_get_si(((kiss_bignum_t*)obj)->mpz));
-          } else if (class_name == (kiss_obj*)&KISS_Sc_integer) {
+          if (class_name == (kiss_obj*)&KISS_Sc_integer) {
                return (kiss_obj*)obj;
+          } else if (class_name == (kiss_obj*)&KISS_Sc_character) {
+               return kiss_make_char(mpz_get_si(((kiss_bignum_t*)obj)->mpz));
           } else if (class_name == (kiss_obj*)&KISS_Sc_float) {
                return kiss_float(obj);
           } else if (class_name == (kiss_obj*)&KISS_Sc_string) {
@@ -64,10 +64,10 @@ kiss_obj* kiss_convert(const kiss_obj* obj, const kiss_obj* const class_name) {
                goto error;
           }
      case KISS_FLOAT:
-          if (class_name == (kiss_obj*)&KISS_Sc_integer) {
-               Kiss_Err(L"Cannot convert float to <integer>, consider using floor, ceiling, round, or truncate", obj, class_name);
-          } else if (class_name == (kiss_obj*)&KISS_Sc_float) {
+          if (class_name == (kiss_obj*)&KISS_Sc_float) {
                return (kiss_obj*)obj;
+          } else if (class_name == (kiss_obj*)&KISS_Sc_integer) {
+               Kiss_Err(L"Cannot convert float to <integer>, consider using floor, ceiling, round, or truncate", obj, class_name);
           } else if (class_name == (kiss_obj*)&KISS_Sc_string) {
                kiss_obj* out = kiss_create_string_output_stream();
                kiss_format_float(out, obj);
@@ -81,6 +81,22 @@ kiss_obj* kiss_convert(const kiss_obj* obj, const kiss_obj* const class_name) {
           } else if (class_name == (kiss_obj*)&KISS_Sc_string) {
                kiss_symbol_t* symbol = (kiss_symbol_t*)obj;
                return (kiss_obj*)kiss_make_string(symbol->name);
+          } else {
+               goto error;
+          }
+     case KISS_STRING:
+          if (class_name == (kiss_obj*)&KISS_Sc_string) {
+               return (kiss_obj*)obj;
+          } else if (class_name == (kiss_obj*)&KISS_Sc_integer ||
+                     class_name == (kiss_obj*)&KISS_Sc_float)
+          {
+               return kiss_c_parse_number(obj);
+          } else if (class_name == (kiss_obj*)&KISS_Sc_symbol) {
+               return kiss_intern(obj);
+          } else if (class_name == (kiss_obj*)&KISS_Sc_general_vector) {
+               return kiss_str_to_vec(obj);
+          } else if (class_name == (kiss_obj*)&KISS_Sc_list) {
+               return kiss_str_to_chars((kiss_string_t*)obj);
           } else {
                goto error;
           }
