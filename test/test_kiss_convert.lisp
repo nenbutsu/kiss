@@ -78,5 +78,16 @@
     (convert "love" <character>))
   nil)
 
-
+;; general-vector
+(equal (convert #(a b c d) <general-vector>) #(a b c d))
+(equal (convert #(a b c d) <list>) '(a b c d))
+(equal (convert #() <general-vector>) #())
+(eq (convert #() <list>) '())
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (convert #(l o v e) <character>))
+  nil)
 

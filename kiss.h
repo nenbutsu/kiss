@@ -526,6 +526,8 @@ kiss_obj* kiss_general_vector_p(const kiss_obj* const obj);
 kiss_obj* kiss_gvref(const kiss_obj* const general_vector, const kiss_obj* const index);
 kiss_obj* kiss_set_gvref(const kiss_obj* const obj, kiss_obj* general_vector, const kiss_obj* const index);
 kiss_obj* kiss_str_to_vec(const kiss_obj* const obj);
+kiss_obj* kiss_list_to_vec(const kiss_obj* const obj);
+kiss_obj* kiss_vec_to_list(const kiss_obj* const obj);
 
 /* array.c */
 kiss_obj* kiss_create_array(const kiss_obj* const dimensions, const kiss_obj* const rest);

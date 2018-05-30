@@ -100,6 +100,14 @@ kiss_obj* kiss_convert(const kiss_obj* obj, const kiss_obj* const class_name) {
           } else {
                goto error;
           }
+     case KISS_GENERAL_VECTOR:
+          if (class_name == (kiss_obj*)&KISS_Sc_general_vector) {
+               return (kiss_obj*)obj;
+          } else if (class_name == (kiss_obj*)&KISS_Sc_list) {
+               return kiss_vec_to_list(obj);
+          } else {
+               goto error;
+          }
      default:
 	  goto error;
      }

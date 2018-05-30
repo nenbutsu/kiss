@@ -127,3 +127,23 @@ kiss_obj* kiss_str_to_vec(const kiss_obj* const obj) {
      }
      return (kiss_obj*)vec;
 }
+
+kiss_obj* kiss_list_to_vec(const kiss_obj* const obj) {
+     Kiss_List(obj);
+     size_t len = kiss_ptr_int(kiss_length(obj));
+     kiss_general_vector_t* vec = (kiss_general_vector_t*)kiss_create_general_vector(kiss_make_fixnum(len), KISS_NIL);
+     const kiss_obj* p = obj;
+     for (size_t n = 0; n < len; n++, p = KISS_CDR(p)) {
+          vec->v[n] = KISS_CAR(p);
+     }
+     return (kiss_obj*)vec;
+}
+
+kiss_obj* kiss_vec_to_list(const kiss_obj* const obj) {
+     const kiss_general_vector_t* const vec = Kiss_General_Vector(obj);
+     kiss_obj* p = KISS_NIL;
+     for (size_t n = vec->n; n > 0; n--) {
+          kiss_push(vec->v[n - 1], &p);
+     }
+     return (kiss_obj*)p;
+}
