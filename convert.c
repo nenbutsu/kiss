@@ -18,7 +18,8 @@
  */
 #include "kiss.h"
 
-kiss_obj* kiss_convert(const kiss_obj* const obj, const kiss_obj* const class_name) {
+kiss_obj* kiss_convert(const kiss_obj* obj, const kiss_obj* const class_name) {
+     obj = kiss_eval(obj);
      kiss_k_class(class_name);
      switch (KISS_OBJ_TYPE(obj)) {
      case KISS_CHARACTER:
@@ -71,6 +72,15 @@ kiss_obj* kiss_convert(const kiss_obj* const obj, const kiss_obj* const class_na
                kiss_obj* out = kiss_create_string_output_stream();
                kiss_format_float(out, obj);
                return kiss_get_output_stream_string(out);
+          } else {
+               goto error;
+          }
+     case KISS_SYMBOL:
+          if (class_name == (kiss_obj*)&KISS_Sc_symbol) {
+               return (kiss_obj*)obj;
+          } else if (class_name == (kiss_obj*)&KISS_Sc_string) {
+               kiss_symbol_t* symbol = (kiss_symbol_t*)obj;
+               return (kiss_obj*)kiss_make_string(symbol->name);
           } else {
                goto error;
           }

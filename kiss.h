@@ -499,7 +499,7 @@ kiss_obj* kiss_format_object(kiss_obj* out, kiss_obj* obj, kiss_obj* escapep);
 kiss_obj* kiss_print(kiss_obj* obj);
 
 /* convert.c */
-kiss_obj* kiss_convert(const kiss_obj* const obj, const kiss_obj* const class_name);
+kiss_obj* kiss_convert(const kiss_obj* obj, const kiss_obj* const class_name);
 
 /* function.c */
 kiss_function_t* kiss_make_function(kiss_symbol_t* name, kiss_obj* lambda);

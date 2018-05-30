@@ -56,3 +56,7 @@
     (convert 12.5 <integer>))
   nil)
 
+;; symbol
+(eq (convert 'love <symbol>) 'love)
+(string= (convert 'love <string>) "love")
+
