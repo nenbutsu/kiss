@@ -91,3 +91,15 @@
     (convert #(l o v e) <character>))
   nil)
 
+;; list
+(equal (convert '(a b c) <list>) '(a b c))
+(equal (convert '(a b c) <general-vector>) #(a b c))
+(eq (convert '() <list>) '())
+(equal (convert '() <general-vector>) #())
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (convert '(l o v e) <character>))
+  nil)

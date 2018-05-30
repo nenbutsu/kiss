@@ -81,6 +81,14 @@ kiss_obj* kiss_convert(const kiss_obj* obj, const kiss_obj* const class_name) {
           } else if (class_name == (kiss_obj*)&KISS_Sc_string) {
                kiss_symbol_t* symbol = (kiss_symbol_t*)obj;
                return (kiss_obj*)kiss_make_string(symbol->name);
+          } else if (obj == KISS_NIL) {
+               if (class_name == (kiss_obj*)&KISS_Sc_list) {
+                    return (kiss_obj*)obj;
+               } else if (class_name == (kiss_obj*)&KISS_Sc_general_vector) {
+                    return kiss_list_to_vec(obj);
+               } else {
+                    goto error;
+               }
           } else {
                goto error;
           }
@@ -105,6 +113,14 @@ kiss_obj* kiss_convert(const kiss_obj* obj, const kiss_obj* const class_name) {
                return (kiss_obj*)obj;
           } else if (class_name == (kiss_obj*)&KISS_Sc_list) {
                return kiss_vec_to_list(obj);
+          } else {
+               goto error;
+          }
+     case KISS_CONS:
+          if (class_name == (kiss_obj*)&KISS_Sc_list) {
+               return (kiss_obj*)obj;
+          } else if (class_name == (kiss_obj*)&KISS_Sc_general_vector) {
+               return kiss_list_to_vec(obj);
           } else {
                goto error;
           }
