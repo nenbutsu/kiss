@@ -66,10 +66,58 @@
 (eq '() 'NIL)
 
 
-
-;; set-property
+;; property, set-property, remove-property
+(null (property 'foo 'none))
 (and (eq (set-property 'athena 'zeus 'daughter) 'athena)
      (eq (remove-property 'zeus 'daughter) 'athena))
+(eq (set-property 'love 'man 'feeling) 'love)
+(eq (property 'man 'feeling) 'love)
+(eq (remove-property 'man 'feeling) 'love)
+(null (property 'man 'feeling))
+(eq (property 'thing 'feeling 'love) 'love)
+(eq (property 'thing 'feeling t) t)
+(= (set-property 10 'me 'wallet) 10)
+(= (property 'me 'wallet 0) 10)
+(= (set-property 1000 'me 'wallet) 1000)
+(= (property 'me 'wallet 0) 1000)
+
+
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (property))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (property 'foo))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (property 'foo 'bar 'baz 'boo))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (property "love" 'who))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (property 'me "who"))
+  nil)
+
 
 ;; gensym
 (symbolp (gensym))
