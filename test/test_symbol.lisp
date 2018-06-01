@@ -27,6 +27,44 @@
 (eq (symbolp '*pi*) t)
 (eq (symbolp *pi*) nil)
 (eq (symbolp 3) nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (symbolp))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (symbolp 'a 'b))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (symbolp 'a 'b 'c))
+  nil)
+
+;; symbol names
+(symbolp '+)
+(symbolp '-)
+(symbolp '1+)
+(symbolp '1-)
+(eq 'foo 'foo)
+(eq 'foO 'foo)
+(eq 'fOo 'foo)
+(eq 'fOO 'foo)
+(eq 'Foo 'foo)
+(eq 'FoO 'foo)
+(eq 'FOo 'foo)
+(eq 'FOO 'foo)
+(eq '() 'nil)
+(eq '() 'NIL)
+
 
 
 ;; set-property
