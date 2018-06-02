@@ -121,8 +121,21 @@
 
 ;; gensym
 (symbolp (gensym))
-
-
-
-
-
+(defmacro twice (x)
+  (let ((v (gensym)))
+    `(let ((,v ,x)) (+ ,v ,v))))
+(= (twice 5) 10)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (gensym 'foo))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (gensym 'foo 'bar))
+  nil)
