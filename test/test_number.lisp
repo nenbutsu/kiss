@@ -15,7 +15,7 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
-;; numberp
+;;; numberp
 (eq (numberp 3) t)
 (eq (numberp -0.3) t)
 (eq (numberp '(a b c)) nil)
@@ -43,6 +43,7 @@
 		    (signal-condition condition nil)))
 		(numberp 1 2 3))
   nil)
+
 
 ;; parse-number
 (= (parse-number "123.34") 123.34)
@@ -95,23 +96,24 @@
 		(parse-number 'a))
   nil)
 
-;; =
-(not (= 3 4))
-(= 3 3.0)
-(= (parse-number "134.54") 134.54)
-(= 0.0 -0.0)
-(= 1 1)
-(= 1 1.0)
-(= 0 0.0)
-(= 10.0 10)
-(= 1.2 1.2)
-(= 123 123)
-(= 3.4 0.34e1)
-(not (= 1 5))
-(not (= 0 3))
-(not (= 0 0.1))
-(not (= 3.5 1))
-(not (= 5.3 2.0))
+
+;;; =
+(eq (= 3 4) 'nil)
+(eq (= 3 3.0) 't)
+(eq (= (parse-number "134.54") 134.54) 't)
+(eq (= 0.0 -0.0) 't)
+(eq (= 1 1) 't)
+(eq (= 1 1.0) 't)
+(eq (= 0 0.0) 't)
+(eq (= 10.0 10) 't)
+(eq (= 1.2 1.2) 't)
+(eq (= 123 123) 't)
+(eq (= 3.4 0.34e1) 't)
+(eq (= 1 5) 'nil)
+(eq (= 0 3) 'nil)
+(eq (= 0 0.1) 'nil)
+(eq (= 3.5 1) 'nil)
+(eq (= 5.3 2.0) 'nil)
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
@@ -154,6 +156,7 @@
 		    (signal-condition condition nil)))
                 (= 1 2 3))
   nil)
+
 
 ;; /=
 (/= 3 4)
