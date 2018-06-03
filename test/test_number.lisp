@@ -654,6 +654,7 @@
 (= (max -10 -3 -1 -5) -1)
 (= (max 1000 0 5 10) 1000)
 (= (max 5.1 3.0 1000 5432.1 0 5 10) 5432.1)
+(= (max 2.5e-10 2.6e-10) 2.6e-10)
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
@@ -683,13 +684,15 @@
                 (max 5 3 'a))
   nil)
 
-;; min
+
+;;; min
 (= (min 0) 0)
 (= (min 5 4 -10 1) -10)
 (= (min 3 2 1) 1)
 (= (min 3.5 2.1 1.5) 1.5)
 (= (min 3.5 10 2.1 1.5) 1.5)
 (= (min -5 -2 -3 10 100) -5)
+(= (min -2.5e-11 -2.6e-11) -2.6e-11)
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
@@ -719,13 +722,16 @@
                 (min 5 3 'a))
   nil)
 
-;; abs
+
+;;; abs
 (= (abs -3) 3)
 (= (abs 2.0) 2.0)
 (= (abs -0.0) 0.0)
 (= (abs 3.4) 3.4)
 (= (abs 5) 5)
 (= (abs -100) 100)
+(= (abs 1.5e10) 1.5e10)
+(= (abs -2.3e8) 2.3e8)
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
@@ -749,7 +755,7 @@
   nil)
 
 
-;; exp
+;;; exp
 (= (exp 0) 1)
 (block a
   (with-handler (lambda (condition)
