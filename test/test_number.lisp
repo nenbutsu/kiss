@@ -605,6 +605,13 @@
   nil)
 (block a
   (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (reciprocal 1 2))
+  nil)
+(block a
+  (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
 		      (return-from a t)
 		    (signal-condition condition nil)))
@@ -639,7 +646,8 @@
                 (quotient 'a 'b))
   nil)
 
-;; max
+
+;;; max
 (= (max 0 5 10) 10)
 (= (max 0 10 9) 10)
 (= (max -10) -10)
