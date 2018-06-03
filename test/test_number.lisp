@@ -779,7 +779,8 @@
                 (exp 'a))
   nil)
 
-;; log
+
+;;; log
 (= (log 2.718281828459045) 1)
 (= (log 1) 0)
 (block a
@@ -811,7 +812,8 @@
                 (log -10))
   nil)
 
-;; expt
+
+;;; expt
 (= (expt 2 3) 8)
 (= (expt 3 3) 27)
 (= (expt 6 2) 36)
@@ -877,7 +879,8 @@
                 (expt 'a 'b))
   nil)
 
-;; sqrt
+
+;;; sqrt
 (= (sqrt 4) 2)
 (= (sqrt 9) 3)
 (= (sqrt 16) 4)
@@ -911,10 +914,12 @@
                 (sqrt 'a))
   nil)
 
-;; *pi*
+
+;;; *pi*
 (floatp *pi*)
 
-;; sin
+
+;;; sin
 (= (sin 0) 0)
 (= (ceiling (sin (quotient *pi* 2))) 1)
 (= (truncate (sin *pi*)) 0)
@@ -941,7 +946,8 @@
                 (sin 'a))
   nil)
 
-;; cos
+
+;;; cos
 (= (cos 0) 1)
 (= (truncate (cos (quotient *pi* 2))) 0)
 (= (floor (cos *pi*)) -1)
@@ -968,7 +974,8 @@
                 (cos 'a))
   nil)
 
-;; tan
+
+;;; tan
 (= (tan 0) 0)
 (= (truncate (tan *pi*)) 0)
 (block a
@@ -993,7 +1000,8 @@
                 (tan 'a))
   nil)
 
-;; atan
+
+;;; atan
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
@@ -1016,7 +1024,8 @@
                 (atan 'a))
   nil)
 
-;; atan2
+
+;;; atan2
 (= (atan2 0 3.0) 0)
 (= (atan2 3 1) (atan 3))
 (block a
@@ -1041,7 +1050,8 @@
                 (atan2 'a 1))
   nil)
 
-;; sinh
+
+;;; sinh
 (= (sinh 0) 0)
 (block a
   (with-handler (lambda (condition)
@@ -1065,7 +1075,8 @@
                 (sinh 'a))
   nil)
 
-;; cosh
+
+;;; cosh
 (= (cosh 0) 1)
 (block a
   (with-handler (lambda (condition)
@@ -1089,7 +1100,8 @@
                 (cosh 'a))
   nil)
 
-;; tanh
+
+;;; tanh
 (= (tanh 0) 0)
 (block a
   (with-handler (lambda (condition)
@@ -1113,7 +1125,8 @@
                 (tanh 'a))
   nil)
 
-;; atanh
+
+;;; atanh
 (= (atanh 0) 0)
 (block a
   (with-handler (lambda (condition)
@@ -1144,11 +1157,13 @@
                 (atanh 'a))
   nil)
 
-;; *most-positive-float*, *most-negative-float*
+
+;;; *most-positive-float*, *most-negative-float*
 (floatp *most-positive-float*)
 (floatp *most-negative-float*)
 
-;; floatp
+
+;;; floatp
 (not (floatp "2.4"))
 (not (floatp 2))
 (floatp 2.0)
@@ -1171,7 +1186,8 @@
                 (floatp 1.0 2.0))
   nil)
 
-;; float
+
+;;; float
 (floatp (float 0))
 (= (float 0) 0.0)
 (floatp (float 2))
@@ -1201,7 +1217,8 @@
                 (float 'a))
   nil)
 
-;; floor
+
+;;; floor
 (= (floor 1) 1)
 (integerp (floor 1))
 (= (floor 1.5) 1)
@@ -1235,7 +1252,8 @@
                 (floor 'a))
   nil)
 
-;; ceiling
+
+;;; ceiling
 (= (ceiling 1) 1)
 (integerp (ceiling 1))
 (= (ceiling 1.5) 2)
@@ -1269,7 +1287,8 @@
                 (ceiling 'a))
   nil)
 
-;; truncate
+
+;;; truncate
 (= (truncate 1) 1)
 (integerp (truncate 1))
 (= (truncate 1.5) 1)
@@ -1303,7 +1322,8 @@
                 (truncate 'a))
   nil)
 
-;; round
+
+;;; round
 (= (round 1) 1)
 (integerp (round 1))
 (= (round 1.5) 2)
@@ -1340,7 +1360,7 @@
   nil)
 
 
-;; integerp
+;;; integerp
 (integerp 0)
 (integerp -10)
 (integerp 100)
@@ -1370,7 +1390,7 @@
   nil)
 
 
-;; div
+;;; div
 (eql (div 12 3) 4)
 (eql (div 14 3) 4)
 (eql (div -12 3) -4)
@@ -1426,7 +1446,7 @@
                 (div 'a 2))
   nil)
 
-;; mod
+;;; mod
 (eql (mod 12 3) 0)
 (eql (mod 7 247) 7)
 (eql (mod 247 7) 2)
@@ -1480,7 +1500,8 @@
                 (mod 'a 2))
   nil)
 
-;; gcd
+
+;;; gcd
 (= (gcd 12 5) 1)
 (= (gcd 24 12) 12)
 (= (gcd 15 24) 3)
@@ -1532,7 +1553,8 @@
                 (gcd 3 'a))
   nil)
 
-;; lcm
+
+;;; lcm
 (= (lcm 2 3) 6)
 (= (lcm 15 24) 120)
 (= (lcm 15 -24) 120)
@@ -1582,7 +1604,6 @@
 		    (signal-condition condition nil)))
                 (lcm 3 'a))
   nil)
-
 
 
 ;; isqrt
