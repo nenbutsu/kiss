@@ -234,6 +234,7 @@
 (eq (< 1 5) 't)
 (eq (< 0 3) 't)
 (eq (< 0 0.1) 't)
+(eq (< 5.0e-20 3) 't)
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
@@ -297,6 +298,7 @@
 (eq (<= 0 0.1) 't)
 (eq (<= 3 1) 'nil)
 (eq (<= 2.1 2) 'nil)
+(eq (<= 5.0e-20 3) 't)
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
@@ -362,6 +364,7 @@
 (eq (> 1 5) 'nil)
 (eq (> 0 3) 'nil)
 (eq (> 0 0.1) 'nil)
+(eq (> 3 5.0e-20) 't)
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
@@ -427,6 +430,7 @@
 (not (>= 1 5))
 (not (>= 0 3))
 (not (>= 0 0.1))
+(eq (>= 5 5.0e-20) 't)
 (block a
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
@@ -470,7 +474,8 @@
                 (>= 1 2 3))
   nil)
 
-;; +
+
+;;; +
 (= (+ 12 3) 15)
 (= (+ 1 2 3) 6)
 (= (+ 12 3.0) 15.0)
@@ -486,8 +491,16 @@
 (= (+ -1) -1)
 (= (+ -1 -5 10 2) 6)
 (= (+ 10 10 10 10) 40)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (+ 'a 'b 'c))
+  nil)
 
-;; *
+
+;;; *
 (= (* 12 3) 36)
 (= (* 12 3.0) 36.0)
 (= (* 4.0 0) 0.0)
@@ -499,13 +512,21 @@
 (= (* -2 -3) 6)
 (= (* 1 2 3 4) 24)
 (= (* 10 100) 1000)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (* 'a 'b 'c))
+  nil)
 
-;; -
+
+;;; -
 (= (- 1) -1)
 (= (- -4.0) 4.0)
 (= (- 4.0) -4.0)
-(eql (- 0.0) -0.0)
-(eql (- -0.0) 0.0)
+(= (- 0.0) -0.0)
+(= (- -0.0) 0.0)
 (= (- 12 3) 9)
 (= (- 1 2 3) -4)
 (= (- 12 3.0) 9.0)
@@ -534,8 +555,16 @@
 		    (signal-condition condition nil)))
                 (- 'a))
   nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+		    (signal-condition condition nil)))
+                (- 'a 'b 'c))
+  nil)
 
-;; quotient reciprocal
+
+;;; quotient reciprocal
 (= (reciprocal 2) 0.5)
 (= (reciprocal 4) 0.25)
 (and (integerp (quotient 10 5))
