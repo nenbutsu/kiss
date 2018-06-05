@@ -49,7 +49,8 @@
     (symbolp 'a 'b 'c))
   nil)
 
-;; symbol names
+
+;;; symbol names
 (symbolp '+)
 (symbolp '-)
 (symbolp '1+)
