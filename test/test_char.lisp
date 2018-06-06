@@ -59,3 +59,46 @@
     (characterp #\a #\b #\c))
   nil)
 
+
+;;; char=
+(eq (char= #\a #\a) 't)
+(eq (char= #\a #\b) 'nil)
+(eq (char= #\a #\A) 'nil)
+(eq (char= #\space #\space) 't)
+(eq (char= #\newline #\newline) 't)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (char= #\a #\b #\c))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (char= #\a))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (char=))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (char= #\a 'a))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (char= 'a "b"))
+  nil)
+
