@@ -929,7 +929,7 @@ kiss_float_t* Kiss_Float(const kiss_obj* const obj) {
 inline
 wchar_t Kiss_Character(const kiss_obj* const obj) {
      if (KISS_IS_FIXCHAR(obj)) { return kiss_wchar(obj); }
-     Kiss_Domain_Error(obj, L"fixchar");
+     Kiss_Domain_Error(obj, L"<character>");
 }
 
 inline
