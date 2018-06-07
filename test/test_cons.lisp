@@ -17,6 +17,7 @@
 
 ;;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#list_class
 
+
 ;;; consp
 ;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_consp
 (eq (consp '(a . b)) t)
@@ -52,6 +53,7 @@
                       (signal-condition condition nil)))
     (consp 0 1 2))
   nil)
+
 
 ;;; cons
 ;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_cons
@@ -131,6 +133,7 @@
     (car '(a b) 2))
   nil)
 
+
 ;;; cdr
 ;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_cdr
 (equal (cdr '(a b c)) '(b c))
@@ -172,6 +175,7 @@
     (cdr '(a b) 2))
   nil)
 
+
 ;;; set-car
 ;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_set_car
 (let ((l (list 'a 'b)))
@@ -206,6 +210,7 @@
     (set-car 0))
   nil)
 
+
 ;;; (setf (car cons) obj)
 ;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#s_setf_car
 (let ((l (list 'a 'b)))
@@ -237,6 +242,7 @@
     (setf (car (list t))))
   nil)
 
+
 ;;; set-cdr
 ;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_set_cdr
 (let ((l (list 'a 'b)))
@@ -266,6 +272,7 @@
                       (signal-condition condition nil)))
     (set-cdr 0))
   nil)
+
 
 ;;; (setf (set-cdr cons) obj)
 ;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#s_setf_cdr
@@ -394,6 +401,7 @@
 (equal (apply #'list (create-list 10 nil))
        '(nil nil nil nil nil nil nil nil nil nil))
 
+
 ;;; reverse
 ;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_reverse
 (equal (reverse '(a b c d e)) '(e d c b a))
@@ -429,6 +437,7 @@
     (reverse '(a b c) '(x y z)))
   nil)
 
+
 ;;; nreverse
 ;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_nreverse
 (equal (nreverse (list 'a 'b 'c 'd 'e)) '(e d c b a))
@@ -463,6 +472,7 @@
     (nreverse '(a b c) '(x y z)))
   nil)
 
+
 ;;; append
 ;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_append
 (equal (append '(a b c) '(d e f)) '(a b c d e f))
@@ -485,6 +495,7 @@
                       (signal-condition condition nil)))
     (append 'z))
   nil)
+
 
 ;;; member
 ;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_member
@@ -825,6 +836,7 @@
     (mapl))
   nil)
 
+
 ;;; mapcan
 ;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_mapcan
 (equal (mapcan (lambda (x) (if (> x 0) (list x))) '(-3 4 0 5 -2 7))
@@ -862,6 +874,7 @@
                       (signal-condition condition nil)))
     (mapcan))
   nil)
+
 
 ;;; mapcon
 ;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_mapcon
@@ -903,6 +916,7 @@
                       (signal-condition condition nil)))
     (mapcon))
   nil)
+
 
 ;;; assoc
 ;; https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_assoc
