@@ -102,6 +102,48 @@
     (char= 'a "b"))
   nil)
 
+;;; char/=
+(eq (char/= #\a #\a) 'nil)
+(eq (char/= #\a #\b) 't)
+(eq (char/= #\a #\A) 't)
+(eq (char/= #\space #\space) 'nil)
+(eq (char/= #\newline #\newline) 'nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (char/= #\a #\b #\c))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (char/= #\a))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (char/=))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (char/= #\a 'a))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (char/= 'a "b"))
+  nil)
+
 
 ;;; char<
 (eq (char< #\0 #\1) 't)
