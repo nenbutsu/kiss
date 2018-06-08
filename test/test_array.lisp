@@ -15,7 +15,22 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
-;; basic-array-p, ...
+;;
+;;  <object>
+;;     |
+;;     +--> <basic-array>
+;;              |
+;;              +--> <basic-array*>
+;;              |        |
+;;              |        +--> <general-array*>
+;;              |
+;;              +--> <basic-vector>
+;;                       |
+;;                       +--> <general-vector>
+;;                       +--> <string>
+;;
+
+;;; basic-array-p, basic-array*-p general-array*-p
 (equal (mapcar (lambda (x)
 		 (list (basic-array-p x)
 		       (basic-array*-p x)
@@ -27,6 +42,37 @@
 		 #1a(a b c)
 		 #2a((a) (b) (c))))
        '((nil nil nil) (nil nil nil) (t nil nil) (t nil nil) (t nil nil) (t t t)))
+
+
+;;; basic-array-p
+(eq (basic-array-p #2A((a b c) (x y z))) 't)
+(eq (basic-array-p #(a b c)) 't)
+(eq (basic-array-p "abc") 't)
+(eq (basic-array-p 'a) 'nil)
+(eq (basic-array-p #\a) 'nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (basic-array-p))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (basic-array-p "love" "me"))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (basic-array-p "love" "me" "tender"))
+  nil)
+
+
 
 ;; create-array
 (equal (create-array '(2 3) 0.0)
