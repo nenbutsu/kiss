@@ -73,6 +73,63 @@
   nil)
 
 
+;;; basic-array*-p
+(eq (basic-array*-p #2A((a b c) (x y z))) 't)
+(eq (basic-array*-p #(a b c)) 'nil)
+(eq (basic-array*-p "abc") 'nil)
+(eq (basic-array*-p 'a) 'nil)
+(eq (basic-array*-p #\a) 'nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (basic-array*-p))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (basic-array*-p "love" "me"))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (basic-array*-p "love" "me" "tender"))
+  nil)
+
+
+;;; general-array*-p
+(eq (general-array*-p #2A((a b c) (x y z))) 't)
+(eq (general-array*-p #(a b c)) 'nil)
+(eq (general-array*-p "abc") 'nil)
+(eq (general-array*-p 'a) 'nil)
+(eq (general-array*-p #\a) 'nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (general-array*-p))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (general-array*-p "love" "me"))
+  nil)
+(block a
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from a t)
+                      (signal-condition condition nil)))
+    (general-array*-p "love" "me" "tender"))
+  nil)
+
 
 ;; create-array
 (equal (create-array '(2 3) 0.0)
