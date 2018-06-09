@@ -23,17 +23,17 @@
 (functionp (function create))
 (functionp (lambda () t))
 (not (functionp 'car))
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (functionp))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (functionp 'car 'cdr))
   nil)
@@ -42,38 +42,38 @@
 ;;; function
 (= (funcall (function -) 3) -3)
 (= (apply #'- '(4 3)) 1)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (function))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (function a b))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <undefined-function>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (function no-such-function))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (function (love me do)))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (function "car"))
   nil)
@@ -91,24 +91,24 @@
 (null (funcall (lambda ())))
 (= 10 (funcall (lambda () 1 2 3 4 5 6 7 8 9 10)))
 (= (funcall (lambda (x y &rest z) (apply #'+ x y z)) 1 2 3 4 5) 15)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (funcall (lambda (x) x)))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (funcall (lambda (x y) (+ x y)) 1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (funcall (lambda (x y) (+ x y)) 1 2 3))
   nil)
@@ -156,31 +156,31 @@
 (= (apply #'+ '(1 2 3 4 5)) 15)
 (= (apply #'+ '()) 0)
 (= (apply #'+ 1 2 3 4 5 '()) 15)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (apply '+ '(1 2 3)))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (apply "+" '(1 2 3)))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (apply #'+ 1 2 #(3 4)))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (apply #'+ 1 2))
   nil)
@@ -193,17 +193,17 @@
               x))
    1)
 (= (funcall #'+) 0)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (funcall '+ 1 2 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (funcall "+" 1 2 3))
   nil)
@@ -215,24 +215,24 @@
 (= (let ((constant-a 2))
      constant-a)
    2)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (defconstant))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (defconstant constant-b))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (defconstant constant-b 1 2 3))
   nil)
@@ -251,24 +251,24 @@
 (eq (let ((today 'thursday))
       (what-is-today))
     'wednesday)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (defglobal))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (defglobal global-b))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (defglobal global-b 1 2 3))
   nil)
@@ -283,24 +283,24 @@
 (eq (dynamic-let ((*color* 'green))
                  (what-color))
     'green)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (defdynamic))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (defdynamic dynamic-b))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
                     (signal-condition condition nil)))
                 (defdynamic dynamic-b 1 2 3))
   nil)

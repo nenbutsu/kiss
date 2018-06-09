@@ -22,24 +22,24 @@
 (eq (numberp "17") nil)
 (eq (numberp #(a b c)) nil)
 (eq (numberp #\x) nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(numberp))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(numberp 1 2))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(numberp 1 2 3))
   nil)
@@ -53,45 +53,45 @@
 (= (parse-number "#O10") 8)
 (= (parse-number "#b1010") 10)
 (= (parse-number "#B1010") 10)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(parse-number "-37."))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(parse-number "-.5"))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(parse-number))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(parse-number 1 2))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(parse-number 1 2 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(parse-number 'a))
   nil)
@@ -114,45 +114,45 @@
 (eq (= 0 0.1) 'nil)
 (eq (= 3.5 1) 'nil)
 (eq (= 5.3 2.0) 'nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (= 'a 1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (= "0" 'a))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (= 1 #(0 1)))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (=))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (= 1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (= 1 2 3))
   nil)
@@ -173,45 +173,45 @@
 (eq (/= 1 5) 't)
 (eq (/= 0 3) 't)
 (eq (/= 0 0.1) 't)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (/= 'a 1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (/= "0" 'a))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (/= 1 #(0 1)))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (/=))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (/= 1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (/= 1 2 3))
   nil)
@@ -235,45 +235,45 @@
 (eq (< 0 3) 't)
 (eq (< 0 0.1) 't)
 (eq (< 5.0e-20 3) 't)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (< 'a 1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (< "0" 'a))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (< 1 #(0 1)))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (<))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (< 1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (< 1 2 3))
   nil)
@@ -299,45 +299,45 @@
 (eq (<= 3 1) 'nil)
 (eq (<= 2.1 2) 'nil)
 (eq (<= 5.0e-20 3) 't)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (<= 'a 1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (<= "0" 'a))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (<= 1 #(0 1)))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (<=))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (<= 1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (<= 1 2 3))
   nil)
@@ -365,45 +365,45 @@
 (eq (> 0 3) 'nil)
 (eq (> 0 0.1) 'nil)
 (eq (> 3 5.0e-20) 't)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (> 'a 1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (> "0" 'a))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (> 1 #(0 1)))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (>))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (> 1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (> 1 2 3))
   nil)
@@ -431,45 +431,45 @@
 (not (>= 0 3))
 (not (>= 0 0.1))
 (eq (>= 5 5.0e-20) 't)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (>= 'a 1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (>= "0" 'a))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (>= 1 #(0 1)))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (>=))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (>= 1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (>= 1 2 3))
   nil)
@@ -491,10 +491,10 @@
 (= (+ -1) -1)
 (= (+ -1 -5 10 2) 6)
 (= (+ 10 10 10 10) 40)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (+ 'a 'b 'c))
   nil)
@@ -512,10 +512,10 @@
 (= (* -2 -3) 6)
 (= (* 1 2 3 4) 24)
 (= (* 10 100) 1000)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (* 'a 'b 'c))
   nil)
@@ -541,24 +541,24 @@
 (= (- -1) 1)
 (= (- -1 -5 10 2) -8)
 (= (- 10 10 10 10) -20)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (-))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (- 'a))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (- 'a 'b 'c))
   nil)
@@ -575,73 +575,73 @@
 (= (quotient 2 -0.5) -4.0)
 (= (quotient 10 5 2) 1)
 (= (quotient 10 -5 -2) 1)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (quotient 0 0.0))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <division-by-zero>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (quotient 3 0.0))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <division-by-zero>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (reciprocal 0))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (reciprocal))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (reciprocal 1 2))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (quotient 3 5 0 4))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (quotient))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (quotient 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (reciprocal 'a))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (quotient 'a 'b))
   nil)
@@ -655,31 +655,31 @@
 (= (max 1000 0 5 10) 1000)
 (= (max 5.1 3.0 1000 5432.1 0 5 10) 5432.1)
 (= (max 2.5e-10 2.6e-10) 2.6e-10)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (max))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (max 'a))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (max 5 3 'a 1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (max 5 3 'a))
   nil)
@@ -693,31 +693,31 @@
 (= (min 3.5 10 2.1 1.5) 1.5)
 (= (min -5 -2 -3 10 100) -5)
 (= (min -2.5e-11 -2.6e-11) -2.6e-11)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (min))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (min 'a))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (min 5 3 'a 1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (min 5 3 'a))
   nil)
@@ -732,24 +732,24 @@
 (= (abs -100) 100)
 (= (abs 1.5e10) 1.5e10)
 (= (abs -2.3e8) 2.3e8)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (abs))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (abs 1 2))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (abs 'a))
   nil)
@@ -757,24 +757,24 @@
 
 ;;; exp
 (= (exp 0) 1)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (exp))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (exp 2 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (exp 'a))
   nil)
@@ -783,31 +783,31 @@
 ;;; log
 (= (log 2.718281828459045) 1)
 (= (log 1) 0)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (log))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (log 2 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (log 'a))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (log -10))
   nil)
@@ -829,52 +829,52 @@
 (= (expt -0.25 -1) -4)
 (= (expt 100 0.5) 10)
 (= (expt 100 -1.5) 0.001)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (expt 0.0 0.0))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (expt 0 -2))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (expt 0 0.0))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (expt -3 3.2))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (expt))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (expt 2 3 4))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (expt 'a 'b))
   nil)
@@ -885,31 +885,31 @@
 (= (sqrt 9) 3)
 (= (sqrt 16) 4)
 (= (sqrt 25) 5)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (sqrt -1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (sqrt))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (sqrt 2 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (sqrt 'a))
   nil)
@@ -924,24 +924,24 @@
 (= (ceiling (sin (quotient *pi* 2))) 1)
 (= (truncate (sin *pi*)) 0)
 (= (truncate (sin (* *pi* 2))) 0)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (sin))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (sin 2 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (sin 'a))
   nil)
@@ -952,24 +952,24 @@
 (= (truncate (cos (quotient *pi* 2))) 0)
 (= (floor (cos *pi*)) -1)
 (= (ceiling (cos (* *pi* 2))) 1)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (cos))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (cos 2 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (cos 'a))
   nil)
@@ -978,48 +978,48 @@
 ;;; tan
 (= (tan 0) 0)
 (= (truncate (tan *pi*)) 0)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (tan))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (tan 2 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (tan 'a))
   nil)
 
 
 ;;; atan
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (atan))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (atan 2 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (atan 'a))
   nil)
@@ -1028,24 +1028,24 @@
 ;;; atan2
 (= (atan2 0 3.0) 0)
 (= (atan2 3 1) (atan 3))
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (atan2))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (atan2 2 3 4))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (atan2 'a 1))
   nil)
@@ -1053,24 +1053,24 @@
 
 ;;; sinh
 (= (sinh 0) 0)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (sinh))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (sinh 2 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (sinh 'a))
   nil)
@@ -1078,24 +1078,24 @@
 
 ;;; cosh
 (= (cosh 0) 1)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (cosh))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (cosh 2 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (cosh 'a))
   nil)
@@ -1103,24 +1103,24 @@
 
 ;;; tanh
 (= (tanh 0) 0)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (tanh))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (tanh 2 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (tanh 'a))
   nil)
@@ -1128,31 +1128,31 @@
 
 ;;; atanh
 (= (atanh 0) 0)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (atanh 1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (atanh))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (atanh 2 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (atanh 'a))
   nil)
@@ -1171,17 +1171,17 @@
 (not (floatp 0))
 (floatp 1.3e10)
 (not (floatp 'a))
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (floatp))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (floatp 1.0 2.0))
   nil)
@@ -1195,24 +1195,24 @@
 (floatp (float -2.0))
 (= (float -2.0) -2.0)
 (floatp (float 123456789123456789123456789))
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (float))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (float 1.0 2.0))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (float 'a))
   nil)
@@ -1230,24 +1230,24 @@
 (= (floor (exp 2)) 7)
 (= (floor -1000) -1000)
 (= (floor 1000) 1000)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (floor))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (floor 2 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (floor 'a))
   nil)
@@ -1265,24 +1265,24 @@
 (= (ceiling (exp 2)) 8)
 (= (ceiling -1000) -1000)
 (= (ceiling 1000) 1000)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (ceiling))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (ceiling 2 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (ceiling 'a))
   nil)
@@ -1300,24 +1300,24 @@
 (= (truncate (exp 2)) 7)
 (= (truncate -1000) -1000)
 (= (truncate 1000) 1000)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (truncate))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (truncate 2 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (truncate 'a))
   nil)
@@ -1337,24 +1337,24 @@
 (= (round (exp 2)) 7)
 (= (round -1000) -1000)
 (= (round 1000) 1000)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (round))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (round 2 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (round 'a))
   nil)
@@ -1367,24 +1367,24 @@
 (not (integerp 3.4))
 (not (integerp "4"))
 (not (integerp '(a b c)))
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (integerp))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (integerp 1 2))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (integerp 1 2 3))
   nil)
@@ -1403,45 +1403,45 @@
 (eql (div 3 -5) 0)
 (eql (div -3 5) 0)
 (eql (div -3 -5) 0)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <division-by-zero>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (div 3 0))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (div))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (div 2 3 4))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (div 2 3 4 5))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (div 2 'a))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (div 'a 2))
   nil)
@@ -1457,45 +1457,45 @@
 (eql (mod 14 -3) -1)
 (eql (mod -12 -3) 0)
 (eql (mod -14 -3) -2)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <division-by-zero>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (mod 3 0))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (mod))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (mod 2 3 4))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (mod 2 3 4 5))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (mod 2 'a))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (mod 'a 2))
   nil)
@@ -1510,45 +1510,45 @@
 (= (gcd -15 -24) 3)
 (= (gcd 0 -4) 4)
 (= (gcd 0 0) 0)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (gcd))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (gcd 1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (gcd 1 2 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (gcd 1.0 5.2))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (gcd 3 5.92))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (gcd 3 'a))
   nil)
@@ -1562,45 +1562,45 @@
 (= (lcm -15 -24) 120)
 (= (lcm 0 -4) 0)
 (= (lcm 0 0) 0)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (lcm))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (lcm 1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (lcm 1 2 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (lcm 1.0 5.2))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (lcm 3 5.92))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (lcm 3 'a))
   nil)
@@ -1614,38 +1614,38 @@
 (= (isqrt 9) 3)
 (= (isqrt 16) 4)
 (= (isqrt 25) 5)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (isqrt -1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (isqrt 1.5))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (isqrt))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (isqrt 2 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
                 (isqrt 'a))
   nil)

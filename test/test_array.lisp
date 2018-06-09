@@ -50,24 +50,24 @@
 (eq (basic-array-p "abc") 't)
 (eq (basic-array-p 'a) 'nil)
 (eq (basic-array-p #\a) 'nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (basic-array-p))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (basic-array-p "love" "me"))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (basic-array-p "love" "me" "tender"))
   nil)
@@ -79,24 +79,24 @@
 (eq (basic-array*-p "abc") 'nil)
 (eq (basic-array*-p 'a) 'nil)
 (eq (basic-array*-p #\a) 'nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (basic-array*-p))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (basic-array*-p "love" "me"))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (basic-array*-p "love" "me" "tender"))
   nil)
@@ -108,55 +108,55 @@
 (eq (general-array*-p "abc") 'nil)
 (eq (general-array*-p 'a) 'nil)
 (eq (general-array*-p #\a) 'nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (general-array*-p))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (general-array*-p "love" "me"))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (general-array*-p "love" "me" "tender"))
   nil)
 
 
-;; create-array
+;;; create-array
 (equal (create-array '(2 3) 0.0)
        #2a((0.0 0.0 0.0) (0.0 0.0 0.0)))
 
 (equal (create-array '(2) 0.0) #(0.0 0.0))
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(create-array '(-1)))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(create-array '(3 -1)))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(create-array 'a))
   nil)
@@ -175,10 +175,10 @@
 (eql (aref (create-array '() 19)) 19)
 (eql (aref "abc" 1) #\b)
 (eql (aref #(a b c) 1) 'b)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(aref 'a 0 0))
   nil)
@@ -197,10 +197,10 @@
 (eql (garef (create-array '(8 8) 6) 1 1) 6)
 (eql (garef (create-array '() 19)) 19)
 (eql (garef #(a b c) 1) 'b)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(garef "abc" 0))
   nil)
@@ -210,10 +210,10 @@
 (equal (array-dimensions (create-array '(2 2) 0)) '(2 2))
 (equal (array-dimensions (vector 'a 'b)) '(2))
 (equal (array-dimensions "foo") '(3))
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(array-dimensions 'a))
   nil)

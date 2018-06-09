@@ -32,24 +32,24 @@
 (eq (consp '#2a((1) (2))) nil)
 (eq (consp #'car) nil)
 (eq (consp (class-of '())) nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (consp))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (consp 0 1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (consp 0 1 2))
   nil)
@@ -67,31 +67,31 @@
        (equal (cdr l) '(b c))))
 (equal (cons 'a 3) '(a . 3))
 (equal (cons '(a b) 'c) '((a b) . c))
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (cons))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (cons 1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (cons 1 2 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (cons 1 2 3 4))
   nil)
@@ -104,31 +104,31 @@
 (= (car '(1 . 2)) 1)
 (eq (car '(a b c)) 'a)
 (equal (car '((a) b c d)) '(a))
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (car '()))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (car "string"))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (car))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (car '(a b) 2))
   nil)
@@ -139,38 +139,38 @@
 (equal (cdr '(a b c)) '(b c))
 (equal (cdr '((a) b c d)) '(b c d))
 (= (cdr '(1 . 2)) 2)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (cdr '()))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (cdr "string"))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (cdr 1.2))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (cdr))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (cdr '(a b) 2))
   nil)
@@ -186,26 +186,26 @@
        (c (set-car 2 l)))
   (eql c 2))
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (set-car 0 "string"))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (set-car 0 (list 1 2) 'x 'y))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (set-car 0))
   nil)
@@ -220,24 +220,24 @@
 (let* ((l (list 1 2))
        (c (setf (car l) 2)))
   (eql c 2))
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (set-car 0 "string"))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (setf (car (list 1 2)) 0 'x 'y))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (setf (car (list t))))
   nil)
@@ -251,24 +251,24 @@
 (let ((l (list 1 2))
       (l2 (list 3 4 5)))
   (eq (set-cdr l2 l) l2))
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(set-cdr 0 "string"))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (set-cdr 0 (list 'a 'b) 'z))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (set-cdr 0))
   nil)
@@ -282,24 +282,24 @@
 (let ((l (list 1 2))
       (l2 (list 3 4 5)))
   (eq (setf (cdr l) l2) l2))
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (setf (cdr "string") 0))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (setf (cdr (list 'a 'b)) 0 'z))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (setf (cdr (list 'a))))
   nil)
@@ -314,18 +314,18 @@
 (eq (null "") nil)
 (eq (null #\z) nil)
 (eq (null #()) nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (null))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (null 1 2))
   nil)
@@ -341,18 +341,18 @@
 (eq (listp 'list) nil)
 (eq (listp #\z) nil)
 (eq (listp #()) nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (listp))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (listp 1 2))
   nil)
@@ -364,31 +364,31 @@
 (equal (create-list 2 #\a) '(#\a #\a))
 (eq (create-list 0) '())
 (eq (create-list 0 t) '())
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (create-list 'a nil))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (create-list -1 nil))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (create-list))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (create-list 3 t 'z))
   nil)
@@ -408,31 +408,31 @@
 (equal (reverse '(x y z)) '(z y x))
 (equal (reverse '(a)) '(a))
 (eq (reverse '()) '())
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (reverse "string"))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (reverse #(x y z)))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (reverse))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (reverse '(a b c) '(x y z)))
   nil)
@@ -443,31 +443,31 @@
 (equal (nreverse (list 'a 'b 'c 'd 'e)) '(e d c b a))
 (equal (nreverse (list 'a)) '(a))
 (eq (nreverse '()) '())
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (nreverse "string"))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (nreverse #(x y z)))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (nreverse))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (nreverse '(a b c) '(x y z)))
   nil)
@@ -480,18 +480,18 @@
 (eq (append '()) '())
 (equal (append '(a b c) '() '(d e f)) '(a b c d e f))
 (equal (append '() '(a b c) '() '() '() '(d e f)) '(a b c d e f))
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (append '(a b) 'x))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (append 'z))
   nil)
@@ -504,31 +504,31 @@
 (eq (member 'a '()) '())
 (equal (member 'a '(c b a)) '(a))
 (equal (member 'c '(a b c a b c)) '(c a b c))
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (member 'a 'x))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (member))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (member 'a))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (member 'a '(c b aq) 'x 'y 'z))
   nil)
@@ -569,38 +569,38 @@
                  '(a b c) '(x y z))
          (reverse result)))
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (mapcar 'not-a-function '(a b c) '(x y z)))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (mapcar 'not-a-function '(a b c)))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (mapcar #'cons 'not-a-list '(x y z)))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (mapcar #'cons))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (mapcar))
   nil)
@@ -649,34 +649,34 @@
 (let ((a '(a b c)))
   (eq (mapc #'list a '(x y z) '() '(l m n)) a))
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (mapc 'not-a-function '(a b c) '(x y z)))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (mapc #'cons 'not-a-list '(x y z)))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (mapc #'cons))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (mapc))
   nil)
@@ -705,34 +705,34 @@
          result)
        '((d) (c d) (b c d) (a b c d)))
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (maplist 'not-a-function '(a b c) '(x y z)))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (maplist #'cons 'not-a-list '(x y z)))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (maplist #'cons))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (maplist))
   nil)
@@ -804,34 +804,34 @@
   (eq (mapl (lambda (x y) (setq k (list x y k))) l1 l2)
       l1))
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (mapl 'not-a-function '(a b c) '(x y z)))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (mapl #'cons 'not-a-list '(x y z)))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (mapl #'cons))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (mapl))
   nil)
@@ -843,34 +843,34 @@
 
        '(4 5 7))
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (mapcan 'not-a-function '(a b c) '(x y z)))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (mapcan #'list 'not-a-list '(x y z)))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (mapcan #'list))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (mapcan))
   nil)
@@ -885,34 +885,34 @@
 (equal (mapcon #'list '(1 2 3 4))
        '((1 2 3 4) (2 3 4) (3 4) (4)))
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (mapcon 'not-a-function '(a b c) '(x y z)))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (mapcon #'list 'not-a-list '(x y z)))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (mapcon #'list))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (mapcon))
   nil)
@@ -933,26 +933,26 @@
 
 (eq (assoc 'a '()) nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (assoc 'a 'not-a-list))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (assoc 'a))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (assoc))
   nil)

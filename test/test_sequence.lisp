@@ -23,10 +23,10 @@
 (eql (length "") 0)
 (eql (length (vector 'a 'b 'c)) 3)
 (eql (length '(a b . c)) 2)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(length 'not-a-sequence))
   nil)
@@ -38,53 +38,53 @@
 (eq (elt '(a b c) 2) 'c)
 (eq (elt (vector 'a 'b 'c) 1) 'b)
 (eql (elt "abc" 0) #\a)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(elt "abc" -1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(elt "abc" 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(elt "" 0))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(elt #() 0))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(elt '() 0))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(elt 'not-a-sequence 0))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(elt "abc" 'x))
   nil)
@@ -105,52 +105,52 @@
 	 (set-elt 'z x 1)
 	 x)
        '#(a z c))
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(set-elt 'x 'not-a-sequence 0))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(set-elt 'x (list 'a 'b 'c) 'z))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(set-elt 'z (list 'a 'b 'c) -1))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(set-elt 'z (list 'a 'b 'c) 3))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(set-elt 'z (list) 0))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(set-elt 'z (vector) 0))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(set-elt 'z (create-string 0) 0))
   nil)
@@ -165,46 +165,46 @@
 (equal (subseq #() 0 0) #())
 (equal (subseq '() 0 0) nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(subseq 'not-a-sequence 0 0))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(subseq #(a b c) 'z 0))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(subseq #(a b c) 0 'z))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(subseq #(a b c) 1 0))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(subseq #(a b c) 0 100))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(subseq #(a b c) -1 1))
   nil)
@@ -223,9 +223,9 @@
 	     (x 0))
 	 (map-into a (lambda () (setq x (+ x 2)))))
        '(2 4 6 8))
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(map-into 'not-a-sequence (lambda (x) (+ x 1)) (list 0 1 2 3))))

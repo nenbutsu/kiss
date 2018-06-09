@@ -90,10 +90,10 @@
 (defglobal str (create-string-input-stream "hi"))
 (eql (read-char str) #\h)
 (eql (read-char str) #\i)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(read-char str))
   nil)

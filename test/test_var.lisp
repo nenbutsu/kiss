@@ -19,10 +19,10 @@
 ;; A complying ISLISP text shall not attempt to create a lexical
 ;; variable binding for any named constant defined in this
 ;; document. It is a violation if any such attempt is made.
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
     (let ((*pi* 0))
       *pi*))

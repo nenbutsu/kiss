@@ -27,24 +27,24 @@
 (eq (symbolp '*pi*) t)
 (eq (symbolp *pi*) nil)
 (eq (symbolp 3) nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (symbolp))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (symbolp 'a 'b))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (symbolp 'a 'b 'c))
   nil)
@@ -83,38 +83,38 @@
 (= (property 'me 'wallet 0) 1000)
 
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (property))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (property 'foo))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (property 'foo 'bar 'baz 'boo))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (property "love" 'who))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (property 'me "who"))
   nil)
@@ -126,17 +126,17 @@
   (let ((v (gensym)))
     `(let ((,v ,x)) (+ ,v ,v))))
 (= (twice 5) 10)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (gensym 'foo))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (gensym 'foo 'bar))
   nil)

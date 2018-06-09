@@ -65,45 +65,45 @@ t
 (not (eq #\a #\A))
 (eq (eql #\a #\a) t)
 (eq (eql #\space #\space) t)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (eq))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (eq 'a))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (eq 'a 'b 'c))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (eql))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (eql 'a))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (eql 'a 'b 'c))
   nil)
@@ -124,24 +124,24 @@ t
 (not (equal #2a((1 2 3) (4 5 6)) #2a((1 2 3) (7 8 9))))
 (not (equal #(a b) #(a c)))
 (not (equal "a" "A"))
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (equal))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (equal 'a))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (equal 'a 'b 'c))
   nil)
@@ -155,17 +155,17 @@ t
 (eq (not 3) nil)
 (eq (not (list)) t)
 (eq (not (list 3)) 'nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (not))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (not 'a 'b 'c))
   nil)

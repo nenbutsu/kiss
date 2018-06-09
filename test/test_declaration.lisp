@@ -21,24 +21,24 @@
 
 (= (the <integer> 1)
    1)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (the <cons>))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (the))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (the <cons> '(a b c) 1))
   nil)
@@ -55,46 +55,46 @@
 (string= (assure <string> "love")
          "love")
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (assure <cons> 'nil))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (assure <string> 'love))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (assure <foo> '(a b c)))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (assure <cons>))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (assure))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (assure <cons> '(1 2 3) 'a))
   nil)

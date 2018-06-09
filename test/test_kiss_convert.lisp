@@ -20,10 +20,10 @@
 ;; character
 (= (convert #\space <integer>) 32)
 (char= (convert #\space <character>) #\space)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (convert #\a <string>))
   nil)
@@ -37,10 +37,10 @@
 (string= (convert 120000000000 <string>) "120000000000")
 (= (convert 12 <float>) 12.0)
 (= (convert 120000000000 <float>) 1.2e11)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (convert 12 <symbol>))
   nil)
@@ -48,10 +48,10 @@
 ;; float
 (= (convert 1.0 <float>) 1.0)
 (= (convert 1.5 <float>) 1.5)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (convert 12.5 <integer>))
   nil)
@@ -70,10 +70,10 @@
 (equal (convert "" <general-vector>) #())
 (equal (convert "123" <list>) '(#\1 #\2 #\3))
 (equal (convert "" <list>) '())
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (convert "love" <character>))
   nil)
@@ -83,10 +83,10 @@
 (equal (convert #(a b c d) <list>) '(a b c d))
 (equal (convert #() <general-vector>) #())
 (eq (convert #() <list>) '())
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (convert #(l o v e) <character>))
   nil)
@@ -96,10 +96,10 @@
 (equal (convert '(a b c) <general-vector>) #(a b c))
 (eq (convert '() <list>) '())
 (equal (convert '() <general-vector>) #())
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (convert '(l o v e) <character>))
   nil)

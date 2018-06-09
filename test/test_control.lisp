@@ -49,24 +49,24 @@
      x)
    2)
 (= (+ x 1) 5)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (setq))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (setq x))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (setq x 1 2 3))
   nil)
@@ -111,24 +111,24 @@
 (= (dynamic dynamic-foo) 10)
 (dynamic-let ((dynamic-foo (- (dynamic dynamic-foo) 5)))
    (= (dynamic dynamic-foo) 5))
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (dynamic))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <arity-error>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (dynamic foo bar))
   nil)
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <unbound-variable>))
-		      (return-from a t)
+		      (return-from top t)
                       (signal-condition condition nil)))
     (dynamic foo-bar-baz))
   nil)
@@ -326,18 +326,18 @@
 
 (eq (bar t nil) 'second-exit)
 (eq (bar nil nil) 'third-exit)
-(block a
+(block top
   (with-handler (lambda (c)
 		  (if (instancep c (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition c nil)))
 		(bar nil t))
   nil)
 
-(block a
+(block top
   (with-handler (lambda (c)
 		  (if (instancep c (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition c nil)))
 		(bar t t))
   nil)
@@ -408,10 +408,10 @@
 (defun test4 ()
   (throw 'outer 6))
 
-(block a
+(block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
-		      (return-from a t)
+		      (return-from top t)
 		    (signal-condition condition nil)))
 		(test))
   nil)
