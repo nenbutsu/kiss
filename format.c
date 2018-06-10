@@ -89,7 +89,9 @@ static kiss_obj* kiss_format_general_array(kiss_obj* out, kiss_obj* obj, kiss_ob
      kiss_format_integer(out, (kiss_obj*)kiss_make_fixnum(array->rank), (kiss_obj*)kiss_make_fixnum(10));
      kiss_format_char(out, kiss_make_char(L'a'));
      if (array->rank == 0) {
+          kiss_format_char(out, kiss_make_char(L'('));
 	  kiss_format_object(out, array->vector, escapep);
+          kiss_format_char(out, kiss_make_char(L')'));
      } else {
 	  kiss_format_list(out, kiss_general_array_s_to_list(obj), escapep);
      }

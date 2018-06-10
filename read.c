@@ -253,15 +253,19 @@ static kiss_obj* kiss_read_array(const kiss_obj* const in) {
      }
      size_t rank = wcstol(wcs, NULL, 10);
      kiss_obj* list = kiss_read_list(in);
-
-     if (rank == 1) {
+     if (rank == 0) {
+          kiss_obj* dimensions = KISS_NIL;
+          kiss_obj* array = kiss_create_array(dimensions, list);
+          // first element of LIST will be THE only element
+          return array;
+     } else if (rank == 1) {
 	  return kiss_vector(list);
+     } else {
+          kiss_obj* dimensions = kiss_list_to_array_dimensions(rank, list);
+          kiss_obj* array = kiss_create_array(dimensions, KISS_NIL);
+          kiss_fill_array(rank, list, Kiss_General_Vector(Kiss_General_Array_S(array)->vector));
+          return array;
      }
-     kiss_obj* dimensions = kiss_list_to_array_dimensions(rank, list);
-     kiss_obj* array = kiss_create_array(dimensions, KISS_NIL);
-
-     kiss_fill_array(rank, list, Kiss_General_Vector(Kiss_General_Array_S(array)->vector));
-     return array;
 }
 
 static kiss_obj* kiss_skip_comment(const kiss_obj* const in) {
@@ -312,7 +316,7 @@ static kiss_obj* kiss_read_sharp_reader_macro(const kiss_obj* const in) {
           kiss_skip_comment(in);
           return NULL;
      }
-     case L'1': case L'2': case L'3': case L'4': 
+     case L'0': case L'1': case L'2': case L'3': case L'4': 
      case L'5': case L'6': case L'7': case L'8': case L'9':
 	  return kiss_read_array(in);
      case L'b': case L'B': case L'o': case L'O': case L'x': case L'X': {
