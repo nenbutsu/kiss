@@ -134,9 +134,10 @@
 ;;; create-array
 (equal (create-array '(2 3) 0.0)
        #2a((0.0 0.0 0.0) (0.0 0.0 0.0)))
-
 (equal (create-array '(2) 0.0) #(0.0 0.0))
-
+(general-array*-p (create-array '(2 3)))
+(general-vector-p (create-array '(2)))
+(general-array*-p (create-array '() 'foo))
 (block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
