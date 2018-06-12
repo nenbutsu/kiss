@@ -748,6 +748,7 @@ kiss_symbol_t KISS_Sc_float;
 kiss_symbol_t KISS_Sc_string;
 kiss_symbol_t KISS_Sc_general_vector;
 kiss_symbol_t KISS_Sc_general_array_s;
+kiss_symbol_t KISS_Sc_general_array;
 kiss_symbol_t KISS_Sc_stream;
 kiss_symbol_t KISS_Sc_function;
 kiss_symbol_t KISS_Sc_hash_table;
@@ -872,7 +873,7 @@ kiss_obj* Kiss_General_Array(const kiss_obj* const obj) {
      if (KISS_IS_GENERAL_VECTOR(obj) || KISS_IS_GENERAL_ARRAY_S(obj)) {
           return (kiss_obj*)obj;
      }
-     Kiss_Domain_Error(obj, L"general array (<general-vector> or <general-array*>)");
+     Kiss_Domain_Error(obj, L"<general-array>");
 }
 
 inline

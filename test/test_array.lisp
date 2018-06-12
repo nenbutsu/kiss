@@ -181,12 +181,27 @@
 (eql (aref (create-array '() 19)) 19)
 (eql (aref "abc" 1) #\b)
 (eql (aref #(a b c) 1) 'b)
+(eq (aref (create-array '() 'z)) 'z)
 (block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
 		      (return-from top t)
 		    (signal-condition condition nil)))
 		(aref 'a 0 0))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from top t)
+		    (signal-condition condition nil)))
+		(aref "abc" 0 0))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from top t)
+		    (signal-condition condition nil)))
+		(aref "abc" 100))
   nil)
 
 
@@ -203,9 +218,14 @@
 (eql (garef (create-array '(8 8) 6) 1 1) 6)
 (eql (garef (create-array '() 19)) 19)
 (eql (garef #(a b c) 1) 'b)
+(defglobal garray (create-array '(3) 'nil))
+(set-garef 'a garray 0)
+(set-garef 'b garray 1)
+(set-garef 'c garray 2)
+(eq (garef garray 1) 'b)
 (block top
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from top t)
 		    (signal-condition condition nil)))
 		(garef "abc" 0))
