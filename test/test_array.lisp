@@ -138,6 +138,10 @@
 (general-array*-p (create-array '(2 3)))
 (general-vector-p (create-array '(2)))
 (general-array*-p (create-array '() 'foo))
+(equal (create-array '(3 2 1) 'z)
+       #3A(((z) (z)) ((z) (z)) ((z) (z))))
+(equal (create-array '(5) 'foo)
+       #(foo foo foo foo foo))
 (block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
@@ -162,6 +166,7 @@
 		(create-array 'a))
   nil)
 
+
 ;; aref
 (defglobal array1 (create-array '(3 3 3) 0))
 (equal array1 #3a(((0 0 0) (0 0 0) (0 0 0))
@@ -178,7 +183,7 @@
 (eql (aref #(a b c) 1) 'b)
 (block top
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from top t)
 		    (signal-condition condition nil)))
 		(aref 'a 0 0))
