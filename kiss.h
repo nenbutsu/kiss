@@ -892,7 +892,7 @@ kiss_obj* Kiss_Basic_Array(const kiss_obj* const obj) {
      if (KISS_IS_GENERAL_VECTOR(obj) || KISS_IS_GENERAL_ARRAY_S(obj) || KISS_IS_STRING(obj)) {
           return (kiss_obj*)obj;
      }
-     Kiss_Domain_Error(obj, L"<basic array>");
+     Kiss_Domain_Error(obj, L"<basic-array>");
 }
 
 
