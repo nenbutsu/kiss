@@ -87,3 +87,13 @@
                       (signal-condition condition nil)))
     (general-vector-p "love" "me" "tender"))
   nil)
+
+
+;;; create-vector
+(equal (create-vector 3 17) #(17 17 17))
+(equal (create-vector 2 #\a) #(#\a #\a))
+(equal (create-vector 0 #\a) #())
+(= (length (create-vector 3)) 3)
+(= (length (create-vector 0)) 0)
+
+
