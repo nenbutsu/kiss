@@ -16,6 +16,11 @@
 ;; GNU General Public License for more details.
 
 ;;; basic-vector-p
+(eq (basic-vector-p "abc") 't)
+(eq (basic-vector-p #(a b c)) 't)
+(eq (basic-vector-p #1A(a b c)) 't)
+(eq (basic-vector-p #2a((a) (b) (c))) 'nil)
+
 (equal (mapcar (lambda (x)
                  (list (basic-vector-p x)
                        (general-vector-p x)))
