@@ -167,7 +167,7 @@
   nil)
 
 
-;; aref, set-aref
+;;; aref, set-aref
 (defglobal array (create-array '(3 3 3) 0))
 (equal array #3a(((0 0 0) (0 0 0) (0 0 0))
 		  ((0 0 0) (0 0 0) (0 0 0))
@@ -214,7 +214,7 @@
   nil)
 
 
-;; garef
+;;; garef, set-garef
 (defglobal array (create-array '(3 3 3) 0))
 (equal array #3a(((0 0 0) (0 0 0) (0 0 0))
 		  ((0 0 0) (0 0 0) (0 0 0))
@@ -224,31 +224,71 @@
 (eql (garef array 0 1 2) 3.14)
 (eql (set-garef 51.3 array 0 1 2) 51.3)
 (eql (garef array 0 1 2) 51.3)
+(eq (set-garef 'foo array 2 2 2) 'foo)
+(eq (garef array 2 2 2) 'foo)
+(equal array #3a(((0 0 0) (0 0 51.3) (0 0 0))
+                 ((0 0 0) (0 0 0) (0 0 0))
+                 ((0 0 0) (0 0 0) (0 0 foo))))
 (eql (garef (create-array '(8 8) 6) 1 1) 6)
 (eql (garef (create-array '() 19)) 19)
+(defglobal array (create-array '() 0))
+(= (garef array) 0)
+(= (set-garef 1 array) 1)
+(= (garef array) 1)
 (eql (garef #(a b c) 1) 'b)
-(defglobal garray (create-array '(3) 'nil))
-(set-garef 'a garray 0)
-(set-garef 'b garray 1)
-(set-garef 'c garray 2)
-(eq (garef garray 1) 'b)
+(eq (garef (create-array '() 'z)) 'z)
 (block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <domain-error>))
 		      (return-from top t)
 		    (signal-condition condition nil)))
-		(garef "abc" 0))
+		(garef 'a 0 0))
   nil)
-
-
-;; array-dimensions
-(equal (array-dimensions (create-array '(2 2) 0)) '(2 2))
-(equal (array-dimensions (vector 'a 'b)) '(2))
-(equal (array-dimensions "foo") '(3))
 (block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
 		      (return-from top t)
 		    (signal-condition condition nil)))
+		(garef #(a b c) 0 0))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <error>))
+		      (return-from top t)
+		    (signal-condition condition nil)))
+		(aref #(a b c) 100))
+  nil)
+
+
+;;; array-dimensions
+(equal (array-dimensions (create-array '(2 2) 0)) '(2 2))
+(equal (array-dimensions (vector 'a 'b)) '(2))
+(equal (array-dimensions "foo") '(3))
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from top t)
+		    (signal-condition condition nil)))
 		(array-dimensions 'a))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+		    (signal-condition condition nil)))
+		(array-dimensions))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+		    (signal-condition condition nil)))
+		(array-dimensions #() #()))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+		    (signal-condition condition nil)))
+		(array-dimensions #() #() #()))
   nil)
