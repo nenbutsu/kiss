@@ -15,12 +15,16 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
+
 ;;; basic-vector-p
 (eq (basic-vector-p "abc") 't)
+(eq (basic-vector-p "") 't)
 (eq (basic-vector-p #(a b c)) 't)
+(eq (basic-vector-p #()) 't)
 (eq (basic-vector-p #1A(a b c)) 't)
 (eq (basic-vector-p #2a((a) (b) (c))) 'nil)
-
+(eq (basic-vector-p '(a b c)) 'nil)
+(eq (basic-vector-p 'foo) 'nil)
 (equal (mapcar (lambda (x)
                  (list (basic-vector-p x)
                        (general-vector-p x)))
@@ -30,4 +34,56 @@
                  #1a(a b c)
                  #2a((a) (b) (c))))
        '((nil nil) (t nil) (t t) (t t) (nil nil)))
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (basic-vector-p))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (basic-vector-p "love" "me"))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (basic-vector-p "love" "me" "tender"))
+  nil)
 
+
+;;; general-vector-p
+(eq (general-vector-p "abc") 'nil)
+(eq (general-vector-p "") 'nil)
+(eq (general-vector-p #(a b c)) 't)
+(eq (general-vector-p #()) 't)
+(eq (general-vector-p #1A(a b c)) 't)
+(eq (general-vector-p #2a((a) (b) (c))) 'nil)
+(eq (general-vector-p '(a b c)) 'nil)
+(eq (general-vector-p 'foo) 'nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (general-vector-p))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (general-vector-p "love" "me"))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (general-vector-p "love" "me" "tender"))
+  nil)
