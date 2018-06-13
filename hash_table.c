@@ -29,7 +29,7 @@ kiss_obj* kiss_make_hash_table(kiss_obj* size, kiss_obj* test, kiss_obj* weaknes
      p->weakness = weakness;
      p->rehash_size = rehash_size;
      p->rehash_threshold = rehash_threshold;
-     p->vector = (kiss_general_vector_t*)kiss_create_general_vector(size, KISS_NIL);
+     p->vector = (kiss_general_vector_t*)kiss_create_vector(size, KISS_NIL);
      return (kiss_obj*)p;
 }
 

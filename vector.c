@@ -43,14 +43,14 @@ kiss_general_vector_t* kiss_make_general_vector(const size_t n, const kiss_obj* 
     return p;
 }
 
-/* function: (create-general-vector i [initial-element]) -> <general-vector>
+/* function: (create-vector i [initial-element]) -> <general-vector>
    Returns a general-vector of length I. If INITIAL-ELEMENT is given,
    the elements of the new vector are initialized with this object, otherwise
    it is initialized with nil. An error shall be signaled if the requested
    vector cannot be allocated (error-id. cannot-create-vector ).
    An error shall be signaled if I is not a non-negative integer
    (error-id. domain-error ). INITIAL-ELEMENT may be any LISP object.*/
-kiss_obj* kiss_create_general_vector(const kiss_obj* const i, const kiss_obj* const rest) {
+kiss_obj* kiss_create_vector(const kiss_obj* const i, const kiss_obj* const rest) {
     kiss_ptr_int n = Kiss_Non_Negative_Fixnum(i);
     kiss_obj* obj = rest == KISS_NIL ? KISS_NIL : KISS_CAR(rest);
     return (kiss_obj*)kiss_make_general_vector(n, obj);
@@ -121,7 +121,7 @@ kiss_obj* kiss_set_gvref(const kiss_obj* const obj, kiss_obj* general_vector, co
 
 kiss_obj* kiss_str_to_vec(const kiss_obj* const obj) {
      kiss_string_t* str = Kiss_String(obj);
-     kiss_general_vector_t* vec = (kiss_general_vector_t*)kiss_create_general_vector(kiss_make_fixnum(str->n), KISS_NIL);
+     kiss_general_vector_t* vec = (kiss_general_vector_t*)kiss_create_vector(kiss_make_fixnum(str->n), KISS_NIL);
      for (size_t n = 0; n < str->n; n++) {
           vec->v[n] = kiss_make_char(str->str[n]);
      }
@@ -131,7 +131,7 @@ kiss_obj* kiss_str_to_vec(const kiss_obj* const obj) {
 kiss_obj* kiss_list_to_vec(const kiss_obj* const obj) {
      Kiss_List(obj);
      size_t len = kiss_ptr_int(kiss_length(obj));
-     kiss_general_vector_t* vec = (kiss_general_vector_t*)kiss_create_general_vector(kiss_make_fixnum(len), KISS_NIL);
+     kiss_general_vector_t* vec = (kiss_general_vector_t*)kiss_create_vector(kiss_make_fixnum(len), KISS_NIL);
      const kiss_obj* p = obj;
      for (size_t n = 0; n < len; n++, p = KISS_CDR(p)) {
           vec->v[n] = KISS_CAR(p);

@@ -519,7 +519,7 @@ void kiss_bind_funargs(kiss_obj* name, kiss_obj* params, kiss_obj* args);
 
 /* vector.c */
 kiss_general_vector_t* kiss_make_general_vector(const size_t n, const kiss_obj* const obj);
-kiss_obj* kiss_create_general_vector(const kiss_obj* const i, const kiss_obj* const rest);
+kiss_obj* kiss_create_vector(const kiss_obj* const i, const kiss_obj* const rest);
 kiss_obj* kiss_vector(const kiss_obj* objs);
 kiss_obj* kiss_basic_vector_p(const kiss_obj* const obj);
 kiss_obj* kiss_general_vector_p(const kiss_obj* const obj);

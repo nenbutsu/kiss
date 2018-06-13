@@ -43,7 +43,7 @@ static kiss_general_vector_t* kiss_make_ga(const kiss_obj* const dimensions, kis
 	  return vector;
      }
      for (size_t i = 0; i < vector->n; i++) {
-	  vector->v[i] = kiss_create_general_vector(kiss_car(dimensions), KISS_NIL);
+	  vector->v[i] = kiss_create_vector(kiss_car(dimensions), KISS_NIL);
 	  kiss_make_ga(kiss_cdr(dimensions), ((kiss_general_vector_t*)vector->v[i]), obj);
      }
      return vector;
@@ -59,7 +59,7 @@ static kiss_general_array_t* kiss_make_general_array(const kiss_obj* const dimen
 	 return array;
     }
     
-    kiss_general_vector_t* vector = (kiss_general_vector_t*)kiss_create_general_vector(kiss_car(dimensions), KISS_NIL);
+    kiss_general_vector_t* vector = (kiss_general_vector_t*)kiss_create_vector(kiss_car(dimensions), KISS_NIL);
     array->vector = (kiss_obj*)kiss_make_ga(kiss_cdr(dimensions), vector, obj);
     return array;
 }
@@ -82,7 +82,7 @@ kiss_obj* kiss_create_array(const kiss_obj* const dimensions, const kiss_obj* co
      size_t rank = kiss_c_length(dimensions);
 
      if (rank == 1) {
-	  return kiss_create_general_vector(kiss_car(dimensions), rest);
+	  return kiss_create_vector(kiss_car(dimensions), rest);
      } else {
 	  kiss_obj* obj = (rest == KISS_NIL) ? KISS_NIL : kiss_car(rest);
 	  return (kiss_obj*)kiss_make_general_array(dimensions, obj);

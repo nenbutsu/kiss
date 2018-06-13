@@ -1105,22 +1105,22 @@ kiss_symbol_t KISS_Sgeneral_array_s_to_list = {
 
 
 /*** vector.c ***/
-kiss_symbol_t KISS_Screate_general_vector;
-kiss_cfunction_t KISS_CFcreate_general_vector = {
-     KISS_CFUNCTION,                         /* type */
-     &KISS_Screate_general_vector,           /* name */
-     (kiss_cf_t*)kiss_create_general_vector, /* C function name */
-     1,                                      /* minimum argument number */
-     2,                                      /* maximum argument number */
+kiss_symbol_t KISS_Screate_vector;
+kiss_cfunction_t KISS_CFcreate_vector = {
+     KISS_CFUNCTION,                 /* type */
+     &KISS_Screate_vector,           /* name */
+     (kiss_cf_t*)kiss_create_vector, /* C function name */
+     1,                              /* minimum argument number */
+     2,                              /* maximum argument number */
 };
-kiss_symbol_t KISS_Screate_general_vector = {
-     KISS_SYMBOL,                              /* type */
-     NULL,                                     /* gc_ptr */
-     L"create-general-vector",                 /* name */
-     KISS_SYSTEM_FUNCTION,                     /* flags */
-     NULL,                                     /* var */
-     (kiss_obj*)&KISS_CFcreate_general_vector, /* fun */
-     KISS_NIL,                                 /* plist */
+kiss_symbol_t KISS_Screate_vector = {
+     KISS_SYMBOL,                      /* type */
+     NULL,                             /* gc_ptr */
+     L"create-vector",                 /* name */
+     KISS_SYSTEM_FUNCTION,             /* flags */
+     NULL,                             /* var */
+     (kiss_obj*)&KISS_CFcreate_vector, /* fun */
+     KISS_NIL,                         /* plist */
 };
 
 kiss_symbol_t KISS_Svector;
@@ -4495,7 +4495,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
      &KISS_Sarray_dimensions, &KISS_Sgeneral_array_s_to_list,
     
      /* vector.c */
-     &KISS_Screate_general_vector, &KISS_Svector,
+     &KISS_Screate_vector, &KISS_Svector,
      &KISS_Sgeneral_vector_p, &KISS_Sbasic_vector_p, &KISS_Sgvref, &KISS_Sset_gvref,
 
      /* hash_table */
