@@ -95,5 +95,30 @@
 (equal (create-vector 0 #\a) #())
 (= (length (create-vector 3)) 3)
 (= (length (create-vector 0)) 0)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (create-vector))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (create-vector 3 'a 'b))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (create-vector 3 'a 'b 'c))
+  nil)
 
 
+;;; vector
+(equal (vector) #())
+(equal (vector 'a) #(a))
+(equal (vector 'a 'b 10) #(a b 10))
