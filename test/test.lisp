@@ -27,6 +27,7 @@
     "test/test_string.lisp"
     "test/test_sequence.lisp"
     "test/test_array.lisp"
+    "test/test_vector.lisp"
     "test/test_number.lisp"
     "test/test_char.lisp"
     "test/test_stream.lisp"
