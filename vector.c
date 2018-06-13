@@ -77,7 +77,7 @@ kiss_obj* kiss_vector(const kiss_obj* objs) {
    Returns t if OBJ is a basic-vector (instance of class <basic-vector>);
    otherwise, returns nil. OBJ may be any ISLISP object. */
 inline kiss_obj* kiss_basic_vector_p(const kiss_obj* const obj) {
-     return kiss_general_vector_p(obj) || kiss_stringp(obj) ? KISS_T : KISS_NIL;
+     return kiss_general_vector_p(obj) == KISS_T || kiss_stringp(obj) == KISS_T ? KISS_T : KISS_NIL;
 }
 
 
