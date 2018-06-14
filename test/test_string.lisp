@@ -397,7 +397,7 @@
   nil)
 
 
-;; char-index
+;;; char-index
 (eql (char-index #\b "abcab") 1)
 (eql (char-index #\B "abcab") nil)
 (eql (char-index #\b "abcab" 2) 4)
@@ -457,7 +457,7 @@
   nil)
 
 
-;; string-index
+;;; string-index
 (eql (string-index "foo" "foobar") 0)
 (eql (string-index "bar" "foobar") 3)
 (eql (string-index "FOO" "foobar") nil)
@@ -465,6 +465,9 @@
 (eql (string-index "bar" "foobar" 1) 3)
 (eql (string-index "foo" "") nil)
 (eql (string-index "" "foo") 0)
+(eql (string-index "" "foo" 1) 1)
+(eql (string-index "" "foo" 2) 2)
+
 
 ;; string-append
 (equal (string-append "abc" "def") "abcdef")
