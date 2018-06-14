@@ -467,6 +467,56 @@
 (eql (string-index "" "foo") 0)
 (eql (string-index "" "foo" 1) 1)
 (eql (string-index "" "foo" 2) 2)
+(eql (string-index "b" "foobar" 1) 3)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (string-index 'a "abc"))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (string-index 'a "abc" 0))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (string-index "a" 'abc))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (string-index "a" 'abc 0))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (string-index))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (string-index "a"))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (string-index "a" "abc" 0 9))
+  nil)
 
 
 ;; string-append
