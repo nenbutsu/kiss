@@ -234,12 +234,13 @@
   nil)
 
 
-(eq (if (string<= "abcd" "abcd") t nil) t)
-(eq (if (string<= "abcd" "wxyz") t nil) t)
-(eq (if (string<= "abcd" "abcde") t nil) t)
-(eq (if (string<= "abcde" "abcd") t nil) nil)
-(eq (if (string> "abcd" "wxyz") t nil) nil)
-(eq (if (string>= "abcd" "abcd") t nil) t)
+;;; string<=
+(eq (if (string<= "abcd" "abcd") 't 'nil) 't)
+(eq (if (string<= "abcd" "wxyz") 't 'nil) 't)
+(eq (if (string<= "abcd" "abcde") 't 'nil) 't)
+(eq (if (string<= "abcde" "abcd") 't 'nil) 'nil)
+(eq (if (string> "abcd" "wxyz") 't 'nil) 'nil)
+(eq (if (string>= "abcd" "abcd") 't 'nil) 't)
 
 ;; char-index
 (eql (char-index #\b "abcab") 1)
