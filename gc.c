@@ -223,7 +223,7 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
 	       kiss_gc_mark_oo_obj((kiss_ilos_obj_t*)obj);
 	       break;
 	  default:
-	       fwprintf(stderr, L"gc_mark: unknown primitive object type = %d\n", KISS_OBJ_TYPE(obj));
+	       fwprintf(stderr, L"gc_mark_obj: unknown primitive object type = %d\n", KISS_OBJ_TYPE(obj));
 	       exit(EXIT_FAILURE);
 	  }
      }
@@ -289,8 +289,8 @@ void kiss_gc_free_obj(kiss_gc_obj* obj) {
 	  return;
      } else {
 	  switch (KISS_OBJ_TYPE(obj)) {
-	  case KISS_CHARACTER:
 	  case KISS_FIXNUM:
+	  case KISS_CHARACTER:
                break;
           case KISS_BIGNUM:
                kiss_gc_free_bignum((kiss_bignum_t*)obj);
@@ -323,7 +323,7 @@ void kiss_gc_free_obj(kiss_gc_obj* obj) {
 	       free(obj);
 	       break;
 	  default:
-	       fwprintf(stderr, L"gc_free: unknown object type = %d\n", KISS_OBJ_TYPE(obj));
+	       fwprintf(stderr, L"gc_free_obj: unknown object type = %d\n", KISS_OBJ_TYPE(obj));
 	       exit(EXIT_FAILURE);
 	  }
      }
