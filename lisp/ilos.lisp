@@ -360,20 +360,18 @@
   (:abstractp t))
 (defclass <integer> (<number>) ()
   (:metaclass <built-in-class>))
-(defclass <non-negative-integer> (<integer>) ()
-  (:metaclass <built-in-class>))
 (defclass <float> (<number>) ()
   (:metaclass <built-in-class>))
 
-(defclass <non-negative-integer> (<object>) () ;; kiss specific
+(defclass <non-negative-integer> (<integer>) () ;; kiss specific
   (:metaclass <built-in-class>))
-(defclass <non-negative-fixnum> (<object>) () ;; kiss specific
+(defclass <non-negative-fixnum> (<integer>) () ;; kiss specific
   (:metaclass <built-in-class>))
-
 
 (defclass <general-array> (<object>) () ;; kiss specific
   (:metaclass <built-in-class>)
   (:abstractp t))
+
 (defclass <basic-array> (<object>) ()
   (:metaclass <built-in-class>)
   (:abstractp t))
