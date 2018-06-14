@@ -40,6 +40,38 @@
 ;; create-string
 (equal (create-string 3 #\a) "aaa")
 (equal (create-string 0 #\a) "")
+(defglobal str (create-string 5))
+(stringp str)
+(= (length str) 5)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (create-string))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (create-string 3 #\a #\b))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (create-string -3 #\a))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (create-string -5))
+  nil)
+
 
 ;; string= ,...
 (eq (if (string= "abcd" "abcd") t nil) t)
