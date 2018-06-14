@@ -46,6 +46,8 @@
 ;; or if the STRING1 is a proper prefix of STRING2 (of shorter length and matching in all
 ;; the characters of STRING1).
 (defun string< (string1 string2)
+  (assure <string> string1)
+  (assure <string> string2)
   (let ((i 0)
         (l1 (length string1))
         (l2 (length string2)))
@@ -110,11 +112,15 @@
 ;; An error shall be signaled if either SUBSTRING or STRING is not a string
 ;; (error-id. domain-error)
 (defun string-index (substring string &rest start-position)
+  (assure <string> substring)
+  (assure <string> string)
+  
   (if (= (length substring) 0)
       0
     (if (= (length string) 0)
 	nil
-      (let ((here (char-index (elt substring 0) string (if start-position (car start-position) 0))))
+      (let ((here (char-index (elt substring 0) string
+                              (if start-position (assure <integer> (car start-position)) 0))))
 	(while here
 	  (let ((p (+ here 1))
 		(n 1))
