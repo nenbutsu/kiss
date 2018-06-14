@@ -73,10 +73,13 @@
   nil)
 
 
-;; string= ,...
+;;; string=
 (eq (if (string= "abcd" "abcd") 't 'nil) 't)
 (eq (if (string= "" "") 't 'nil) 't)
 (eq (if (string= "love me tender" "love me tender") 't 'nil) 't)
+(eq (if (string= "abc" "abcd") 't 'nil) 'nil)
+(eq (if (string= "abcd" "abc") 't 'nil) 'nil)
+(eq (if (string= "" "a") 't 'nil) 'nil)
 (eq (if (string= "abcd" "wxyz") 't 'nil) 'nil)
 (eq (if (string= "abcd" "abcde") 't 'nil) 'nil)
 (eq (if (string= "abcde" "abcd") 't 'nil) 'nil)
@@ -128,6 +131,8 @@
 (eq (if (string/= "abcd" "abcd") 't 'nil) 'nil)
 (eq (if (string/= "" "") 't 'nil) 'nil)
 (eq (if (string/= "abc" "ABC") 't 'nil) 't)
+(eq (if (string/= "abc" "abcd") 't 'nil) 't)
+(eq (if (string/= "abcd" "abc") 't 'nil) 't)
 (eq (if (string/= "" "abc") 't 'nil) 't)
 (eq (if (string/= "abcd" "wxyz") 't 'nil) 't)
 (eq (if (string/= "abcd" "abcde") 't 'nil) 't)
@@ -176,11 +181,17 @@
   nil)
 
 
-(eq (if (string< "abcd" "abcd") t nil) nil)
-(eq (if (string< "abcd" "wxyz") t nil) t)
-(eq (if (string< "lo" "love") t nil) t)
-(eq (if (string< "abcd" "abcde") t nil) t)
-(eq (if (string< "abcde" "abcd") t nil) nil)
+;;; string<
+(eq (if (string< "abcd" "abcd") 't 'nil) 'nil)
+(eq (if (string< "abcd" "wxyz") 't 'nil) 't)
+(eq (if (string< "lo" "love") 't 'nil) 't)
+(eq (if (string< "abcd" "abcde") 't 'nil) 't)
+(eq (if (string< "abcde" "abcd") 't 'nil) 'nil)
+(eq (if (string< "" "abcd") 't 'nil) 't)
+(eq (if (string< "b" "abcd") 't 'nil) 'nil)
+(eq (if (string< "abc" "bbc") 't 'nil) 't)
+
+
 (eq (if (string<= "abcd" "abcd") t nil) t)
 (eq (if (string<= "abcd" "wxyz") t nil) t)
 (eq (if (string<= "abcd" "abcde") t nil) t)
