@@ -448,13 +448,13 @@
                       (signal-condition condition nil)))
     (char-index #\a))
   nil)
-;;(block top
-;;  (with-handler (lambda (condition)
-;;		  (if (instancep condition (class <arity-error>))
-;;		      (return-from top t)
-;;                      (signal-condition condition nil)))
-;;    (char-index #\a "abc" 0 9))
-;;  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (char-index #\a "abc" 0 9))
+  nil)
 
 
 ;; string-index

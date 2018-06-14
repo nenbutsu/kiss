@@ -94,6 +94,12 @@
 (defun char-index (char string &rest start-position)
   (assure <character> char)
   (assure <string> string)
+  (if (not (null start-position))
+      (if (not (= (length start-position) 1))
+          (signal-condition (create (class <arity-error>)
+                                    'form start-position
+                                    'message "(char-index char string [start-position])")
+		            nil)))
   (let ((here (if start-position (assure <integer> (car start-position)) 0))
 	(len (length string)))
     (while (and (< here len) (char/= char (elt string here)))
