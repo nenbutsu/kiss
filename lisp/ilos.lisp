@@ -230,11 +230,11 @@
     (if (or (eq c class)
             (subclassp c class)
             (and (integerp obj)
-                 (and (eq class (class <non-negative-integer>))
-                      (>= obj 0))
-                 (and (eq class (class <non-negative-fixnum>))
-                      (fixnump obj)
-                      (>= obj 0))))
+                 (or (and (eq class (class <non-negative-integer>))
+                          (>= obj 0))
+                     (and (eq class (class <non-negative-fixnum>))
+                          (fixnump obj)
+                          (>= obj 0)))))
         t
       nil)))
 
