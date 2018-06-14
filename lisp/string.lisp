@@ -92,7 +92,9 @@
 ;; An error shall be signaled if CHAR is not a character or if STRING is not a string
 ;; (error-id. domain-error).
 (defun char-index (char string &rest start-position)
-  (let ((here (if start-position (car start-position) 0))
+  (assure <character> char)
+  (assure <string> string)
+  (let ((here (if start-position (assure <integer> (car start-position)) 0))
 	(len (length string)))
     (while (and (< here len) (char/= char (elt string here)))
       (setq here (+ here 1)))
