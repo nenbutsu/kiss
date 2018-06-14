@@ -94,7 +94,7 @@
 (defun char-index (char string &rest start-position)
   (assure <character> char)
   (assure <string> string)
-  (if (not (null start-position))
+  (if start-position
       (if (not (= (length start-position) 1))
           (signal-condition (create (class <arity-error>)
                                     'form start-position
@@ -122,13 +122,21 @@
 (defun string-index (substring string &rest start-position)
   (assure <string> substring)
   (assure <string> string)
-  
+  (if start-position
+      (if (/= (length start-position) 1)
+          (signal-condition (create (class <arity-error>)
+                                    'form start-position
+                                    'message "(string-index char string [start-position])")
+		            nil)
+        (setq start-position (assure <integer> (car start-position))))
+    (setq start-position 0))
+  (if (> start-position (length string))
+      (error "string-index: invalid start-position"))
   (if (= (length substring) 0)
-      0
+      (min start-position (length string))
     (if (= (length string) 0)
 	nil
-      (let ((here (char-index (elt substring 0) string
-                              (if start-position (assure <integer> (car start-position)) 0))))
+      (let ((here (char-index (elt substring 0) string start-position)))
 	(while here
 	  (let ((p (+ here 1))
 		(n 1))
