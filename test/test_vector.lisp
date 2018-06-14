@@ -122,3 +122,7 @@
 (equal (vector) #())
 (equal (vector 'a) #(a))
 (equal (vector 'a 'b 10) #(a b 10))
+(eq (general-vector-p (vector)) 't)
+(eq (general-vector-p (vector 'a)) 't)
+(eq (general-vector-p (vector 'a 'b 10)) 't)
+
