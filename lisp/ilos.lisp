@@ -227,7 +227,14 @@
 (defun instancep (obj class)
   (kiss::assure-class class)
   (let ((c (class-of obj)))
-    (if (or (eq c class) (subclassp c class))
+    (if (or (eq c class)
+            (subclassp c class)
+            (and (integerp obj)
+                 (and (eq class (class <non-negative-integer>))
+                      (>= obj 0))
+                 (and (eq class (class <non-negative-fixnum>))
+                      (fixnump obj)
+                      (>= obj 0))))
         t
       nil)))
 
@@ -357,6 +364,12 @@
   (:metaclass <built-in-class>))
 (defclass <float> (<number>) ()
   (:metaclass <built-in-class>))
+
+(defclass <non-negative-integer> (<object>) () ;; kiss specific
+  (:metaclass <built-in-class>))
+(defclass <non-negative-fixnum> (<object>) () ;; kiss specific
+  (:metaclass <built-in-class>))
+
 
 (defclass <general-array> (<object>) () ;; kiss specific
   (:metaclass <built-in-class>)

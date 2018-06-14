@@ -50,9 +50,9 @@ _Static_assert (sizeof(kiss_ptr_int) == sizeof(void*), "We need a C int type wit
 typedef enum {
      KISS_FIXNUM = 1,       // used as a flag for FIXNUM
      KISS_CHARACTER = 2,    // used as a flag for FIXCHAR
+     KISS_BIGNUM,
      KISS_CONS,
      KISS_SYMBOL,
-     KISS_BIGNUM,
      KISS_FLOAT,
      KISS_STRING,
      KISS_GENERAL_VECTOR,
@@ -816,7 +816,7 @@ inline
 kiss_obj* Kiss_Non_Negative_Integer(const kiss_obj* const obj) {
      Kiss_Integer(obj);
      if (kiss_num_lessthan(obj, kiss_make_fixnum(0)) == KISS_T) {
-          Kiss_Domain_Error(obj, L"non negative integer");
+          Kiss_Domain_Error(obj, L"<non-negative-integer>");
      }
      return (kiss_obj*)obj;
 }
@@ -858,7 +858,7 @@ inline
 kiss_ptr_int Kiss_Non_Negative_Fixnum(const kiss_obj* const obj) {
      const kiss_ptr_int i = Kiss_Fixnum(obj);
      if (i >= 0) { return i; }
-     Kiss_Domain_Error(obj, L"non negative fixnum");
+     Kiss_Domain_Error(obj, L"<non-negative-fixnum>");
 }
 
 inline

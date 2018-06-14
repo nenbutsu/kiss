@@ -4350,6 +4350,24 @@ kiss_symbol_t KISS_Sc_integer = {
      NULL,         /* fun */
      KISS_NIL,     /* plist */
 };
+kiss_symbol_t KISS_Sc_non_negative_integer = {
+     KISS_SYMBOL,               /* type */
+     NULL,                      /* gc_ptr */
+     L"<non-negative-integer>", /* name */
+     0,                         /* flags */
+     NULL,                      /* var */
+     NULL,                      /* fun */
+     KISS_NIL,                  /* plist */
+};
+kiss_symbol_t KISS_Sc_non_negative_fixnum = {
+     KISS_SYMBOL,              /* type */
+     NULL,                     /* gc_ptr */
+     L"<non-negative-fixnum>", /* name */
+     0,                        /* flags */
+     NULL,                     /* var */
+     NULL,                     /* fun */
+     KISS_NIL,                 /* plist */
+};
 kiss_symbol_t KISS_Sc_float = {
      KISS_SYMBOL, /* type */
      NULL,        /* gc_ptr */
@@ -4597,7 +4615,10 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
      /* predefined class names */
      &KISS_Sc_object, &KISS_Sc_built_in_class, &KISS_Sc_standard_class,
      &KISS_Sc_null, &KISS_Sc_cons, &KISS_Sc_list, &KISS_Sc_symbol, &KISS_Sc_character,
-     &KISS_Sc_integer, &KISS_Sc_float, &KISS_Sc_string, &KISS_Sc_general_vector,
+     &KISS_Sc_integer,
+     &KISS_Sc_non_negative_integer, &KISS_Sc_non_negative_fixnum,
+     &KISS_Sc_float,
+     &KISS_Sc_string, &KISS_Sc_general_vector,
      &KISS_Sc_general_array_s, &KISS_Sc_general_array,
      &KISS_Sc_stream, &KISS_Sc_function,
 
