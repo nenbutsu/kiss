@@ -19,6 +19,22 @@
 ;;; stringp
 (eq (stringp "abc") 't)
 (eq (stringp 'abc) 'nil)
+(eq (stringp #()) 'nil)
+(eq (stringp #2A((a) (b))) 'nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (stringp))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (stringp "abc" "xyz"))
+  nil)
 
 
 ;; create-string
