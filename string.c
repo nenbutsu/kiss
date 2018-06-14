@@ -33,17 +33,16 @@ kiss_string_t* kiss_make_string(const wchar_t* const s);
    An error shall be signaled if I is not a non-negative integer or if INITIAL-CHARACTER
    is not a character (error-id. domain-error). */
 kiss_obj* kiss_create_string(const kiss_obj* const i, const kiss_obj* const rest) {
-    kiss_string_t* const p = Kiss_GC_Malloc(sizeof(kiss_string_t));
     kiss_ptr_int n = Kiss_Non_Negative_Fixnum(i);
     wchar_t c = rest == KISS_NIL ? L' ' : Kiss_Character(KISS_CAR(rest));
     wchar_t* s = Kiss_Malloc(sizeof(wchar_t) * (n + 1));
     for (size_t j = 0; j < n; j++) { s[j] = c; }
     s[n] = L'\0';
 
+    kiss_string_t* const p = Kiss_GC_Malloc(sizeof(kiss_string_t));
     p->type = KISS_STRING;
     p->str = s;
     p->n = n;
-    
     return (kiss_obj*)p;
 }
 
