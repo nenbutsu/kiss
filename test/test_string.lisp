@@ -15,9 +15,11 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
-;; stringp
-(eq (stringp "abc") t)
-(null (stringp 'abc))
+
+;;; stringp
+(eq (stringp "abc") 't)
+(eq (stringp 'abc) 'nil)
+
 
 ;; create-string
 (equal (create-string 3 #\a) "aaa")
