@@ -188,6 +188,7 @@
 (eq (if (string< "abcd" "abcde") 't 'nil) 't)
 (eq (if (string< "abcde" "abcd") 't 'nil) 'nil)
 (eq (if (string< "" "abcd") 't 'nil) 't)
+(eq (if (string< "" "") 't 'nil) 'nil)
 (eq (if (string< "b" "abcd") 't 'nil) 'nil)
 (eq (if (string< "abc" "bbc") 't 'nil) 't)
 (block top
@@ -239,7 +240,59 @@
 (eq (if (string<= "abcd" "wxyz") 't 'nil) 't)
 (eq (if (string<= "abcd" "abcde") 't 'nil) 't)
 (eq (if (string<= "abcde" "abcd") 't 'nil) 'nil)
+(eq (if (string<= "" "") 't 'nil) 't)
+(eq (if (string<= "" "a") 't 'nil) 't)
+(eq (if (string<= "a" "") 't 'nil) 'nil)
+(eq (if (string<= "love me tender" "love me tender") 't 'nil) 't)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (string<=))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (string<= "abc"))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (string<= "abc" "xyz" "foo"))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (string<= "abc" 'abc))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (string<= 'abc "abc"))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (string<= 'abc 'xyz))
+  nil)
+
+
+;;; string>
 (eq (if (string> "abcd" "wxyz") 't 'nil) 'nil)
+
+
+;;; string>=
 (eq (if (string>= "abcd" "abcd") 't 'nil) 't)
 
 ;; char-index
