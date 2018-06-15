@@ -4314,6 +4314,15 @@ kiss_symbol_t KISS_Sc_cons = {
      NULL,        /* fun */
      KISS_NIL,    /* plist */
 };
+kiss_symbol_t KISS_Sc_sequence = {
+     KISS_SYMBOL,   /* type */
+     NULL,          /* gc_ptr */
+     L"<sequence>", /* name */
+     0,             /* flags */
+     NULL,          /* var */
+     NULL,          /* fun */
+     KISS_NIL,      /* plist */
+};
 kiss_symbol_t KISS_Sc_list = {
      KISS_SYMBOL, /* type */
      NULL,        /* gc_ptr */
@@ -4614,7 +4623,8 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
     
      /* predefined class names */
      &KISS_Sc_object, &KISS_Sc_built_in_class, &KISS_Sc_standard_class,
-     &KISS_Sc_null, &KISS_Sc_cons, &KISS_Sc_list, &KISS_Sc_symbol, &KISS_Sc_character,
+     &KISS_Sc_null, &KISS_Sc_cons, &KISS_Sc_list, &KISS_Sc_sequence,
+     &KISS_Sc_symbol, &KISS_Sc_character,
      &KISS_Sc_integer,
      &KISS_Sc_non_negative_integer, &KISS_Sc_non_negative_fixnum,
      &KISS_Sc_float,

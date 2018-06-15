@@ -325,7 +325,11 @@
 (defclass <symbol> (<object>) ()
   (:metaclass <built-in-class>))
 
-(defclass <list> (<object>) ()
+(defclass <sequence> (<object>) ()
+  (:metaclass <built-in-class>)
+  (:abstractp t))
+
+(defclass <list> (<sequence>) ()
   (:metaclass <built-in-class>)
   (:abstractp t))
 (defclass <cons> (<list>) ()
@@ -381,7 +385,7 @@
 (defclass <general-array*> (<basic-array*>  <general-array>) ()
   (:metaclass <built-in-class>))
 
-(defclass <basic-vector> (<basic-array>) ()
+(defclass <basic-vector> (<basic-array> <sequence>) ()
   (:metaclass <built-in-class>)
   (:abstractp t))
 (defclass <general-vector> (<basic-vector>  <general-array>) ()

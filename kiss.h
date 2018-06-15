@@ -741,6 +741,7 @@ kiss_symbol_t KISS_Sc_standard_class;
 kiss_symbol_t KISS_Sc_null;
 kiss_symbol_t KISS_Sc_cons;
 kiss_symbol_t KISS_Sc_list;
+kiss_symbol_t KISS_Sc_sequence;
 kiss_symbol_t KISS_Sc_symbol;
 kiss_symbol_t KISS_Sc_character;
 kiss_symbol_t KISS_Sc_integer;
@@ -879,7 +880,7 @@ kiss_obj* Kiss_General_Array(const kiss_obj* const obj) {
 inline
 kiss_obj* Kiss_Sequence(const kiss_obj* const obj) {
      if (KISS_IS_SEQUENCE(obj)) { return (kiss_obj*)obj; }
-     Kiss_Domain_Error(obj, L"sequence");
+     Kiss_Domain_Error(obj, L"<sequence>");
 }
 
 inline
