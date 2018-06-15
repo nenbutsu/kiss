@@ -48,6 +48,27 @@
 		    (signal-condition condition nil)))
 		(length (create-array '())))
   nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+		    (signal-condition condition nil)))
+		(length))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+		    (signal-condition condition nil)))
+		(length '() "abc"))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+		    (signal-condition condition nil)))
+		(length #(x y z) '() "abc"))
+  nil)
 
 
 
