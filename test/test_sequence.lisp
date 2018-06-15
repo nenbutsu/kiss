@@ -15,7 +15,8 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
-;; length
+
+;;; length
 (eql (length '(a b c)) 3)
 (eql (length '(a (b) (c d e))) 3)
 (eql (length '()) 0)
@@ -25,7 +26,7 @@
 (eql (length '(a b . c)) 2)
 (block top
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from top t)
 		    (signal-condition condition nil)))
 		(length 'not-a-sequence))
