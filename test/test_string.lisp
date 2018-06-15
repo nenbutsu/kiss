@@ -519,10 +519,28 @@
   nil)
 
 
-;; string-append
+;;; string-append
 (equal (string-append "abc" "def") "abcdef")
 (equal (string-append "abc" "abc") "abcabc")
 (equal (string-append "abc" "") "abc")
 (equal (string-append "" "abc") "abc")
 (equal (string-append "abc" "" "def") "abcdef")
+(equal (string-append "" "abc" "" "def" "" "" "" "") "abcdef")
+(equal (string-append) "")
+(equal (string-append "xyz") "xyz")
+(equal (string-append "" "abc" "" "def" "" "" "" "xyz" "") "abcdefxyz")
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (string-append 'a))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (string-append "abc" 'xyz))
+  nil)
 
