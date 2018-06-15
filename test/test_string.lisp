@@ -543,4 +543,18 @@
                       (signal-condition condition nil)))
     (string-append "abc" 'xyz))
   nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (string-append #(a b c)))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (string-append nil))
+  nil)
 
