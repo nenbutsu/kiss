@@ -112,7 +112,7 @@ kiss_obj* kiss_str_to_chars(const kiss_string_t* const str) {
 kiss_obj* kiss_string_append(const kiss_obj* const rest) {
      long int n = 0;
      for (const kiss_obj* args = rest; KISS_IS_CONS(args); args = KISS_CDR(args)) {
-	  n += kiss_c_length(KISS_CAR(args));
+	  n += kiss_c_length((kiss_obj*)Kiss_String(KISS_CAR(args)));
      }
      kiss_string_t* str = (kiss_string_t*)kiss_create_string((kiss_obj*)kiss_make_fixnum(n), KISS_NIL);
 
