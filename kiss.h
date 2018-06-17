@@ -747,6 +747,7 @@ kiss_symbol_t KISS_Sc_character;
 kiss_symbol_t KISS_Sc_integer;
 kiss_symbol_t KISS_Sc_fixnum;
 kiss_symbol_t KISS_Sc_bignum;
+kiss_symbol_t KISS_Sc_valid_index;
 kiss_symbol_t KISS_Sc_float;
 kiss_symbol_t KISS_Sc_string;
 kiss_symbol_t KISS_Sc_general_vector;

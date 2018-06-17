@@ -101,7 +101,7 @@ kiss_obj* Kiss_Valid_Sequence_Index(const kiss_obj* const sequence, const kiss_o
      const size_t n = kiss_c_length(sequence);
      const kiss_ptr_int i = Kiss_Fixnum(index);
      if (i < 0 || i >= n) {
-          Kiss_Err(L"Invalid sequence index ~S for ~S", index, sequence);
+          Kiss_Domain_Error(index, L"<valid-index>");
      }
      return (kiss_obj*)index;
 }
