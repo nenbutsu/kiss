@@ -745,6 +745,8 @@ kiss_symbol_t KISS_Sc_sequence;
 kiss_symbol_t KISS_Sc_symbol;
 kiss_symbol_t KISS_Sc_character;
 kiss_symbol_t KISS_Sc_integer;
+kiss_symbol_t KISS_Sc_fixnum;
+kiss_symbol_t KISS_Sc_bignum;
 kiss_symbol_t KISS_Sc_float;
 kiss_symbol_t KISS_Sc_string;
 kiss_symbol_t KISS_Sc_general_vector;
@@ -789,13 +791,13 @@ kiss_ptr_int Kiss_Fixnum(const kiss_obj* obj) {
      if (KISS_IS_FIXNUM(obj)) { return kiss_ptr_int(obj); }
      obj = kiss_fixnum_if_possible(obj);
      if (KISS_IS_FIXNUM(obj)) { return kiss_ptr_int(obj); }
-     Kiss_Domain_Error(obj, L"fixnum");
+     Kiss_Domain_Error(obj, L"<fixnum>");
 }
 
 inline
 kiss_bignum_t* Kiss_Bignum(const kiss_obj* const obj) {
      if (KISS_IS_BIGNUM(obj)) { return (kiss_bignum_t*)obj; }
-     Kiss_Domain_Error(obj, L"bignum");
+     Kiss_Domain_Error(obj, L"<bignum>");
 }
 
 inline

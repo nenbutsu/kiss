@@ -364,6 +364,10 @@
   (:abstractp t))
 (defclass <integer> (<number>) ()
   (:metaclass <built-in-class>))
+(defclass <fixnum> (<integer>) () ;; kiss specific
+  (:metaclass <built-in-class>))
+(defclass <bignum> (<integer>) () ;; kiss specific
+  (:metaclass <built-in-class>))
 (defclass <float> (<number>) ()
   (:metaclass <built-in-class>))
 
