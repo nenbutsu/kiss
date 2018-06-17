@@ -130,9 +130,37 @@
 		    (signal-condition condition nil)))
 		(elt "abc" 'x))
   nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+		    (signal-condition condition nil)))
+		(elt))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+		    (signal-condition condition nil)))
+		(elt "abc"))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+		    (signal-condition condition nil)))
+		(elt "abc" 0 1))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+		    (signal-condition condition nil)))
+		(elt "abc" 0 1 2))
+  nil)
 
 
-;; set-elt
+;;; set-elt
 (string= (let ((string (create-string 5 #\x)))
 	   (set-elt #\O string 2)
 	   string)
