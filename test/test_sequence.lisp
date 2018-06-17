@@ -71,12 +71,16 @@
   nil)
 
 
-
-
-;; elt
+;;; elt
+(eq (elt '(a b c) 0) 'a)
+(eq (elt '(a b c) 1) 'b)
 (eq (elt '(a b c) 2) 'c)
+(eq (elt (vector 'a 'b 'c) 0) 'a)
 (eq (elt (vector 'a 'b 'c) 1) 'b)
+(eq (elt (vector 'a 'b 'c) 2) 'c)
 (eql (elt "abc" 0) #\a)
+(eql (elt "abc" 1) #\b)
+(eql (elt "abc" 2) #\c)
 (block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
@@ -112,17 +116,16 @@
 		    (signal-condition condition nil)))
 		(elt '() 0))
   nil)
-
 (block top
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from top t)
 		    (signal-condition condition nil)))
 		(elt 'not-a-sequence 0))
   nil)
 (block top
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from top t)
 		    (signal-condition condition nil)))
 		(elt "abc" 'x))
