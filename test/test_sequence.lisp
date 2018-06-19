@@ -282,7 +282,21 @@
 
 ;; subseq
 (equal (subseq "abcdef" 1 4) "bcd")
+(equal (subseq "abcdef" 0 6) "abcdef")
+(equal (subseq "abcdef" 0 2) "ab")
+(equal (subseq "abcdef" 3 6) "def")
+(equal (subseq "abcdef" 0 0) "")
+(equal (subseq "abcdef" 3 3) "")
+(equal (subseq "abcdef" 6 6) "")
 (equal (subseq '(a b c d e f) 1 4) '(b c d))
+(equal (subseq '(a b c d e f) 0 1) '(a))
+(equal (subseq '(a b c d e f) 0 6) '(a b c d e f))
+(equal (subseq '(a b c d e f) 3 6) '(d e f))
+(equal (subseq '(a b c d e f) 5 6) '(f))
+(equal (subseq '(a b c d e f) 0 0) '())
+(equal (subseq '(a b c d e f) 3 3) '())
+(equal (subseq '(a b c d e f) 6 6) '())
+
 (equal (subseq (vector 'a 'b 'c 'd 'e 'f) 1 4) #(b c d))
 
 (equal (subseq "" 0 0) "")
