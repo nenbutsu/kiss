@@ -347,6 +347,42 @@
 		    (signal-condition condition nil)))
 		(subseq #(a b c) -1 1))
   nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+		    (signal-condition condition nil)))
+		(subseq))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+		    (signal-condition condition nil)))
+		(subseq "abc"))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+		    (signal-condition condition nil)))
+		(subseq "abc" 0))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+		    (signal-condition condition nil)))
+		(subseq "abc" 0 1 2))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+		    (signal-condition condition nil)))
+		(subseq "abc" 0 1 2 3))
+  nil)
+
 
 ;; map-into
 (equal (let ((a (list 1 2 3 4))
