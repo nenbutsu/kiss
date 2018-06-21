@@ -296,31 +296,32 @@
 (equal (subseq '(a b c d e f) 0 0) '())
 (equal (subseq '(a b c d e f) 3 3) '())
 (equal (subseq '(a b c d e f) 6 6) '())
-
 (equal (subseq (vector 'a 'b 'c 'd 'e 'f) 1 4) #(b c d))
-
+(equal (subseq (vector 'a 'b 'c) 0 1) #(a))
+(equal (subseq (vector 'a 'b 'c) 0 2) #(a b))
+(equal (subseq (vector 'a 'b 'c) 0 3) #(a b c))
+(equal (subseq (vector 'a 'b 'c) 2 3) #(c))
+(equal (subseq (vector 'a 'b 'c) 1 3) #(b c))
 (equal (subseq "" 0 0) "")
 (equal (subseq #() 0 0) #())
 (equal (subseq '() 0 0) nil)
-
 (block top
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from top t)
 		    (signal-condition condition nil)))
 		(subseq 'not-a-sequence 0 0))
   nil)
-
 (block top
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from top t)
 		    (signal-condition condition nil)))
 		(subseq #(a b c) 'z 0))
   nil)
 (block top
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from top t)
 		    (signal-condition condition nil)))
 		(subseq #(a b c) 0 'z))
@@ -334,14 +335,14 @@
   nil)
 (block top
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from top t)
 		    (signal-condition condition nil)))
 		(subseq #(a b c) 0 100))
   nil)
 (block top
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from top t)
 		    (signal-condition condition nil)))
 		(subseq #(a b c) -1 1))
