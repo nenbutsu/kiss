@@ -128,18 +128,9 @@ kiss_obj* kiss_set_elt(const kiss_obj* const obj, kiss_obj* const sequence, cons
    or if Z1 is not an integer, or if Z2 is not an integer (error-id. domain-error). */
 kiss_obj* kiss_subseq(const kiss_obj* const sequence, const kiss_obj* const z1, const kiss_obj* const z2)
 {
+     Kiss_Valid_Subsequence_Index(sequence, z1, z2);
      kiss_ptr_int i1 = Kiss_Fixnum(z1);
      kiss_ptr_int i2 = Kiss_Fixnum(z2);
-     size_t n = kiss_c_length(sequence);
-     if (i1 < 0) {
-	  Kiss_Err(L"Invalid sequence index = ~S", z1);
-     }
-     if (i2 > n) {
-	  Kiss_Err(L"Invalid sequence index = ~S", z2);
-     }
-     if (i1 > i2) {
-	  Kiss_Err(L"Index1 ~S must be less than or equal to Index2 ~S", z1, z2);
-     }
      switch (KISS_OBJ_TYPE(sequence)) {
      case KISS_SYMBOL: {
 	  assert(sequence == KISS_NIL);

@@ -454,6 +454,7 @@ _Noreturn
 void Kiss_Domain_Error(const kiss_obj* const obj, const wchar_t* const domain);
 kiss_symbol_t* Kiss_Variable_Name(const kiss_obj* const name);
 kiss_obj* Kiss_Valid_Sequence_Index(const kiss_obj* const sequence, const kiss_obj* const index);
+void Kiss_Valid_Subsequence_Index(const kiss_obj* const sequence, const kiss_obj* const z1, const kiss_obj* const z2);
 kiss_stream_t* Kiss_Input_Char_Stream(const kiss_obj* const obj);
 kiss_stream_t* Kiss_Output_Char_Stream(const kiss_obj* const obj);
 kiss_stream_t* Kiss_Input_Byte_Stream(const kiss_obj* const obj);

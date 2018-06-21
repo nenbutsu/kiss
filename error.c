@@ -106,6 +106,24 @@ kiss_obj* Kiss_Valid_Sequence_Index(const kiss_obj* const sequence, const kiss_o
      return (kiss_obj*)index;
 }
 
+void Kiss_Valid_Subsequence_Index(const kiss_obj* const sequence, const kiss_obj* const z1, const kiss_obj* const z2)
+{
+     const size_t n = kiss_c_length(sequence);
+     const kiss_ptr_int i1 = Kiss_Fixnum(z1);
+     if (i1 < 0 || i1 > n) {
+          Kiss_Domain_Error(z1, L"<valid-index>");
+     }
+     const kiss_ptr_int i2 = Kiss_Fixnum(z2);
+     if (i2 < 0 || i2 > n) {
+          Kiss_Domain_Error(z2, L"<valid-index>");
+     }
+     if (i1 > i2) {
+	  Kiss_Err(L"Index1 ~S must be less than or equal to Index2 ~S", z1, z2);
+     }
+     
+}
+
+
 kiss_stream_t* Kiss_Input_Char_Stream(const kiss_obj* const obj) {
     if (!KISS_IS_INPUT_STREAM(obj) || !KISS_IS_CHARACTER_STREAM(obj)) {
 	Kiss_Err(L"Input character stream expected ~S", obj);
