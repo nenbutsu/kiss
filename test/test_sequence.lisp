@@ -384,12 +384,11 @@
   nil)
 
 
-;; map-into
+;;; map-into
 (equal (let ((a (list 1 2 3 4))
 	     (b (list 10 10 10 10)))
 	 (map-into a #'+ a b))
        '(11 12 13 14))
-
 (equal (let ((a (list 11 12 13 14))
 	     (k (list 'one 'two 'three)))
 	 (map-into a #'cons k a))
@@ -398,6 +397,16 @@
 	     (x 0))
 	 (map-into a (lambda () (setq x (+ x 2)))))
        '(2 4 6 8))
+(equal (let ((a (list '(one . 11) '(two . 12) '(three . 13) 14))
+	     (x 0))
+	 (map-into a (lambda () (setq x (+ x 2))) '()))
+       '((one . 11) (two . 12) (three . 13) 14))
+(equal (let ((list (create-list 4 nil))
+             (a (list 'a 'b 'c))
+             (b (list 'x 'y 'z))
+             (c (list 1 2 3)))
+         (map-into list (lambda (i j k) (list i j k)) a b c))
+       '((a x 1) (b y 2) (c z 3) nil))
 (block top
   (with-handler (lambda (condition)
 		  (if (instancep condition (class <error>))
