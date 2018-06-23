@@ -516,11 +516,31 @@
            (map-into string (lambda (x) x) "abcdefghijklmnopqrstuvwxyz"))
          "")
 
-
-
 (block top
   (with-handler (lambda (condition)
-		  (if (instancep condition (class <error>))
+		  (if (instancep condition (class <domain-error>))
 		      (return-from top t)
 		    (signal-condition condition nil)))
-		(map-into 'not-a-sequence (lambda (x) (+ x 1)) (list 0 1 2 3))))
+		(map-into 'not-a-sequence (lambda (x) (+ x 1)) (list 0 1 2 3)))
+  nii)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from top t)
+		    (signal-condition condition nil)))
+		(map-into (create-list 10) (lambda (x) (+ x 1)) 'not-a-sequence))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <domain-error>))
+		      (return-from top t)
+		    (signal-condition condition nil)))
+		(map-into 'not-a-sequence (lambda (x y) (+ x y 1)) (list 0 1 2 3) 'not-a-sequence))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+		    (signal-condition condition nil)))
+		(map-into))
+  nil)
