@@ -45,6 +45,35 @@
   nil)
 
 
+;;; open-stream-p
+(member (open-stream-p (standard-input)) '(t nil))
+(member (open-stream-p (standard-output)) '(t nil))
+(member (open-stream-p (error-output)) '(t nil))
+(eq (open-stream-p "abc") 'nil)
+(eq (open-stream-p 'xyz) 'nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (open-stream-p))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (open-stream-p (standard-input) 't))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (open-stream-p (standard-input) 't 'nil))
+  nil)
+
+
 ;;; input-stream-p
 (eq (input-stream-p (standard-input)) t)
 (eq (input-stream-p (standard-output)) nil)
