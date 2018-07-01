@@ -15,10 +15,35 @@
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
 
+
 ;;; streamp
 (eq (streamp (standard-input)) t)
+(eq (streamp (standard-output)) t)
+(eq (streamp (error-output)) t)
 (eq (streamp '()) nil)
 (eq (streamp "love") nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (streamp))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (streamp (standard-input) 't))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (streamp (standard-input) 't 'nil))
+  nil)
+
 
 ;;; input-stream-p
 (eq (input-stream-p (standard-input)) t)
