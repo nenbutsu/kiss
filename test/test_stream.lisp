@@ -197,7 +197,7 @@
   nil)
 
 
-;; with-standard-output
+;;; with-standard-output
 (let ((message nil))
   (with-standard-output (create-string-output-stream)
 	(format (standard-output) "love me tender...")
@@ -212,7 +212,7 @@
   nil)
 
 
-;; with-error-output
+;;; with-error-output
 (let ((message nil))
   (with-error-output (create-string-output-stream)
 	(format (error-output) "love me tender...")
