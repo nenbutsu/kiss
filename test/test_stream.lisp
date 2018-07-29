@@ -78,14 +78,109 @@
 (eq (input-stream-p (standard-input)) t)
 (eq (input-stream-p (standard-output)) nil)
 (eq (input-stream-p '(a b c)) nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (input-stream-p))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (input-stream-p (standard-input) 't))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (input-stream-p (standard-input) 't 'nil))
+  nil)
+
 
 ;;; output-stream-p
 (eq (output-stream-p (standard-output)) t)
 (eq (output-stream-p (standard-input)) nil)
 (eq (output-stream-p "hello") nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (output-stream-p))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (output-stream-p (standard-input) 't))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (output-stream-p (standard-input) 't 'nil))
+  nil)
 
-;; error-output
+
+;;; standard-input
+(eq (input-stream-p (standard-input)) t)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (standard-input 't))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (standard-input 1 2))
+  nil)
+
+
+;;; standard-output
+(eq (output-stream-p (standard-output)) t)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (standard-output 't))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (standard-output 1 2))
+  nil)
+
+
+;;; error-output
 (eq (output-stream-p (error-output)) t)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (error-output 't))
+  nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (error-output 1 2))
+  nil)
+
 
 ;; with-standard-input
 (equal (with-standard-input (create-string-input-stream "this is a string")
