@@ -182,10 +182,20 @@
   nil)
 
 
-;; with-standard-input
+;;; with-standard-input
 (equal (with-standard-input (create-string-input-stream "this is a string")
 			    (list (read) (read)))
        '(this is))
+(eq (with-standard-input (create-string-input-stream "this is a string"))
+    'nil)
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (with-standard-input))
+  nil)
+
 
 ;; with-standard-output
 (let ((message nil))
@@ -193,6 +203,14 @@
 	(format (standard-output) "love me tender...")
 	(setq message (get-output-stream-string (standard-output))))
   (string= message "love me tender..."))
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (with-standard-output))
+  nil)
+
 
 ;; with-error-output
 (let ((message nil))
@@ -200,6 +218,14 @@
 	(format (error-output) "love me tender...")
 	(setq message (get-output-stream-string (error-output))))
   (string= message "love me tender..."))
+(block top
+  (with-handler (lambda (condition)
+		  (if (instancep condition (class <arity-error>))
+		      (return-from top t)
+                      (signal-condition condition nil)))
+    (with-error-output))
+  nil)
+
 
 ;; with-open-output-file, with-open-input-file
 (null (with-open-output-file (outstream "example.dat")
