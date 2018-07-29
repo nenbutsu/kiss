@@ -229,6 +229,9 @@ void kiss_gc_mark_obj(kiss_obj* obj) {
      }
 }
 
+extern kiss_obj* Kiss_Features;
+extern kiss_hash_table_t* Kiss_Symbol_Hash_Table;
+
 void kiss_gc_mark(void) {
      kiss_environment_t* env = Kiss_Get_Environment();
 

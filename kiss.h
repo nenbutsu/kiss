@@ -39,7 +39,7 @@
 typedef long int kiss_ptr_int;
 #define KISS_PTR_INT_MAX (LONG_MAX>>2)
 #define KISS_PTR_INT_MIN (LONG_MIN>>2)
-_Static_assert (sizeof(kiss_ptr_int) == sizeof(void*), "We need a C int type with the same width as void*");
+_Static_assert (sizeof(kiss_ptr_int) == sizeof(void*), "We need a C int type which has the same width as void*");
 
 #define kiss_ptr_int(x)        (((kiss_ptr_int)x)>>2)
 #define kiss_wchar(x)          kiss_ptr_int(x)
@@ -93,6 +93,7 @@ struct kiss_gc_obj {
 typedef struct kiss_gc_obj kiss_gc_obj;
 
 
+// primitive types
 typedef struct {
      kiss_type type;
      void* gc_ptr;
@@ -162,7 +163,6 @@ typedef struct {
      kiss_obj* rehash_threshold;
 } kiss_hash_table_t;
 
-extern kiss_hash_table_t* Kiss_Symbol_Hash_Table;
 
 
 
@@ -301,7 +301,6 @@ typedef struct {
      kiss_obj* plist;
 } kiss_ilos_obj_t;
 
-
 typedef struct {
      kiss_lexical_environment_t lexical_env;
      kiss_dynamic_environment_t dynamic_env;
@@ -315,29 +314,29 @@ typedef struct {
      kiss_obj* error_call_stack;
 } kiss_environment_t;
 
-extern kiss_obj* Kiss_Features;
-
-kiss_symbol_t KISS_St, KISS_Snil, KISS_Squote, KISS_Slambda;
+kiss_symbol_t KISS_St, KISS_Snil;
 #define KISS_T        ((kiss_obj*)(&KISS_St))
 #define KISS_NIL      ((kiss_obj*)(&KISS_Snil))
 
-kiss_symbol_t KISS_Skw_rest, KISS_Samp_rest, KISS_Skw_size, KISS_Skw_test, KISS_Skw_weakness, KISS_Skw_rehash_size, KISS_Skw_rehash_threshold, KISS_Skw_name, KISS_Skw_class;
-
+kiss_symbol_t KISS_Squote, KISS_Slambda;
+kiss_symbol_t KISS_Skw_rest, KISS_Samp_rest;
+kiss_symbol_t KISS_Skw_size, KISS_Skw_test, KISS_Skw_weakness, KISS_Skw_rehash_size, KISS_Skw_rehash_threshold;
 kiss_symbol_t KISS_Seql;
+kiss_symbol_t KISS_Skw_name, KISS_Skw_class;
 
 kiss_symbol_t KISS_Ueos, KISS_Udummy;
 #define KISS_DUMMY    ((kiss_obj*)(&KISS_Udummy))
 #define KISS_EOS      ((kiss_obj*)(&KISS_Ueos))
 
+
+/* gc.c */
 #define KISS_HEAP_STACK_SIZE (1024 * 1024 * 2)
 extern size_t Kiss_Heap_Top;
 extern kiss_gc_obj* Kiss_Heap_Stack[];
-
 extern kiss_ptr_int Kiss_GC_Flag;
 extern size_t Kiss_GC_Amount;
 extern void* Kiss_GC_Objects;
 
-/* gc.c */
 kiss_obj* kiss_gc_info(void);
 kiss_obj* kiss_gc(void);
 
