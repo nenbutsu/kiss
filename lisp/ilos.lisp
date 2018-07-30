@@ -359,6 +359,9 @@
 (defclass <standard-generic-function> (<generic-function>) ()
   (:metaclass <built-in-class>))
 
+(defclass <hash-table> (<object>) () ;; kiss specific
+  (:metaclass <built-in-class>))
+
 (defclass <number> (<object>) ()
   (:metaclass <built-in-class>)
   (:abstractp t))
