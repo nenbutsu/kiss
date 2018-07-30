@@ -4657,7 +4657,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
      &KISS_Sc_float,
      &KISS_Sc_string, &KISS_Sc_general_vector,
      &KISS_Sc_general_array_s, &KISS_Sc_general_array,
-     &KISS_Sc_stream, &KISS_Sc_function,
+     &KISS_Sc_stream, &KISS_Sc_function, &KISS_Sc_hash_table,
 
      /* gf_invoke.c */
      &KISS_Smethod_invoke,
