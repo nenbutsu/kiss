@@ -314,6 +314,7 @@ typedef struct {
      kiss_obj* error_call_stack;
 } kiss_environment_t;
 
+// symbols
 kiss_symbol_t KISS_St, KISS_Snil;
 #define KISS_T        ((kiss_obj*)(&KISS_St))
 #define KISS_NIL      ((kiss_obj*)(&KISS_Snil))
@@ -397,7 +398,7 @@ void* Kiss_GC_Malloc(size_t const size) {
 #define KISS_IS_LFUNCTION(x)         (KISS_OBJ_TYPE(x) == KISS_LFUNCTION)
 #define KISS_IS_LMACRO(x)            (KISS_OBJ_TYPE(x) == KISS_LMACRO)
 #define KISS_IS_CFUNCTION(x)         (KISS_OBJ_TYPE(x) == KISS_CFUNCTION)
-#define KISS_IS_CSPECIAL(x)            (KISS_OBJ_TYPE(x) == KISS_CSPECIAL)
+#define KISS_IS_CSPECIAL(x)          (KISS_OBJ_TYPE(x) == KISS_CSPECIAL)
 #define KISS_IS_CATCHER(x)           (KISS_OBJ_TYPE(x) == KISS_CATCHER)
 #define KISS_IS_CLEANUP(x)           (KISS_OBJ_TYPE(x) == KISS_CLEANUP)
 #define KISS_IS_BLOCK(x)             (KISS_OBJ_TYPE(x) == KISS_BLOCK)
@@ -421,9 +422,6 @@ kiss_obj* kiss_char_lessthan(const kiss_obj* const character1, const kiss_obj* c
 
 /* cf_invoke.c */
 kiss_obj* kiss_cf_invoke(const kiss_cfunction_t* const cfun, kiss_obj* args);
-
-/* cons.c */
-
 
 /* control.c */
 kiss_obj* kiss_quote(kiss_obj* obj);
@@ -775,6 +773,8 @@ kiss_obj* kiss_make_integer(kiss_ptr_int i) {
      return (i > KISS_PTR_INT_MAX) ? (kiss_obj*)kiss_make_bignum(i) : kiss_make_fixnum(i);
 }
 
+
+// type assert
 inline
 kiss_cons_t* Kiss_Cons(const kiss_obj* const obj) {
      if (KISS_IS_CONS(obj)) { return (kiss_cons_t*)obj; }
@@ -784,7 +784,7 @@ kiss_cons_t* Kiss_Cons(const kiss_obj* const obj) {
 inline
 kiss_hash_table_t* Kiss_Hash_Table(const kiss_obj* const obj) {
      if (KISS_IS_TASH_TABLE(obj)) { return (kiss_hash_table_t*)obj; }
-     Kiss_Domain_Error(obj, L"hash-table");
+     Kiss_Domain_Error(obj, L"<hash-table>");
 }
 
 inline
