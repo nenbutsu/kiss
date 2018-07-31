@@ -314,7 +314,7 @@ typedef struct {
      kiss_obj* error_call_stack;
 } kiss_environment_t;
 
-// symbols
+/// symbols
 kiss_symbol_t KISS_St, KISS_Snil;
 #define KISS_T        ((kiss_obj*)(&KISS_St))
 #define KISS_NIL      ((kiss_obj*)(&KISS_Snil))
@@ -373,13 +373,13 @@ void* Kiss_GC_Malloc(size_t const size) {
 }
 
 
-#define KISS_CAR(x) ((void*)(((kiss_cons_t*)x)->car))
-#define KISS_CDR(x) ((void*)(((kiss_cons_t*)x)->cdr))
+#define KISS_CAR(x)    ((void*)(((kiss_cons_t*)x)->car))
+#define KISS_CDR(x)    ((void*)(((kiss_cons_t*)x)->cdr))
 #define KISS_CDDR(x)   KISS_CDR(KISS_CDR(x))
 #define KISS_CADR(x)   KISS_CAR(KISS_CDR(x))
 #define KISS_CADDR(x)  KISS_CAR(KISS_CDR(KISS_CDR(x)))
 
-#define KISS_OBJ_TYPE(x) (int)(((kiss_ptr_int)x & 3) ? ((kiss_ptr_int)x & 3) : (((kiss_obj*)x)->type))
+#define KISS_OBJ_TYPE(x) (((kiss_ptr_int)x & 3) ? ((kiss_ptr_int)x & 3) : (((kiss_obj*)x)->type))
 
 #define KISS_IS_FIXNUM(x)            ((kiss_ptr_int)x & 1)
 #define KISS_IS_FIXCHAR(x)           ((kiss_ptr_int)x & 2)
@@ -553,8 +553,12 @@ kiss_environment_t* Kiss_Get_Environment(void);
 void kiss_initialize(void);
 
 /* number.c */
-kiss_obj* kiss_fixnum_if_possible(const kiss_obj* const obj);
 kiss_bignum_t* kiss_make_bignum(kiss_ptr_int i);
+inline
+kiss_obj* kiss_make_integer(kiss_ptr_int i) {
+     return (i > KISS_PTR_INT_MAX) ? (kiss_obj*)kiss_make_bignum(i) : kiss_make_fixnum(i);
+}
+kiss_obj* kiss_fixnum_if_possible(const kiss_obj* const obj);
 kiss_obj* kiss_integerp(const kiss_obj* const obj);
 kiss_obj* kiss_fixnump(const kiss_obj* const obj);
 kiss_obj* kiss_bignump(const kiss_obj* const obj);
@@ -656,6 +660,23 @@ kiss_obj* kiss_stream_ready_p(kiss_obj* obj);
 kiss_obj* kiss_load(const kiss_obj* const filename);
 
 /* string.c */
+inline
+void kiss_init_string(kiss_string_t* str, wchar_t* name, size_t n) {
+     str->type = KISS_STRING;
+     str->str = name;
+     str->n = n;
+}
+inline
+kiss_string_t* kiss_make_string(const wchar_t* const s) {
+     kiss_string_t* const p = Kiss_GC_Malloc(sizeof(kiss_string_t));
+     p->type = KISS_STRING;
+     p->str = NULL;
+     p->n = 0;
+     size_t n = wcslen(s) ;
+     wchar_t* wcs = wcscpy(Kiss_Malloc(sizeof(wchar_t) * (n + 1)), s);
+     kiss_init_string(p, wcs, n);
+     return p;
+}
 kiss_obj* kiss_create_string(const kiss_obj* const i, const kiss_obj* const rest);
 kiss_obj* kiss_stringp(const kiss_obj* const obj);
 kiss_obj* kiss_string_eq(const kiss_obj* const str1, const kiss_obj* const str2);
@@ -687,23 +708,7 @@ kiss_obj* kiss_intern(const kiss_obj* const name);
 kiss_obj* kiss_property(const kiss_obj* const symbol, const kiss_obj* const property, const kiss_obj* const rest);
 kiss_obj* kiss_set_property(const kiss_obj* const obj, kiss_obj* const symbol, const kiss_obj* const property);
 kiss_obj* kiss_remove_property(kiss_obj* const symbol, const kiss_obj* const property);
-inline
-void kiss_init_string(kiss_string_t* str, wchar_t* name, size_t n) {
-     str->type = KISS_STRING;
-     str->str = name;
-     str->n = n;
-}
-inline
-kiss_string_t* kiss_make_string(const wchar_t* const s) {
-     kiss_string_t* const p = Kiss_GC_Malloc(sizeof(kiss_string_t));
-     p->type = KISS_STRING;
-     p->str = NULL;
-     p->n = 0;
-     size_t n = wcslen(s) ;
-     wchar_t* wcs = wcscpy(Kiss_Malloc(sizeof(wchar_t) * (n + 1)), s);
-     kiss_init_string(p, wcs, n);
-     return p;
-}
+
 inline
 kiss_obj* kiss_symbol(const wchar_t* const name) {
      return kiss_intern((kiss_obj*)kiss_make_string(name));
@@ -732,7 +737,7 @@ kiss_obj* kiss_oref(const kiss_obj* const obj, const kiss_obj* const property);
 kiss_obj* kiss_set_oref(const kiss_obj* const value, kiss_obj* const obj, const kiss_obj* const property);
 kiss_obj* kiss_k_class(const kiss_obj* const name);
 kiss_obj* kiss_class_of(const kiss_obj* const obj);
-// predefined class names
+/// predefined class names
 kiss_symbol_t KISS_Sc_object;
 kiss_symbol_t KISS_Sc_built_in_class;
 kiss_symbol_t KISS_Sc_standard_class;
@@ -768,13 +773,9 @@ void kiss_init_environment(void);
 kiss_obj* kiss_featurep(kiss_obj* feature);
 kiss_obj* kiss_provide(kiss_obj* feature);
 
-inline
-kiss_obj* kiss_make_integer(kiss_ptr_int i) {
-     return (i > KISS_PTR_INT_MAX) ? (kiss_obj*)kiss_make_bignum(i) : kiss_make_fixnum(i);
-}
 
 
-// type assert
+/// type assert
 inline
 kiss_cons_t* Kiss_Cons(const kiss_obj* const obj) {
      if (KISS_IS_CONS(obj)) { return (kiss_cons_t*)obj; }
@@ -991,6 +992,8 @@ kiss_cfunction_t* Kiss_CSpecial(const kiss_obj* const obj) {
      Kiss_Domain_Error(obj, L"c macro");
 }
 
+
+/// predicates
 /* function: (not obj) -> boolean
    This predicate is the logical `not'. It returns t
    if obj is nil and nil otherwise. obj may be any ISLISP object. */
@@ -1031,6 +1034,7 @@ kiss_obj* kiss_eql(const kiss_obj* const obj1, const kiss_obj* const obj2) {
      return kiss_eq(obj1, obj2);
 }
 
+/// stream
 /* function: (streamp obj ) -> boolean
    Returns t if OBJ is a stream (instance of class <stream>); otherwise,
    returns nil. OBJ may be any ISLISP object. streamp is unaffected by
@@ -1077,6 +1081,7 @@ kiss_obj* kiss_error_output(void)    {
      return kiss_dynamic(kiss_symbol(L"*kiss::error-output*"));
 }
 
+/// cons
 /* function: (consp obj) -> boolean
    Returns t if OBJ is a cons (instance of class <cons>); otherwise, returns nil.
    OBJ may be any ISLISP object. */
@@ -1774,8 +1779,8 @@ end:
      return (kiss_obj*)list1;
 }
 
+/// eval
 kiss_symbol_t KISS_Ssignal_condition;
-
 inline
 kiss_obj* kiss_eval_compound_form(kiss_cons_t* p) {
      kiss_obj* op = p->car;
