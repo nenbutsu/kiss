@@ -14,7 +14,6 @@
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
-
 */
 #include "kiss.h"
 
@@ -134,6 +133,7 @@ static void kiss_collect_lexeme_chars(const kiss_obj* const in, int* const escap
 	    kiss_read_multiple_escaped_lexeme_chars(in);
 	    break;
 	case L'\\':
+	    *escaped = 1;
 	    kiss_c_read_char(in, KISS_NIL, KISS_NIL);
 	    kiss_read_single_escaped_lexeme_char(in);
 	    break;
@@ -417,7 +417,7 @@ static kiss_obj* kiss_read_lexeme(const kiss_obj* const in) {
      env->lexeme_chars = KISS_NIL;
      while(1) {
           kiss_obj* p = kiss_c_preview_char(in, KISS_NIL, KISS_NIL);
-          if (p == KISS_NIL) { return NULL; }
+          if (p == KISS_NIL) { return NULL; } // end of stream
           wchar_t c = kiss_wchar(p);
           if (iswspace(c) || iswcntrl(c)) {
                kiss_c_read_char(in, KISS_NIL, KISS_NIL);
@@ -426,16 +426,16 @@ static kiss_obj* kiss_read_lexeme(const kiss_obj* const in) {
 
           switch (c) {
           case L'(':
-               kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip (
+               kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip '('
                return kiss_read_list(in);
           case L')':
-               kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip )
+               kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip ')'
                return KISS_RPAREN;
           case L'`':
-               kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip `
+               kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip '`'
                return kiss_read_backquote(in);
           case L',':
-               kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip ,
+               kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip ','
                p = kiss_c_preview_char(in, KISS_NIL, KISS_NIL);
                if (p == KISS_NIL) { Kiss_Err(L"Read error. Stray unquote ,: ~S", in); }
                c = kiss_wchar(p);
@@ -446,7 +446,7 @@ static kiss_obj* kiss_read_lexeme(const kiss_obj* const in) {
                     return kiss_read_comma(in);
                }
           case L'\'':
-               kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip '
+               kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip '\''
                p = kiss_c_read(in, KISS_NIL, KISS_EOS);
                if (p == KISS_EOS) { Kiss_Err(L"Read error. Stray quote ': ~S", in); }
                return kiss_c_list(2, (kiss_obj*)&KISS_Squote, p);
@@ -454,10 +454,10 @@ static kiss_obj* kiss_read_lexeme(const kiss_obj* const in) {
                do {
                     p = kiss_c_read_char(in, KISS_NIL, KISS_NIL);
                } while (p != KISS_NIL && kiss_wchar(p) != L'\n');
-               if (p == KISS_NIL) return NULL;
+               if (p == KISS_NIL) return NULL; // end of stream
                break;
           case L'"':
-               kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip "
+               kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip '"'
                return kiss_read_string(in);
           case L'#': {
                kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip #
@@ -497,9 +497,9 @@ kiss_obj* kiss_c_read(const kiss_obj* const in, const kiss_obj* const eos_err_p,
 // https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#argument_conventions
 // https://nenbutsu.github.io/ISLispHyperDraft/islisp-v23.html#f_read  
 kiss_obj* kiss_read(const kiss_obj* args) {
-     kiss_obj* in = kiss_standard_input();
-     kiss_obj* eos_err_p = KISS_T;
-     kiss_obj* eos_val = KISS_NIL;
+     kiss_obj* in = kiss_standard_input(); // default
+     kiss_obj* eos_err_p = KISS_T;         // default
+     kiss_obj* eos_val = KISS_NIL;         // defalut
      if (KISS_IS_CONS(args)) {
           in = (kiss_obj*)Kiss_Input_Char_Stream(KISS_CAR(args));
           args = KISS_CDR(args);
