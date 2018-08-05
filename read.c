@@ -176,7 +176,7 @@ static kiss_obj* kiss_read_sharp_reader_macro_char(const kiss_obj* const in) {
     kiss_environment_t* env = Kiss_Get_Environment();
     kiss_obj* p = kiss_c_read_char(in, KISS_NIL, KISS_EOS);
     if (p == KISS_EOS) {
-	Kiss_Err(L"missing character after #\\ macro reader");
+	Kiss_Err(L"Missing character after #\\ macro reader");
     }
     kiss_push(p, &env->lexeme_chars);
 
@@ -271,12 +271,12 @@ static kiss_obj* kiss_read_array(const kiss_obj* const in) {
 static kiss_obj* kiss_skip_comment(const kiss_obj* const in) {
      while (1) {
           kiss_obj* p = kiss_c_read_char(in, KISS_NIL, KISS_EOS);
-          if (p == KISS_EOS) { Kiss_Err(L"missing |# comment closer"); }
+          if (p == KISS_EOS) { Kiss_Err(L"Missing |# comment closer"); }
           wchar_t c = kiss_wchar(p);
           switch (c) {
           case L'#': {
                p = kiss_c_read_char(in, KISS_NIL, KISS_EOS);
-               if (p == KISS_EOS) { Kiss_Err(L"missing |# comment closer"); }
+               if (p == KISS_EOS) { Kiss_Err(L"Missing |# comment closer"); }
                c = kiss_wchar(p);
                if (c == L'|') {
                     kiss_skip_comment(in); // comments can nest
@@ -285,7 +285,7 @@ static kiss_obj* kiss_skip_comment(const kiss_obj* const in) {
           }
           case L'|':
                p = kiss_c_read_char(in, KISS_NIL, KISS_EOS);
-               if (p == KISS_EOS) { Kiss_Err(L"missing |# comment closer"); }
+               if (p == KISS_EOS) { Kiss_Err(L"Missing |# comment closer"); }
                c = kiss_wchar(p);
                if (c == L'#') {
                     return NULL;
@@ -298,7 +298,7 @@ static kiss_obj* kiss_skip_comment(const kiss_obj* const in) {
 
 static kiss_obj* kiss_read_sharp_reader_macro(const kiss_obj* const in) {
      kiss_obj* p = kiss_c_preview_char(in, KISS_NIL, KISS_EOS);
-     if (p == KISS_EOS) { Kiss_Err(L"missing # macro reader character"); }
+     if (p == KISS_EOS) { Kiss_Err(L"Missing # macro reader character"); }
      wchar_t c = kiss_wchar(p);
      switch (c) {
      case L'\'': /* #'f */
@@ -437,7 +437,7 @@ static kiss_obj* kiss_read_lexeme(const kiss_obj* const in) {
           case L',':
                kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip ','
                p = kiss_c_preview_char(in, KISS_NIL, KISS_NIL);
-               if (p == KISS_NIL) { Kiss_Err(L"Read error. Stray unquote ,: ~S", in); }
+               if (p == KISS_NIL) { Kiss_Err(L"Stray unquote ,: ~S", in); }
                c = kiss_wchar(p);
                if (c == L'@') {
                     kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip @
@@ -448,7 +448,7 @@ static kiss_obj* kiss_read_lexeme(const kiss_obj* const in) {
           case L'\'':
                kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip '\''
                p = kiss_c_read(in, KISS_NIL, KISS_EOS);
-               if (p == KISS_EOS) { Kiss_Err(L"Read error. Stray quote ': ~S", in); }
+               if (p == KISS_EOS) { Kiss_Err(L"Stray quote ': ~S", in); }
                return kiss_c_list(2, (kiss_obj*)&KISS_Squote, p);
           case L';':
                do {
@@ -484,9 +484,9 @@ kiss_obj* kiss_c_read(const kiss_obj* const in, const kiss_obj* const eos_err_p,
                return (kiss_obj*)eos_val;
           }
      } else if (x == KISS_RPAREN) {
-          Kiss_Err(L"Read error. Illegal right parenthesis: ~S", in); // _Noreturn
+          Kiss_Err(L"Illegal right parenthesis: ~S", in); // _Noreturn
      } else if (x == KISS_DOT) {
-          Kiss_Err(L"Read error. Illegal consing dot: ~S", in); // _Noreturn
+          Kiss_Err(L"Illegal consing dot: ~S", in); // _Noreturn
      } else {
           if (KISS_IS_SYMBOL(x)) { assert(kiss_is_interned((kiss_symbol_t*)x)); }
           return x;
