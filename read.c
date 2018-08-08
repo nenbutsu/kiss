@@ -40,7 +40,6 @@ static inline int kiss_is_delimiter(wint_t c) {
      return iswspace(c) || wcschr(L"()`,'\"#;", c);
 }
 
-
 static kiss_obj* kiss_read_list(const kiss_obj* const in) {
      kiss_cons_t head;
      kiss_init_cons(&head, KISS_NIL, KISS_NIL);
@@ -73,7 +72,7 @@ static kiss_obj* kiss_read_string(const kiss_obj* const in) {
      kiss_cons_t* tail = &head;
      while (1) {
           kiss_obj* x = kiss_c_read_char(in, KISS_NIL, KISS_EOS);
-          if (x == KISS_EOS) { Kiss_Err(L"Missing closing double quotation"); }
+          if (x == KISS_EOS) { Kiss_Err(L"Missing closing double quotation for a string"); }
           else {
                wchar_t c = kiss_wchar(x);
                switch (c) {
