@@ -19,14 +19,14 @@
 #include "kiss.h"
 
 size_t Kiss_Heap_Top = 0;
-kiss_ptr_int Kiss_GC_Flag = 0;
+kiss_C_integer Kiss_GC_Flag = 0;
 
 static int Kiss_GCing = 0;
 size_t Kiss_GC_Amount = 0;
 kiss_gc_obj* Kiss_Heap_Stack[KISS_HEAP_STACK_SIZE];
 void* Kiss_GC_Objects = NULL;
 
-#define gc_flag(x)  ((kiss_ptr_int)((kiss_ptr_int)x & 1))
+#define gc_flag(x)  ((kiss_C_integer)((kiss_C_integer)x & 1))
 
 kiss_obj* kiss_gc(void);
 
@@ -37,8 +37,8 @@ static inline int is_marked(kiss_gc_obj* const restrict obj) {
 
 
 static inline void mark_flag(kiss_gc_obj* const restrict obj) {
-     obj->gc_ptr = Kiss_GC_Flag ? (void*)(((kiss_ptr_int)obj->gc_ptr) & (~0<<1)) :
-                                  (void*)(((kiss_ptr_int)obj->gc_ptr) | 1);
+     obj->gc_ptr = Kiss_GC_Flag ? (void*)(((kiss_C_integer)obj->gc_ptr) & (~0<<1)) :
+                                  (void*)(((kiss_C_integer)obj->gc_ptr) | 1);
 }
 
 void kiss_gc_mark_obj(kiss_obj* obj);
@@ -342,7 +342,7 @@ void kiss_gc_sweep(void) {
           } else {
                kiss_gc_obj* tmp = obj;
 	       obj = kiss_gc_ptr(obj->gc_ptr);
-	       *prev = (void*)((kiss_ptr_int)obj | (Kiss_GC_Flag ? 0 : 1));
+	       *prev = (void*)((kiss_C_integer)obj | (Kiss_GC_Flag ? 0 : 1));
 	       kiss_gc_free_obj(tmp);
 	  }
      }

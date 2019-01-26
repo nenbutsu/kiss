@@ -18,7 +18,7 @@
 */
 #include "kiss.h"
 
-kiss_bignum_t* kiss_make_bignum(kiss_ptr_int i) {
+kiss_bignum_t* kiss_make_bignum(kiss_C_integer i) {
     kiss_bignum_t* p = Kiss_GC_Malloc(sizeof(kiss_bignum_t));
     p->type = KISS_BIGNUM;
     mpz_init_set_si(p->mpz, i);
@@ -73,7 +73,7 @@ kiss_obj* kiss_float(const kiss_obj* const x) {
      Kiss_Number(x);
      switch (KISS_OBJ_TYPE(x)) {
      case KISS_FIXNUM: {
-          return (kiss_obj*)kiss_make_float(kiss_ptr_int(x));
+          return (kiss_obj*)kiss_make_float(kiss_C_integer(x));
      }
      case KISS_BIGNUM: {
           return (kiss_obj*)kiss_make_float(mpz_get_d(((kiss_bignum_t*)x)->mpz));
@@ -137,7 +137,7 @@ kiss_obj* kiss_c_parse_number(const kiss_obj* const obj) {
      
      wchar_t* tail = NULL;
      long int i = wcstol(p, &tail, base);
-     if (tail == p + wcslen(p) && i <= KISS_PTR_INT_MAX) {
+     if (tail == p + wcslen(p) && i <= KISS_C_INTEGER_MAX) {
           return (kiss_obj*)kiss_make_fixnum(i);
      }
      
@@ -175,12 +175,12 @@ kiss_obj* kiss_parse_number(kiss_obj* obj) {
 
 static inline
 kiss_obj* kiss_plus2_fixnum2 (const kiss_obj* const a, const kiss_obj* const b) {
-     const kiss_ptr_int i1 = kiss_ptr_int(a);
-     const kiss_ptr_int i2 = kiss_ptr_int(b);
+     const kiss_C_integer i1 = kiss_C_integer(a);
+     const kiss_C_integer i2 = kiss_C_integer(b);
      if ((i1 >= 0 && i2 <=0) || (i1 <= 0 && i2 >=0)) {
           return (kiss_obj*)kiss_make_fixnum(i1 + i2);
      } else if (i1 > 0 && i2 > 0) {
-          kiss_ptr_int n = KISS_PTR_INT_MAX - i2;
+          kiss_C_integer n = KISS_C_INTEGER_MAX - i2;
           if (i1 <= n) {
                return (kiss_obj*)kiss_make_fixnum(i1 + i2);
           } else {
@@ -189,7 +189,7 @@ kiss_obj* kiss_plus2_fixnum2 (const kiss_obj* const a, const kiss_obj* const b) 
                return (kiss_obj*)z;
           }
      } else if (i1 < 0 && i2 < 0) {
-          kiss_ptr_int n = KISS_PTR_INT_MIN - i2;
+          kiss_C_integer n = KISS_C_INTEGER_MIN - i2;
           if (i1 >= n) {
                return (kiss_obj*)kiss_make_fixnum(i1 + i2);
           } else {
@@ -206,7 +206,7 @@ kiss_obj* kiss_plus2_fixnum2 (const kiss_obj* const a, const kiss_obj* const b) 
 
 static inline
 kiss_obj* kiss_plus2_fixnum_bignum (kiss_obj* a, kiss_obj* b) {
-     kiss_bignum_t* z1 = kiss_make_bignum(kiss_ptr_int(a));
+     kiss_bignum_t* z1 = kiss_make_bignum(kiss_C_integer(a));
      kiss_bignum_t* z2 = (kiss_bignum_t*)b;
      mpz_add(z1->mpz, z1->mpz, z2->mpz);
      return (kiss_obj*)z1;
@@ -214,7 +214,7 @@ kiss_obj* kiss_plus2_fixnum_bignum (kiss_obj* a, kiss_obj* b) {
 
 static inline
 kiss_obj* kiss_plus2_fixnum_float(kiss_obj* a, kiss_obj* b) {
-     kiss_float_t* f1 = kiss_make_float(kiss_ptr_int(a));
+     kiss_float_t* f1 = kiss_make_float(kiss_C_integer(a));
      kiss_float_t* f2 = (kiss_float_t*)b;
      f1->f += f2->f;
      return (kiss_obj*)f1;
@@ -320,8 +320,8 @@ kiss_obj* kiss_flip_sign(kiss_obj* obj) {
      Kiss_Number(obj);
      switch (KISS_OBJ_TYPE(obj)) {
      case KISS_FIXNUM: {
-          kiss_ptr_int i = - kiss_ptr_int(obj);
-          if (i <= KISS_PTR_INT_MAX && i >= KISS_PTR_INT_MIN) {
+          kiss_C_integer i = - kiss_C_integer(obj);
+          if (i <= KISS_C_INTEGER_MAX && i >= KISS_C_INTEGER_MIN) {
                return kiss_make_fixnum(i);
           } else {
                kiss_bignum_t* z = kiss_make_bignum(i);
@@ -364,15 +364,15 @@ kiss_obj* kiss_minus(kiss_obj* number, kiss_obj* rest) {
 
 static inline
 kiss_obj* kiss_multiply2_fixnum_bignum(kiss_obj* a, kiss_obj* b) {
-     kiss_bignum_t* z = kiss_make_bignum(kiss_ptr_int(a));
+     kiss_bignum_t* z = kiss_make_bignum(kiss_C_integer(a));
      mpz_mul(z->mpz, z->mpz, ((kiss_bignum_t*)b)->mpz);
      return (kiss_obj*)z;
 }
 
 static inline
 kiss_obj* kiss_multiply2_fixnum2 (kiss_obj* a, kiss_obj* b) {
-     kiss_ptr_int i1 = kiss_ptr_int(a);
-     kiss_ptr_int i2 = kiss_ptr_int(b);
+     kiss_C_integer i1 = kiss_C_integer(a);
+     kiss_C_integer i2 = kiss_C_integer(b);
 
      if (i1 == 0 || i2 == 0) {
           return (kiss_obj*)kiss_make_fixnum(0);
@@ -384,19 +384,19 @@ kiss_obj* kiss_multiply2_fixnum2 (kiss_obj* a, kiss_obj* b) {
      }
 
      if (i1 < 0) {
-          if (i1 < -KISS_PTR_INT_MAX) {
+          if (i1 < -KISS_C_INTEGER_MAX) {
                return kiss_multiply2_fixnum_bignum(b, (kiss_obj*)kiss_make_bignum(i1));
           }
           i1 = -i1;
      }
      if (i2 < 0) {
-          if (i2 < -KISS_PTR_INT_MAX) {
+          if (i2 < -KISS_C_INTEGER_MAX) {
                return kiss_multiply2_fixnum_bignum(a, (kiss_obj*)kiss_make_bignum(i2));
           }
           i2 = -i2;
      }
 
-     kiss_ptr_int q = KISS_PTR_INT_MAX / i1;
+     kiss_C_integer q = KISS_C_INTEGER_MAX / i1;
      if (i2 <= q) {
           return (kiss_obj*)kiss_make_fixnum(i1 * i2 * (minus ? -1 : 1));
      } else {
@@ -412,7 +412,7 @@ kiss_obj* kiss_multiply2_fixnum2 (kiss_obj* a, kiss_obj* b) {
 static inline
 kiss_obj* kiss_multiply2_fixnum_float(kiss_obj* a, kiss_obj* b) {
      kiss_float_t* f = kiss_make_float(((kiss_float_t*)b)->f);
-     f->f *= kiss_ptr_int(a);
+     f->f *= kiss_C_integer(a);
      return (kiss_obj*)f;
 }
 
@@ -521,12 +521,12 @@ kiss_obj* kiss_num_eq(const kiss_obj* const a, const kiss_obj* const b) {
      case KISS_FIXNUM:
           switch (KISS_OBJ_TYPE(b)) {
           case KISS_FIXNUM:
-               return (kiss_ptr_int)a == (kiss_ptr_int)b ? KISS_T : KISS_NIL;
+               return (kiss_C_integer)a == (kiss_C_integer)b ? KISS_T : KISS_NIL;
           case KISS_BIGNUM:
-               return mpz_cmp_si(((kiss_bignum_t*)b)->mpz, kiss_ptr_int(a)) == 0 ?
+               return mpz_cmp_si(((kiss_bignum_t*)b)->mpz, kiss_C_integer(a)) == 0 ?
                     KISS_T : KISS_NIL;
           case KISS_FLOAT:
-               return (((kiss_float_t*)b)->f == kiss_ptr_int(a)) ? KISS_T : KISS_NIL;
+               return (((kiss_float_t*)b)->f == kiss_C_integer(a)) ? KISS_T : KISS_NIL;
           default:
                fwprintf(stderr, L"kiss_num_eq: unexpected primitive number type = %d",
                         KISS_OBJ_TYPE(b));
@@ -536,7 +536,7 @@ kiss_obj* kiss_num_eq(const kiss_obj* const a, const kiss_obj* const b) {
      case KISS_BIGNUM:
           switch (KISS_OBJ_TYPE(b)) {
           case KISS_FIXNUM:
-               return mpz_cmp_si(((kiss_bignum_t*)a)->mpz, kiss_ptr_int(b)) == 0 ?
+               return mpz_cmp_si(((kiss_bignum_t*)a)->mpz, kiss_C_integer(b)) == 0 ?
                     KISS_T : KISS_NIL;
           case KISS_BIGNUM:
                return mpz_cmp(((kiss_bignum_t*)a)->mpz, ((kiss_bignum_t*)b)->mpz) == 0 ?
@@ -553,7 +553,7 @@ kiss_obj* kiss_num_eq(const kiss_obj* const a, const kiss_obj* const b) {
      case KISS_FLOAT:
           switch (KISS_OBJ_TYPE(b)) {
           case KISS_FIXNUM:
-               return ((kiss_float_t*)a)->f == kiss_ptr_int(b) ? KISS_T : KISS_NIL;
+               return ((kiss_float_t*)a)->f == kiss_C_integer(b) ? KISS_T : KISS_NIL;
           case KISS_BIGNUM:
                return mpz_cmp_d(((kiss_bignum_t*)b)->mpz, ((kiss_float_t*)a)->f) == 0 ?
                     KISS_T : KISS_NIL;
@@ -592,12 +592,12 @@ kiss_obj* kiss_num_lessthan(const kiss_obj* const a, const kiss_obj* const b) {
      case KISS_FIXNUM:
           switch (KISS_OBJ_TYPE(b)) {
           case KISS_FIXNUM:
-               return kiss_ptr_int(a) < kiss_ptr_int(b) ? KISS_T : KISS_NIL;
+               return kiss_C_integer(a) < kiss_C_integer(b) ? KISS_T : KISS_NIL;
           case KISS_BIGNUM:
-               return mpz_cmp_si(((kiss_bignum_t*)b)->mpz, kiss_ptr_int(a)) > 0 ?
+               return mpz_cmp_si(((kiss_bignum_t*)b)->mpz, kiss_C_integer(a)) > 0 ?
                     KISS_T : KISS_NIL;
           case KISS_FLOAT:
-               return kiss_ptr_int(a) < ((kiss_float_t*)b)->f ? KISS_T : KISS_NIL;
+               return kiss_C_integer(a) < ((kiss_float_t*)b)->f ? KISS_T : KISS_NIL;
           default:
                fwprintf(stderr, L"kiss_num_lessthan: unexpected primitive number type = %d",
                         KISS_OBJ_TYPE(b));
@@ -607,7 +607,7 @@ kiss_obj* kiss_num_lessthan(const kiss_obj* const a, const kiss_obj* const b) {
      case KISS_BIGNUM:
           switch (KISS_OBJ_TYPE(b)) {
           case KISS_FIXNUM:
-               return mpz_cmp_si(((kiss_bignum_t*)a)->mpz, kiss_ptr_int(b)) < 0 ?
+               return mpz_cmp_si(((kiss_bignum_t*)a)->mpz, kiss_C_integer(b)) < 0 ?
                     KISS_T : KISS_NIL;
           case KISS_BIGNUM:
                return mpz_cmp(((kiss_bignum_t*)a)->mpz, ((kiss_bignum_t*)b)->mpz) < 0 ?
@@ -624,7 +624,7 @@ kiss_obj* kiss_num_lessthan(const kiss_obj* const a, const kiss_obj* const b) {
      case KISS_FLOAT:
           switch (KISS_OBJ_TYPE(b)) {
           case KISS_FIXNUM:
-               return ((kiss_float_t*)a)->f < kiss_ptr_int(b) ?
+               return ((kiss_float_t*)a)->f < kiss_C_integer(b) ?
                     KISS_T : KISS_NIL;
           case KISS_BIGNUM:
                return mpz_cmp_d(((kiss_bignum_t*)b)->mpz, ((kiss_float_t*)a)->f) > 0 ?
@@ -670,14 +670,14 @@ kiss_obj* kiss_fixnum_if_possible(const kiss_obj* const obj) {
           return (kiss_obj*)obj;
      case KISS_BIGNUM: {
           kiss_bignum_t* z = (kiss_bignum_t*)obj;
-          return (kiss_obj*)((mpz_cmp_si(z->mpz, KISS_PTR_INT_MAX) <= 0 &&
-                              mpz_cmp_si(z->mpz, KISS_PTR_INT_MIN) >= 0) ?
+          return (kiss_obj*)((mpz_cmp_si(z->mpz, KISS_C_INTEGER_MAX) <= 0 &&
+                              mpz_cmp_si(z->mpz, KISS_C_INTEGER_MIN) >= 0) ?
                              kiss_make_fixnum(mpz_get_si(z->mpz)) : obj);
      }
      case KISS_FLOAT: {
           double f = ((kiss_float_t*)obj)->f;
-          kiss_ptr_int i = f;
-          if (i == f && i >= KISS_PTR_INT_MIN && i <= KISS_PTR_INT_MAX) {
+          kiss_C_integer i = f;
+          if (i == f && i >= KISS_C_INTEGER_MIN && i <= KISS_C_INTEGER_MAX) {
                return kiss_make_fixnum(i);
           } else {
                return (kiss_obj*)obj;
@@ -690,10 +690,10 @@ kiss_obj* kiss_fixnum_if_possible(const kiss_obj* const obj) {
 
 static inline
 kiss_obj* kiss_div_fixnum(kiss_obj* a, kiss_obj* b) {
-     kiss_ptr_int i1 = kiss_ptr_int(a);
-     kiss_ptr_int i2 = kiss_ptr_int(b);
-     kiss_ptr_int q = i1 / i2;
-     kiss_ptr_int r = i1 % i2;
+     kiss_C_integer i1 = kiss_C_integer(a);
+     kiss_C_integer i2 = kiss_C_integer(b);
+     kiss_C_integer q = i1 / i2;
+     kiss_C_integer r = i1 % i2;
      if (i1 >= 0) { // (div 14 3) => 4
           if (i2 > 0) {
                return (kiss_obj*)kiss_make_fixnum(q);
@@ -732,7 +732,7 @@ kiss_obj* kiss_div(kiss_obj* a, kiss_obj* b) {
           case KISS_FIXNUM:
                return kiss_div_fixnum(a, b);
           case KISS_BIGNUM: {
-               kiss_ptr_int i1 = kiss_ptr_int(a);
+               kiss_C_integer i1 = kiss_C_integer(a);
                kiss_bignum_t* z1 = kiss_make_bignum(i1);
                kiss_bignum_t* z2 = (kiss_bignum_t*)b;
                mpz_fdiv_q(z1->mpz, z1->mpz, z2->mpz);
@@ -748,7 +748,7 @@ kiss_obj* kiss_div(kiss_obj* a, kiss_obj* b) {
      case KISS_BIGNUM:
           switch (KISS_OBJ_TYPE(b)) {
           case KISS_FIXNUM: {
-               kiss_ptr_int i2 = kiss_ptr_int(b);
+               kiss_C_integer i2 = kiss_C_integer(b);
                kiss_bignum_t* z1 = (kiss_bignum_t*)a;
                kiss_bignum_t* z2 = kiss_make_bignum(i2);
                mpz_fdiv_q(z2->mpz, z1->mpz, z2->mpz);
@@ -777,10 +777,10 @@ kiss_obj* kiss_div(kiss_obj* a, kiss_obj* b) {
 
 static inline
 kiss_obj* kiss_mod_fixnum(kiss_obj* a, kiss_obj* b) {
-     kiss_ptr_int i1 = kiss_ptr_int(a);
-     kiss_ptr_int i2 = kiss_ptr_int(b);
-     kiss_ptr_int q = i1 / i2;
-     kiss_ptr_int r = i1 % i2;
+     kiss_C_integer i1 = kiss_C_integer(a);
+     kiss_C_integer i2 = kiss_C_integer(b);
+     kiss_C_integer q = i1 / i2;
+     kiss_C_integer r = i1 % i2;
      if (i1 >= 0) { // (div 14 3) => 2
           if (i2 > 0) {
                return (kiss_obj*)kiss_make_fixnum(r);
@@ -820,7 +820,7 @@ kiss_obj* kiss_mod(kiss_obj* a, kiss_obj* b) {
           case KISS_FIXNUM:
                return kiss_mod_fixnum(a, b);
           case KISS_BIGNUM: {
-               kiss_ptr_int i1 = kiss_ptr_int(a);
+               kiss_C_integer i1 = kiss_C_integer(a);
                kiss_bignum_t* z1 = kiss_make_bignum(i1);
                kiss_bignum_t* z2 = (kiss_bignum_t*)b;
                mpz_fdiv_r(z1->mpz, z1->mpz, z2->mpz);
@@ -836,7 +836,7 @@ kiss_obj* kiss_mod(kiss_obj* a, kiss_obj* b) {
      case KISS_BIGNUM:
           switch (KISS_OBJ_TYPE(b)) {
           case KISS_FIXNUM: {
-               kiss_ptr_int i2 = kiss_ptr_int(b);
+               kiss_C_integer i2 = kiss_C_integer(b);
                kiss_bignum_t* z1 = (kiss_bignum_t*)a;
                kiss_bignum_t* z2 = kiss_make_bignum(i2);
                mpz_fdiv_r(z2->mpz, z1->mpz, z2->mpz);
@@ -911,9 +911,9 @@ kiss_obj* kiss_abs(kiss_obj* x) {
      Kiss_Number(x);
      switch (KISS_OBJ_TYPE(x)) {
      case KISS_FIXNUM: {
-          kiss_ptr_int i = kiss_ptr_int(x);
+          kiss_C_integer i = kiss_C_integer(x);
           if (i < 0) {
-               if (i == KISS_PTR_INT_MIN) {
+               if (i == KISS_C_INTEGER_MIN) {
                     kiss_bignum_t* z = kiss_make_bignum(i);
                     mpz_neg(z->mpz, z->mpz);
                     return (kiss_obj*)z;
@@ -972,9 +972,9 @@ kiss_obj* kiss_expt(const kiss_obj* const x1, const kiss_obj* const x2) {
      }
      if (KISS_IS_INTEGER(x1) && KISS_IS_INTEGER(x2) &&
          kiss_num_greaterthan_eq(x2, kiss_make_fixnum(0)) == KISS_T) {
-          kiss_bignum_t* z1 = KISS_IS_FIXNUM(x1) ? kiss_make_bignum(kiss_ptr_int(x1)) :
+          kiss_bignum_t* z1 = KISS_IS_FIXNUM(x1) ? kiss_make_bignum(kiss_C_integer(x1)) :
                (kiss_bignum_t*)x1;
-          unsigned long int i2 = KISS_IS_FIXNUM(x2) ? kiss_ptr_int(x2) :
+          unsigned long int i2 = KISS_IS_FIXNUM(x2) ? kiss_C_integer(x2) :
                mpz_get_ui(((kiss_bignum_t*)x2)->mpz);
           kiss_bignum_t* z = kiss_make_bignum(0);
           mpz_pow_ui(z->mpz, z1->mpz, i2);
@@ -1003,7 +1003,7 @@ kiss_obj* kiss_isqrt(const kiss_obj* const x) {
      Kiss_Non_Negative_Integer(x);
      switch (KISS_OBJ_TYPE(x)) {
      case KISS_FIXNUM: {
-          kiss_bignum_t* z = kiss_make_bignum(kiss_ptr_int(x));
+          kiss_bignum_t* z = kiss_make_bignum(kiss_C_integer(x));
           mpz_sqrt(z->mpz, z->mpz);
           return kiss_fixnum_if_possible((kiss_obj*)z);
      }
@@ -1031,7 +1031,7 @@ kiss_obj* kiss_floor(kiss_obj* x) {
           return x;
      case KISS_FLOAT: {
           double f = floor(((kiss_float_t*)x)->f);
-          if (f > KISS_PTR_INT_MAX || f < KISS_PTR_INT_MIN) {
+          if (f > KISS_C_INTEGER_MAX || f < KISS_C_INTEGER_MIN) {
                kiss_bignum_t* z = kiss_make_bignum(0);
                mpz_set_d(z->mpz, f);
                return (kiss_obj*)z;
@@ -1058,7 +1058,7 @@ kiss_obj* kiss_ceiling(kiss_obj* x) {
           return x;
      case KISS_FLOAT: {
           double f = ceil(((kiss_float_t*)x)->f);
-          if (f > KISS_PTR_INT_MAX || f < KISS_PTR_INT_MIN) {
+          if (f > KISS_C_INTEGER_MAX || f < KISS_C_INTEGER_MIN) {
                kiss_bignum_t* z = kiss_make_bignum(0);
                mpz_set_d(z->mpz, f);
                return (kiss_obj*)z;
@@ -1085,7 +1085,7 @@ kiss_obj* kiss_truncate(kiss_obj* x) {
           return x;
      case KISS_FLOAT: {
           double f = trunc(((kiss_float_t*)x)->f);
-          if (f > KISS_PTR_INT_MAX || f < KISS_PTR_INT_MIN) {
+          if (f > KISS_C_INTEGER_MAX || f < KISS_C_INTEGER_MIN) {
                kiss_bignum_t* z = kiss_make_bignum(0);
                mpz_set_d(z->mpz, f);
                return (kiss_obj*)z;
@@ -1113,12 +1113,12 @@ kiss_obj* kiss_round(kiss_obj* x) {
      case KISS_FLOAT: {
           double f = ((kiss_float_t*)x)->f;
           double rounded = round(f);
-          if (f > 0 && f == rounded - 0.5 && ((kiss_ptr_int)rounded) % 2 != 0) {
+          if (f > 0 && f == rounded - 0.5 && ((kiss_C_integer)rounded) % 2 != 0) {
                rounded--;
-          } else if (f < 0 && f == rounded + 0.5 && ((kiss_ptr_int)rounded) % 2 != 0) {
+          } else if (f < 0 && f == rounded + 0.5 && ((kiss_C_integer)rounded) % 2 != 0) {
                rounded++;
           }
-          if (rounded > KISS_PTR_INT_MAX || rounded < KISS_PTR_INT_MIN) {
+          if (rounded > KISS_C_INTEGER_MAX || rounded < KISS_C_INTEGER_MIN) {
                kiss_bignum_t* z = kiss_make_bignum(0);
                mpz_set_d(z->mpz, rounded);
                return (kiss_obj*)z;
@@ -1293,10 +1293,10 @@ kiss_obj* kiss_min(const kiss_obj* x, const kiss_obj* const rest) {
 kiss_obj* kiss_quotient2(const kiss_obj* const x, const kiss_obj* const y) {
      switch (KISS_OBJ_TYPE(x)) {
      case KISS_FIXNUM: {
-          kiss_ptr_int i1 = kiss_ptr_int(x);
+          kiss_C_integer i1 = kiss_C_integer(x);
           switch (KISS_OBJ_TYPE(y)) {
           case KISS_FIXNUM: {
-               kiss_ptr_int i2 = kiss_ptr_int(y);
+               kiss_C_integer i2 = kiss_C_integer(y);
                if (i1 % i2 == 0) {
                     return kiss_make_fixnum(i1 / i2);
                } else {
@@ -1336,7 +1336,7 @@ kiss_obj* kiss_quotient2(const kiss_obj* const x, const kiss_obj* const y) {
           kiss_bignum_t* z1 = (kiss_bignum_t*)x;
           switch (KISS_OBJ_TYPE(y)) {
           case KISS_FIXNUM: {
-               kiss_ptr_int i2 = kiss_ptr_int(y);
+               kiss_C_integer i2 = kiss_C_integer(y);
                kiss_bignum_t* z = kiss_make_bignum(i2);
                kiss_bignum_t* r = kiss_make_bignum(0.0);
                mpz_fdiv_qr(z->mpz, r->mpz, z1->mpz, z->mpz);
@@ -1379,7 +1379,7 @@ kiss_obj* kiss_quotient2(const kiss_obj* const x, const kiss_obj* const y) {
           kiss_float_t* f1 = (kiss_float_t*)x;
           switch (KISS_OBJ_TYPE(y)) {
           case KISS_FIXNUM: {
-               double f2 = kiss_ptr_int(y);
+               double f2 = kiss_C_integer(y);
                kiss_float_t* f = kiss_make_float(f1->f / f2);
                return (kiss_obj*)f;
           }

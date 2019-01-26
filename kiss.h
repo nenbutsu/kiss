@@ -35,16 +35,16 @@
 
 #include <gmp.h>
 
-typedef long int kiss_ptr_int;
-#define KISS_PTR_INT_MAX (LONG_MAX>>2)
-#define KISS_PTR_INT_MIN (LONG_MIN>>2)
-_Static_assert (sizeof(kiss_ptr_int) == sizeof(void*), "We need a C int type which has the same width as void*");
+typedef long int kiss_C_integer;
+#define KISS_C_INTEGER_MAX (LONG_MAX>>2)
+#define KISS_C_INTEGER_MIN (LONG_MIN>>2)
+_Static_assert (sizeof(kiss_C_integer) == sizeof(void*), "We need a C int type which has the same width as void*");
 
-#define kiss_ptr_int(x)        (((kiss_ptr_int)x)>>2)
-#define kiss_C_wchar_t(x)          kiss_ptr_int(x)
+#define kiss_C_integer(x)        (((kiss_C_integer)x)>>2)
+#define kiss_C_wchar_t(x)          kiss_C_integer(x)
 
-#define kiss_make_char(x)      (kiss_obj*)((((kiss_ptr_int)x)<<2) | 2)
-#define kiss_make_fixnum(x)    (kiss_obj*)((((kiss_ptr_int)x)<<2) | 1)
+#define kiss_make_char(x)      (kiss_obj*)((((kiss_C_integer)x)<<2) | 2)
+#define kiss_make_fixnum(x)    (kiss_obj*)((((kiss_C_integer)x)<<2) | 1)
 
 typedef enum {
      KISS_FIXNUM = 1,       // used as a flag for FIXNUM
@@ -333,7 +333,7 @@ kiss_symbol_t KISS_Ueos, KISS_Udummy;
 #define KISS_HEAP_STACK_SIZE (1024 * 1024 * 2)
 extern size_t Kiss_Heap_Top;
 extern kiss_gc_obj* Kiss_Heap_Stack[];
-extern kiss_ptr_int Kiss_GC_Flag;
+extern kiss_C_integer Kiss_GC_Flag;
 extern size_t Kiss_GC_Amount;
 extern void* Kiss_GC_Objects;
 
@@ -343,7 +343,7 @@ kiss_obj* kiss_gc(void);
 _Noreturn
 void Kiss_System_Error (void);
 
-#define kiss_gc_ptr(x)   ((void*)((kiss_ptr_int)x & (~0<<1)))
+#define kiss_gc_ptr(x)   ((void*)((kiss_C_integer)x & (~0<<1)))
 /* An error shall be signaled if the requested memory cannot be allocated
    (error-id. <storage-exhausted>). */
 inline
@@ -366,7 +366,7 @@ void* Kiss_GC_Malloc(size_t const size) {
 
     Kiss_Heap_Stack[Kiss_Heap_Top++] = p;
     assert(Kiss_Heap_Top < KISS_HEAP_STACK_SIZE);
-    ((kiss_gc_obj*)p)->gc_ptr = (void*)((kiss_ptr_int)kiss_gc_ptr(Kiss_GC_Objects) | Kiss_GC_Flag);
+    ((kiss_gc_obj*)p)->gc_ptr = (void*)((kiss_C_integer)kiss_gc_ptr(Kiss_GC_Objects) | Kiss_GC_Flag);
     Kiss_GC_Objects = p;
     return p;
 }
@@ -378,10 +378,10 @@ void* Kiss_GC_Malloc(size_t const size) {
 #define KISS_CADR(x)   KISS_CAR(KISS_CDR(x))
 #define KISS_CADDR(x)  KISS_CAR(KISS_CDR(KISS_CDR(x)))
 
-#define KISS_OBJ_TYPE(x) (((kiss_ptr_int)x & 3) ? ((kiss_ptr_int)x & 3) : (((kiss_obj*)x)->type))
+#define KISS_OBJ_TYPE(x) (((kiss_C_integer)x & 3) ? ((kiss_C_integer)x & 3) : (((kiss_obj*)x)->type))
 
-#define KISS_IS_FIXNUM(x)            ((kiss_ptr_int)x & 1)
-#define KISS_IS_FIXCHAR(x)           ((kiss_ptr_int)x & 2)
+#define KISS_IS_FIXNUM(x)            ((kiss_C_integer)x & 1)
+#define KISS_IS_FIXCHAR(x)           ((kiss_C_integer)x & 2)
 #define KISS_IS_BIGNUM(x)            (KISS_OBJ_TYPE(x) == KISS_BIGNUM)
 #define KISS_IS_INTEGER(x)           (KISS_IS_FIXNUM(x) || KISS_IS_BIGNUM(x))
 #define KISS_IS_CHARACTER(x)         (KISS_IS_FIXCHAR(x))
@@ -552,10 +552,10 @@ kiss_environment_t* Kiss_Get_Environment(void);
 void kiss_initialize(void);
 
 /* number.c */
-kiss_bignum_t* kiss_make_bignum(kiss_ptr_int i);
+kiss_bignum_t* kiss_make_bignum(kiss_C_integer i);
 inline
-kiss_obj* kiss_make_integer(kiss_ptr_int i) {
-     return (i > KISS_PTR_INT_MAX) ? (kiss_obj*)kiss_make_bignum(i) : kiss_make_fixnum(i);
+kiss_obj* kiss_make_integer(kiss_C_integer i) {
+     return (i > KISS_C_INTEGER_MAX) ? (kiss_obj*)kiss_make_bignum(i) : kiss_make_fixnum(i);
 }
 kiss_obj* kiss_fixnum_if_possible(const kiss_obj* const obj);
 kiss_obj* kiss_integerp(const kiss_obj* const obj);
@@ -788,10 +788,10 @@ kiss_hash_table_t* Kiss_Hash_Table(const kiss_obj* const obj) {
 }
 
 inline
-kiss_ptr_int Kiss_Fixnum(const kiss_obj* obj) {
-     if (KISS_IS_FIXNUM(obj)) { return kiss_ptr_int(obj); }
+kiss_C_integer Kiss_Fixnum(const kiss_obj* obj) {
+     if (KISS_IS_FIXNUM(obj)) { return kiss_C_integer(obj); }
      obj = kiss_fixnum_if_possible(obj);
-     if (KISS_IS_FIXNUM(obj)) { return kiss_ptr_int(obj); }
+     if (KISS_IS_FIXNUM(obj)) { return kiss_C_integer(obj); }
      Kiss_Domain_Error(obj, L"<fixnum>");
 }
 
@@ -859,15 +859,15 @@ kiss_obj* Kiss_Non_Negative_Number(const kiss_obj* const obj) {
 }
 
 inline
-kiss_ptr_int Kiss_Non_Negative_Fixnum(const kiss_obj* const obj) {
-     const kiss_ptr_int i = Kiss_Fixnum(obj);
+kiss_C_integer Kiss_Non_Negative_Fixnum(const kiss_obj* const obj) {
+     const kiss_C_integer i = Kiss_Fixnum(obj);
      if (i >= 0) { return i; }
      Kiss_Domain_Error(obj, L"<non-negative-fixnum>");
 }
 
 inline
-kiss_ptr_int Kiss_Non_Zero_Fixnum(const kiss_obj* const obj) {
-     const kiss_ptr_int i = Kiss_Fixnum(obj);
+kiss_C_integer Kiss_Non_Zero_Fixnum(const kiss_obj* const obj) {
+     const kiss_C_integer i = Kiss_Fixnum(obj);
      if (i != 0) { return i; }
      Kiss_Domain_Error(obj, L"non zero fixnum");
 }
@@ -1268,7 +1268,7 @@ kiss_obj* kiss_set_cdr(const kiss_obj* const obj, kiss_obj* const cons) {
    INITIAL-ELEMENT may be any ISLISP object. */
 inline
 kiss_obj* kiss_create_list(const kiss_obj* const i, const kiss_obj* const rest) {
-     kiss_ptr_int n = Kiss_Non_Negative_Fixnum(i);
+     kiss_C_integer n = Kiss_Non_Negative_Fixnum(i);
      kiss_obj* init = rest == KISS_NIL ? KISS_NIL : KISS_CAR(rest);
      kiss_obj* p = KISS_NIL;
      for (; n > 0; n--) {
@@ -1575,10 +1575,10 @@ kiss_obj* kiss_assoc_using(const kiss_obj* test, const kiss_obj* const obj, kiss
    than or equal to the number of cons cells in list, the result is list. */
 inline
 kiss_obj* kiss_last(const kiss_obj* const list, const kiss_obj* const rest) {
-     kiss_ptr_int n = rest == KISS_NIL ? 1 : Kiss_Non_Negative_Fixnum(kiss_car(rest));
+     kiss_C_integer n = rest == KISS_NIL ? 1 : Kiss_Non_Negative_Fixnum(kiss_car(rest));
      const kiss_obj* p = Kiss_List(list);
      size_t len = kiss_c_length(list);
-     for (kiss_ptr_int i = len - n; i > 0; i--) p = kiss_cdr(p);
+     for (kiss_C_integer i = len - n; i > 0; i--) p = kiss_cdr(p);
      return (kiss_obj*)p;
 }
 

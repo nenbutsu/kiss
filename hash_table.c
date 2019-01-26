@@ -57,7 +57,7 @@ kiss_obj* kiss_create_hash_table(kiss_obj* args) {
      return (kiss_obj*)kiss_make_hash_table(size, test, weakness, rehash_size, rehash_threshold);
 }
 
-kiss_ptr_int kiss_hash_string(const kiss_string_t* const str, const kiss_hash_table_t* const table) {
+kiss_C_integer kiss_hash_string(const kiss_string_t* const str, const kiss_hash_table_t* const table) {
      size_t n = 0;
      for (wchar_t* wcs = str->str; *wcs != L'\0'; wcs++) {
           n += *wcs;
@@ -66,14 +66,14 @@ kiss_ptr_int kiss_hash_string(const kiss_string_t* const str, const kiss_hash_ta
      return n;
 }
 
-kiss_ptr_int kiss_hash_symbol(const kiss_symbol_t* const symbol, const kiss_hash_table_t* const table)
+kiss_C_integer kiss_hash_symbol(const kiss_symbol_t* const symbol, const kiss_hash_table_t* const table)
 {
-     size_t n = kiss_ptr_int(symbol);
+     size_t n = kiss_C_integer(symbol);
      n %= table->vector->n;
      return n;
 }
 
-kiss_ptr_int kiss_hash(const kiss_obj* const obj, const kiss_hash_table_t* const table) {
+kiss_C_integer kiss_hash(const kiss_obj* const obj, const kiss_hash_table_t* const table) {
      switch (KISS_OBJ_TYPE(obj)) {
      case KISS_STRING:
           return kiss_hash_string((kiss_string_t*)obj, table);
@@ -89,7 +89,7 @@ kiss_ptr_int kiss_hash(const kiss_obj* const obj, const kiss_hash_table_t* const
 
 kiss_obj* kiss_c_gethash(const kiss_obj* const key, const kiss_hash_table_t* const hash_table, const kiss_obj* const default_value)
 {
-     kiss_ptr_int k = kiss_hash(key, hash_table);
+     kiss_C_integer k = kiss_hash(key, hash_table);
      kiss_obj* list = hash_table->vector->v[k];
      kiss_obj* p = kiss_assoc_using(hash_table->test, key, list);
      if (p == KISS_NIL)
@@ -108,7 +108,7 @@ kiss_obj* kiss_gethash(const kiss_obj* const key, const kiss_obj* const table, c
 kiss_obj* kiss_puthash(const kiss_obj* const key, const kiss_obj* const value, kiss_obj* const table)
 {
      kiss_hash_table_t* hash_table = Kiss_Hash_Table(table);
-     kiss_ptr_int k = kiss_hash(key, hash_table);
+     kiss_C_integer k = kiss_hash(key, hash_table);
      kiss_obj* alist = hash_table->vector->v[k];
      kiss_obj* p = kiss_assoc_using(hash_table->test, key, alist);
      if (p == KISS_NIL) {

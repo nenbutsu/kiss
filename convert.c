@@ -39,7 +39,7 @@ kiss_obj* kiss_convert(const kiss_obj* obj, const kiss_obj* const class_name) {
           if (class_name == (kiss_obj*)&KISS_Sc_integer) {
                return (kiss_obj*)obj;
           } else if (class_name == (kiss_obj*)&KISS_Sc_character) {
-               return kiss_make_char(kiss_ptr_int(obj));
+               return kiss_make_char(kiss_C_integer(obj));
           } else if (class_name == (kiss_obj*)&KISS_Sc_float) {
                return kiss_float(obj);
           } else if (class_name == (kiss_obj*)&KISS_Sc_string) {

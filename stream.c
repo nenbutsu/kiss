@@ -503,7 +503,7 @@ kiss_obj* kiss_read_byte(kiss_obj* in, kiss_obj* args) {
 kiss_obj* kiss_write_byte(kiss_obj* z, kiss_obj* output) {
      if (KISS_IS_FILE_STREAM(Kiss_Output_Byte_Stream(output))) {
 	  FILE* fp = Kiss_Open_File_Stream(output)->file_ptr;
-	  kiss_ptr_int i = Kiss_Fixnum(z);
+	  kiss_C_integer i = Kiss_Fixnum(z);
 	  if (i > CHAR_MAX || i < CHAR_MIN) {
 	       Kiss_Err(L"out of 8-bit integer range ~S", z);
 	  }

@@ -25,13 +25,13 @@ extern inline
 void* Kiss_GC_Malloc(size_t const size);
 
 extern inline
-kiss_obj* kiss_make_integer(kiss_ptr_int i);
+kiss_obj* kiss_make_integer(kiss_C_integer i);
 
 extern inline
 kiss_cons_t* Kiss_Cons(const kiss_obj* const obj);
 
 extern inline
-kiss_ptr_int Kiss_Fixnum(const kiss_obj* obj);
+kiss_C_integer Kiss_Fixnum(const kiss_obj* obj);
 
 extern inline
 kiss_bignum_t* Kiss_Bignum(const kiss_obj* const obj);
@@ -58,10 +58,10 @@ extern inline
 kiss_obj* Kiss_Non_Negative_Number(const kiss_obj* const obj);
      
 extern inline
-kiss_ptr_int Kiss_Non_Negative_Fixnum(const kiss_obj* const obj);
+kiss_C_integer Kiss_Non_Negative_Fixnum(const kiss_obj* const obj);
 
 extern inline
-kiss_ptr_int Kiss_Non_Zero_Fixnum(const kiss_obj* const obj);
+kiss_C_integer Kiss_Non_Zero_Fixnum(const kiss_obj* const obj);
 
 extern inline
 kiss_obj* Kiss_General_Array(const kiss_obj* const obj);

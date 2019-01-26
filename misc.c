@@ -26,7 +26,7 @@ kiss_obj* kiss_get_universal_time(void) {
      time_t t = time(NULL);
      if (t == (time_t)(-1)) { Kiss_System_Error(); }
      // https://stackoverflow.com/questions/8805832/number-of-seconds-from-1st-january-1900-to-start-of-unix-epoch
-     return kiss_plus2(kiss_make_integer((kiss_ptr_int)t), kiss_make_integer(2208988800));
+     return kiss_plus2(kiss_make_integer((kiss_C_integer)t), kiss_make_integer(2208988800));
 }
 
 kiss_obj* kiss_get_internal_run_time(void) {
@@ -36,7 +36,7 @@ kiss_obj* kiss_get_internal_run_time(void) {
      if (t == (clock_t)(-1)) {
           Kiss_System_Error();
      }
-     return kiss_make_integer((kiss_ptr_int)t);
+     return kiss_make_integer((kiss_C_integer)t);
 }
 
 kiss_obj* kiss_get_internal_real_time(void) {
@@ -46,11 +46,11 @@ kiss_obj* kiss_get_internal_real_time(void) {
      if (t == (clock_t)(-1)) {
           Kiss_System_Error();
      }
-     return kiss_make_integer((kiss_ptr_int)t);
+     return kiss_make_integer((kiss_C_integer)t);
 }
 
 kiss_obj* kiss_internal_time_units_per_second(void) {
-     return kiss_make_integer((kiss_ptr_int)CLOCKS_PER_SEC);
+     return kiss_make_integer((kiss_C_integer)CLOCKS_PER_SEC);
 }
 
 kiss_obj* kiss_time(kiss_obj* form) {

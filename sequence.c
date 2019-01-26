@@ -44,7 +44,7 @@ kiss_obj* kiss_length(const kiss_obj* const sequence) {
    if Z is not an integer (error-id. domain-error). */
 kiss_obj* kiss_elt(const kiss_obj* const sequence, const kiss_obj* const z) {
      Kiss_Valid_Sequence_Index(sequence, z);
-     size_t i = kiss_ptr_int(z);
+     size_t i = kiss_C_integer(z);
      switch (KISS_OBJ_TYPE(sequence)) {
      case KISS_SYMBOL: {
 	  assert(sequence == KISS_NIL);
@@ -83,7 +83,7 @@ kiss_obj* kiss_elt(const kiss_obj* const sequence, const kiss_obj* const z) {
 */
 kiss_obj* kiss_set_elt(const kiss_obj* const obj, kiss_obj* const sequence, const kiss_obj* const z) {
      Kiss_Valid_Sequence_Index(sequence, z);
-     size_t i = kiss_ptr_int(z);
+     size_t i = kiss_C_integer(z);
      switch (KISS_OBJ_TYPE(sequence)) {
      case KISS_SYMBOL: {
 	  assert(sequence == KISS_NIL);
@@ -129,8 +129,8 @@ kiss_obj* kiss_set_elt(const kiss_obj* const obj, kiss_obj* const sequence, cons
 kiss_obj* kiss_subseq(const kiss_obj* const sequence, const kiss_obj* const z1, const kiss_obj* const z2)
 {
      Kiss_Valid_Subsequence_Index(sequence, z1, z2);
-     kiss_ptr_int i1 = Kiss_Fixnum(z1);
-     kiss_ptr_int i2 = Kiss_Fixnum(z2);
+     kiss_C_integer i1 = Kiss_Fixnum(z1);
+     kiss_C_integer i2 = Kiss_Fixnum(z2);
      switch (KISS_OBJ_TYPE(sequence)) {
      case KISS_SYMBOL: {
 	  assert(sequence == KISS_NIL);
@@ -152,7 +152,7 @@ kiss_obj* kiss_subseq(const kiss_obj* const sequence, const kiss_obj* const z1, 
 	  kiss_string_t* string = (kiss_string_t*)sequence;
 	  kiss_obj* n = (kiss_obj*)kiss_make_fixnum(i2 - i1);
 	  kiss_string_t* p = (kiss_string_t*)kiss_create_string(n, KISS_NIL);
-	  for (kiss_ptr_int i = i1; i < i2; i++) {
+	  for (kiss_C_integer i = i1; i < i2; i++) {
 	       p->str[i - i1] = string->str[i];
 	  }
 	  return (kiss_obj*)p;
@@ -160,7 +160,7 @@ kiss_obj* kiss_subseq(const kiss_obj* const sequence, const kiss_obj* const z1, 
      case KISS_GENERAL_VECTOR: {
 	  kiss_general_vector_t* vector = (kiss_general_vector_t*)sequence;
 	  kiss_general_vector_t* p = kiss_make_general_vector(i2 - i1, KISS_NIL);
-	  kiss_ptr_int i;
+	  kiss_C_integer i;
 	  for (i = i1; i < i2; i++) {
 	       p->v[i - i1] = vector->v[i];
 	  }

@@ -99,7 +99,7 @@ kiss_symbol_t* Kiss_Variable_Name(const kiss_obj* const name) {
 kiss_obj* Kiss_Valid_Sequence_Index(const kiss_obj* const sequence, const kiss_obj* const index)
 {
      const size_t n = kiss_c_length(sequence);
-     const kiss_ptr_int i = Kiss_Fixnum(index);
+     const kiss_C_integer i = Kiss_Fixnum(index);
      if (i < 0 || i >= n) {
           Kiss_Domain_Error(index, L"<valid-index>");
      }
@@ -109,11 +109,11 @@ kiss_obj* Kiss_Valid_Sequence_Index(const kiss_obj* const sequence, const kiss_o
 void Kiss_Valid_Subsequence_Index(const kiss_obj* const sequence, const kiss_obj* const z1, const kiss_obj* const z2)
 {
      const size_t n = kiss_c_length(sequence);
-     const kiss_ptr_int i1 = Kiss_Fixnum(z1);
+     const kiss_C_integer i1 = Kiss_Fixnum(z1);
      if (i1 < 0 || i1 > n) {
           Kiss_Domain_Error(z1, L"<valid-index>");
      }
-     const kiss_ptr_int i2 = Kiss_Fixnum(z2);
+     const kiss_C_integer i2 = Kiss_Fixnum(z2);
      if (i2 < 0 || i2 > n) {
           Kiss_Domain_Error(z2, L"<valid-index>");
      }

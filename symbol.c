@@ -2070,7 +2070,7 @@ kiss_symbol_t KISS_Ss_most_positive_fixnum_s = {
      NULL,                               /* gc_ptr */
      L"*most-positive-fixnum*",          /* name */
      KISS_SYSTEM_CONSTANT_VAR,           /* flags */
-     kiss_make_fixnum(KISS_PTR_INT_MAX), /* var */
+     kiss_make_fixnum(KISS_C_INTEGER_MAX), /* var */
      NULL,                               /* fun */
      KISS_NIL,                           /* plist */
 };
@@ -2080,7 +2080,7 @@ kiss_symbol_t KISS_Ss_most_negative_fixnum_s = {
      NULL,                               /* gc_ptr */
      L"*most-negative-fixnum*",          /* name */
      KISS_SYSTEM_CONSTANT_VAR,           /* flags */
-     kiss_make_fixnum(KISS_PTR_INT_MIN), /* var */
+     kiss_make_fixnum(KISS_C_INTEGER_MIN), /* var */
      NULL,                               /* fun */
      KISS_NIL,                           /* plist */
 };
