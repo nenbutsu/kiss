@@ -61,7 +61,7 @@ int kiss_read_eval_print_loop(void) {
                     kiss_obj* c;
                     do {
                          c = kiss_c_read_char(kiss_standard_input(), KISS_NIL, KISS_EOS);
-                    } while (c != KISS_EOS && kiss_wchar(c) != L'\n');
+                    } while (c != KISS_EOS && kiss_C_wchar_t(c) != L'\n');
                     if (c == KISS_EOS) { break; }
 		    env->dynamic_env = saved_dynamic_env;
 		    env->lexical_env = saved_lexical_env;

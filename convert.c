@@ -26,7 +26,7 @@ kiss_obj* kiss_convert(const kiss_obj* obj, const kiss_obj* const class_name) {
           if (class_name == (kiss_obj*)&KISS_Sc_character) {
                return (kiss_obj*)obj;
           } else if (class_name == (kiss_obj*)&KISS_Sc_integer) {
-               return kiss_make_fixnum(kiss_wchar(obj));
+               return kiss_make_fixnum(kiss_C_wchar_t(obj));
           } else if (class_name == (kiss_obj*)&KISS_Sc_symbol) {
                const kiss_string_t* const str = kiss_chars_to_str(kiss_cons(obj, KISS_NIL));
                return kiss_intern((kiss_obj*)str);

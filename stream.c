@@ -307,7 +307,7 @@ kiss_obj* kiss_c_read_line(kiss_obj* in, kiss_obj* eos_err_p, kiss_obj* eos_val)
      kiss_obj* c = kiss_c_read_char(in, eos_err_p, KISS_NIL);
      if (c == KISS_NIL) { return eos_val; }
      while (c != KISS_NIL) {
-	  if (kiss_wchar(c) == L'\n') {
+	  if (kiss_C_wchar_t(c) == L'\n') {
 	       break;
 	  }
 	  kiss_push(c, &p);

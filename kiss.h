@@ -41,7 +41,7 @@ typedef long int kiss_ptr_int;
 _Static_assert (sizeof(kiss_ptr_int) == sizeof(void*), "We need a C int type which has the same width as void*");
 
 #define kiss_ptr_int(x)        (((kiss_ptr_int)x)>>2)
-#define kiss_wchar(x)          kiss_ptr_int(x)
+#define kiss_C_wchar_t(x)          kiss_ptr_int(x)
 
 #define kiss_make_char(x)      (kiss_obj*)((((kiss_ptr_int)x)<<2) | 2)
 #define kiss_make_fixnum(x)    (kiss_obj*)((((kiss_ptr_int)x)<<2) | 1)
@@ -933,7 +933,7 @@ kiss_float_t* Kiss_Float(const kiss_obj* const obj) {
 
 inline
 wchar_t Kiss_Character(const kiss_obj* const obj) {
-     if (KISS_IS_FIXCHAR(obj)) { return kiss_wchar(obj); }
+     if (KISS_IS_FIXCHAR(obj)) { return kiss_C_wchar_t(obj); }
      Kiss_Domain_Error(obj, L"<character>");
 }
 

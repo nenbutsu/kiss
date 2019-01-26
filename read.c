@@ -74,7 +74,7 @@ static kiss_obj* kiss_read_string(const kiss_obj* const in) {
           kiss_obj* x = kiss_c_read_char(in, KISS_NIL, KISS_EOS);
           if (x == KISS_EOS) { Kiss_Err(L"Missing closing double quotation for a string"); }
           else {
-               wchar_t c = kiss_wchar(x);
+               wchar_t c = kiss_C_wchar_t(x);
                switch (c) {
                case L'"': goto end;
                case L'\\':
@@ -110,7 +110,7 @@ static void kiss_read_multiple_escaped_lexeme_chars(const kiss_obj* const in) {
      while(1) {
           kiss_obj* x = kiss_c_read_char(in, KISS_NIL, KISS_EOS);
           if (x == KISS_EOS) Kiss_Err(L"Missing closing multiple-escape");
-          wchar_t c = kiss_wchar(x);
+          wchar_t c = kiss_C_wchar_t(x);
           switch (c) {
           case L'|': return;
           case L'\\': kiss_read_single_escaped_lexeme_char(in); continue;
@@ -124,7 +124,7 @@ static void kiss_collect_lexeme_chars(const kiss_obj* const in, int* const escap
     while (1) {
 	kiss_obj* x = kiss_c_preview_char(in, KISS_NIL, KISS_EOS);
 	if (x == KISS_EOS) { return; }
-	wchar_t c = kiss_wchar(x);
+	wchar_t c = kiss_C_wchar_t(x);
 	if (kiss_is_delimiter(c)) { return; }
 	switch (c) {
 	case L'|':
@@ -180,7 +180,7 @@ static kiss_obj* kiss_read_sharp_reader_macro_char(const kiss_obj* const in) {
     kiss_push(p, &env->lexeme_chars);
 
     p = kiss_c_preview_char(in, KISS_NIL, KISS_EOS);
-    while (p != KISS_EOS && !kiss_is_delimiter(kiss_wchar(p))) {
+    while (p != KISS_EOS && !kiss_is_delimiter(kiss_C_wchar_t(p))) {
 	kiss_c_read_char(in, KISS_NIL, KISS_EOS);
 	kiss_push(p, &env->lexeme_chars);
 	p = kiss_c_preview_char(in, KISS_NIL, KISS_EOS);
@@ -195,7 +195,7 @@ static kiss_obj* kiss_read_sharp_reader_macro_char(const kiss_obj* const in) {
     
     kiss_string_t* char_name = kiss_chars_to_str(kiss_reverse(env->lexeme_chars)); // used in err msg*/
     for (p = env->lexeme_chars; KISS_IS_CONS(p); p = KISS_CDR(p)) {/* downcase chars*/
-         wchar_t c = kiss_wchar(KISS_CAR(p));
+         wchar_t c = kiss_C_wchar_t(KISS_CAR(p));
          kiss_set_car(kiss_make_char(towlower(c)), p);
     }
     kiss_string_t* downcased_char_name = kiss_chars_to_str(kiss_reverse(env->lexeme_chars));
@@ -271,12 +271,12 @@ static kiss_obj* kiss_skip_comment(const kiss_obj* const in) {
      while (1) {
           kiss_obj* p = kiss_c_read_char(in, KISS_NIL, KISS_EOS);
           if (p == KISS_EOS) { Kiss_Err(L"Missing |# comment closer"); }
-          wchar_t c = kiss_wchar(p);
+          wchar_t c = kiss_C_wchar_t(p);
           switch (c) {
           case L'#': {
                p = kiss_c_read_char(in, KISS_NIL, KISS_EOS);
                if (p == KISS_EOS) { Kiss_Err(L"Missing |# comment closer"); }
-               c = kiss_wchar(p);
+               c = kiss_C_wchar_t(p);
                if (c == L'|') {
                     kiss_skip_comment(in); // comments can nest
                }
@@ -285,7 +285,7 @@ static kiss_obj* kiss_skip_comment(const kiss_obj* const in) {
           case L'|':
                p = kiss_c_read_char(in, KISS_NIL, KISS_EOS);
                if (p == KISS_EOS) { Kiss_Err(L"Missing |# comment closer"); }
-               c = kiss_wchar(p);
+               c = kiss_C_wchar_t(p);
                if (c == L'#') {
                     return NULL;
                }
@@ -298,7 +298,7 @@ static kiss_obj* kiss_skip_comment(const kiss_obj* const in) {
 static kiss_obj* kiss_read_sharp_reader_macro(const kiss_obj* const in) {
      kiss_obj* p = kiss_c_preview_char(in, KISS_NIL, KISS_EOS);
      if (p == KISS_EOS) { Kiss_Err(L"Missing # macro reader character"); }
-     wchar_t c = kiss_wchar(p);
+     wchar_t c = kiss_C_wchar_t(p);
      switch (c) {
      case L'\'': /* #'f */
 	  kiss_c_read_char(in, KISS_NIL, KISS_EOS);
@@ -417,7 +417,7 @@ static kiss_obj* kiss_read_lexeme(const kiss_obj* const in) {
      while(1) {
           kiss_obj* p = kiss_c_preview_char(in, KISS_NIL, KISS_NIL);
           if (p == KISS_NIL) { return NULL; } // end of stream
-          wchar_t c = kiss_wchar(p);
+          wchar_t c = kiss_C_wchar_t(p);
           if (iswspace(c) || iswcntrl(c)) {
                kiss_c_read_char(in, KISS_NIL, KISS_NIL);
                continue;
@@ -437,7 +437,7 @@ static kiss_obj* kiss_read_lexeme(const kiss_obj* const in) {
                kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip ','
                p = kiss_c_preview_char(in, KISS_NIL, KISS_NIL);
                if (p == KISS_NIL) { Kiss_Err(L"Stray unquote ,: ~S", in); }
-               c = kiss_wchar(p);
+               c = kiss_C_wchar_t(p);
                if (c == L'@') {
                     kiss_c_read_char(in, KISS_NIL, KISS_NIL); // skip @
                     return kiss_read_comma_at(in);
@@ -452,7 +452,7 @@ static kiss_obj* kiss_read_lexeme(const kiss_obj* const in) {
           case L';':
                do {
                     p = kiss_c_read_char(in, KISS_NIL, KISS_NIL);
-               } while (p != KISS_NIL && kiss_wchar(p) != L'\n');
+               } while (p != KISS_NIL && kiss_C_wchar_t(p) != L'\n');
                if (p == KISS_NIL) return NULL; // end of stream
                break;
           case L'"':
