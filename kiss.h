@@ -38,6 +38,7 @@
 typedef long int kiss_C_integer;
 #define KISS_C_INTEGER_MAX (LONG_MAX>>2)
 #define KISS_C_INTEGER_MIN (LONG_MIN>>2)
+
 _Static_assert (sizeof(kiss_C_integer) == sizeof(void*), "We need a C int type which has the same width as void*");
 
 #define kiss_C_integer(x)        (((kiss_C_integer)x)>>2)
