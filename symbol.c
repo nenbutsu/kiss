@@ -4080,7 +4080,7 @@ kiss_symbol_t KISS_Sprovide = {
 
 
 /*** ilos.c ***/
-kiss_symbol_t KISS_Sk_classes = {
+kiss_symbol_t KISS_Sks_classes = {
      KISS_SYMBOL,      /* type */
      NULL,             /* gc_ptr */
      L"kiss::classes", /* name */
@@ -4643,7 +4643,7 @@ kiss_symbol_t* Kiss_Symbols[KISS_SYMBOL_MAX]= {
      &KISS_Sread, 
 
      /* ilos.c */
-     &KISS_Sk_classes, &KISS_Sk_class,
+     &KISS_Sks_classes, &KISS_Sk_class,
      &KISS_Soref, &KISS_Sset_oref,
      &KISS_Sclass_of,
      &KISS_Smake_ilos_obj, &KISS_Sobject_p, &KISS_Silos_obj_plist, &KISS_Sset_ilos_obj_plist,

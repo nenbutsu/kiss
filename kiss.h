@@ -71,6 +71,7 @@ typedef enum {
      KISS_TAGBODY,
 
      KISS_ILOS_OBJ,
+     KISS_ILOS_CLASS,
 } kiss_type;
 
 typedef struct {
@@ -295,10 +296,23 @@ typedef struct {
      size_t pos;
 } kiss_file_stream_t;
 
+struct kiss_ilos_class_t {
+     kiss_type type;
+     void* gc_ptr;
+     struct kiss_ilos_class_t* class;
+     wchar_t* name;
+     kiss_obj* cpl;
+     kiss_obj* slots;
+};
+
+typedef struct kiss_ilos_class_t kiss_ilos_class_t;
+
 typedef struct {
      kiss_type type;
      void* gc_ptr;
+     kiss_ilos_class_t* class;
      kiss_obj* plist;
+     kiss_obj* slots[1];
 } kiss_ilos_obj_t;
 
 typedef struct {
