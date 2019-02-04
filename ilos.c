@@ -31,6 +31,7 @@ kiss_obj* kiss_object_p(kiss_obj* obj) {
     else                       { return KISS_NIL; }
 }
 
+// -------
 kiss_obj* kiss_ilos_obj_plist(const kiss_obj* const obj) {
     kiss_ilos_obj_t* p = Kiss_ILOS_Obj(obj);
     return p->plist;
@@ -41,7 +42,9 @@ kiss_obj* kiss_set_ilos_obj_plist(const kiss_obj* const plist, kiss_obj* const o
     p->plist = (kiss_obj*)plist;
     return obj;
 }
+// -------
 
+// -------
 kiss_obj* kiss_oref(const kiss_obj* const obj, const kiss_obj* const property) {
     return kiss_plist_get(kiss_ilos_obj_plist(obj), property);
 }
@@ -50,6 +53,7 @@ kiss_obj* kiss_set_oref(const kiss_obj* const value, kiss_obj* const obj, const 
     kiss_obj* plist = kiss_plist_put(kiss_ilos_obj_plist(obj), property, value);
     return kiss_set_ilos_obj_plist(plist, obj);    
 }
+// -------
 
 kiss_obj* kiss_k_class(const kiss_obj* const name) {
      kiss_obj* class = kiss_gethash(name, KISS_Sk_classes.var, KISS_NIL);
