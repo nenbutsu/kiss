@@ -28,7 +28,7 @@ kiss_obj* kiss_make_ilos_obj(kiss_obj* plist) {
 
 kiss_obj* kiss_object_p(kiss_obj* obj) {
     if (KISS_IS_ILOS_OBJ(obj)) { return KISS_T; }
-    else                     { return KISS_NIL; }
+    else                       { return KISS_NIL; }
 }
 
 kiss_obj* kiss_ilos_obj_plist(const kiss_obj* const obj) {
