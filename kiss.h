@@ -15,6 +15,12 @@
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
  */
+#ifdef _WINDOWS
+   #include <windows.h>
+#else
+   #include <unistd.h>
+#endif
+
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
